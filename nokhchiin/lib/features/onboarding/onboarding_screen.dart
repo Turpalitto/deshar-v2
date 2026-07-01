@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/router/app_router.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:nokhchiin/core/l10n/l10n_extensions.dart';
 import '../../core/design/tokens/app_spacing.dart';
@@ -60,7 +61,7 @@ class OnboardingScreen extends ConsumerWidget {
               radius: skin.cardRadius,
               onTap: () async {
                 await ref.read(userProfileProvider.notifier).setMode(AppMode.adult);
-                if (context.mounted) context.go('/');
+                if (context.mounted) context.go('/lesson/$kFirstLessonUnitId');
               },
             ).animate().fadeIn(delay: 300.ms).slideX(),
             const Spacer(flex: 2),
@@ -110,7 +111,7 @@ class _AgeButton extends ConsumerWidget {
           await ref.read(userProfileProvider.notifier).setAgeGroup(age);
           if (context.mounted) {
             Navigator.pop(context);
-            context.go('/');
+            context.go('/lesson/$kFirstLessonUnitId');
           }
         },
       ),

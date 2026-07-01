@@ -71,6 +71,7 @@ class UserProfileEntity extends Equatable {
     this.weeklyXp = const [0, 0, 0, 0, 0, 0, 0],
     this.isPremium = false,
     this.lessonsCompletedTotal = 0,
+    this.reviewsDoneToday = 0,
   });
 
   final AppMode mode;
@@ -93,6 +94,7 @@ class UserProfileEntity extends Equatable {
   final List<int> weeklyXp;
   final bool isPremium;
   final int lessonsCompletedTotal;
+  final int reviewsDoneToday;
 
   int get dailyGoalProgress =>
       dailyGoalWords > 0 ? (wordsLearnedToday / dailyGoalWords * 100).round().clamp(0, 100) : 0;
@@ -118,6 +120,7 @@ class UserProfileEntity extends Equatable {
     List<int>? weeklyXp,
     bool? isPremium,
     int? lessonsCompletedTotal,
+    int? reviewsDoneToday,
   }) {
     return UserProfileEntity(
       mode: mode ?? this.mode,
@@ -140,6 +143,7 @@ class UserProfileEntity extends Equatable {
       weeklyXp: weeklyXp ?? this.weeklyXp,
       isPremium: isPremium ?? this.isPremium,
       lessonsCompletedTotal: lessonsCompletedTotal ?? this.lessonsCompletedTotal,
+      reviewsDoneToday: reviewsDoneToday ?? this.reviewsDoneToday,
     );
   }
 

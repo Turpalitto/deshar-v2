@@ -2,12 +2,19 @@ import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
-import '../../core/providers/providers.dart';
 import '../../core/config/feature_flags.dart';
-import '../../core/services/audio_service.dart';
+import '../../core/design/tokens/app_spacing.dart';
+import '../../core/design/widgets/app_button.dart';
+import '../../core/design/widgets/app_card.dart';
+import '../../core/design/widgets/app_scaffold.dart';
+import '../../core/design/widgets/loading_state.dart';
+import '../../core/design/widgets/word_exercise_card.dart';
 import '../../core/providers/content_providers.dart';
-import '../../core/widgets/word_illustration.dart';
+import '../../core/providers/providers.dart';
+import '../../core/services/audio_service.dart';
+import '../../core/design/widgets/app_button.dart';
 import '../../domain/entities/word_entity.dart';
 
 final _audioProvider = Provider((_) => AudioService());
@@ -44,6 +51,7 @@ class _BossScreenState extends ConsumerState<BossScreen> {
       words = (await ref.read(dictionaryRepoProvider).getAllWords()).take(10).toList();
     }
     words.shuffle(_rng);
+    if (!mounted) return;
     setState(() {
       _words = words.take(_boss?['questionsCount'] as int? ?? 10).toList();
       _secondsLeft = _boss?['timeLimitSec'] as int? ?? 120;
@@ -62,6 +70,15 @@ class _BossScreenState extends ConsumerState<BossScreen> {
     super.dispose();
   }
 
+  Future<void> _unlockNextWorld() async {
+    final worlds = await ref.read(worldsProvider.future);
+    final idx = worlds.indexWhere((w) => (w['units'] as List).contains(widget.unitId));
+    if (idx >= 0 && idx < worlds.length - 1) {
+      final nextId = worlds[idx + 1]['id'] as String;
+      await ref.read(userProfileProvider.notifier).unlockWorld(nextId);
+    }
+  }
+
   void _finish() {
     if (_finished) return;
     _finished = true;
@@ -72,14 +89,28 @@ class _BossScreenState extends ConsumerState<BossScreen> {
             _boss?['rewardXp'] as int? ?? 100,
             _boss?['rewardStars'] as int? ?? 25,
           );
+      _unlockNextWorld();
+      ref.read(userProfileProvider.notifier).unlockAchievement('collector');
     }
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         title: Text(won ? 'Победа! 🏆' : 'Попробуй ещё'),
-        content: Text('Счёт: $_score / ${_words.length}'),
+        content: Text(
+          won
+              ? 'Счёт: $_score / ${_words.length}\nНовый мир открыт!'
+              : 'Счёт: $_score / ${_words.length}',
+        ),
         actions: [
-          TextButton(onPressed: () { Navigator.pop(ctx); context.pop(); }, child: const Text('OK')),
+          AppButton(
+            label: 'OK',
+            expanded: false,
+            onPressed: () {
+              Navigator.pop(ctx);
+              context.pop();
+            },
+          ),
         ],
       ),
     );
@@ -88,11 +119,11 @@ class _BossScreenState extends ConsumerState<BossScreen> {
   @override
   Widget build(BuildContext context) {
     if (_words.isEmpty || _boss == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const AppScaffold(body: LoadingState(message: 'Босс готовится…'));
     }
     if (_index >= _words.length) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _finish());
-      return const Scaffold(body: Center(child: Text('Завершение...')));
+      return const AppScaffold(body: LoadingState());
     }
 
     final target = _words[_index];
@@ -100,33 +131,18 @@ class _BossScreenState extends ConsumerState<BossScreen> {
     others.shuffle(_rng);
     final options = [target, ...others.take(3)]..shuffle(_rng);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Босс: ${_boss!['titleRu']}'),
-        actions: [Padding(padding: const EdgeInsets.all(16), child: Text('⏱ $_secondsLeft'))],
-      ),
+    return AppScaffold(
+      title: 'Босс: ${_boss!['titleRu']}',
+      actions: [Padding(padding: const EdgeInsets.all(16), child: Text('⏱ $_secondsLeft'))],
       body: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
           children: [
-            const FoxMascot(size: 64, emotion: FoxEmotion.thinking),
             Text('★ $_score', style: Theme.of(context).textTheme.headlineMedium),
-            const SizedBox(height: 16),
-            WordIllustration(category: widget.unitId, emoji: target.emoji, size: 140),
-            const SizedBox(height: 16),
-            Text(target.chechen, style: Theme.of(context).textTheme.displayLarge, textAlign: TextAlign.center),
-            if (target.pronunciation != null && target.pronunciation!.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: Text(
-                  target.pronunciation!,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontStyle: FontStyle.italic,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
+            const SizedBox(height: AppSpacing.md),
+            WordExerciseCard(word: target, categoryId: widget.unitId)
+                .animate(key: ValueKey(target.id))
+                .fadeIn(),
             if (FeatureFlags.audioEnabled)
               IconButton(
                 icon: const Icon(Icons.volume_up_rounded, size: 36),
@@ -134,29 +150,20 @@ class _BossScreenState extends ConsumerState<BossScreen> {
               ),
             const Spacer(),
             ...options.map((o) => Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.black87,
-                        side: const BorderSide(color: Color(0xFFE8EAED)),
-                      ),
-                      onPressed: () async {
-                        if (o.id == target.id) {
-                          _score++;
-                          await ref.read(reviewWordUseCaseProvider)(target.id, 5);
-                        } else {
-                          await ref.read(reviewWordUseCaseProvider)(target.id, 1);
-                        }
-                        setState(() => _index++);
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(14),
-                        child: Text(o.russian, style: const TextStyle(fontWeight: FontWeight.w700)),
-                      ),
-                    ),
+                  padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                  child: AppButton(
+                    label: o.russian,
+                    variant: AppButtonVariant.secondary,
+                    expanded: true,
+                    onPressed: () async {
+                      if (o.id == target.id) {
+                        _score++;
+                        await ref.read(reviewWordUseCaseProvider)(target.id, 5);
+                      } else {
+                        await ref.read(reviewWordUseCaseProvider)(target.id, 1);
+                      }
+                      setState(() => _index++);
+                    },
                   ),
                 )),
             const Spacer(),

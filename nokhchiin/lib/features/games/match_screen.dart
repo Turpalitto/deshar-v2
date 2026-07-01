@@ -2,14 +2,26 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/design/tokens/app_spacing.dart';
+import '../../core/design/widgets/app_button.dart';
+import '../../core/design/widgets/app_card.dart';
+import '../../core/design/widgets/app_scaffold.dart';
+import '../../core/design/widgets/loading_state.dart';
 import '../../core/providers/providers.dart';
 import '../../domain/entities/word_entity.dart';
 
 final _rng = Random();
 
 class MatchScreen extends ConsumerStatefulWidget {
-  const MatchScreen({super.key, required this.unitId});
+  const MatchScreen({
+    super.key,
+    required this.unitId,
+    this.embedded = false,
+    this.onComplete,
+  });
   final String unitId;
+  final bool embedded;
+  final VoidCallback? onComplete;
 
   @override
   ConsumerState<MatchScreen> createState() => _MatchScreenState();
@@ -20,6 +32,7 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
   String? _selCe;
   String? _selRu;
   final _matched = <String>{};
+  bool _loading = true;
 
   @override
   void initState() {
@@ -32,7 +45,12 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
     if (words.length < 4) {
       words = (await ref.read(dictionaryRepoProvider).getAllWords()).take(5).toList();
     }
-    setState(() => _words = words.take(5).toList());
+    if (mounted) {
+      setState(() {
+        _words = words.take(5).toList();
+        _loading = false;
+      });
+    }
   }
 
   void _tapCe(String id) => setState(() => _selCe = id);
@@ -49,49 +67,76 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
       _selRu = null;
     });
     if (_matched.length == _words.length && mounted) {
-      await ref.read(userProfileProvider.notifier).addXp(60, 6);
-      context.pop();
+      if (widget.embedded) {
+        widget.onComplete?.call();
+      } else {
+        await ref.read(userProfileProvider.notifier).addXp(60, 6);
+        if (mounted) context.pop();
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_words.isEmpty) return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    if (_loading) {
+      return widget.embedded
+          ? const Center(child: LoadingState())
+          : const AppScaffold(body: LoadingState());
+    }
+    if (_words.isEmpty) {
+      return const Center(child: Text('Недостаточно слов'));
+    }
+
     final ruList = [..._words]..shuffle(_rng);
-    return Scaffold(
-      appBar: AppBar(title: Text('Пары ${_matched.length}/${_words.length}')),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                children: _words.map((w) => _MatchBtn(
-                      label: w.chechen,
-                      selected: _selCe == w.id,
-                      matched: _matched.contains(w.id),
-                      onTap: () => _tapCe(w.id),
-                    )).toList(),
-              ),
+    final body = Padding(
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      child: Column(
+        children: [
+          Text(
+            'Собери пары ${_matched.length}/${_words.length}',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Expanded(
+            child: Row(
+              children: [
+                Expanded(
+                  child: ListView(
+                    children: _words
+                        .map((w) => _MatchBtn(
+                              label: w.chechen,
+                              emoji: w.emoji,
+                              selected: _selCe == w.id,
+                              matched: _matched.contains(w.id),
+                              onTap: () => _tapCe(w.id),
+                            ))
+                        .toList(),
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: ListView(
+                    children: ruList
+                        .map((w) => _MatchBtn(
+                              label: w.russian,
+                              emoji: null,
+                              selected: _selRu == w.id,
+                              matched: _matched.contains(w.id),
+                              onTap: () => _tapRu(w.id),
+                            ))
+                        .toList(),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                children: ruList.map((w) => _MatchBtn(
-                      label: w.russian,
-                      selected: _selRu == w.id,
-                      matched: _matched.contains(w.id),
-                      onTap: () {
-                        _tapRu(w.id);
-                        _check();
-                      },
-                    )).toList(),
-              ),
-            ),
-          ],
-        ),
+          ),
+          AppButton(label: 'Проверить', onPressed: _check),
+        ],
       ),
     );
+
+    if (widget.embedded) return body;
+    return AppScaffold(title: 'Пары', body: body);
   }
 }
 
@@ -101,33 +146,42 @@ class _MatchBtn extends StatelessWidget {
     required this.selected,
     required this.matched,
     required this.onTap,
+    this.emoji,
   });
+
   final String label;
+  final String? emoji;
   final bool selected, matched;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Material(
-        color: matched
-            ? const Color(0xFFE6F4EA)
-            : selected
-                ? const Color(0xFFE8F0FE)
-                : Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        child: InkWell(
-          onTap: matched ? null : onTap,
-          borderRadius: BorderRadius.circular(14),
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: const Color(0xFFE8EAED)),
-            ),
-            child: Text(label, style: const TextStyle(fontWeight: FontWeight.w700)),
+      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+      child: AppCard(
+        onTap: matched ? null : onTap,
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.md, horizontal: AppSpacing.sm),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: selected ? Border.all(color: Theme.of(context).colorScheme.primary, width: 2) : null,
+            color: matched ? Colors.green.withValues(alpha: 0.15) : null,
+          ),
+          child: Row(
+            children: [
+              if (emoji != null) Text(emoji!, style: const TextStyle(fontSize: 20)),
+              if (emoji != null) const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    decoration: matched ? TextDecoration.lineThrough : null,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),

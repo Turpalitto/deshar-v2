@@ -23,8 +23,17 @@ final _audio = Provider((_) => AudioService());
 final _rng = Random();
 
 class QuizScreen extends ConsumerStatefulWidget {
-  const QuizScreen({super.key, required this.unitId});
+  const QuizScreen({
+    super.key,
+    required this.unitId,
+    this.embedded = false,
+    this.maxQuestions,
+    this.onComplete,
+  });
   final String unitId;
+  final bool embedded;
+  final int? maxQuestions;
+  final VoidCallback? onComplete;
 
   @override
   ConsumerState<QuizScreen> createState() => _QuizScreenState();
@@ -67,63 +76,76 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
     final l10n = context.l10n;
 
     if (_loading) {
+      if (widget.embedded) return Center(child: LoadingState(message: l10n.loading));
       return AppScaffold(body: LoadingState(message: l10n.loading));
     }
     if (_words.length < 4) {
+      if (widget.embedded) return EmptyState(emoji: '📭', title: l10n.notEnoughWords);
       return AppScaffold(body: EmptyState(emoji: '📭', title: l10n.notEnoughWords));
     }
+
+    final questionLimit = widget.maxQuestions ?? _words.length;
+    final totalQ = questionLimit.clamp(1, _words.length);
 
     final target = _words[_index];
     final others = [..._words]..removeAt(_index);
     others.shuffle(_rng);
     final options = [target, ...others.take(3)]..shuffle(_rng);
 
-    return AppScaffold(
-      title: l10n.quizTitle(_score),
-      body: Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Column(
-          children: [
-            AnimatedContainer(
-              duration: AppDurations.fast,
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              decoration: BoxDecoration(
-                color: _lastCorrect == null
-                    ? Colors.transparent
-                    : (_lastCorrect!
-                        ? NokhchiinColors.successLight
-                        : NokhchiinColors.errorLight),
-                borderRadius: BorderRadius.circular(16),
+    final body = Padding(
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      child: Column(
+        children: [
+          if (widget.embedded)
+            Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.md),
+              child: Text(
+                'Вопрос ${_index + 1} / $totalQ',
+                style: Theme.of(context).textTheme.titleMedium,
               ),
-              child: WordExerciseCard(
-                word: target,
-                categoryId: widget.unitId,
-              ).animate(key: ValueKey(target.id)).fadeIn(),
             ),
-            const SizedBox(height: AppSpacing.md),
-            Text(l10n.quizTapHint, style: Theme.of(context).textTheme.bodySmall),
-            if (FeatureFlags.audioEnabled) ...[
-              const SizedBox(height: AppSpacing.sm),
-              IconButton(onPressed: _speak, icon: const Icon(Icons.volume_up_rounded, size: 32)),
-            ],
-            const Spacer(),
-            ...options.map((o) => Padding(
-                  padding: const EdgeInsets.only(bottom: AppSpacing.md),
-                  child: AppButton(
-                    label: '${o.emoji ?? '📖'}  ${o.russian}',
-                    variant: AppButtonVariant.secondary,
-                    expanded: true,
-                    onPressed: () => _answer(o == target, target),
-                  ),
-                )),
-            const Spacer(),
+          AnimatedContainer(
+            duration: AppDurations.fast,
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            decoration: BoxDecoration(
+              color: _lastCorrect == null
+                  ? Colors.transparent
+                  : (_lastCorrect!
+                      ? NokhchiinColors.successLight
+                      : NokhchiinColors.errorLight),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: WordExerciseCard(
+              word: target,
+              categoryId: widget.unitId,
+            ).animate(key: ValueKey(target.id)).fadeIn(),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Text(l10n.quizTapHint, style: Theme.of(context).textTheme.bodySmall),
+          if (FeatureFlags.audioEnabled) ...[
+            const SizedBox(height: AppSpacing.sm),
+            IconButton(onPressed: _speak, icon: const Icon(Icons.volume_up_rounded, size: 32)),
           ],
-        ),
+          const Spacer(),
+          ...options.map((o) => Padding(
+                padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                child: AppButton(
+                  label: '${o.emoji ?? '📖'}  ${o.russian}',
+                  variant: AppButtonVariant.secondary,
+                  expanded: true,
+                  onPressed: () => _answer(o == target, target, totalQ),
+                ),
+              )),
+          const Spacer(),
+        ],
       ),
     );
+
+    if (widget.embedded) return body;
+    return AppScaffold(title: l10n.quizTitle(_score), body: body);
   }
 
-  Future<void> _answer(bool correct, WordEntity target) async {
+  Future<void> _answer(bool correct, WordEntity target, int totalQ) async {
     setState(() => _lastCorrect = correct);
     if (correct) {
       HapticFeedback.lightImpact();
@@ -138,9 +160,11 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
 
     setState(() => _lastCorrect = null);
 
-    if (_index < _words.length - 1) {
+    if (_index < totalQ - 1) {
       setState(() => _index++);
       if (FeatureFlags.audioEnabled) _speak();
+    } else if (widget.embedded) {
+      widget.onComplete?.call();
     } else {
       await ref.read(userProfileProvider.notifier).addXp(50, 5);
       if (mounted) context.pop();

@@ -28,6 +28,9 @@ class CanAccessUnitUseCase {
 enum PremiumFeature {
   unlimitedReview,
   fullPath,
+  fullDictionary,
+  fullCollections,
+  fullStats,
   parentStats,
   offlinePacks,
 }
@@ -47,6 +50,9 @@ class CanAccessFeatureUseCase {
     return switch (feature) {
       PremiumFeature.unlimitedReview => false,
       PremiumFeature.fullPath => false,
+      PremiumFeature.fullDictionary => false,
+      PremiumFeature.fullCollections => false,
+      PremiumFeature.fullStats => false,
       PremiumFeature.parentStats => false,
       PremiumFeature.offlinePacks => false,
     };

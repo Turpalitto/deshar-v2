@@ -177,6 +177,7 @@ class UserRepositoryImpl implements UserRepository {
       weeklyXp: (data['weeklyXp'] as List?)?.cast<int>() ?? const [0, 0, 0, 0, 0, 0, 0],
       isPremium: data['isPremium'] as bool? ?? false,
       lessonsCompletedTotal: data['lessonsCompletedTotal'] as int? ?? 0,
+      reviewsDoneToday: data['reviewsDoneToday'] as int? ?? 0,
     );
   }
 
@@ -203,6 +204,7 @@ class UserRepositoryImpl implements UserRepository {
       'weeklyXp': profile.weeklyXp,
       'isPremium': profile.isPremium,
       'lessonsCompletedTotal': profile.lessonsCompletedTotal,
+      'reviewsDoneToday': profile.reviewsDoneToday,
     });
   }
 }

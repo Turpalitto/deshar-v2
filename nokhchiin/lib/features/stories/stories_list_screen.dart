@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/design/tokens/app_spacing.dart';
+import '../../core/design/widgets/app_card.dart';
+import '../../core/design/widgets/app_scaffold.dart';
+import '../../core/design/widgets/loading_state.dart';
 import '../../core/providers/content_providers.dart';
 import '../../core/providers/providers.dart';
-import '../../core/widgets/glass_card.dart';
 import '../../core/widgets/word_illustration.dart';
 
 class StoriesListScreen extends ConsumerWidget {
@@ -12,35 +15,35 @@ class StoriesListScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final stories = ref.watch(storiesProvider);
-    final progress = ref.watch(progressRepoProvider);
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Награды — истории')),
+    return AppScaffold(
+      title: 'Награды — истории',
       body: stories.when(
         data: (list) => FutureBuilder(
-          future: progress.getAllProgress(),
+          future: _storyAccess(ref, list),
           builder: (context, snap) {
-            final hasProgress = (snap.data?.length ?? 0) > 0;
-            final items = hasProgress ? list : list.take(1).toList();
+            if (!snap.hasData) return const LoadingState();
+            final access = snap.data!;
 
             return ListView(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(AppSpacing.lg),
               children: [
-                GlassCard(
+                AppCard(
                   child: Text(
-                    hasProgress
-                        ? 'Истории открываются после уроков — награда за прогресс'
-                        : 'Пройди первый урок, чтобы открыть истории',
+                    'Истории открываются после уроков — награда за прогресс',
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ),
-                const SizedBox(height: 16),
-                ...items.map((s) {
+                const SizedBox(height: AppSpacing.lg),
+                ...List.generate(list.length, (i) {
+                  final s = list[i];
+                  final unlocked = access[i];
                   final panels = (s['panels'] as List?)?.length ?? 0;
+                  final required = s['requiredMastery'] as int? ?? 50;
                   return Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: GlassCard(
-                      onTap: hasProgress ? () => context.push('/story/${s['id']}') : null,
+                    padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                    child: AppCard(
+                      onTap: unlocked ? () => context.push('/story/${s['id']}') : null,
                       child: Row(
                         children: [
                           WordIllustration(
@@ -48,17 +51,20 @@ class StoriesListScreen extends ConsumerWidget {
                             emoji: s['emoji'] as String?,
                             size: 80,
                           ),
-                          const SizedBox(width: 16),
+                          const SizedBox(width: AppSpacing.lg),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(s['titleRu'] as String, style: Theme.of(context).textTheme.titleLarge),
-                                Text('$panels сцен · награда', style: Theme.of(context).textTheme.bodySmall),
+                                Text(
+                                  unlocked ? '$panels сцен · награда' : 'Нужно $required% юнита',
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
                               ],
                             ),
                           ),
-                          Text(hasProgress ? '📖' : '🔒', style: const TextStyle(fontSize: 24)),
+                          Text(unlocked ? '📖' : '🔒', style: const TextStyle(fontSize: 24)),
                         ],
                       ),
                     ),
@@ -68,9 +74,25 @@ class StoriesListScreen extends ConsumerWidget {
             );
           },
         ),
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const LoadingState(),
         error: (e, _) => Center(child: Text('$e')),
       ),
     );
+  }
+
+  Future<List<bool>> _storyAccess(WidgetRef ref, List<Map<String, dynamic>> list) async {
+    final mastery = ref.read(unitMasteryUseCaseProvider);
+    final result = <bool>[];
+    for (final s in list) {
+      final unitId = s['unitId'] as String?;
+      final required = s['requiredMastery'] as int? ?? 50;
+      if (unitId == null) {
+        result.add(false);
+        continue;
+      }
+      final pct = await mastery(unitId);
+      result.add(pct >= required);
+    }
+    return result;
   }
 }

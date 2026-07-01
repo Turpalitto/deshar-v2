@@ -7,6 +7,7 @@ import '../../core/design/widgets/loading_state.dart';
 import '../../core/design/widgets/progress_ring.dart';
 import '../../core/design/widgets/streak_badge.dart';
 import '../../core/providers/providers.dart';
+import 'package:go_router/go_router.dart';
 import '../../domain/entities/learning_entities.dart';
 
 class ProgressScreen extends ConsumerWidget {
@@ -74,6 +75,13 @@ class ProgressScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: AppSpacing.md),
+              if (!profile.isPremium)
+                AppCard(
+                  onTap: () => context.push('/paywall?return=/progress'),
+                  child: const Text('Premium — полная статистика и достижения'),
+                ),
+              if (!profile.isPremium) const SizedBox(height: AppSpacing.md),
+              if (profile.isPremium) ...[
               AppCard(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,6 +118,7 @@ class ProgressScreen extends ConsumerWidget {
                   ],
                 ),
               ),
+              ],
             ],
           );
         },

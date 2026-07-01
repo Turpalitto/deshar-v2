@@ -19,8 +19,15 @@ import '../../domain/entities/word_entity.dart';
 final _rng = Random();
 
 class FlashcardsScreen extends ConsumerStatefulWidget {
-  const FlashcardsScreen({super.key, required this.unitId});
+  const FlashcardsScreen({
+    super.key,
+    required this.unitId,
+    this.embedded = false,
+    this.onComplete,
+  });
   final String unitId;
+  final bool embedded;
+  final VoidCallback? onComplete;
 
   @override
   ConsumerState<FlashcardsScreen> createState() => _FlashcardsScreenState();
@@ -65,8 +72,12 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
         _showTranslation = false;
       });
     } else {
-      await ref.read(userProfileProvider.notifier).addXp(25, 5);
-      if (mounted) _showReward();
+      if (widget.embedded) {
+        widget.onComplete?.call();
+      } else {
+        await ref.read(userProfileProvider.notifier).addXp(25, 5);
+        if (mounted) _showReward();
+      }
     }
   }
 
@@ -109,77 +120,83 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
   @override
   Widget build(BuildContext context) {
     if (_loading) {
+      if (widget.embedded) return const Center(child: LoadingState(message: 'Готовим карточки…'));
       return const AppScaffold(body: LoadingState(message: 'Готовим карточки…'));
     }
     if (_words.isEmpty) {
+      if (widget.embedded) return const Center(child: Text('Нет слов для урока'));
       return const AppScaffold(body: Center(child: Text('Нет слов для урока')));
     }
 
     final w = _words[_index];
     final isKids = ref.watch(userProfileProvider).value?.mode == AppMode.kids;
 
-    return AppScaffold(
-      title: '${_index + 1} / ${_words.length}',
-      body: Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Column(
-          children: [
-            Expanded(
-              child: GestureDetector(
-                onTap: () => setState(() => _showTranslation = !_showTranslation),
-                child: AppCard(
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        WordExerciseCard(
-                          word: w,
-                          categoryId: widget.unitId,
-                          showRussian: _showTranslation,
-                        ).animate(key: ValueKey(w.id)).fadeIn().scale(begin: const Offset(0.95, 0.95)),
-                        if (!_showTranslation)
-                          Padding(
-                            padding: const EdgeInsets.only(top: AppSpacing.md),
-                            child: Text(
-                              'Нажми, чтобы увидеть перевод',
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
+    final body = Padding(
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      child: Column(
+        children: [
+          Expanded(
+            child: GestureDetector(
+              onTap: () => setState(() => _showTranslation = !_showTranslation),
+              child: AppCard(
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      WordExerciseCard(
+                        word: w,
+                        categoryId: widget.unitId,
+                        showRussian: _showTranslation,
+                      ).animate(key: ValueKey(w.id)).fadeIn().scale(begin: const Offset(0.95, 0.95)),
+                      if (!_showTranslation)
+                        Padding(
+                          padding: const EdgeInsets.only(top: AppSpacing.md),
+                          child: Text(
+                            'Нажми, чтобы увидеть перевод',
+                            style: Theme.of(context).textTheme.bodySmall,
                           ),
-                      ],
-                    ),
+                        ),
+                    ],
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: AppSpacing.lg),
-            Row(
-              children: [
-                Expanded(
-                  child: AppButton(
-                    label: 'Ещё учу',
-                    variant: AppButtonVariant.secondary,
-                    onPressed: () => _known(false),
-                  ),
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          Row(
+            children: [
+              Expanded(
+                child: AppButton(
+                  label: 'Ещё учу',
+                  variant: AppButtonVariant.secondary,
+                  onPressed: () => _known(false),
                 ),
-                const SizedBox(width: AppSpacing.md),
-                Expanded(
-                  child: AppButton(
-                    label: 'Знаю ✓',
-                    onPressed: () => _known(true),
-                  ),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: AppButton(
+                  label: 'Знаю ✓',
+                  onPressed: () => _known(true),
                 ),
-              ],
-            ),
-            if (!isKids) ...[
-              const SizedBox(height: AppSpacing.sm),
-              TextButton(
-                onPressed: () => context.push('/typing/${widget.unitId}'),
-                child: const Text('Режим ввода CE → RU'),
               ),
             ],
+          ),
+          if (!widget.embedded && !isKids) ...[
+            const SizedBox(height: AppSpacing.sm),
+            TextButton(
+              onPressed: () => context.push('/typing/${widget.unitId}'),
+              child: const Text('Режим ввода CE → RU'),
+            ),
           ],
-        ),
+        ],
       ),
+    );
+
+    if (widget.embedded) return body;
+
+    return AppScaffold(
+      title: '${_index + 1} / ${_words.length}',
+      body: body,
     );
   }
 }

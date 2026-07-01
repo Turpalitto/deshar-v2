@@ -10,6 +10,7 @@ import '../../domain/entities/enums.dart';
 import '../../core/services/progress_stats_service.dart';
 import '../../core/services/billing_service.dart';
 import '../../domain/usecases/access_usecases.dart';
+import '../../domain/constants/subscription_limits.dart';
 import '../../domain/entities/subscription_entity.dart';
 import '../../domain/repositories/billing_repository.dart';
 
@@ -111,6 +112,7 @@ class UserProfileNotifier extends StateNotifier<AsyncValue<UserProfileEntity>> {
       wordsLearnedToday: 0,
       todayMinutes: 0,
       dailyGiftClaimed: false,
+      reviewsDoneToday: 0,
       weeklyXp: weekly,
       achievements: achievements,
     );
@@ -184,16 +186,53 @@ class UserProfileNotifier extends StateNotifier<AsyncValue<UserProfileEntity>> {
   }
 
   Future<void> completeLesson() async {
-    final current = state.value ?? const UserProfileEntity();
-    final updated = current.copyWith(lessonsCompletedTotal: current.lessonsCompletedTotal + 1);
-    await _repo.saveProfile(updated);
-    state = AsyncValue.data(updated);
+    await completeLessonWithReward();
   }
 
   Future<void> unlockAchievement(String id) async {
     final current = state.value ?? const UserProfileEntity();
     if (current.achievements.contains(id)) return;
     final updated = current.copyWith(achievements: [...current.achievements, id]);
+    await _repo.saveProfile(updated);
+    state = AsyncValue.data(updated);
+  }
+
+  Future<void> unlockWorld(String worldId) async {
+    final current = state.value ?? const UserProfileEntity();
+    if (current.unlockedWorlds.contains(worldId)) {
+      await setCurrentWorld(worldId);
+      return;
+    }
+    final updated = current.copyWith(
+      unlockedWorlds: [...current.unlockedWorlds, worldId],
+      currentWorldId: worldId,
+    );
+    await _repo.saveProfile(updated);
+    state = AsyncValue.data(updated);
+  }
+
+  Future<void> recordReview() async {
+    final current = state.value ?? const UserProfileEntity();
+    final updated = current.copyWith(reviewsDoneToday: current.reviewsDoneToday + 1);
+    await _repo.saveProfile(updated);
+    state = AsyncValue.data(updated);
+  }
+
+  Future<int> completeLessonWithReward() async {
+    final current = state.value ?? const UserProfileEntity();
+    final total = current.lessonsCompletedTotal + 1;
+    final updated = current.copyWith(lessonsCompletedTotal: total);
+    await _repo.saveProfile(updated);
+    state = AsyncValue.data(updated);
+    return total;
+  }
+
+  Future<void> openLessonChest() async {
+    final current = state.value ?? const UserProfileEntity();
+    final updated = current.copyWith(
+      coins: current.coins + 25,
+      xp: current.xp + 30,
+    );
     await _repo.saveProfile(updated);
     state = AsyncValue.data(updated);
   }

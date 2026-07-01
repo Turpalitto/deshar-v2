@@ -2,6 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/design/tokens/app_spacing.dart';
+import '../../core/design/widgets/app_card.dart';
+import '../../core/design/widgets/app_scaffold.dart';
 import '../../core/providers/providers.dart';
 import '../../domain/entities/enums.dart';
 import '../../domain/entities/learning_entities.dart';
@@ -14,27 +17,24 @@ class ProfileScreen extends ConsumerWidget {
     final profile = ref.watch(userProfileProvider).value ?? const UserProfileEntity();
     final isKids = profile.mode == AppMode.kids;
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Профиль')),
+    return AppScaffold(
+      title: 'Профиль',
       body: ListView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         children: [
-          Center(
-            child: Text(isKids ? '🦊' : '📚', style: const TextStyle(fontSize: 56)),
-          ),
-          const SizedBox(height: 8),
-          Center(
-            child: Text(
-              'Уровень ${profile.level}',
-              style: Theme.of(context).textTheme.headlineMedium,
+          AppCard(
+            child: Column(
+              children: [
+                Text(isKids ? '🦊' : '📚', style: const TextStyle(fontSize: 56)),
+                const SizedBox(height: AppSpacing.sm),
+                Text('Уровень ${profile.level}', style: Theme.of(context).textTheme.headlineMedium),
+                Text('${profile.xp} XP · 🪙 ${profile.coins} · 🔥 ${profile.streakDays} дн.'),
+              ],
             ),
           ),
-          Center(
-            child: Text('${profile.xp} XP · ${profile.stars} ⭐ · ${profile.streakDays} дн. серия'),
-          ),
-          const SizedBox(height: 28),
+          const SizedBox(height: AppSpacing.lg),
           Text('Режим обучения', style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.sm),
           SizedBox(
             width: double.infinity,
             child: CupertinoSlidingSegmentedControl<AppMode>(
@@ -50,16 +50,13 @@ class ProfileScreen extends ConsumerWidget {
                 ),
               },
               onValueChanged: (mode) {
-                if (mode != null) {
-                  ref.read(userProfileProvider.notifier).setMode(mode);
-                }
+                if (mode != null) ref.read(userProfileProvider.notifier).setMode(mode);
               },
             ),
           ),
           if (isKids) ...[
-            const SizedBox(height: 20),
+            const SizedBox(height: AppSpacing.lg),
             Text('Возраст', style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 8),
             ...KidsAgeGroup.values.map((age) {
               final label = switch (age) {
                 KidsAgeGroup.age3to6 => '3–6 лет',
@@ -76,22 +73,22 @@ class ProfileScreen extends ConsumerWidget {
               );
             }),
           ],
-          const Divider(height: 32),
-          ListTile(
-            leading: const Icon(Icons.menu_book_outlined),
-            title: const Text('Словарь'),
-            subtitle: const Text('Мациев 7784 + Алироев 53 + проверенная лексика'),
+          const SizedBox(height: AppSpacing.lg),
+          AppCard(
+            onTap: () => context.push('/progress'),
+            child: const ListTile(
+              leading: Icon(Icons.insights_rounded),
+              title: Text('Статистика'),
+              trailing: Icon(Icons.chevron_right_rounded),
+            ),
           ),
-          ListTile(
-            leading: const Icon(Icons.verified_outlined),
-            title: const Text('Исправления'),
-            subtitle: const Text('Лерг = ухо (не «лор»); аудит vocabulary_corrections.json'),
-          ),
-          ListTile(
-            leading: const Icon(Icons.swap_horiz_rounded),
-            title: const Text('Сменить режим при входе'),
-            trailing: const Icon(Icons.chevron_right),
+          AppCard(
             onTap: () => context.go('/onboarding'),
+            child: const ListTile(
+              leading: Icon(Icons.swap_horiz_rounded),
+              title: Text('Сменить режим при входе'),
+              trailing: Icon(Icons.chevron_right_rounded),
+            ),
           ),
         ],
       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nokhchiin/core/l10n/l10n_extensions.dart';
+import 'package:go_router/go_router.dart';
 import '../../core/config/feature_flags.dart';
 import '../../core/design/tokens/app_spacing.dart';
 import '../../core/design/tokens/app_typography.dart';
@@ -10,6 +11,7 @@ import '../../core/design/widgets/error_state.dart';
 import '../../core/design/widgets/loading_state.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/audio_service.dart';
+import '../../domain/constants/subscription_limits.dart';
 import '../../domain/entities/word_entity.dart';
 
 final _audioProvider = Provider((_) => AudioService());
@@ -35,11 +37,24 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final dict = ref.watch(dictionaryProvider);
+    final profile = ref.watch(userProfileProvider).value;
+    final isPremium = profile?.isPremium ?? false;
 
     return AppScaffold(
       title: l10n.dictionaryTitle,
       body: Column(
         children: [
+          if (!isPremium)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.sm, AppSpacing.lg, 0),
+              child: AppCard(
+                onTap: () => context.push('/paywall?return=/dictionary'),
+                child: Text(
+                  'Free: ${SubscriptionLimits.freeDictionaryBrowseLimit} слов · Premium — весь словарь',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ),
+            ),
           Padding(
             padding: const EdgeInsets.fromLTRB(AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.md),
             child: TextField(
@@ -54,13 +69,15 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
           Expanded(
             child: dict.when(
               data: (words) {
+                final browseLimit = isPremium ? words.length : SubscriptionLimits.freeDictionaryBrowseLimit;
+                final searchLimit = isPremium ? words.length : SubscriptionLimits.freeDictionarySearchLimit;
                 final filtered = _query.isEmpty
-                    ? words.take(100).toList()
+                    ? words.take(browseLimit).toList()
                     : words
                         .where((w) =>
                             w.chechen.toLowerCase().contains(_query.toLowerCase()) ||
                             w.russian.toLowerCase().contains(_query.toLowerCase()))
-                        .take(80)
+                        .take(searchLimit)
                         .toList();
                 return ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
