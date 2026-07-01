@@ -178,6 +178,7 @@ class UserRepositoryImpl implements UserRepository {
       isPremium: data['isPremium'] as bool? ?? false,
       lessonsCompletedTotal: data['lessonsCompletedTotal'] as int? ?? 0,
       reviewsDoneToday: data['reviewsDoneToday'] as int? ?? 0,
+      seenCultureCapsules: (data['seenCultureCapsules'] as List?)?.cast<String>() ?? const [],
     );
   }
 
@@ -205,6 +206,7 @@ class UserRepositoryImpl implements UserRepository {
       'isPremium': profile.isPremium,
       'lessonsCompletedTotal': profile.lessonsCompletedTotal,
       'reviewsDoneToday': profile.reviewsDoneToday,
+      'seenCultureCapsules': profile.seenCultureCapsules,
     });
   }
 }

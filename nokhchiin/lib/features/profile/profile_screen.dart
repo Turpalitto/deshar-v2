@@ -75,13 +75,23 @@ class ProfileScreen extends ConsumerWidget {
           ],
           const SizedBox(height: AppSpacing.lg),
           AppCard(
-            onTap: () => context.push('/progress'),
-            child: const ListTile(
-              leading: Icon(Icons.insights_rounded),
-              title: Text('Статистика'),
-              trailing: Icon(Icons.chevron_right_rounded),
+            onTap: () => context.push(isKids ? '/progress' : '/insights'),
+            child: ListTile(
+              leading: const Icon(Icons.insights_rounded),
+              title: Text(isKids ? 'Статистика' : 'Мои инсайты'),
+              subtitle: isKids ? null : const Text('Прогресс и слабые места'),
+              trailing: const Icon(Icons.chevron_right_rounded),
             ),
           ),
+          if (!isKids)
+            AppCard(
+              onTap: () => context.push('/progress'),
+              child: const ListTile(
+                leading: Icon(Icons.schedule_rounded),
+                title: Text('SRS и достижения'),
+                trailing: Icon(Icons.chevron_right_rounded),
+              ),
+            ),
           AppCard(
             onTap: () => context.go('/onboarding'),
             child: const ListTile(

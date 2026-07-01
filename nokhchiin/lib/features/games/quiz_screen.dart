@@ -1,16 +1,12 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nokhchiin/core/l10n/l10n_extensions.dart';
 import '../../core/config/feature_flags.dart';
 import '../../core/design/tokens/app_durations.dart';
 import '../../core/design/tokens/app_spacing.dart';
-import '../../core/design/tokens/nokhchiin_colors.dart';
 import '../../core/design/widgets/app_button.dart';
-import '../../core/design/widgets/app_card.dart';
 import '../../core/design/widgets/app_scaffold.dart';
 import '../../core/design/widgets/empty_state.dart';
 import '../../core/design/widgets/loading_state.dart';
@@ -18,6 +14,7 @@ import '../../core/design/widgets/word_exercise_card.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/audio_service.dart';
 import '../../domain/entities/word_entity.dart';
+import 'widgets/exercise_presentation.dart';
 
 final _audio = Provider((_) => AudioService());
 final _rng = Random();
@@ -104,21 +101,16 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
                 style: Theme.of(context).textTheme.titleMedium,
               ),
             ),
-          AnimatedContainer(
-            duration: AppDurations.fast,
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            decoration: BoxDecoration(
-              color: _lastCorrect == null
-                  ? Colors.transparent
-                  : (_lastCorrect!
-                      ? NokhchiinColors.successLight
-                      : NokhchiinColors.errorLight),
-              borderRadius: BorderRadius.circular(16),
+          AnswerFeedbackAnimator(
+            feedback: _lastCorrect,
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: WordExerciseCard(
+                key: ValueKey(target.id),
+                word: target,
+                categoryId: widget.unitId,
+              ),
             ),
-            child: WordExerciseCard(
-              word: target,
-              categoryId: widget.unitId,
-            ).animate(key: ValueKey(target.id)).fadeIn(),
           ),
           const SizedBox(height: AppSpacing.md),
           Text(l10n.quizTapHint, style: Theme.of(context).textTheme.bodySmall),
@@ -147,12 +139,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
 
   Future<void> _answer(bool correct, WordEntity target, int totalQ) async {
     setState(() => _lastCorrect = correct);
-    if (correct) {
-      HapticFeedback.lightImpact();
-      _score++;
-    } else {
-      HapticFeedback.heavyImpact();
-    }
+    if (correct) _score++;
 
     await ref.read(reviewWordUseCaseProvider)(target.id, correct ? 4 : 1);
     await Future.delayed(AppDurations.normal);

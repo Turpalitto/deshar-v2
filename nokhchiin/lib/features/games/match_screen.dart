@@ -2,13 +2,16 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/design/tokens/app_durations.dart';
 import '../../core/design/tokens/app_spacing.dart';
 import '../../core/design/widgets/app_button.dart';
 import '../../core/design/widgets/app_card.dart';
 import '../../core/design/widgets/app_scaffold.dart';
 import '../../core/design/widgets/loading_state.dart';
+import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
 import '../../domain/entities/word_entity.dart';
+import 'widgets/exercise_presentation.dart';
 
 final _rng = Random();
 
@@ -33,6 +36,7 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
   String? _selRu;
   final _matched = <String>{};
   bool _loading = true;
+  bool? _lastMatchCorrect;
 
   @override
   void initState() {
@@ -58,14 +62,23 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
 
   Future<void> _check() async {
     if (_selCe == null || _selRu == null) return;
-    if (_selCe == _selRu) {
+    final isMatch = _selCe == _selRu;
+    setState(() => _lastMatchCorrect = isMatch);
+
+    if (isMatch) {
       _matched.add(_selCe!);
       await ref.read(reviewWordUseCaseProvider)(_selCe!, 4);
     }
+
+    await Future.delayed(AppDurations.normal);
+    if (!mounted) return;
+
     setState(() {
+      _lastMatchCorrect = null;
       _selCe = null;
       _selRu = null;
     });
+
     if (_matched.length == _words.length && mounted) {
       if (widget.embedded) {
         widget.onComplete?.call();
@@ -87,6 +100,7 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
       return const Center(child: Text('Недостаточно слов'));
     }
 
+    final tokens = context.iosTokens;
     final ruList = [..._words]..shuffle(_rng);
     final body = Padding(
       padding: const EdgeInsets.all(AppSpacing.lg),
@@ -98,36 +112,43 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
           ),
           const SizedBox(height: AppSpacing.md),
           Expanded(
-            child: Row(
-              children: [
-                Expanded(
-                  child: ListView(
-                    children: _words
-                        .map((w) => _MatchBtn(
-                              label: w.chechen,
-                              emoji: w.emoji,
-                              selected: _selCe == w.id,
-                              matched: _matched.contains(w.id),
-                              onTap: () => _tapCe(w.id),
-                            ))
-                        .toList(),
+            child: AnswerFeedbackAnimator(
+              feedback: _lastMatchCorrect,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: ListView(
+                      children: _words
+                          .map((w) => _MatchBtn(
+                                label: w.chechen,
+                                emoji: w.emoji,
+                                selected: _selCe == w.id,
+                                matched: _matched.contains(w.id),
+                                accent: tokens.accent,
+                                accentMuted: tokens.accentMuted,
+                                onTap: () => _tapCe(w.id),
+                              ))
+                          .toList(),
+                    ),
                   ),
-                ),
-                const SizedBox(width: AppSpacing.md),
-                Expanded(
-                  child: ListView(
-                    children: ruList
-                        .map((w) => _MatchBtn(
-                              label: w.russian,
-                              emoji: null,
-                              selected: _selRu == w.id,
-                              matched: _matched.contains(w.id),
-                              onTap: () => _tapRu(w.id),
-                            ))
-                        .toList(),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: ListView(
+                      children: ruList
+                          .map((w) => _MatchBtn(
+                                label: w.russian,
+                                emoji: null,
+                                selected: _selRu == w.id,
+                                matched: _matched.contains(w.id),
+                                accent: tokens.accent,
+                                accentMuted: tokens.accentMuted,
+                                onTap: () => _tapRu(w.id),
+                              ))
+                          .toList(),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           AppButton(label: 'Проверить', onPressed: _check),
@@ -146,12 +167,16 @@ class _MatchBtn extends StatelessWidget {
     required this.selected,
     required this.matched,
     required this.onTap,
+    required this.accent,
+    required this.accentMuted,
     this.emoji,
   });
 
   final String label;
   final String? emoji;
   final bool selected, matched;
+  final Color accent;
+  final Color accentMuted;
   final VoidCallback onTap;
 
   @override
@@ -165,8 +190,8 @@ class _MatchBtn extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: AppSpacing.md, horizontal: AppSpacing.sm),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            border: selected ? Border.all(color: Theme.of(context).colorScheme.primary, width: 2) : null,
-            color: matched ? Colors.green.withValues(alpha: 0.15) : null,
+            border: selected ? Border.all(color: accent, width: 2) : null,
+            color: matched ? accentMuted.withValues(alpha: 0.55) : null,
           ),
           child: Row(
             children: [

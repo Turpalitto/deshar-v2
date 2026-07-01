@@ -1,7 +1,10 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:nokhchiin/l10n/app_localizations.dart';
+import 'core/design_system/ios_design_system.dart';
+import 'core/design_system/theme_integration.dart';
 import 'core/router/app_router.dart';
 import 'core/design/theme/nokhchiin_theme.dart';
 import 'core/design/theme/theme_provider.dart';
@@ -33,6 +36,18 @@ class NokhchiinApp extends ConsumerWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       routerConfig: appRouter,
+      // iOS design system (ThemeExtension) + Dynamic Type — не трогает экраны.
+      builder: (context, child) {
+        final theme = DesignSystemIntegration.enhanceWithContext(context, Theme.of(context));
+        final ios = theme.extension<IosDesignSystem>();
+        final content = child ?? const SizedBox.shrink();
+        return Theme(
+          data: theme,
+          child: ios == null
+              ? content
+              : CupertinoTheme(data: ios.cupertinoTheme, child: content),
+        );
+      },
     );
   }
 }

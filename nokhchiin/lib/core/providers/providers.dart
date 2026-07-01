@@ -8,6 +8,7 @@ import '../../domain/entities/learning_entities.dart';
 import '../../domain/entities/word_entity.dart';
 import '../../domain/entities/enums.dart';
 import '../../core/services/progress_stats_service.dart';
+import '../../core/services/learner_insights_service.dart';
 import '../../core/services/billing_service.dart';
 import '../../domain/usecases/access_usecases.dart';
 import '../../domain/constants/subscription_limits.dart';
@@ -243,6 +244,16 @@ class UserProfileNotifier extends StateNotifier<AsyncValue<UserProfileEntity>> {
     await _repo.saveProfile(updated);
     state = AsyncValue.data(updated);
   }
+
+  Future<void> markCultureCapsuleSeen(String capsuleId) async {
+    final current = state.value ?? const UserProfileEntity();
+    if (current.seenCultureCapsules.contains(capsuleId)) return;
+    final updated = current.copyWith(
+      seenCultureCapsules: [...current.seenCultureCapsules, capsuleId],
+    );
+    await _repo.saveProfile(updated);
+    state = AsyncValue.data(updated);
+  }
 }
 
 final progressStatsProvider = Provider(
@@ -254,6 +265,21 @@ final progressStatsProvider = Provider(
 
 final languageMasteryProvider = FutureProvider<int>((ref) async {
   return ref.watch(progressStatsProvider).languageMasteryPercent();
+});
+
+final learnerInsightsProvider = FutureProvider<LearnerInsights>((ref) async {
+  final units = await ref.watch(learningUnitsProvider.future);
+  final language = await ref.watch(languageMasteryProvider.future);
+  final profile = ref.watch(userProfileProvider).value ?? const UserProfileEntity();
+
+  return LearnerInsightsService.build(
+    units: units,
+    languageMasteryPercent: language,
+    streakDays: profile.streakDays,
+    level: profile.level,
+    xp: profile.xp,
+    lessonsCompleted: profile.lessonsCompletedTotal,
+  );
 });
 
 final continueUnitProvider = FutureProvider<LearningUnitEntity?>((ref) async {

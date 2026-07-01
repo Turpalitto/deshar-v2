@@ -4,14 +4,17 @@ import 'package:go_router/go_router.dart';
 import '../../core/design/tokens/app_spacing.dart';
 import '../../core/design/widgets/app_button.dart';
 import '../../core/design/widgets/app_scaffold.dart';
+import '../../core/design/widgets/loading_state.dart';
 import '../../core/design/widgets/reward_celebration.dart';
 import '../../core/design/widgets/progress_ring.dart';
 import '../../core/providers/providers.dart';
 import '../../domain/constants/subscription_limits.dart';
 import '../../domain/entities/learning_entities.dart';
+import '../culture/culture_capsule_flow.dart';
 import '../games/flashcards_screen.dart';
 import '../games/match_screen.dart';
 import '../games/quiz_screen.dart';
+import '../games/widgets/exercise_presentation.dart';
 
 /// Урок: карточки → пары → квиз → награда (3–5 мин).
 class LessonFlowScreen extends ConsumerStatefulWidget {
@@ -24,8 +27,20 @@ class LessonFlowScreen extends ConsumerStatefulWidget {
 
 class _LessonFlowScreenState extends ConsumerState<LessonFlowScreen> {
   int _step = 0;
+  bool _introReady = false;
 
   static const _labels = ['Слова', 'Игра', 'Тест', 'Награда'];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _runIntroCapsule());
+  }
+
+  Future<void> _runIntroCapsule() async {
+    await CultureCapsuleFlow.maybeShowBeforeUnit(context, ref, widget.unitId);
+    if (mounted) setState(() => _introReady = true);
+  }
 
   Future<void> _finishLesson() async {
     final notifier = ref.read(userProfileProvider.notifier);
@@ -74,6 +89,13 @@ class _LessonFlowScreenState extends ConsumerState<LessonFlowScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (!_introReady) {
+      return const AppScaffold(
+        title: 'Урок',
+        body: LoadingState(message: 'Готовим урок…'),
+      );
+    }
+
     final progress = ((_step + 1) / _labels.length * 100).round();
 
     return AppScaffold(
@@ -87,12 +109,8 @@ class _LessonFlowScreenState extends ConsumerState<LessonFlowScreen> {
                 ProgressRing(percent: progress, size: 44, strokeWidth: 4),
                 const SizedBox(width: AppSpacing.md),
                 Expanded(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: LinearProgressIndicator(
-                      value: (_step + 1) / _labels.length,
-                      minHeight: 8,
-                    ),
+                  child: LessonSpringProgressBar(
+                    progress: (_step + 1) / _labels.length,
                   ),
                 ),
               ],

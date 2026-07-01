@@ -1,12 +1,9 @@
 import 'dart:math';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_animate/flutter_animate.dart';
-import '../../core/design/tokens/app_durations.dart';
 import '../../core/design/tokens/app_spacing.dart';
-import '../../core/design/tokens/nokhchiin_colors.dart';
 import '../../core/design/widgets/app_button.dart';
 import '../../core/design/widgets/app_card.dart';
 import '../../core/design/widgets/app_scaffold.dart';
@@ -15,6 +12,7 @@ import '../../core/design/widgets/word_exercise_card.dart';
 import '../../core/providers/providers.dart';
 import '../../domain/entities/enums.dart';
 import '../../domain/entities/word_entity.dart';
+import 'widgets/spring_swipe_card.dart';
 
 final _rng = Random();
 
@@ -34,6 +32,8 @@ class FlashcardsScreen extends ConsumerStatefulWidget {
 }
 
 class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
+  final _swipeController = SpringSwipeCardController();
+
   List<WordEntity> _words = [];
   int _index = 0;
   bool _showTranslation = false;
@@ -63,8 +63,6 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
     final w = _words[_index];
     await ref.read(reviewWordUseCaseProvider)(w.id, yes ? 5 : 2);
     if (yes) await ref.read(userProfileProvider.notifier).recordWordLearned();
-
-    if (yes) HapticFeedback.lightImpact();
 
     if (_index < _words.length - 1) {
       setState(() {
@@ -136,27 +134,40 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
       child: Column(
         children: [
           Expanded(
-            child: GestureDetector(
-              onTap: () => setState(() => _showTranslation = !_showTranslation),
+            child: SpringSwipeCard(
+              key: ValueKey(w.id),
+              controller: _swipeController,
+              onSwipeLeft: () {
+                HapticFeedback.heavyImpact();
+                _known(false);
+              },
+              onSwipeRight: () {
+                HapticFeedback.lightImpact();
+                _known(true);
+              },
               child: AppCard(
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      WordExerciseCard(
-                        word: w,
-                        categoryId: widget.unitId,
-                        showRussian: _showTranslation,
-                      ).animate(key: ValueKey(w.id)).fadeIn().scale(begin: const Offset(0.95, 0.95)),
-                      if (!_showTranslation)
-                        Padding(
-                          padding: const EdgeInsets.only(top: AppSpacing.md),
-                          child: Text(
-                            'Нажми, чтобы увидеть перевод',
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
+                child: GestureDetector(
+                  onTap: () => setState(() => _showTranslation = !_showTranslation),
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        WordExerciseCard(
+                          word: w,
+                          categoryId: widget.unitId,
+                          showRussian: _showTranslation,
                         ),
-                    ],
+                        if (!_showTranslation)
+                          Padding(
+                            padding: const EdgeInsets.only(top: AppSpacing.md),
+                            child: Text(
+                              'Нажми — перевод · свайп влево/вправо',
+                              style: Theme.of(context).textTheme.bodySmall,
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -169,14 +180,14 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
                 child: AppButton(
                   label: 'Ещё учу',
                   variant: AppButtonVariant.secondary,
-                  onPressed: () => _known(false),
+                  onPressed: () => _swipeController.swipeLeft(),
                 ),
               ),
               const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: AppButton(
                   label: 'Знаю ✓',
-                  onPressed: () => _known(true),
+                  onPressed: () => _swipeController.swipeRight(),
                 ),
               ),
             ],

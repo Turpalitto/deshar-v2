@@ -9,6 +9,7 @@ import '../../features/dictionary/dictionary_screen.dart';
 import '../../features/games/flashcards_screen.dart';
 import '../../features/games/quiz_screen.dart';
 import '../../features/games/match_screen.dart';
+import '../../features/insights/adult_insights_dashboard_screen.dart';
 import '../../features/parent/parent_dashboard_screen.dart';
 import '../../features/profile/profile_screen.dart';
 import '../../features/review/review_screen.dart';
@@ -20,12 +21,16 @@ import '../../features/stories/story_reader_screen.dart';
 import '../../features/progress/progress_screen.dart';
 import '../../features/paywall/paywall_screen.dart';
 import '../../features/games/typing_exercise_screen.dart';
+import '../../features/culture/culture_capsule_preview_screen.dart';
 import '../design/widgets/app_shell.dart';
+import 'route_transitions.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 
 /// Первый урок после onboarding.
 const kFirstLessonUnitId = 'animals';
+
+Page<void> _fadeScale(GoRouterState state, Widget child) => buildFadeScalePage(state: state, child: child);
 
 final appRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
@@ -75,77 +80,96 @@ final appRouter = GoRouter(
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
       path: '/path',
-      builder: (_, __) => const LearningPathScreen(),
+      pageBuilder: (context, state) => _fadeScale(state, const LearningPathScreen()),
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
       path: '/unit/:id',
-      builder: (_, state) => UnitDetailScreen(unitId: state.pathParameters['id']!),
+      pageBuilder: (context, state) =>
+          _fadeScale(state, UnitDetailScreen(unitId: state.pathParameters['id']!)),
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
       path: '/lesson/:unitId',
-      builder: (_, state) => LessonFlowScreen(unitId: state.pathParameters['unitId']!),
+      pageBuilder: (context, state) =>
+          _fadeScale(state, LessonFlowScreen(unitId: state.pathParameters['unitId']!)),
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
       path: '/dictionary',
-      builder: (_, __) => const DictionaryScreen(),
+      pageBuilder: (context, state) => _fadeScale(state, const DictionaryScreen()),
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
       path: '/parent',
-      builder: (_, __) => const ParentDashboardScreen(),
+      pageBuilder: (context, state) => _fadeScale(state, const ParentDashboardScreen()),
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
       path: '/flashcards/:unitId',
-      builder: (_, state) => FlashcardsScreen(unitId: state.pathParameters['unitId']!),
+      pageBuilder: (context, state) =>
+          _fadeScale(state, FlashcardsScreen(unitId: state.pathParameters['unitId']!)),
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
       path: '/quiz/:unitId',
-      builder: (_, state) => QuizScreen(unitId: state.pathParameters['unitId']!),
+      pageBuilder: (context, state) =>
+          _fadeScale(state, QuizScreen(unitId: state.pathParameters['unitId']!)),
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
       path: '/match/:unitId',
-      builder: (_, state) => MatchScreen(unitId: state.pathParameters['unitId']!),
+      pageBuilder: (context, state) =>
+          _fadeScale(state, MatchScreen(unitId: state.pathParameters['unitId']!)),
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
       path: '/collections',
-      builder: (_, __) => const CollectionsScreen(),
+      pageBuilder: (context, state) => _fadeScale(state, const CollectionsScreen()),
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
       path: '/stories',
-      builder: (_, __) => const StoriesListScreen(),
+      pageBuilder: (context, state) => _fadeScale(state, const StoriesListScreen()),
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
       path: '/story/:id',
-      builder: (_, state) => StoryReaderScreen(storyId: state.pathParameters['id']!),
+      pageBuilder: (context, state) =>
+          _fadeScale(state, StoryReaderScreen(storyId: state.pathParameters['id']!)),
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
       path: '/boss/:unitId',
-      builder: (_, state) => BossScreen(unitId: state.pathParameters['unitId']!),
+      pageBuilder: (context, state) =>
+          _fadeScale(state, BossScreen(unitId: state.pathParameters['unitId']!)),
+    ),
+    GoRoute(
+      parentNavigatorKey: _rootNavigatorKey,
+      path: '/insights',
+      pageBuilder: (context, state) => _fadeScale(state, const AdultInsightsDashboardScreen()),
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
       path: '/progress',
-      builder: (_, __) => const ProgressScreen(),
+      pageBuilder: (context, state) => _fadeScale(state, const ProgressScreen()),
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
       path: '/paywall',
-      builder: (_, state) => PaywallScreen(returnPath: state.uri.queryParameters['return']),
+      pageBuilder: (context, state) =>
+          _fadeScale(state, PaywallScreen(returnPath: state.uri.queryParameters['return'])),
+    ),
+    GoRoute(
+      parentNavigatorKey: _rootNavigatorKey,
+      path: '/dev/culture-capsules',
+      pageBuilder: (context, state) => _fadeScale(state, const CultureCapsulePreviewScreen()),
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
       path: '/typing/:unitId',
-      builder: (_, state) => TypingExerciseScreen(unitId: state.pathParameters['unitId']!),
+      pageBuilder: (context, state) =>
+          _fadeScale(state, TypingExerciseScreen(unitId: state.pathParameters['unitId']!)),
     ),
   ],
 );
