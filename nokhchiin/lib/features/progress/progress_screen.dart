@@ -18,39 +18,50 @@ class ProgressScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final profile = ref.watch(userProfileProvider).value ?? const UserProfileEntity();
     final mastery = ref.watch(languageMasteryProvider);
+    final progressRepo = ref.watch(progressRepoProvider);
     final weekXp = profile.weeklyXp.fold<int>(0, (a, b) => a + b);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Прогресс')),
-      body: ListView(
-        padding: const EdgeInsets.all(20),
-        children: [
-          GlassCard(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Сегодня', style: Theme.of(context).textTheme.headlineMedium),
-                const SizedBox(height: 12),
-                _Row('Слов', '${profile.wordsLearnedToday} / ${profile.dailyGoalWords}'),
-                _Row('XP', '${profile.xp}'),
-                _Row('Монеты', '🪙 ${profile.coins}'),
-              ],
-            ),
-          ),
-          const SizedBox(height: 12),
-          GlassCard(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Неделя · Месяц', style: Theme.of(context).textTheme.headlineMedium),
-                const SizedBox(height: 12),
-                _Row('XP за неделю', '$weekXp'),
-                _Row('Уроков всего', '${profile.lessonsCompletedTotal}'),
-                _Row('Язык', '${mastery.valueOrNull ?? 0}%'),
-                _Row('Серия', '${profile.streakDays} дн.'),
-              ],
-            ),
-          ),
+      body: FutureBuilder(
+        future: progressRepo.getAllProgress(),
+        builder: (context, snap) {
+          final wordsStudied = snap.data?.length ?? 0;
+          return ListView(
+            padding: const EdgeInsets.all(20),
+            children: [
+              GlassCard(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Сегодня', style: Theme.of(context).textTheme.headlineMedium),
+                    const SizedBox(height: 12),
+                    _Row('Слов', '${profile.wordsLearnedToday} / ${profile.dailyGoalWords}'),
+                    _Row('XP', '${profile.xp}'),
+                    _Row('Уровень', '${profile.level}'),
+                    _Row('Монеты', '🪙 ${profile.coins}'),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+              GlassCard(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Неделя · Месяц', style: Theme.of(context).textTheme.headlineMedium),
+                    const SizedBox(height: 12),
+                    _Row('XP за неделю', '$weekXp'),
+                    _Row('Слов в работе', '$wordsStudied'),
+                    _Row('Словарь', '${mastery.valueOrNull ?? 0}%'),
+                    _Row('Уроков', '${profile.lessonsCompletedTotal}'),
+                    _Row('Серия', '${profile.streakDays} дн.'),
+                    _Row(
+                      'Активность',
+                      (profile.lastActiveDate ?? '').isEmpty ? '—' : profile.lastActiveDate!,
+                    ),
+                  ],
+                ),
+              ),
           const SizedBox(height: 12),
           GlassCard(
             child: Column(
@@ -76,7 +87,9 @@ class ProgressScreen extends ConsumerWidget {
               ],
             ),
           ),
-        ],
+            ],
+          );
+        },
       ),
     );
   }
