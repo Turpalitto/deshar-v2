@@ -1,0 +1,40 @@
+{
+  "worlds": [
+    {
+      "id": "meadow",
+      "titleRu": "Луговая долина",
+      "titleCe": "Хьунан Ӏаппаза",
+      "emoji": "🌿",
+      "gradient": ["#A8E6CF", "#DCEDC1"],
+      "unlockStars": 0,
+      "units": ["animals", "nature"]
+    },
+    {
+      "id": "village",
+      "titleRu": "Горное село",
+      "titleCe": "Ламан Ӏаппаза",
+      "emoji": "🏔️",
+      "gradient": ["#B3E5FC", "#E1F5FE"],
+      "unlockStars": 50,
+      "units": ["home", "family", "food"]
+    },
+    {
+      "id": "school_world",
+      "titleRu": "Школа знаний",
+      "titleCe": "Дешаран Ӏалам",
+      "emoji": "📚",
+      "gradient": ["#E1BEE7", "#F3E5F5"],
+      "unlockStars": 120,
+      "units": ["school", "verbs", "phrases"]
+    },
+    {
+      "id": "legend",
+      "titleRu": "Легенды Нохчийчоь",
+      "titleCe": "Легендаш",
+      "emoji": "✨",
+      "gradient": ["#FFE0B2", "#FFF3E0"],
+      "unlockStars": 250,
+      "units": ["dialogues", "stories"]
+    }
+  ]
+}

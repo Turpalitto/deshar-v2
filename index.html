@@ -1,0 +1,3037 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Нохчийн Академия Бераш — iOS Premium App</title>
+    <!-- Google Fonts for Premium iOS feel (Will load in browser, with safe fallback for offline preview) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="premium_visuals.css">
+    
+    <style>
+        /* --- GLOBAL iOS PREMIUM VARIABLES & RESET --- */
+        :root {
+            --bg-cloud-top: #e0f2fe;
+            --bg-cloud-mid: #bae6fd;
+            --bg-cloud-btm: #fed7aa;
+            --ios-card-bg: rgba(255, 255, 255, 0.92);
+            --ios-card-border: rgba(255, 255, 255, 0.7);
+            --ios-shadow: 0 12px 36px -12px rgba(0, 0, 0, 0.15), 0 4px 10px -2px rgba(0, 0, 0, 0.08);
+            --ios-shadow-sm: 0 4px 12px -4px rgba(0, 0, 0, 0.1);
+            --ios-shadow-lg: 0 20px 48px -16px rgba(0, 0, 0, 0.25);
+            --color-chechen-green: #10b981;
+            --color-chechen-red: #ef4444;
+            --color-accent: #ea580c;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --shell-radius: 36px;
+            --card-radius: 24px;
+        }
+
+        /* Взрослый режим — спокойный iOS / Apple Books стиль */
+        .app-shell[data-profile="adult"] {
+            --bg-cloud-top: #f1f5f9;
+            --bg-cloud-mid: #e2e8f0;
+            --bg-cloud-btm: #cbd5e1;
+            --color-accent: #1a73e8;
+            --shell-radius: 28px;
+            --card-radius: 16px;
+        }
+        .app-shell[data-profile="adult"] .app-subtitle {
+            color: #1a73e8;
+        }
+        .app-shell[data-profile="adult"] .mascot-banner {
+            display: none;
+        }
+        .app-shell[data-profile="adult"] .app-logo-icon {
+            background: linear-gradient(135deg, #1a73e8, #174ea6);
+            box-shadow: 0 6px 16px -4px rgba(26, 115, 232, 0.45);
+        }
+        .app-shell[data-profile="adult"] body,
+        .app-shell[data-profile="adult"] {
+            animation: none;
+        }
+
+        .mode-segment {
+            display: flex;
+            background: rgba(0,0,0,0.06);
+            border-radius: 14px;
+            padding: 3px;
+            gap: 2px;
+        }
+        .mode-segment button {
+            border: none;
+            background: transparent;
+            padding: 8px 14px;
+            border-radius: 11px;
+            font-weight: 800;
+            font-size: 12px;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+        .mode-segment button.active {
+            background: white;
+            color: var(--text-main);
+            box-shadow: var(--ios-shadow-sm);
+        }
+        .app-shell[data-profile="adult"] .mode-segment button.active {
+            background: #1a73e8;
+            color: white;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, var(--bg-cloud-top), var(--bg-cloud-mid), var(--bg-cloud-btm));
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-main);
+            user-select: none;
+            -webkit-user-select: none;
+            overflow-x: hidden;
+            padding: 10px;
+        }
+
+        /* Subtle Kids Floating Cloud Background */
+        @keyframes clouds-drift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        body {
+            background-size: 300% 300%;
+            animation: clouds-drift 25s ease infinite;
+        }
+
+        /* --- Custom iOS Scrollbars --- */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        /* --- App Container Shell (iPad / iPhone Pro Max Emulation) --- */
+        .app-shell {
+            width: 100%;
+            max-width: 1024px;
+            min-height: 92vh;
+            max-height: 96vh;
+            background: rgba(255, 255, 255, 0.55);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            border: 3px solid rgba(255, 255, 255, 0.85);
+            border-radius: 36px;
+            box-shadow: var(--ios-shadow-lg), 0 0 0 10px rgba(255, 255, 255, 0.25);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* --- Top iOS App Bar --- */
+        .app-header {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.65);
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            z-index: 50;
+        }
+
+        .brand-zone {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            cursor: pointer;
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .brand-zone:hover {
+            transform: scale(1.04);
+        }
+
+        .app-logo-icon {
+            width: 52px;
+            height: 52px;
+            background: linear-gradient(135deg, #f59e0b, #ea580c);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            box-shadow: 0 6px 16px -4px rgba(234, 88, 12, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .app-title-h1 {
+            font-size: 22px;
+            font-weight: 900;
+            color: #1e293b;
+            line-height: 1.1;
+            letter-spacing: -0.5px;
+        }
+        .app-subtitle {
+            font-size: 11px;
+            font-weight: 800;
+            color: #ea580c;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* --- Gamification Badges Zone --- */
+        .stats-zone {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .badge-pill {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 14px;
+            box-shadow: var(--ios-shadow-sm);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .badge-pill:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--ios-shadow);
+        }
+
+        .badge-level {
+            background: linear-gradient(135deg, #3b82f6, #4f46e5);
+            color: white;
+            border: 2px solid #818cf8;
+        }
+        .badge-streak {
+            background: linear-gradient(135deg, #f97316, #ef4444);
+            color: white;
+            border: 2px solid #fb923c;
+        }
+        .badge-stars {
+            background: linear-gradient(135deg, #facc15, #eab308);
+            color: #1e293b;
+            border: 2px solid #fef08a;
+        }
+
+        .btn-premium {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: 2px solid #6ee7b7;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            box-shadow: 0 6px 16px -4px rgba(16, 185, 129, 0.5);
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .btn-premium:hover {
+            transform: scale(1.06);
+            background: linear-gradient(135deg, #059669, #047857);
+        }
+        .btn-premium:active {
+            transform: scale(0.96);
+        }
+
+        /* --- Mascot Guide Zone (Khan Academy Kids Style Helper) --- */
+        .mascot-banner {
+            margin: 16px 24px 0 24px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,237,213,0.9));
+            border: 2px solid rgba(251, 146, 60, 0.4);
+            border-radius: 24px;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            box-shadow: var(--ios-shadow-sm);
+            position: relative;
+        }
+
+        .mascot-avatar-container {
+            position: relative;
+            width: 76px;
+            height: 76px;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 46px;
+            box-shadow: inset 0 4px 8px rgba(0,0,0,0.06), 0 4px 12px rgba(245, 158, 11, 0.3);
+            border: 3px solid white;
+            animation: mascot-bounce 3s ease-in-out infinite;
+        }
+
+        @keyframes mascot-bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+
+        /* Accessory Placements on Mascot */
+        .mascot-hat {
+            position: absolute;
+            top: -18px;
+            font-size: 34px;
+            z-index: 10;
+            animation: hat-wobble 4s ease-in-out infinite;
+        }
+        @keyframes hat-wobble {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(8deg); }
+        }
+
+        .mascot-glasses {
+            position: absolute;
+            top: 14px;
+            font-size: 36px;
+            z-index: 5;
+        }
+
+        .mascot-friend {
+            position: absolute;
+            bottom: -8px;
+            right: -12px;
+            font-size: 28px;
+            z-index: 15;
+            animation: friend-hop 2.5s ease infinite;
+        }
+        @keyframes friend-hop {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-4px) scale(1.1); }
+        }
+
+        .mascot-dialogue {
+            flex-grow: 1;
+        }
+        .mascot-name {
+            font-weight: 900;
+            font-size: 14px;
+            color: #ea580c;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .mascot-message {
+            font-weight: 700;
+            font-size: 16px;
+            color: #334155;
+            line-height: 1.3;
+            margin-top: 3px;
+        }
+
+        /* --- Dynamic Main Area Shell --- */
+        .app-body {
+            flex-grow: 1;
+            padding: 20px 24px 24px 24px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        /* --- Mode / Screen Classes --- */
+        .screen {
+            display: none;
+            flex-direction: column;
+            flex-grow: 1;
+            animation: screen-appear 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .screen.active {
+            display: flex;
+        }
+
+        @keyframes screen-appear {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- UI COMPONENTS & MENUS --- */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 26px;
+            font-weight: 900;
+            color: #1e293b;
+        }
+        .section-subtitle {
+            font-size: 15px;
+            font-weight: 700;
+            color: #64748b;
+        }
+
+        .grid-lessons {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 22px;
+        }
+
+        .card-lesson {
+            background: var(--ios-card-bg);
+            border: 2px solid var(--ios-card-border);
+            border-radius: 30px;
+            padding: 22px;
+            box-shadow: var(--ios-shadow);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 190px;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .card-lesson:hover {
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: var(--ios-shadow-lg);
+            border-color: #818cf8;
+        }
+
+        .card-lesson-bg-glow {
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            opacity: 0.15;
+            z-index: 1;
+            transition: transform 0.4s ease;
+        }
+        .card-lesson:hover .card-lesson-bg-glow {
+            transform: scale(1.3);
+        }
+
+        .card-lesson-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 2;
+        }
+
+        .lesson-icon-box {
+            width: 60px;
+            height: 60px;
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+            box-shadow: 0 8px 20px -6px rgba(0,0,0,0.2);
+            border: 2px solid rgba(255,255,255,0.8);
+        }
+
+        .lesson-word-count {
+            background: #f1f5f9;
+            color: #475569;
+            font-weight: 800;
+            font-size: 12px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .card-lesson-mid {
+            margin-top: 18px;
+            z-index: 2;
+        }
+        .lesson-chechen-title {
+            font-size: 12px;
+            font-weight: 900;
+            color: #6366f1;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+        .lesson-russian-title {
+            font-size: 22px;
+            font-weight: 900;
+            color: #1e293b;
+            margin-top: 2px;
+        }
+
+        .card-lesson-btm {
+            margin-top: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: 800;
+            font-size: 14px;
+            color: #64748b;
+            z-index: 2;
+        }
+        .card-lesson:hover .card-lesson-btm {
+            color: #4f46e5;
+        }
+
+        /* --- Modes Select Menu (Within Lesson) --- */
+        .btn-back {
+            background: rgba(255,255,255,0.85);
+            border: 2px solid rgba(203, 213, 225, 0.6);
+            color: #334155;
+            font-weight: 800;
+            font-size: 15px;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: var(--ios-shadow-sm);
+            transition: all 0.2s ease;
+        }
+        .btn-back:hover {
+            background: white;
+            transform: translateX(-3px);
+            border-color: #6366f1;
+            color: #6366f1;
+        }
+
+        .modes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+            max-width: 800px;
+            align-self: center;
+            width: 100%;
+        }
+
+        .card-mode {
+            background: var(--ios-card-bg);
+            border: 2px solid var(--ios-card-border);
+            border-radius: 30px;
+            padding: 22px;
+            box-shadow: var(--ios-shadow);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .card-mode:hover {
+            transform: translateY(-4px) scale(1.03);
+            box-shadow: var(--ios-shadow-lg);
+            border-color: #f59e0b;
+        }
+
+        .mode-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            color: white;
+            box-shadow: 0 8px 20px -6px rgba(0,0,0,0.2);
+            flex-shrink: 0;
+        }
+
+        .mode-info {
+            flex-grow: 1;
+        }
+        .mode-title-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .mode-title {
+            font-size: 19px;
+            font-weight: 900;
+            color: #1e293b;
+        }
+        .mode-reward {
+            background: #fef3c7;
+            color: #d97706;
+            font-weight: 900;
+            font-size: 13px;
+            padding: 4px 10px;
+            border-radius: 14px;
+        }
+        .mode-desc {
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748b;
+            margin-top: 4px;
+            line-height: 1.3;
+        }
+
+        /* --- GAME 1: 3D FLASHCARDS --- */
+        .game-shell {
+            max-width: 650px;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .game-top-bar {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .progress-indicator {
+            background: rgba(255,255,255,0.9);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 900;
+            font-size: 16px;
+            color: #475569;
+            box-shadow: var(--ios-shadow-sm);
+            border: 2px solid white;
+        }
+
+        .flashcard-3d-scene {
+            perspective: 1200px;
+            width: 100%;
+            height: 380px;
+            cursor: pointer;
+        }
+
+        .flashcard-wrapper {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .flashcard-wrapper.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-face {
+            position: absolute;
+            inset: 0;
+            border-radius: 40px;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            box-shadow: var(--ios-shadow-lg);
+            border: 5px solid white;
+        }
+
+        .flashcard-front {
+            background: linear-gradient(145deg, #ffffff, #f8fafc);
+            color: #1e293b;
+        }
+
+        .flashcard-back {
+            background: linear-gradient(145deg, #4f46e5, #3b82f6);
+            color: white;
+            transform: rotateY(180deg);
+        }
+
+        .card-emoji-giant {
+            font-size: 100px;
+            animation: mascot-bounce 3s ease-in-out infinite;
+        }
+
+        .card-word-main {
+            font-size: 52px;
+            font-weight: 900;
+            margin-top: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .card-phonetic {
+            background: #edf2f7;
+            color: #4f46e5;
+            font-size: 20px;
+            font-weight: 900;
+            padding: 8px 24px;
+            border-radius: 24px;
+            margin-top: 14px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-hint-text {
+            font-size: 18px;
+            font-weight: 700;
+            background: rgba(0,0,0,0.25);
+            padding: 12px 24px;
+            border-radius: 20px;
+            margin-top: 20px;
+            max-width: 90%;
+            text-align: center;
+        }
+
+        .card-flip-prompt {
+            position: absolute;
+            bottom: 20px;
+            font-size: 13px;
+            font-weight: 800;
+            opacity: 0.6;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .game-controls-row {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .btn-game-nav {
+            background: white;
+            color: #334155;
+            font-weight: 900;
+            font-size: 16px;
+            padding: 14px 28px;
+            border-radius: 24px;
+            border: 2px solid white;
+            box-shadow: var(--ios-shadow);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .btn-game-nav:hover {
+            transform: scale(1.05);
+            border-color: #6366f1;
+            color: #6366f1;
+        }
+        .btn-game-nav:active {
+            transform: scale(0.95);
+        }
+        .btn-game-nav[disabled] {
+            opacity: 0.4;
+            pointer-events: none;
+            background: #e2e8f0;
+        }
+
+        .btn-game-audio-giant {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f59e0b, #ea580c);
+            color: white;
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 25px -6px rgba(234, 88, 12, 0.6);
+            border: 3px solid white;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .btn-game-audio-giant:hover {
+            transform: scale(1.15) rotate(10deg);
+        }
+        .btn-game-audio-giant:active {
+            transform: scale(0.95);
+        }
+
+        /* --- GAME 2: VISUAL QUIZ --- */
+        .quiz-question-card {
+            background: rgba(255,255,255,0.95);
+            border: 4px solid #818cf8;
+            border-radius: 36px;
+            padding: 24px;
+            width: 100%;
+            text-align: center;
+            box-shadow: var(--ios-shadow);
+        }
+        .quiz-chechen-prompt {
+            font-size: 48px;
+            font-weight: 900;
+            color: #1e293b;
+        }
+        .quiz-phonetic-badge {
+            display: inline-block;
+            background: #e0e7ff;
+            color: #4338ca;
+            font-size: 18px;
+            font-weight: 900;
+            padding: 6px 20px;
+            border-radius: 20px;
+            margin-top: 8px;
+        }
+
+        .quiz-options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            width: 100%;
+        }
+
+        .quiz-option-btn {
+            background: white;
+            border: 4px solid white;
+            border-radius: 32px;
+            padding: 28px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: var(--ios-shadow);
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .quiz-option-btn:hover {
+            transform: scale(1.05);
+            border-color: #818cf8;
+            box-shadow: var(--ios-shadow-lg);
+        }
+        .quiz-option-btn:active {
+            transform: scale(0.95);
+        }
+        .quiz-option-btn.correct {
+            background: #10b981;
+            border-color: #059669;
+            color: white;
+            animation: success-bounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .quiz-option-btn.wrong {
+            background: #ef4444;
+            border-color: #dc2626;
+            color: white;
+            animation: error-shake 0.5s ease;
+        }
+
+        @keyframes success-bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.12); }
+        }
+        @keyframes error-shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-10px); }
+            40%, 80% { transform: translateX(10px); }
+        }
+
+        .quiz-opt-emoji {
+            font-size: 72px;
+        }
+        .quiz-opt-label {
+            font-size: 22px;
+            font-weight: 900;
+        }
+
+        /* --- GAME 3: PAIR MATCHING --- */
+        .matching-columns {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            width: 100%;
+            max-width: 750px;
+        }
+
+        .match-col {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .match-col-header {
+            font-weight: 900;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-align: center;
+            background: white;
+            padding: 8px;
+            border-radius: 16px;
+            box-shadow: var(--ios-shadow-sm);
+        }
+        .match-col-chechen .match-col-header { color: #4f46e5; }
+        .match-col-russian .match-col-header { color: #e11d48; }
+
+        .btn-match {
+            background: white;
+            border: 3px solid white;
+            padding: 18px;
+            border-radius: 24px;
+            font-weight: 900;
+            font-size: 20px;
+            text-align: center;
+            box-shadow: var(--ios-shadow);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            color: #1e293b;
+        }
+        .btn-match:hover {
+            transform: scale(1.03);
+            border-color: #94a3b8;
+        }
+        .btn-match.selected {
+            background: #4f46e5;
+            color: white;
+            border-color: #3730a3;
+            transform: scale(1.06);
+            box-shadow: var(--ios-shadow-lg);
+        }
+        .btn-match.selected-rus {
+            background: #e11d48;
+            color: white;
+            border-color: #be123c;
+            transform: scale(1.06);
+            box-shadow: var(--ios-shadow-lg);
+        }
+        .btn-match.matched {
+            background: #10b981;
+            color: white;
+            border-color: #059669;
+            opacity: 0.6;
+            pointer-events: none;
+            transform: scale(0.95);
+        }
+
+        /* --- GAME 4: WORD CONSTRUCTOR --- */
+        .target-constructor-box {
+            background: rgba(255,255,255,0.95);
+            border: 4px solid #f59e0b;
+            border-radius: 36px;
+            padding: 24px;
+            width: 100%;
+            text-align: center;
+            box-shadow: var(--ios-shadow);
+        }
+
+        .constructor-slots-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            background: rgba(0, 0, 0, 0.06);
+            border: 3px solid rgba(255,255,255,0.7);
+            border-radius: 32px;
+            padding: 24px;
+            width: 100%;
+            min-height: 110px;
+            box-shadow: inset 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .letter-slot {
+            width: 64px;
+            height: 64px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 900;
+            transition: all 0.3s ease;
+        }
+        .letter-slot.filled {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            box-shadow: var(--ios-shadow);
+            animation: success-bounce 0.4s ease;
+            border: 2px solid white;
+        }
+        .letter-slot.empty {
+            background: rgba(255,255,255,0.7);
+            border: 3px dashed #94a3b8;
+            color: #cbd5e1;
+        }
+
+        .available-letters-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        .btn-letter-tile {
+            width: 68px;
+            height: 68px;
+            background: white;
+            border: 3px solid #818cf8;
+            color: #4f46e5;
+            border-radius: 22px;
+            font-size: 32px;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--ios-shadow);
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .btn-letter-tile:hover {
+            transform: scale(1.15) rotate(6deg);
+            background: #fef3c7;
+            border-color: #f59e0b;
+            color: #d97706;
+            box-shadow: var(--ios-shadow-lg);
+        }
+        .btn-letter-tile:active {
+            transform: scale(0.95);
+        }
+        .btn-letter-tile.used {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.5);
+        }
+
+        .btn-reset-letters {
+            background: white;
+            padding: 10px 24px;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 14px;
+            color: #64748b;
+            border: 2px solid #e2e8f0;
+            cursor: pointer;
+            box-shadow: var(--ios-shadow-sm);
+        }
+        .btn-reset-letters:hover {
+            color: #4f46e5;
+            border-color: #4f46e5;
+        }
+
+        /* --- SHOP SCREEN --- */
+        .shop-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 24px;
+            width: 100%;
+            max-width: 900px;
+            align-self: center;
+        }
+
+        .card-shop-item {
+            background: var(--ios-card-bg);
+            border: 3px solid var(--ios-card-border);
+            border-radius: 32px;
+            padding: 24px;
+            text-align: center;
+            box-shadow: var(--ios-shadow);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        .card-shop-item:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--ios-shadow-lg);
+        }
+
+        .shop-item-icon-box {
+            width: 86px;
+            height: 86px;
+            border-radius: 26px;
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border: 2px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 52px;
+            margin-bottom: 16px;
+            box-shadow: inset 0 4px 8px rgba(0,0,0,0.05);
+        }
+
+        .shop-item-name {
+            font-size: 18px;
+            font-weight: 900;
+            color: #1e293b;
+        }
+        .shop-item-desc {
+            font-size: 12px;
+            font-weight: 700;
+            color: #64748b;
+            margin-top: 6px;
+            line-height: 1.3;
+        }
+
+        .shop-btn-action {
+            width: 100%;
+            padding: 12px;
+            border-radius: 20px;
+            font-weight: 900;
+            font-size: 15px;
+            cursor: pointer;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .shop-btn-buy {
+            background: linear-gradient(135deg, #facc15, #eab308);
+            color: #1e293b;
+            border: 2px solid #fef08a;
+            box-shadow: 0 6px 16px -4px rgba(234, 179, 8, 0.5);
+        }
+        .shop-btn-buy:hover { transform: scale(1.05); }
+
+        .shop-btn-equip {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: 2px solid #6ee7b7;
+            box-shadow: 0 6px 16px -4px rgba(16, 185, 129, 0.5);
+        }
+        .shop-btn-equip:hover { transform: scale(1.05); }
+
+        .shop-btn-unequip {
+            background: linear-gradient(135deg, #f43f5e, #e11d48);
+            color: white;
+            border: 2px solid #fecdd3;
+            box-shadow: 0 6px 16px -4px rgba(225, 29, 72, 0.5);
+        }
+        .shop-btn-unequip:hover { transform: scale(1.05); }
+
+        /* --- IMPORT SCREEN --- */
+        .import-shell {
+            max-width: 700px;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            background: var(--ios-card-bg);
+            border: 3px solid var(--ios-card-border);
+            border-radius: 36px;
+            padding: 30px;
+            box-shadow: var(--ios-shadow-lg);
+        }
+
+        .import-intro {
+            font-size: 15px;
+            font-weight: 700;
+            color: #475569;
+            line-height: 1.4;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .input-label {
+            font-size: 13px;
+            font-weight: 900;
+            text-transform: uppercase;
+            color: #64748b;
+            letter-spacing: 1px;
+        }
+
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: 16px 20px;
+            border-radius: 24px;
+            border: 2px solid #cbd5e1;
+            background: rgba(255,255,255,0.9);
+            font-family: inherit;
+            font-size: 16px;
+            font-weight: 800;
+            color: #1e293b;
+            transition: all 0.2s ease;
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.05);
+        }
+        .form-input:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.05), 0 0 0 4px rgba(99, 102, 241, 0.2);
+        }
+        .form-textarea {
+            font-family: monospace;
+            font-weight: 700;
+            line-height: 1.6;
+        }
+
+        .btn-submit-import {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            color: white;
+            border: 3px solid #a5b4fc;
+            padding: 20px;
+            border-radius: 26px;
+            font-weight: 900;
+            font-size: 18px;
+            cursor: pointer;
+            box-shadow: 0 10px 25px -6px rgba(99, 102, 241, 0.6);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        .btn-submit-import:hover {
+            transform: scale(1.03);
+            background: linear-gradient(135deg, #4f46e5, #4338ca);
+        }
+        .btn-submit-import:active { transform: scale(0.97); }
+
+        /* --- DICTIONARY SCREEN --- */
+        .dict-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            width: 100%;
+        }
+
+        .card-dict-word {
+            background: var(--ios-card-bg);
+            border: 2px solid var(--ios-card-border);
+            border-radius: 24px;
+            padding: 16px 20px;
+            box-shadow: var(--ios-shadow-sm);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .card-dict-word:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--ios-shadow);
+            border-color: #818cf8;
+        }
+
+        .dict-emoji-box {
+            font-size: 38px;
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--ios-shadow-sm);
+            flex-shrink: 0;
+        }
+
+        .dict-info {
+            flex-grow: 1;
+        }
+        .dict-chechen {
+            font-weight: 900;
+            font-size: 20px;
+            color: #1e293b;
+        }
+        .dict-russian {
+            font-weight: 800;
+            font-size: 14px;
+            color: #ea580c;
+            margin-top: 2px;
+        }
+        .dict-pronunciation {
+            font-size: 12px;
+            font-weight: 700;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        .btn-dict-audio {
+            width: 44px;
+            height: 44px;
+            border-radius: 16px;
+            background: #e0e7ff;
+            color: #4f46e5;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid #c7d2fe;
+            flex-shrink: 0;
+        }
+        .btn-dict-audio:hover {
+            background: #4f46e5;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .dict-toolbar {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .dict-search-input {
+            width: 100%;
+            padding: 14px 20px;
+            border-radius: 18px;
+            border: 2px solid #c7d2fe;
+            background: rgba(255, 255, 255, 0.95);
+            font-family: inherit;
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e293b;
+            outline: none;
+            box-shadow: var(--ios-shadow-sm);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .dict-search-input:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+        }
+        .dict-meta-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .dict-count {
+            font-size: 13px;
+            font-weight: 800;
+            color: #6366f1;
+        }
+        .dict-source {
+            font-size: 11px;
+            font-weight: 700;
+            color: #64748b;
+            text-align: right;
+        }
+        .btn-dict-load-more {
+            display: block;
+            margin: 20px auto 0;
+            padding: 12px 28px;
+            border-radius: 18px;
+            border: 2px solid #c7d2fe;
+            background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+            color: #4338ca;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .btn-dict-load-more:hover { transform: translateY(-2px); }
+        .dict-empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: #64748b;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        /* --- App Footer iOS Nav --- */
+        .app-footer {
+            background: rgba(255,255,255,0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 2px solid rgba(255,255,255,0.6);
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-weight: 800;
+            font-size: 13px;
+            color: #64748b;
+            z-index: 50;
+        }
+
+        .btn-footer-nav {
+            background: white;
+            color: #4f46e5;
+            border: 2px solid #e0e7ff;
+            padding: 8px 18px;
+            border-radius: 18px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: var(--ios-shadow-sm);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-footer-nav:hover {
+            transform: translateY(-2px);
+            border-color: #6366f1;
+            box-shadow: var(--ios-shadow);
+        }
+
+        /* Custom Standalone Confetti Canvas */
+        #confetti-canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Native App Shell -->
+    <div class="app-shell" id="app-shell">
+        
+        <!-- Standalone Confetti Canvas for 100% Offline Reliability -->
+        <canvas id="confetti-canvas"></canvas>
+
+        <!-- Top Header Navigation -->
+        <header class="app-header">
+            <div class="brand-zone" id="brand-home-btn">
+                <div class="app-logo-icon">🏔️</div>
+                <div>
+                    <h1 class="app-title-h1">НОХЧИЙН</h1>
+                    <div class="app-subtitle">Академия Бераш • Premium iOS</div>
+                </div>
+            </div>
+
+            <div class="stats-zone">
+                <div class="mode-segment" id="mode-segment" role="tablist" aria-label="Режим обучения">
+                    <button type="button" id="btn-mode-kids" data-mode="kids" class="active">🦊 Дети</button>
+                    <button type="button" id="btn-mode-adult" data-mode="adult">📚 Взрослые</button>
+                </div>
+                <div class="badge-pill badge-level" id="badge-level">
+                    <span>★</span>
+                    <span id="stat-level-text">Уровень 2</span>
+                </div>
+
+                <div class="badge-pill badge-streak" id="badge-streak">
+                    <span style="display: inline-block; animation: mascot-bounce 2s infinite">🔥</span>
+                    <span id="stat-streak-text">3 дня</span>
+                </div>
+
+                <div class="badge-pill badge-stars" id="badge-stars">
+                    <span style="font-size: 18px">⭐️</span>
+                    <span id="stat-stars-text">25</span>
+                </div>
+
+                <button class="btn-premium" id="btn-open-shop">
+                    <span style="font-size: 16px">🛍️</span>
+                    <span>Магазин</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Dynamic Mascot Helper Guide Banner -->
+        <div class="mascot-banner">
+            <div class="mascot-avatar-container" id="mascot-visual">
+                <span>🦊</span>
+                <!-- Accessory Placeholders -->
+                <div class="mascot-hat" id="mascot-eq-hat"></div>
+                <div class="mascot-glasses" id="mascot-eq-glasses"></div>
+                <div class="mascot-friend" id="mascot-eq-friend"></div>
+            </div>
+
+            <div class="mascot-dialogue">
+                <div class="mascot-name">
+                    <span>Цхьогал (Лисичка-Гид)</span>
+                    <span style="font-size: 16px">✨</span>
+                </div>
+                <div class="mascot-message" id="mascot-message">
+                    Салам! Добро пожаловать! Уроки составлены по словарю Мациева — выбери тему, открой полный словарь или создай свой урок!
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Dynamic App Workspaces -->
+        <main class="app-body">
+
+            <!-- SCREEN 1: LESSONS MENU -->
+            <div class="screen active" id="screen-lessons-menu">
+                <div class="section-header">
+                    <div>
+                        <h2 class="section-title">Выбери тему для изучения</h2>
+                        <div class="section-subtitle">Каждый урок содержит 4 интерактивные игры-тренажера</div>
+                    </div>
+                </div>
+                <div class="grid-lessons" id="grid-lessons-container">
+                    <!-- Dynamic Lesson Cards injected by JS -->
+                </div>
+            </div>
+
+            <!-- SCREEN 2: MODES SELECTION MENU -->
+            <div class="screen" id="screen-lesson-modes">
+                <div class="section-header">
+                    <button class="btn-back" id="btn-modes-back">
+                        <span>◀</span> Назад к темам
+                    </button>
+                    <div style="text-align: right">
+                        <div class="lesson-chechen-title" id="mode-header-chechen">Дийнаташ</div>
+                        <h2 class="section-title" id="mode-header-russian">Животные</h2>
+                    </div>
+                </div>
+                <div class="modes-grid">
+                    
+                    <div class="card-mode" data-mode="cards">
+                        <div class="mode-icon" style="background: linear-gradient(135deg, #ec4899, #f43f5e)">🎴</div>
+                        <div class="mode-info">
+                            <div class="mode-title-row">
+                                <h3 class="mode-title">Обучающие Карточки</h3>
+                                <span class="mode-reward">+3 ⭐️</span>
+                            </div>
+                            <p class="mode-desc">Слушай правильное произношение, переворачивай и запоминай слова.</p>
+                        </div>
+                    </div>
+
+                    <div class="card-mode" data-mode="quiz">
+                        <div class="mode-icon" style="background: linear-gradient(135deg, #f59e0b, #ea580c)">❓</div>
+                        <div class="mode-info">
+                            <div class="mode-title-row">
+                                <h3 class="mode-title">Угадай Картинку</h3>
+                                <span class="mode-reward">+5 ⭐️</span>
+                            </div>
+                            <p class="mode-desc">Викторина: выбери правильную картинку к чеченскому слову.</p>
+                        </div>
+                    </div>
+
+                    <div class="card-mode" data-mode="matching">
+                        <div class="mode-icon" style="background: linear-gradient(135deg, #3b82f6, #4f46e5)">🧩</div>
+                        <div class="mode-info">
+                            <div class="mode-title-row">
+                                <h3 class="mode-title">Найди Пару</h3>
+                                <span class="mode-reward">+6 ⭐️</span>
+                            </div>
+                            <p class="mode-desc">Головоломка: соедини чеченские слова с русскими значениями.</p>
+                        </div>
+                    </div>
+
+                    <div class="card-mode" data-mode="constructor">
+                        <div class="mode-icon" style="background: linear-gradient(135deg, #10b981, #059669)">🔠</div>
+                        <div class="mode-info">
+                            <div class="mode-title-row">
+                                <h3 class="mode-title">Собери Слово</h3>
+                                <span class="mode-reward">+8 ⭐️</span>
+                            </div>
+                            <p class="mode-desc">Супер-игра: составь чеченское слово из разбросанных букв.</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- SCREEN 3: 3D FLASHCARDS GAME -->
+            <div class="screen" id="screen-game-cards">
+                <div class="game-shell">
+                    <div class="game-top-bar">
+                        <button class="btn-back" id="btn-cards-back">
+                            <span>◀</span> Меню темы
+                        </button>
+                        <div class="progress-indicator" id="cards-progress-text">Карточка 1 / 6</div>
+                        <div style="width: 100px"></div>
+                    </div>
+
+                    <div class="flashcard-3d-scene" id="flashcard-scene">
+                        <div class="flashcard-wrapper" id="flashcard-wrapper">
+                            
+                            <!-- Front (Chechen) -->
+                            <div class="flashcard-face flashcard-front premium-tier">
+                                <span class="premium-ribbon">Premium</span>
+                                <div class="card-visual-scene" id="card-front-visual"></div>
+                                <h3 class="card-word-main" id="card-front-word">Цициг</h3>
+                                <div class="card-phonetic">
+                                    <span style="font-size: 24px">🔊</span>
+                                    <span id="card-front-phonetic">[Цѝ-циг]</span>
+                                </div>
+                                <div class="card-flip-prompt">Нажми, чтобы перевернуть 🔄</div>
+                            </div>
+
+                            <!-- Back (Russian Translation) -->
+                            <div class="flashcard-face flashcard-back premium-tier">
+                                <div class="card-visual-scene" id="card-back-visual"></div>
+                                <div style="font-size: 16px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; opacity: 0.8">Перевод:</div>
+                                <h3 class="card-word-main" id="card-back-word">Кошка</h3>
+                                <div class="card-hint-text" id="card-back-hint">💡 Любит пить молоко и мурлыкать</div>
+                                <div class="card-flip-prompt" style="color: rgba(255,255,255,0.8)">Нажми, чтобы вернуть 🔄</div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="game-controls-row">
+                        <button class="btn-game-nav" id="btn-cards-prev">
+                            <span>◀</span> Предыдущая
+                        </button>
+                        <div class="btn-game-audio-giant" id="btn-cards-speak" title="Озвучить слово">
+                            🔊
+                        </div>
+                        <button class="btn-game-nav" id="btn-cards-next" style="background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; border-color: #818cf8">
+                            <span id="cards-next-text">Следующая</span> <span id="cards-next-arrow">▶</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCREEN 4: VISUAL QUIZ GAME -->
+            <div class="screen" id="screen-game-quiz">
+                <div class="game-shell" style="max-width: 750px">
+                    <div class="game-top-bar">
+                        <button class="btn-back" id="btn-quiz-back">
+                            <span>◀</span> Меню темы
+                        </button>
+                        <div class="progress-indicator" id="quiz-progress-text">Вопрос 1 / 6</div>
+                        <div class="progress-indicator" style="background: #fef3c7; border-color: #fde68a; color: #d97706" id="quiz-score-text">
+                            ★ 0
+                        </div>
+                    </div>
+
+                    <div class="quiz-question-card">
+                        <div style="font-size: 14px; font-weight: 900; color: #6366f1; text-transform: uppercase; letter-spacing: 1.5px">Какая картинка подходит к слову?</div>
+                        <h2 class="quiz-chechen-prompt" id="quiz-question-word">Цициг</h2>
+                        <div class="quiz-phonetic-badge" id="quiz-question-phonetic">[Цѝ-циг]</div>
+                    </div>
+
+                    <div class="quiz-options-grid" id="quiz-options-container">
+                        <!-- Options injected by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCREEN 5: PAIR MATCHING GAME -->
+            <div class="screen" id="screen-game-matching">
+                <div class="game-shell" style="max-width: 800px">
+                    <div class="game-top-bar">
+                        <button class="btn-back" id="btn-match-back">
+                            <span>◀</span> Меню темы
+                        </button>
+                        <div class="progress-indicator" id="match-status-badge">Найди правильные пары слов</div>
+                        <div class="progress-indicator" style="background: #d1fae5; border-color: #a7f3d0; color: #059669" id="match-pairs-count">
+                            ✓ 0 / 5
+                        </div>
+                    </div>
+
+                    <div class="matching-columns">
+                        
+                        <!-- Chechen Side -->
+                        <div class="match-col match-col-chechen">
+                            <div class="match-col-header">Чеченский Мотт</div>
+                            <div id="match-col-chechen-btns" class="match-col"></div>
+                        </div>
+
+                        <!-- Russian Side -->
+                        <div class="match-col match-col-russian">
+                            <div class="match-col-header">Русский Перевод</div>
+                            <div id="match-col-russian-btns" class="match-col"></div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCREEN 6: WORD CONSTRUCTOR GAME -->
+            <div class="screen" id="screen-game-constructor">
+                <div class="game-shell" style="max-width: 750px">
+                    <div class="game-top-bar">
+                        <button class="btn-back" id="btn-const-back">
+                            <span>◀</span> Меню темы
+                        </button>
+                        <div class="progress-indicator" id="const-progress-text">Слово 1 / 6</div>
+                        <div style="width: 100px"></div>
+                    </div>
+
+                    <div class="target-constructor-box">
+                        <div style="display: inline-block; font-size: 72px; animation: mascot-bounce 3s infinite" id="const-target-emoji">🐱</div>
+                        <h2 style="font-size: 38px; font-weight: 900; color: #1e293b; margin-top: 6px" id="const-target-russian">Кошка</h2>
+                        <div style="font-size: 16px; font-weight: 800; color: #d97706; background: #fef3c7; display: inline-block; padding: 6px 20px; border-radius: 20px; margin-top: 10px" id="const-target-hint">
+                            Подсказка: [Цѝ-циг]
+                        </div>
+                    </div>
+
+                    <div style="font-size: 15px; font-weight: 900; color: #64748b; text-transform: uppercase; letter-spacing: 1px">Нажимай на буквы, чтобы собрать слово:</div>
+
+                    <div class="constructor-slots-container" id="const-slots-container">
+                        <!-- Slots injected by JS -->
+                    </div>
+
+                    <div class="available-letters-container" id="const-letters-container">
+                        <!-- Letter tiles injected by JS -->
+                    </div>
+
+                    <button class="btn-reset-letters" id="btn-const-reset">
+                        🔄 Сбросить буквы
+                    </button>
+                </div>
+            </div>
+
+            <!-- SCREEN 7: REWARD SHOP -->
+            <div class="screen" id="screen-shop">
+                <div class="section-header max-w-[900px] w-full mx-auto">
+                    <button class="btn-back" id="btn-shop-back">
+                        <span>◀</span> Вернуться к темам
+                    </button>
+                    <div>
+                        <h2 class="section-title">Магазин Подарков</h2>
+                        <div class="section-subtitle">Наряди Лисичку или добавь новых спутников</div>
+                    </div>
+                    <div class="badge-pill badge-stars">
+                        <span style="font-size: 18px">⭐️</span>
+                        <span id="shop-balance-text">25</span>
+                    </div>
+                </div>
+
+                <div class="shop-grid" id="shop-items-container">
+                    <!-- Shop items injected by JS -->
+                </div>
+            </div>
+
+            <!-- SCREEN 8: IMPORT / CUSTOM LESSON CREATOR -->
+            <div class="screen" id="screen-import">
+                <div class="section-header max-w-[700px] w-full mx-auto">
+                    <button class="btn-back" id="btn-import-back">
+                        <span>◀</span> Главное меню
+                    </button>
+                    <h2 class="section-title">Создать свой урок</h2>
+                    <div style="width: 100px"></div>
+                </div>
+
+                <div class="import-shell">
+                    <p class="import-intro">
+                        ✨ Вставьте слова из словаря Мациева или своего задания. Формат: <strong>Чеченское - Русское | Эмодзи</strong>. Полный словарь — в разделе «Словарь Мациева».
+                    </p>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px">
+                        <div class="input-group">
+                            <label class="input-label">Название урока (на русском):</label>
+                            <input type="text" class="form-input" id="import-title" placeholder="Например: Мои новые слова" value="Урок из файла">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Подзаголовок (на чеченском):</label>
+                            <input type="text" class="form-input" id="import-chechen-title" placeholder="Например: Сан дешнаш" value="Сан Дарс">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Список слов (Формат: Чеченское - Русское | Эмодзи):</label>
+                        <textarea class="form-textarea" id="import-words-text" rows="7">
+Маьлхан - Солнечный | ☀️
+Дог - Сердце | ❤️
+Безам - Любовь | 🥰
+Маршалла - Приветствие | 👋
+ГӀала - Город | 🏙️
+Лам - Гора | 🏔️
+Хи - Река | 🌊
+ЦӀа - Родной Дом | 🏡</textarea>
+                        <span style="font-size: 12px; font-weight: 700; color: #94a3b8">Каждое слово на новой строке. Можно вставлять прямо из Word, Excel или текстового файла!</span>
+                    </div>
+
+                    <button class="btn-submit-import" id="btn-execute-import">
+                        <span style="font-size: 24px">✨</span>
+                        <span>Сгенерировать игру из этих слов!</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- SCREEN 9: MACIEV DICTIONARY (FULL LEXICON) -->
+            <div class="screen" id="screen-dictionary">
+                <div class="section-header max-w-[900px] w-full mx-auto">
+                    <button class="btn-back" id="btn-dict-back">
+                        <span>◀</span> Вернуться к темам
+                    </button>
+                    <div>
+                        <h2 class="section-title">Словарь Мациева</h2>
+                        <div class="section-subtitle">Чеченско-русский словарь — 7600+ слов</div>
+                    </div>
+                    <div style="width: 100px"></div>
+                </div>
+
+                <div class="dict-toolbar">
+                    <input type="search" class="dict-search-input" id="dict-search-input"
+                        placeholder="🔍 Поиск: чеченское или русское слово..." autocomplete="off">
+                    <div class="dict-meta-row">
+                        <div class="dict-count" id="dict-count-text">Загрузка словаря...</div>
+                        <div class="dict-source" id="dict-source-badge">Мациев А.Г. Чеченско-русский словарь</div>
+                    </div>
+                </div>
+
+                <div class="dict-grid" id="dict-words-container">
+                    <!-- Words Lexicon injected by JS -->
+                </div>
+                <button class="btn-dict-load-more" id="btn-dict-load-more" style="display:none">Показать ещё</button>
+            </div>
+
+        </main>
+
+        <!-- App Footer Bar -->
+        <footer class="app-footer">
+            <div style="display: flex; align-items: center; gap: 12px">
+                <span>Нохчийн Мотт Берашна • Secure iOS Game Engine</span>
+                <button class="btn-footer-nav" id="btn-open-dictionary" style="background: #f1f5f9; color: #334155; border-color: #cbd5e1">
+                    <span style="font-size: 16px">📖</span>
+                    <span>Словарь Мациев + Алироев (7876+)</span>
+                </button>
+            </div>
+            <button class="btn-footer-nav" id="btn-open-import">
+                <span style="font-size: 16px">📥</span>
+                <span>Загрузить слова из файла</span>
+            </button>
+        </footer>
+
+    </div>
+
+    <script src="lessons_data.js"></script>
+    <script src="word_visuals.js"></script>
+    <!-- --- 100% VANILLA JS PREMIUM ENGINE --- -->
+    <script>
+        // --- 1. SAFE STORAGE ENGINE (Bypasses all Sandbox SecurityErrors) ---
+        class SafeStorage {
+            constructor() {
+                this.memory = {};
+            }
+            get(key, fallback) {
+                try {
+                    const val = window.localStorage.getItem(key);
+                    return val !== null ? JSON.parse(val) : fallback;
+                } catch(e) {
+                    return this.memory[key] !== undefined ? this.memory[key] : fallback;
+                }
+            }
+            set(key, val) {
+                try {
+                    window.localStorage.setItem(key, JSON.stringify(val));
+                } catch(e) {
+                    this.memory[key] = val;
+                }
+            }
+        }
+        const storage = new SafeStorage();
+
+        // --- 2. HIGH-FIDELITY SOUND EFFECTS ENGINE (Web Audio API) ---
+        const playSound = (type) => {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                if (ctx.state === 'suspended') {
+                    ctx.resume();
+                }
+                const now = ctx.currentTime;
+
+                if (type === 'tap') {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(450, now);
+                    osc.frequency.exponentialRampToValueAtTime(850, now + 0.08);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.linearRampToValueAtTime(0, now + 0.08);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.08);
+                } else if (type === 'success') {
+                    const osc1 = ctx.createOscillator();
+                    const osc2 = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc1.type = 'sine';
+                    osc2.type = 'triangle';
+                    osc1.frequency.setValueAtTime(523.25, now); // C5
+                    osc1.frequency.exponentialRampToValueAtTime(659.25, now + 0.12); // E5
+                    osc1.frequency.exponentialRampToValueAtTime(783.99, now + 0.24);  // G5
+                    osc1.frequency.exponentialRampToValueAtTime(1046.50, now + 0.36); // C6
+                    osc2.frequency.setValueAtTime(261.63, now); // C4
+                    osc2.frequency.exponentialRampToValueAtTime(523.25, now + 0.36); // C5
+                    gain.gain.setValueAtTime(0.25, now);
+                    gain.gain.linearRampToValueAtTime(0, now + 0.6);
+                    osc1.connect(gain);
+                    osc2.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc1.start(now);
+                    osc2.start(now);
+                    osc1.stop(now + 0.6);
+                    osc2.stop(now + 0.6);
+                } else if (type === 'wrong') {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(180, now);
+                    osc.frequency.linearRampToValueAtTime(130, now + 0.25);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.linearRampToValueAtTime(0, now + 0.25);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.25);
+                } else if (type === 'fanfare') {
+                    const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51];
+                    notes.forEach((freq, idx) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(freq, now + idx * 0.12);
+                        gain.gain.setValueAtTime(0.3, now + idx * 0.12);
+                        gain.gain.linearRampToValueAtTime(0, now + idx * 0.12 + 0.4);
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.start(now + idx * 0.12);
+                        osc.stop(now + idx * 0.12 + 0.4);
+                    });
+                }
+            } catch(e) {
+                console.log("Web Audio API disabled or blocked");
+            }
+        };
+
+        // --- 3. SPEECH SYNTHESIS HELPER ---
+        const speakWord = (chechenWord) => {
+            playSound('tap');
+            try {
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                    const utter = new SpeechSynthesisUtterance(chechenWord);
+                    utter.rate = 0.85;
+                    utter.pitch = 1.1;
+                    window.speechSynthesis.speak(utter);
+                }
+            } catch(e) {
+                console.log("SpeechSynthesis error", e);
+            }
+        };
+
+        // --- 4. BUILT-IN 60FPS CONFETTI FIREWORKS ENGINE ---
+        const shootConfetti = () => {
+            playSound('fanfare');
+            const canvas = document.getElementById('confetti-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const particles = [];
+            const colors = ['#f59e0b', '#ec4899', '#3b82f6', '#10b981', '#8b5cf6', '#ef4444', '#facc15'];
+
+            for (let i = 0; i < 140; i++) {
+                particles.push({
+                    x: canvas.width * 0.5,
+                    y: canvas.height * 0.85,
+                    vx: (Math.random() - 0.5) * 28,
+                    vy: -(Math.random() * 22 + 12),
+                    size: Math.random() * 12 + 8,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    rot: Math.random() * 360,
+                    vrot: (Math.random() - 0.5) * 10
+                });
+            }
+
+            let frame = 0;
+            const animate = () => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let alive = false;
+                particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.6; // Gravity
+                    p.rot += p.vrot;
+                    if (p.size > 0.2) p.size -= 0.05;
+
+                    if (p.y < canvas.height && p.size > 0.5) {
+                        alive = true;
+                        ctx.save();
+                        ctx.translate(p.x, p.y);
+                        ctx.rotate(p.rot * Math.PI / 180);
+                        ctx.fillStyle = p.color;
+                        ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size);
+                        ctx.restore();
+                    }
+                });
+
+                if (alive && frame < 180) {
+                    frame++;
+                    requestAnimationFrame(animate);
+                } else {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            };
+            animate();
+        };
+
+        // --- 5. ULTRA-PREMIUM DEFAULT VOCABULARY DATABASE ---
+        const defaultLessons = [
+            {
+                id: 'greetings',
+                title: 'Приветствия',
+                chechenTitle: 'Маршалла',
+                icon: '👋',
+                color: 'linear-gradient(135deg, #10b981, #06b6d4)',
+                words: [
+                    { chechen: 'Маршалла', russian: 'Привет / Здравствуйте', pronunciation: 'Мар-шал-ла', emoji: '👋', hint: 'Традиционное чеченское пожелание мира' },
+                    { chechen: 'Баркалла', russian: 'Спасибо', pronunciation: 'Бар-кал-ла', emoji: '🙏', hint: 'Выражение благодарности' },
+                    { chechen: 'Ӏуьйре дика', russian: 'Доброе утро', pronunciation: 'Ӏуьй-ре ди-ка', emoji: '🌅', hint: 'Пожелание благословенного начала дня' },
+                    { chechen: 'Де дика', russian: 'Добрый день', pronunciation: 'Де ди-ка', emoji: '☀️', hint: 'Приветствие в светлое время суток' },
+                    { chechen: 'Суьйре дика', russian: 'Добрый вечер', pronunciation: 'Суьй-ре ди-ка', emoji: '🌇', hint: 'Вечернее дружеское приветствие' },
+                    { chechen: 'Марша Ӏайла', russian: 'До свидания', pronunciation: 'Мар-ша Ӏай-ла', emoji: '🚶‍♂️', hint: 'Пожелание оставаться с миром' }
+                ]
+            },
+            {
+                id: 'animals',
+                title: 'Животные',
+                chechenTitle: 'Дийнаташ',
+                icon: '🐾',
+                color: 'linear-gradient(135deg, #f59e0b, #ea580c)',
+                words: [
+                    { chechen: 'Цициг', russian: 'Кошка', pronunciation: 'Цѝ-циг', emoji: '🐱', hint: 'Любит пить молоко и мурлыкать' },
+                    { chechen: 'ЖӀаьла', russian: 'Собака', pronunciation: 'Жаь-ла', emoji: '🐶', hint: 'Верный и преданный друг' },
+                    { chechen: 'Говр', russian: 'Лошадь', pronunciation: 'Говр', emoji: '🐴', hint: 'Быстро скачет по полям' },
+                    { chechen: 'Борз', russian: 'Волк', pronunciation: 'Борз', emoji: '🐺', hint: 'Символ смелости, свободы и силы' },
+                    { chechen: 'Ча', russian: 'Медведь', pronunciation: 'Ча', emoji: '🐻', hint: 'Большой и любит сладкий мёд' },
+                    { chechen: 'Цхьогал', russian: 'Лиса', pronunciation: 'Цхьò-гал', emoji: '🦊', hint: 'Рыжая, пушистая и очень хитрая' },
+                    { chechen: 'Лу', russian: 'Олень', pronunciation: 'Лу', emoji: '🦌', hint: 'С красивыми ветвистыми рогами' },
+                    { chechen: 'ЦӀокъ', russian: 'Барс', pronunciation: 'ЦӀокъ', emoji: '🐆', hint: 'Быстрый и ловкий хищник гор' }
+                ]
+            },
+            {
+                id: 'colors',
+                title: 'Цвета',
+                chechenTitle: 'Бесаш',
+                icon: '🎨',
+                color: 'linear-gradient(135deg, #ec4899, #f43f5e)',
+                words: [
+                    { chechen: 'ЦӀе', russian: 'Красный', pronunciation: 'ЦӀе', emoji: '🍎', hint: 'Цвет спелого яблока и розы' },
+                    { chechen: 'Сийна', russian: 'Синий', pronunciation: 'Сѝй-на', emoji: '🌊', hint: 'Цвет глубокого моря и неба' },
+                    { chechen: 'Баьццара', russian: 'Зеленый', pronunciation: 'Баьц-ца-ра', emoji: '🌿', hint: 'Цвет свежей весенней травки' },
+                    { chechen: 'Можа', russian: 'Желтый', pronunciation: 'Мò-жа', emoji: '☀️', hint: 'Цвет теплого солнышка и подсолнуха' },
+                    { chechen: 'КӀайн', russian: 'Белый', pronunciation: 'КӀайн', emoji: '☁️', hint: 'Цвет чистого пушистого снега' },
+                    { chechen: 'Ӏаьржа', russian: 'Черный', pronunciation: 'Ӏаьр-жа', emoji: '🌌', hint: 'Цвет звездной ночи' }
+                ]
+            },
+            {
+                id: 'numbers',
+                title: 'Цифры (1-10)',
+                chechenTitle: 'Терахьаш',
+                icon: '🔢',
+                color: 'linear-gradient(135deg, #3b82f6, #4f46e5)',
+                words: [
+                    { chechen: 'Цхьаъ', russian: 'Один (1)', pronunciation: 'Цхьаъ', emoji: '1️⃣', hint: 'Первая цифра счета' },
+                    { chechen: 'Шиъ', russian: 'Два (2)', pronunciation: 'Шиъ', emoji: '2️⃣', hint: 'Пара глаз или пара рук' },
+                    { chechen: 'Кхоъ', russian: 'Три (3)', pronunciation: 'Кхоъ', emoji: '3️⃣', hint: 'Три колеса у детского велосипеда' },
+                    { chechen: 'Диъ', russian: 'Четыре (4)', pronunciation: 'Диъ', emoji: '4️⃣', hint: 'Четыре лапки у котенка' },
+                    { chechen: 'Пхиъ', russian: 'Пять (5)', pronunciation: 'Пхиъ', emoji: '5️⃣', hint: 'Пять пальцев на одной руке' },
+                    { chechen: 'Ялх', russian: 'Шесть (6)', pronunciation: 'Ялх', emoji: '6️⃣', hint: 'Шесть граней у кубика' },
+                    { chechen: 'ВорхӀ', russian: 'Семь (7)', pronunciation: 'ВорхӀ', emoji: '7️⃣', hint: 'Семь цветов у радуги' },
+                    { chechen: 'БархӀ', russian: 'Восемь (8)', pronunciation: 'БархӀ', emoji: '8️⃣', hint: 'Восемь ног у осьминога' },
+                    { chechen: 'Исс', russian: 'Девять (9)', pronunciation: 'Исс', emoji: '9️⃣', hint: 'Самая большая однозначная цифра' },
+                    { chechen: 'Итт', russian: 'Десять (10)', pronunciation: 'Итт', emoji: '🔟', hint: 'Все пальцы на обеих руках!' }
+                ]
+            },
+            {
+                id: 'family',
+                title: 'Семья',
+                chechenTitle: 'Доьзал',
+                icon: '❤️',
+                color: 'linear-gradient(135deg, #10b981, #059669)',
+                words: [
+                    { chechen: 'Нана', russian: 'Мама', pronunciation: 'Нà-на', emoji: '👩‍👧', hint: 'Самый близкий и родной человек' },
+                    { chechen: 'Да', russian: 'Папа', pronunciation: 'Да', emoji: '👨‍👦', hint: 'Глава семьи, наш защитник и опора' },
+                    { chechen: 'Ваша', russian: 'Брат', pronunciation: 'Вà-ша', emoji: '👦', hint: 'Смелый мальчик в нашей семье' },
+                    { chechen: 'Йиша', russian: 'Сестра', pronunciation: 'Йѝ-ша', emoji: '👧', hint: 'Добрая и заботливая девочка' },
+                    { chechen: 'Деда', russian: 'Дедушка', pronunciation: 'Дè-да', emoji: '👴', hint: 'Самый мудрый и старший в семье' },
+                    { chechen: 'Денана', russian: 'Бабушка', pronunciation: 'Дè-на-на', emoji: '👵', hint: 'Рассказывает самые интересные сказки' }
+                ]
+            },
+            {
+                id: 'food',
+                title: 'Еда и Напитки',
+                chechenTitle: 'Кхача',
+                icon: '🍎',
+                color: 'linear-gradient(135deg, #8b5cf6, #6d28d9)',
+                words: [
+                    { chechen: 'Хи', russian: 'Вода', pronunciation: 'Хи', emoji: '💧', hint: 'Источник жизни, утоляет жажду' },
+                    { chechen: 'Шура', russian: 'Молоко', pronunciation: 'Шу-рà', emoji: '🥛', hint: 'Полезное для роста и крепких костей' },
+                    { chechen: 'Бепиг', russian: 'Хлеб', pronunciation: 'Бè-пиг', emoji: '🍞', hint: 'Главный продукт за любым столом' },
+                    { chechen: 'Чай', russian: 'Чай', pronunciation: 'Чай', emoji: '☕', hint: 'Горячий и ароматный напиток для гостей' },
+                    { chechen: 'Ӏаж', russian: 'Яблоко', pronunciation: 'Ӏаж', emoji: '🍏', hint: 'Сочный, сладкий и хрустящий фрукт' },
+                    { chechen: 'Жижиг', russian: 'Мясо', pronunciation: 'Жѝ-жиг', emoji: '🥩', hint: 'Дает настоящую богатырскую силу' }
+                ]
+            },
+            {
+                id: 'nature',
+                title: 'Природа',
+                chechenTitle: 'Ӏалам',
+                icon: '🌳',
+                color: 'linear-gradient(135deg, #06b6d4, #0e7490)',
+                words: [
+                    { chechen: 'Маьлхан', russian: 'Солнце', pronunciation: 'Маьл-хан', emoji: '☀️', hint: 'Согревает всю землю своим теплом' },
+                    { chechen: 'Лам', russian: 'Гора', pronunciation: 'Лам', emoji: '🏔️', hint: 'Высокие вершины Кавказа' },
+                    { chechen: 'Зезаг', russian: 'Цветок', pronunciation: 'Зè-заг', emoji: '🌷', hint: 'Красиво растет на весеннем лугу' },
+                    { chechen: 'Хьун', russian: 'Лес', pronunciation: 'Хьун', emoji: '🌲', hint: 'Дом для множества диких зверей' },
+                    { chechen: 'Стигал', russian: 'Небо', pronunciation: 'Сти-гал', emoji: '🌌', hint: 'Бесконечное, синее над головой' },
+                    { chechen: 'ДогӀа', russian: 'Дождь', pronunciation: 'Дò-гӀа', emoji: '🌧️', hint: 'Поит все растения и цветы' }
+                ]
+            }
+        ];
+
+        // --- 6. SHOP REWARDS DATABASE ---
+        const shopItems = [
+            { id: 'hat_crown', name: 'Золотая Корона', price: 20, icon: '👑', type: 'hat', desc: 'Для настоящих королей и королев знаний!' },
+            { id: 'hat_cap', name: 'Кепка Героя', price: 15, icon: '🧢', type: 'hat', desc: 'Модная кепка для быстрых и точных ответов.' },
+            { id: 'glasses_cool', name: 'Крутые Очки', price: 18, icon: '🕶️', type: 'glasses', desc: 'Самый стильный образ на всем Кавказе.' },
+            { id: 'friend_cat', name: 'Спутник Цициг', price: 30, icon: '🐱', type: 'friend', desc: 'Милый котенок будет сопровождать в уроках.' },
+            { id: 'friend_wolf', name: 'Волчонок Борз', price: 40, icon: '🐺', type: 'friend', desc: 'Маленький смелый волчонок будет рядом.' },
+            { id: 'friend_deer', name: 'Олененок Лу', price: 35, icon: '🦌', type: 'friend', desc: 'Прекрасный олененок из горных лесов.' }
+        ];
+
+        // --- 7. CENTRAL APP STATE & CONTROLLER ---
+        class ChechenGameApp {
+            constructor() {
+                // Persistent State
+                this.stars = storage.get('chechen_stars', 20);
+                this.xp = storage.get('chechen_xp', 140);
+                this.streak = storage.get('chechen_streak', 3);
+                this.inventory = storage.get('chechen_inventory', []);
+                this.equipped = storage.get('chechen_equipped', {});
+                this.profileMode = storage.get('chechen_profile_mode', 'kids');
+                this.lessons = this.loadLessons();
+
+                // Maciev Dictionary State
+                this.macievDictionary = [];
+                this.dictSearchQuery = '';
+                this.dictVisibleCount = 80;
+                this.dictSearchTimer = null;
+
+                // Game Execution State
+                this.activeLesson = null;
+                this.activeGameMode = null;
+                this.activeTimer = null;
+                this.currentCardIdx = 0;
+                this.quizScore = 0;
+                this.matchingPairs = [];
+                this.selectedMatchChechen = null;
+                this.selectedMatchRussian = null;
+                this.isMatchingBusy = false;
+                this.constSpelled = [];
+                this.constAvailable = [];
+
+                // Initialize Core Setup
+                this.initUI();
+                this.applyProfileMode();
+                this.bindGlobalEvents();
+                this.renderLessonsGrid();
+                this.updateStatsUI();
+                this.updateMascotVisuals();
+                this.loadMacievDictionary();
+            }
+
+            loadLessons() {
+                const base = (window.MACIEV_LESSONS && window.MACIEV_LESSONS.length)
+                    ? window.MACIEV_LESSONS
+                    : defaultLessons;
+                const saved = storage.get('chechen_custom_lessons', null);
+                const version = storage.get('chechen_lessons_version', 0);
+
+                if (!Array.isArray(saved) || saved.length === 0 || version < 5) {
+                    storage.set('chechen_lessons_version', 5);
+                    const customs = Array.isArray(saved)
+                        ? saved.filter(l => l && l.id && String(l.id).startsWith('custom_'))
+                        : [];
+                    const merged = [...customs, ...base];
+                    storage.set('chechen_custom_lessons', merged);
+                    return merged;
+                }
+
+                const valid = saved.filter(l => l && Array.isArray(l.words) && l.words.length > 0);
+                if (valid.length === 0) {
+                    storage.set('chechen_custom_lessons', base);
+                    return base;
+                }
+                return valid;
+            }
+
+            async loadMacievDictionary() {
+                try {
+                    const res = await fetch('dictionary.json');
+                    if (!res.ok) throw new Error('Dictionary not found');
+                    const data = await res.json();
+                    this.macievDictionary = data.entries || [];
+                    const badge = document.getElementById('dict-source-badge');
+                    if (badge) {
+                        const src = (data.sources || []).map(s => s.id).join(' + ') || 'merged';
+                        badge.textContent = `${data.totalEntries} слов • ${src}`;
+                    }
+                } catch (e) {
+                    this.macievDictionary = [];
+                    const badge = document.getElementById('dict-source-badge');
+                    if (badge) {
+                        badge.textContent = 'Словарь Мациева (запустите через локальный сервер)';
+                    }
+                }
+            }
+
+            // Save user progression instantly
+            saveProgress() {
+                storage.set('chechen_stars', this.stars);
+                storage.set('chechen_xp', this.xp);
+                storage.set('chechen_streak', this.streak);
+                storage.set('chechen_inventory', this.inventory);
+                storage.set('chechen_equipped', this.equipped);
+                storage.set('chechen_custom_lessons', this.lessons);
+                this.updateStatsUI();
+            }
+
+            addRewards(addedXp, addedStars) {
+                this.xp += addedXp;
+                this.stars += addedStars;
+                this.saveProgress();
+                shootConfetti();
+            }
+
+            // Set mascot text
+            setMascot(msg) {
+                document.getElementById('mascot-message').innerHTML = msg;
+            }
+
+            // Update Header Stats
+            updateStatsUI() {
+                const curLevel = Math.floor(this.xp / 100) + 1;
+                document.getElementById('stat-level-text').innerText = `Уровень ${curLevel}`;
+                document.getElementById('stat-streak-text').innerText = `${this.streak} дня`;
+                document.getElementById('stat-stars-text').innerText = `${this.stars}`;
+                document.getElementById('shop-balance-text').innerText = `${this.stars}`;
+            }
+
+            // Update Equipped Mascot Items
+            updateMascotVisuals() {
+                const h = shopItems.find(i => i.id === this.equipped['hat']);
+                const g = shopItems.find(i => i.id === this.equipped['glasses']);
+                const f = shopItems.find(i => i.id === this.equipped['friend']);
+
+                document.getElementById('mascot-eq-hat').innerText = h ? h.icon : '';
+                document.getElementById('mascot-eq-glasses').innerText = g ? g.icon : '';
+                document.getElementById('mascot-eq-friend').innerText = f ? f.icon : '';
+            }
+
+            // Screen switcher with rigorous timeout cancellation
+            switchScreen(targetId) {
+                if (this.activeTimer) {
+                    clearTimeout(this.activeTimer);
+                    this.activeTimer = null;
+                }
+                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                document.getElementById(targetId).classList.add('active');
+            }
+
+            // Helper to exit any mini-game safely
+            exitMiniGame() {
+                playSound('tap');
+                this.activeGameMode = null;
+                if (this.activeTimer) {
+                    clearTimeout(this.activeTimer);
+                    this.activeTimer = null;
+                }
+                this.switchScreen('screen-lesson-modes');
+                this.setMascot(`Тема "${this.activeLesson.title}" (${this.activeLesson.chechenTitle}). В какой тренажер сыграем?`);
+            }
+
+            applyProfileMode() {
+                const shell = document.getElementById('app-shell');
+                const isAdult = this.profileMode === 'adult';
+                if (shell) shell.setAttribute('data-profile', this.profileMode);
+                document.getElementById('btn-mode-kids')?.classList.toggle('active', !isAdult);
+                document.getElementById('btn-mode-adult')?.classList.toggle('active', isAdult);
+                const sub = document.querySelector('.app-subtitle');
+                if (sub) {
+                    sub.textContent = isAdult
+                        ? 'Академия • Взрослый режим'
+                        : 'Академия Бераш • Premium iOS';
+                }
+                if (isAdult) {
+                    this.setMascot('Выберите тему или откройте полный словарь.');
+                }
+            }
+
+            setProfileMode(mode) {
+                this.profileMode = mode === 'adult' ? 'adult' : 'kids';
+                storage.set('chechen_profile_mode', this.profileMode);
+                this.applyProfileMode();
+                this.renderLessonsGrid();
+            }
+
+            // Bind persistent buttons
+            bindGlobalEvents() {
+                document.getElementById('btn-mode-kids')?.addEventListener('click', () => {
+                    playSound('tap');
+                    this.setProfileMode('kids');
+                });
+                document.getElementById('btn-mode-adult')?.addEventListener('click', () => {
+                    playSound('tap');
+                    this.setProfileMode('adult');
+                });
+                document.getElementById('brand-home-btn').onclick = () => {
+                    playSound('tap');
+                    this.activeGameMode = null;
+                    this.switchScreen('screen-lessons-menu');
+                    this.setMascot("Салам! Что выберем сегодня?");
+                };
+                document.getElementById('btn-open-shop').onclick = () => {
+                    playSound('tap');
+                    this.activeGameMode = null;
+                    this.renderShop();
+                    this.switchScreen('screen-shop');
+                    this.setMascot("Добро пожаловать в Магазин! Выбери классный наряд за заработанные звездочки!");
+                };
+                document.getElementById('btn-shop-back').onclick = () => {
+                    playSound('tap');
+                    this.switchScreen('screen-lessons-menu');
+                };
+                document.getElementById('btn-modes-back').onclick = () => {
+                    playSound('tap');
+                    this.activeGameMode = null;
+                    this.switchScreen('screen-lessons-menu');
+                };
+                document.getElementById('btn-open-import').onclick = () => {
+                    playSound('tap');
+                    this.activeGameMode = null;
+                    this.switchScreen('screen-import');
+                    this.setMascot("Портал создания уроков: здесь можно вставить слова из любого домашнего задания или вашего файла!");
+                };
+                document.getElementById('btn-import-back').onclick = () => {
+                    playSound('tap');
+                    this.switchScreen('screen-lessons-menu');
+                };
+                document.getElementById('btn-open-dictionary').onclick = () => {
+                    playSound('tap');
+                    this.activeGameMode = null;
+                    this.dictSearchQuery = '';
+                    this.dictVisibleCount = 80;
+                    const searchInput = document.getElementById('dict-search-input');
+                    if (searchInput) searchInput.value = '';
+                    this.renderDictionary();
+                    this.switchScreen('screen-dictionary');
+                    this.setMascot("Словарь Мациева: 7600+ слов! Ищи на чеченском или русском и нажми 🔊 чтобы послушать.");
+                };
+                document.getElementById('btn-dict-back').onclick = () => {
+                    playSound('tap');
+                    this.switchScreen('screen-lessons-menu');
+                };
+                const dictSearch = document.getElementById('dict-search-input');
+                if (dictSearch) {
+                    dictSearch.oninput = (e) => {
+                        clearTimeout(this.dictSearchTimer);
+                        this.dictSearchTimer = setTimeout(() => {
+                            this.dictSearchQuery = e.target.value;
+                            this.dictVisibleCount = 80;
+                            this.renderDictionary();
+                        }, 250);
+                    };
+                }
+                const dictLoadMore = document.getElementById('btn-dict-load-more');
+                if (dictLoadMore) {
+                    dictLoadMore.onclick = () => {
+                        playSound('tap');
+                        this.dictVisibleCount += 80;
+                        this.renderDictionary();
+                    };
+                }
+
+                // Mini-Game Back Buttons
+                document.getElementById('btn-cards-back').onclick = () => this.exitMiniGame();
+                document.getElementById('btn-quiz-back').onclick = () => this.exitMiniGame();
+                document.getElementById('btn-match-back').onclick = () => this.exitMiniGame();
+                document.getElementById('btn-const-back').onclick = () => this.exitMiniGame();
+
+                // Execute Custom Import
+                document.getElementById('btn-execute-import').onclick = () => {
+                    this.executeImportLesson();
+                };
+            }
+
+            // --- RENDER LESSONS GRID ---
+            renderLessonsGrid() {
+                const container = document.getElementById('grid-lessons-container');
+                container.innerHTML = '';
+
+                this.lessons.forEach(l => {
+                    const card = document.createElement('div');
+                    card.className = 'card-lesson';
+                    card.innerHTML = `
+                        <div class="card-lesson-bg-glow" style="background: ${l.color}"></div>
+                        <div class="card-lesson-top">
+                            <div class="lesson-icon-box" style="background: ${l.color}">${l.icon}</div>
+                            <div class="lesson-word-count">${l.words.length} слов</div>
+                        </div>
+                        <div class="card-lesson-mid">
+                            <div class="lesson-chechen-title">${l.chechenTitle}</div>
+                            <div class="lesson-russian-title">${l.title}</div>
+                        </div>
+                        <div class="card-lesson-btm">
+                            <span>Учить и играть</span>
+                            <span style="font-size: 16px">▶</span>
+                        </div>
+                    `;
+
+                    card.onclick = () => {
+                        playSound('tap');
+                        this.openLessonModes(l);
+                    };
+                    container.appendChild(card);
+                });
+            }
+
+            // Open Modes screen
+            openLessonModes(lesson) {
+                this.activeLesson = lesson;
+                document.getElementById('mode-header-chechen').innerText = lesson.chechenTitle;
+                document.getElementById('mode-header-russian').innerText = lesson.title;
+                this.switchScreen('screen-lesson-modes');
+                this.setMascot(`Тема "${lesson.title}" (${lesson.chechenTitle}). Отличный выбор! В какой тренажер сыграем?`);
+
+                // Bind mode cards
+                document.querySelectorAll('.card-mode').forEach(card => {
+                    card.onclick = () => {
+                        playSound('tap');
+                        const mode = card.getAttribute('data-mode');
+                        this.activeGameMode = mode;
+                        if (mode === 'cards') this.startCardsGame();
+                        else if (mode === 'quiz') this.startQuizGame();
+                        else if (mode === 'matching') this.startMatchingGame();
+                        else if (mode === 'constructor') this.startConstructorGame();
+                    };
+                });
+            }
+
+            // --- GAME 1: FLASHCARDS ---
+            startCardsGame() {
+                this.currentCardIdx = 0;
+                this.switchScreen('screen-game-cards');
+                this.renderCurrentCard();
+                this.setMascot("Обучающие карточки! Нажимай на карточку, чтобы перевернуть, и слушай произношение.");
+
+                // Event handlers
+                document.getElementById('btn-cards-speak').onclick = () => { speakWord(this.activeLesson.words[this.currentCardIdx].chechen); };
+                document.getElementById('flashcard-scene').onclick = () => {
+                    playSound('tap');
+                    const wrap = document.getElementById('flashcard-wrapper');
+                    wrap.classList.toggle('flipped');
+                    if (!wrap.classList.contains('flipped')) {
+                        speakWord(this.activeLesson.words[this.currentCardIdx].chechen);
+                    }
+                };
+
+                document.getElementById('btn-cards-prev').onclick = () => {
+                    if (this.currentCardIdx > 0) {
+                        playSound('tap');
+                        this.currentCardIdx--;
+                        this.renderCurrentCard();
+                    }
+                };
+                document.getElementById('btn-cards-next').onclick = () => {
+                    playSound('tap');
+                    if (this.currentCardIdx < this.activeLesson.words.length - 1) {
+                        this.currentCardIdx++;
+                        this.renderCurrentCard();
+                    } else {
+                        // Completed!
+                        this.addRewards(30, 3);
+                        this.setMascot("Ура! Ты просмотрел все карточки и заработал +3 звездочки!");
+                        this.exitMiniGame();
+                    }
+                };
+            }
+
+            renderCurrentCard() {
+                const word = this.activeLesson.words[this.currentCardIdx];
+                const lessonId = this.activeLesson.id || 'default';
+                document.getElementById('flashcard-wrapper').classList.remove('flipped');
+                document.getElementById('cards-progress-text').innerText = `Карточка ${this.currentCardIdx + 1} / ${this.activeLesson.words.length}`;
+
+                const emo = window.WordVisuals ? window.WordVisuals.resolveEmoji(word) : word.emoji;
+                word.emoji = emo;
+
+                if (window.WordVisuals) {
+                    window.WordVisuals.mount(word, document.getElementById('card-front-visual'), lessonId);
+                    window.WordVisuals.mount(word, document.getElementById('card-back-visual'), lessonId);
+                }
+
+                document.getElementById('card-front-word').innerText = word.chechen;
+                document.getElementById('card-front-phonetic').innerText = `[${word.pronunciation}]`;
+
+                document.getElementById('card-back-word').innerText = word.russian;
+                document.getElementById('card-back-hint').innerText = `💡 ${word.hint}`;
+
+                // Prev/Next states
+                document.getElementById('btn-cards-prev').disabled = (this.currentCardIdx === 0);
+                if (this.currentCardIdx === this.activeLesson.words.length - 1) {
+                    document.getElementById('cards-next-text').innerText = "Завершить ⭐️";
+                    document.getElementById('cards-next-arrow').innerText = "✓";
+                } else {
+                    document.getElementById('cards-next-text').innerText = "Следующая";
+                    document.getElementById('cards-next-arrow').innerText = "▶";
+                }
+
+                speakWord(word.chechen);
+            }
+
+            // --- GAME 2: VISUAL QUIZ ---
+            startQuizGame() {
+                this.currentCardIdx = 0;
+                this.quizScore = 0;
+                this.switchScreen('screen-game-quiz');
+                this.renderCurrentQuiz();
+                this.setMascot("Викторина! Слушай слово и выбирай правильную картинку из четырех!");
+            }
+
+            // Helper to pull extra random options if a lesson is incredibly short
+            getQuizAlternatives(targetWord) {
+                const sameLessonOthers = this.activeLesson.words.filter(w => w.chechen !== targetWord.chechen);
+                if (sameLessonOthers.length >= 3) {
+                    return [...sameLessonOthers].sort(() => 0.5 - Math.random()).slice(0, 3);
+                }
+
+                // If lesson has fewer than 4 words, pull from all lessons
+                const globalOthers = [];
+                this.lessons.forEach(l => {
+                    l.words.forEach(w => {
+                        if (w.chechen !== targetWord.chechen) globalOthers.push(w);
+                    });
+                });
+                
+                const uniqueOthers = [];
+                const seen = new Set([targetWord.chechen]);
+                sameLessonOthers.forEach(w => { seen.add(w.chechen); uniqueOthers.push(w); });
+
+                const shuffledGlobal = [...globalOthers].sort(() => 0.5 - Math.random());
+                for (let w of shuffledGlobal) {
+                    if (uniqueOthers.length >= 3) break;
+                    if (!seen.has(w.chechen)) {
+                        seen.add(w.chechen);
+                        uniqueOthers.push(w);
+                    }
+                }
+                return uniqueOthers;
+            }
+
+            renderCurrentQuiz() {
+                if (this.activeGameMode !== 'quiz') return;
+                const targetWord = this.activeLesson.words[this.currentCardIdx];
+                document.getElementById('quiz-progress-text').innerText = `Вопрос ${this.currentCardIdx + 1} / ${this.activeLesson.words.length}`;
+                document.getElementById('quiz-score-text').innerText = `★ ${this.quizScore}`;
+                
+                document.getElementById('quiz-question-word').innerText = targetWord.chechen;
+                document.getElementById('quiz-question-phonetic').innerText = `[${targetWord.pronunciation}]`;
+
+                // Build exactly 4 options
+                const falseOpts = this.getQuizAlternatives(targetWord);
+                const allOpts = [...falseOpts, targetWord].sort(() => 0.5 - Math.random());
+
+                const optionsContainer = document.getElementById('quiz-options-container');
+                optionsContainer.innerHTML = '';
+
+                let answered = false;
+                allOpts.forEach(opt => {
+                    const btn = document.createElement('div');
+                    btn.className = 'quiz-option-btn';
+                    btn.innerHTML = `
+                        <div class="quiz-opt-emoji">${opt.emoji}</div>
+                        <div class="quiz-opt-label">${opt.russian}</div>
+                    `;
+
+                    btn.onclick = () => {
+                        if (answered || this.activeGameMode !== 'quiz') return;
+                        answered = true;
+                        
+                        if (opt.chechen === targetWord.chechen) {
+                            btn.classList.add('correct');
+                            playSound('success');
+                            this.quizScore++;
+                            this.setMascot("Нийса ду! Абсолютно верно! Ты молодец!");
+                        } else {
+                            btn.classList.add('wrong');
+                            playSound('wrong');
+                            this.setMascot(`Ой! Правильным ответом было: ${targetWord.chechen} (${targetWord.russian}).`);
+                            Array.from(optionsContainer.children).forEach(childBtn => {
+                                if (childBtn.innerText.includes(targetWord.russian)) {
+                                    childBtn.style.borderColor = '#10b981';
+                                    childBtn.style.background = '#ecfdf5';
+                                }
+                            });
+                        }
+
+                        document.getElementById('quiz-score-text').innerText = `★ ${this.quizScore}`;
+
+                        this.activeTimer = setTimeout(() => {
+                            this.activeTimer = null;
+                            if (this.activeGameMode !== 'quiz') return;
+                            if (this.currentCardIdx < this.activeLesson.words.length - 1) {
+                                this.currentCardIdx++;
+                                this.renderCurrentQuiz();
+                            } else {
+                                this.addRewards(50, 5);
+                                this.setMascot(`Умница! Викторина пройдена! Правильных ответов: ${this.quizScore}. Заработано 5 звездочек!`);
+                                this.exitMiniGame();
+                            }
+                        }, 1800);
+                    };
+                    optionsContainer.appendChild(btn);
+                });
+
+                speakWord(targetWord.chechen);
+            }
+
+            // --- GAME 3: PAIR MATCHING ---
+            startMatchingGame() {
+                this.matchingPairs = [];
+                this.selectedMatchChechen = null;
+                this.selectedMatchRussian = null;
+                this.isMatchingBusy = false;
+                this.switchScreen('screen-game-matching');
+                this.renderMatchingBoard();
+                this.setMascot("Головоломка! Соедини чеченское слово с его русским значением!");
+            }
+
+            renderMatchingBoard() {
+                const matchWords = this.activeLesson.words.slice(0, 5);
+                const chechenList = [...matchWords].sort(() => 0.5 - Math.random());
+                const russianList = [...matchWords].sort(() => 0.5 - Math.random());
+
+                document.getElementById('match-pairs-count').innerText = `✓ 0 / ${matchWords.length}`;
+
+                const chContainer = document.getElementById('match-col-chechen-btns');
+                const ruContainer = document.getElementById('match-col-russian-btns');
+                chContainer.innerHTML = '';
+                ruContainer.innerHTML = '';
+
+                // Chechen buttons
+                chechenList.forEach(w => {
+                    const btn = document.createElement('div');
+                    btn.className = 'btn-match';
+                    btn.setAttribute('data-word', w.chechen);
+                    btn.innerText = w.chechen;
+
+                    btn.onclick = () => {
+                        if (this.isMatchingBusy || btn.classList.contains('matched') || this.activeGameMode !== 'matching') return;
+                        playSound('tap');
+                        Array.from(chContainer.children).forEach(b => b.classList.remove('selected'));
+                        btn.classList.add('selected');
+                        this.selectedMatchChechen = w;
+                        this.checkMatchingPair(matchWords.length);
+                    };
+                    chContainer.appendChild(btn);
+                });
+
+                // Russian buttons
+                russianList.forEach(w => {
+                    const btn = document.createElement('div');
+                    btn.className = 'btn-match';
+                    btn.setAttribute('data-word', w.chechen);
+                    btn.innerHTML = `<span style="font-size: 28px">${w.emoji}</span> <span>${w.russian}</span>`;
+
+                    btn.onclick = () => {
+                        if (this.isMatchingBusy || btn.classList.contains('matched') || this.activeGameMode !== 'matching') return;
+                        playSound('tap');
+                        Array.from(ruContainer.children).forEach(b => b.classList.remove('selected-rus'));
+                        btn.classList.add('selected-rus');
+                        this.selectedMatchRussian = w;
+                        this.checkMatchingPair(matchWords.length);
+                    };
+                    ruContainer.appendChild(btn);
+                });
+            }
+
+            checkMatchingPair(totalCount) {
+                if (!this.selectedMatchChechen || !this.selectedMatchRussian) return;
+
+                this.isMatchingBusy = true;
+                const chContainer = document.getElementById('match-col-chechen-btns');
+                const ruContainer = document.getElementById('match-col-russian-btns');
+
+                const chBtn = Array.from(chContainer.children).find(b => b.getAttribute('data-word') === this.selectedMatchChechen.chechen);
+                const ruBtn = Array.from(ruContainer.children).find(b => b.getAttribute('data-word') === this.selectedMatchRussian.chechen);
+
+                if (this.selectedMatchChechen.chechen === this.selectedMatchRussian.chechen) {
+                    // Match!
+                    playSound('success');
+                    chBtn.classList.remove('selected');
+                    ruBtn.classList.remove('selected-rus');
+                    chBtn.classList.add('matched');
+                    ruBtn.classList.add('matched');
+                    this.matchingPairs.push(this.selectedMatchChechen.chechen);
+                    
+                    this.selectedMatchChechen = null;
+                    this.selectedMatchRussian = null;
+                    this.isMatchingBusy = false;
+                    this.setMascot("Супер! Идеальное совпадение!");
+
+                    document.getElementById('match-pairs-count').innerText = `✓ ${this.matchingPairs.length} / ${totalCount}`;
+
+                    if (this.matchingPairs.length === totalCount) {
+                        this.activeTimer = setTimeout(() => {
+                            this.activeTimer = null;
+                            if (this.activeGameMode !== 'matching') return;
+                            this.addRewards(60, 6);
+                            this.setMascot("Вау! Ты соединил все слова как настоящий знаток! Получено 6 звездочек!");
+                            this.exitMiniGame();
+                        }, 1200);
+                    }
+                } else {
+                    // Wrong match
+                    playSound('wrong');
+                    this.setMascot("Не совсем... Эти карточки не подходят друг к другу.");
+                    chBtn.style.animation = 'error-shake 0.4s ease';
+                    ruBtn.style.animation = 'error-shake 0.4s ease';
+
+                    this.activeTimer = setTimeout(() => {
+                        this.activeTimer = null;
+                        if (this.activeGameMode !== 'matching') return;
+                        chBtn.classList.remove('selected');
+                        ruBtn.classList.remove('selected-rus');
+                        chBtn.style.animation = '';
+                        ruBtn.style.animation = '';
+                        this.selectedMatchChechen = null;
+                        this.selectedMatchRussian = null;
+                        this.isMatchingBusy = false;
+                    }, 700);
+                }
+            }
+
+            // --- GAME 4: WORD CONSTRUCTOR ---
+            startConstructorGame() {
+                this.currentCardIdx = 0;
+                this.switchScreen('screen-game-constructor');
+                document.getElementById('btn-const-reset').onclick = () => { playSound('tap'); this.renderCurrentConstructor(); };
+                this.renderCurrentConstructor();
+                this.setMascot("Собери слово из букв! Нажимай на плавающие буквы в правильном порядке.");
+            }
+
+            renderCurrentConstructor() {
+                if (this.activeGameMode !== 'constructor') return;
+                const targetWord = this.activeLesson.words[this.currentCardIdx];
+                document.getElementById('const-progress-text').innerText = `Слово ${this.currentCardIdx + 1} / ${this.activeLesson.words.length}`;
+                document.getElementById('const-target-emoji').innerText = targetWord.emoji;
+                document.getElementById('const-target-russian').innerText = targetWord.russian;
+                document.getElementById('const-target-hint').innerText = `Подсказка: [${targetWord.pronunciation}]`;
+
+                const letters = targetWord.chechen.toUpperCase().split('');
+                this.constSpelled = [];
+                this.constAvailable = [...letters].sort(() => 0.5 - Math.random());
+
+                this.updateConstructorSlotsUI(letters);
+                speakWord(targetWord.chechen);
+            }
+
+            updateConstructorSlotsUI(wordLetters) {
+                if (this.activeGameMode !== 'constructor') return;
+                const slotsContainer = document.getElementById('const-slots-container');
+                slotsContainer.innerHTML = '';
+                
+                wordLetters.forEach((_, idx) => {
+                    const char = this.constSpelled[idx];
+                    const slot = document.createElement('div');
+                    slot.className = `letter-slot ${char ? 'filled' : 'empty'}`;
+                    slot.innerText = char ? char : '?';
+                    slotsContainer.appendChild(slot);
+                });
+
+                // Available tiles
+                const tilesContainer = document.getElementById('const-letters-container');
+                tilesContainer.innerHTML = '';
+
+                this.constAvailable.forEach((char, availIdx) => {
+                    const tile = document.createElement('div'); tile.className = 'btn-letter-tile';
+                    tile.innerText = char;
+
+                    tile.onclick = () => {
+                        if (this.constSpelled.length >= wordLetters.length || this.activeGameMode !== 'constructor') return;
+                        playSound('tap');
+                        tile.classList.add('used');
+                        this.constSpelled.push(char);
+                        
+                        // Remove from avail
+                        this.constAvailable.splice(availIdx, 1);
+                        this.updateConstructorSlotsUI(wordLetters);
+
+                        // Check word completion
+                        if (this.constSpelled.length === wordLetters.length) {
+                            if (this.constSpelled.join('') === wordLetters.join('')) {
+                                playSound('success');
+                                this.setMascot("Браво! Слово собрано абсолютно верно!");
+                                this.activeTimer = setTimeout(() => {
+                                    this.activeTimer = null;
+                                    if (this.activeGameMode !== 'constructor') return;
+                                    if (this.currentCardIdx < this.activeLesson.words.length - 1) {
+                                        this.currentCardIdx++;
+                                        this.renderCurrentConstructor();
+                                    } else {
+                                        this.addRewards(80, 8);
+                                        this.setMascot("Ура! Все слова собраны! Ты мастер чеченского языка! Заработано 8 звездочек!");
+                                        this.exitMiniGame();
+                                    }
+                                }, 1400);
+                            } else {
+                                playSound('wrong');
+                                this.setMascot("Ой! Похоже, буквы перепутались местами. Попробуем еще раз!"); 
+                                slotsContainer.style.animation = 'error-shake 0.5s ease';
+                                this.activeTimer = setTimeout(() => {
+                                    this.activeTimer = null;
+                                    if (this.activeGameMode !== 'constructor') return;
+                                    slotsContainer.style.animation = '';
+                                    this.renderCurrentConstructor();
+                                }, 1100);
+                            }
+                        }
+                    };
+                    tilesContainer.appendChild(tile);
+                });
+            }
+
+            // --- REWARD SHOP ---
+            renderShop() {
+                const container = document.getElementById('shop-items-container');
+                container.innerHTML = '';
+
+                shopItems.forEach(item => {
+                    const isOwned = this.inventory.includes(item.id);
+                    const isEq = this.equipped[item.type] === item.id;
+
+                    const card = document.createElement('div');
+                    card.className = 'card-shop-item';
+                    card.innerHTML = `
+                        <div class="shop-item-icon-box">${item.icon}</div>
+                        <div>
+                            <h3 class="shop-item-name">${item.name}</h3>
+                            <p class="shop-item-desc">${item.desc}</p>
+                        </div>
+                    `;
+
+                    const btn = document.createElement('button');
+                    if (isOwned) {
+                        if (isEq) {
+                            btn.className = 'shop-btn-action shop-btn-unequip';
+                            btn.innerHTML = `<span>Снять</span>`;
+                            btn.onclick = () => { playSound('tap'); delete this.equipped[item.type]; this.saveProgress(); this.renderShop(); this.updateMascotVisuals(); };
+                        } else {
+                            btn.className = 'shop-btn-action shop-btn-equip';
+                            btn.innerHTML = `<span>Надеть ✓</span>`;
+                            btn.onclick = () => { playSound('tap'); this.equipped[item.type] = item.id; this.saveProgress(); this.renderShop(); this.updateMascotVisuals(); shootConfetti(); };
+                        }
+                    } else {
+                        btn.className = 'shop-btn-action shop-btn-buy';
+                        btn.innerHTML = `<span>Купить за ${item.price}</span> <span style="font-size: 16px">⭐️</span>`;
+                        btn.onclick = () => {
+                            if (this.stars >= item.price) {
+                                this.stars -= item.price;
+                                this.inventory.push(item.id);
+                                this.equipped[item.type] = item.id;
+                                this.saveProgress();
+                                this.renderShop();
+                                this.updateMascotVisuals();
+                                this.setMascot(`Ура! Новая обновка: ${item.name}! Какая красота!`);
+                                shootConfetti();
+                            } else {
+                                playSound('wrong');
+                                this.setMascot("Не хватает звездочек! Пройди еще игры, чтобы заработать!");
+                            }
+                        };
+                    }
+                    card.appendChild(btn);
+                    container.appendChild(card);
+                });
+            }
+
+            // --- MACIEV DICTIONARY (FULL LEXICON WITH SEARCH) ---
+            renderDictionary() {
+                const container = document.getElementById('dict-words-container');
+                const countEl = document.getElementById('dict-count-text');
+                const loadMoreBtn = document.getElementById('btn-dict-load-more');
+                container.innerHTML = '';
+
+                let allWords = [];
+
+                if (this.macievDictionary.length > 0) {
+                    allWords = this.macievDictionary.map(w => ({
+                        chechen: w.chechen,
+                        russian: w.russian,
+                        pronunciation: w.pronunciation || w.chechen,
+                        emoji: '📖',
+                        categoryTitle: 'Словарь Мациева'
+                    }));
+                } else {
+                    const seen = new Set();
+                    this.lessons.forEach(l => {
+                        l.words.forEach(w => {
+                            if (!seen.has(w.chechen)) {
+                                seen.add(w.chechen);
+                                allWords.push({ ...w, categoryTitle: l.title });
+                            }
+                        });
+                    });
+                }
+
+                const query = (this.dictSearchQuery || '').trim().toLowerCase();
+                if (query) {
+                    allWords = allWords.filter(w =>
+                        w.chechen.toLowerCase().includes(query) ||
+                        w.russian.toLowerCase().includes(query)
+                    );
+                } else {
+                    allWords.sort((a, b) => a.chechen.localeCompare(b.chechen, 'ru'));
+                }
+
+                const total = allWords.length;
+                const toShow = allWords.slice(0, this.dictVisibleCount);
+
+                if (countEl) {
+                    countEl.textContent = query
+                        ? `Найдено: ${total} слов`
+                        : `Показано ${toShow.length} из ${total} слов`;
+                }
+
+                if (loadMoreBtn) {
+                    loadMoreBtn.style.display = this.dictVisibleCount < total ? 'block' : 'none';
+                }
+
+                if (toShow.length === 0) {
+                    container.innerHTML = '<div class="dict-empty">Ничего не найдено. Попробуйте другое слово.</div>';
+                    return;
+                }
+
+                toShow.forEach(w => {
+                    const card = document.createElement('div');
+                    card.className = 'card-dict-word';
+                    card.innerHTML = `
+                        <div class="dict-emoji-box">${w.emoji || '📖'}</div>
+                        <div class="dict-info">
+                            <div class="dict-chechen">${w.chechen}</div>
+                            <div class="dict-russian">${w.russian}${w.categoryTitle ? ' • ' + w.categoryTitle : ''}</div>
+                            <div class="dict-pronunciation">[${w.pronunciation || w.chechen}]</div>
+                        </div>
+                        <button class="btn-dict-audio" title="Произнести">🔊</button>
+                    `;
+
+                    card.querySelector('.btn-dict-audio').onclick = (e) => {
+                        e.stopPropagation();
+                        speakWord(w.chechen);
+                    };
+
+                    card.onclick = () => { speakWord(w.chechen); };
+                    container.appendChild(card);
+                });
+            }
+
+            // --- EXECUTE IMPORT LESSON ---
+            executeImportLesson() {
+                const titleInput = document.getElementById('import-title').value.trim() || 'Мой Урок';
+                const chechenTitleInput = document.getElementById('import-chechen-title').value.trim() || 'Сан Дарс';
+                const wordsText = document.getElementById('import-words-text').value.trim();
+
+                const lines = wordsText.split('\n');
+                const parsedWords = [];
+
+                lines.forEach(line => {
+                    if (!line.trim()) return;
+                    // Format: Чеченское - Русское | Эмодзи
+                    const parts = line.split(/[|\-—=]/);
+                    const chechen = parts[0] ? parts[0].trim() : '';
+                    const russian = parts[1] ? parts[1].trim() : '';
+                    let emoji = '⭐️';
+                    if (parts[2]) {
+                        emoji = parts[2].trim();
+                    } else {
+                        const matchEmoji = russian.match(/\p{Extended_Pictographic}/u);
+                        if (matchEmoji) emoji = matchEmoji[0];
+                    }
+
+                    if (chechen && russian) {
+                        parsedWords.push({
+                            chechen: chechen[0].toUpperCase() + chechen.slice(1),
+                            russian: russian[0].toUpperCase() + russian.slice(1),
+                            pronunciation: chechen,
+                            emoji: emoji,
+                            hint: `Слово из твоего списка: ${russian}`
+                        });
+                    }
+                });
+
+                if (parsedWords.length < 2) {
+                    playSound('wrong');
+                    alert("Пожалуйста, добавьте хотя бы 2 пары слов (например: Говр - Лошадь)");
+                    return;
+                }
+
+                const newLesson = {
+                    id: `custom_${Date.now()}`,
+                    title: titleInput,
+                    chechenTitle: chechenTitleInput,
+                    icon: '🌟',
+                    color: 'linear-gradient(135deg, #10b981, #06b6d4)',
+                    words: parsedWords
+                };
+
+                this.lessons = [newLesson, ...this.lessons];
+                this.saveProgress();
+                this.renderLessonsGrid();
+                this.switchScreen('screen-lessons-menu');
+                this.setMascot(`Супер! Ваш собственный урок "${titleInput}" успешно создан и добавлен на главное меню!`);
+                shootConfetti();
+            }
+
+            initUI() {
+                console.log("Chechen Premium iOS App initialized successfully");
+            }
+        }
+
+        // --- Execute Application Instantly on DOM Load or Ready State ---
+        const initApp = () => {
+            try {
+                if (!window.ChechenApp) {
+                    window.ChechenApp = new ChechenGameApp();
+                }
+            } catch (err) {
+                console.error('ChechenApp init failed:', err);
+                const container = document.getElementById('grid-lessons-container');
+                if (container) {
+                    container.innerHTML = '<div class="dict-empty">Ошибка запуска. Обновите страницу (Ctrl+F5).</div>';
+                }
+            }
+        };
+
+        if (document.readyState === 'loading') {
+            window.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
+    </script>
+</body>
+</html>

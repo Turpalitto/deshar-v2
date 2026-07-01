@@ -1,0 +1,15 @@
+{
+  "units": [
+    {"id": "animals", "order": 1, "titleRu": "Животные", "titleCe": "Дийнаташ", "icon": "paw", "requiredMastery": 0},
+    {"id": "home", "order": 2, "titleRu": "Дом", "titleCe": "ЦӀий", "icon": "home", "requiredMastery": 70},
+    {"id": "family", "order": 3, "titleRu": "Семья", "titleCe": "Доьзал", "icon": "heart", "requiredMastery": 70},
+    {"id": "food", "order": 4, "titleRu": "Еда", "titleCe": "Кхача", "icon": "food", "requiredMastery": 70},
+    {"id": "school", "order": 5, "titleRu": "Школа", "titleCe": "Дешар", "icon": "book", "requiredMastery": 70},
+    {"id": "nature", "order": 6, "titleRu": "Природа", "titleCe": "Ӏалам", "icon": "tree", "requiredMastery": 70},
+    {"id": "verbs", "order": 7, "titleRu": "Глаголы", "titleCe": "Дешар", "icon": "bolt", "requiredMastery": 70},
+    {"id": "adjectives", "order": 8, "titleRu": "Прилагательные", "titleCe": "Бесаш", "icon": "palette", "requiredMastery": 70},
+    {"id": "phrases", "order": 9, "titleRu": "Фразы", "titleCe": "Йолу йоазув", "icon": "chat", "requiredMastery": 70},
+    {"id": "dialogues", "order": 10, "titleRu": "Диалоги", "titleCe": "Дийцар", "icon": "people", "requiredMastery": 80},
+    {"id": "stories", "order": 11, "titleRu": "Истории", "titleCe": "Бахархой", "icon": "story", "requiredMastery": 85}
+  ]
+}

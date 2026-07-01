@@ -1,0 +1,40 @@
+{
+  "bosses": [
+    {
+      "id": "boss_animals",
+      "unitId": "animals",
+      "titleRu": "Хранитель леса",
+      "titleCe": "Хьунан Ӏаба",
+      "emoji": "🐻",
+      "questionsCount": 10,
+      "timeLimitSec": 120,
+      "passScore": 8,
+      "rewardStars": 25,
+      "rewardXp": 100
+    },
+    {
+      "id": "boss_family",
+      "unitId": "family",
+      "titleRu": "Мудрая бабушка",
+      "titleCe": "Денана",
+      "emoji": "👵",
+      "questionsCount": 8,
+      "timeLimitSec": 90,
+      "passScore": 6,
+      "rewardStars": 20,
+      "rewardXp": 80
+    },
+    {
+      "id": "boss_verbs",
+      "unitId": "verbs",
+      "titleRu": "Глаголный мастер",
+      "titleCe": "Дешархо",
+      "emoji": "⚡",
+      "questionsCount": 12,
+      "timeLimitSec": 150,
+      "passScore": 9,
+      "rewardStars": 35,
+      "rewardXp": 150
+    }
+  ]
+}

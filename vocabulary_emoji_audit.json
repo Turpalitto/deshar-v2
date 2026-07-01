@@ -1,0 +1,35 @@
+{
+  "emoji_issues": [],
+  "translation_issues": [],
+  "duplicate_chechen": [
+    {
+      "chechen_key": "хи",
+      "entries": [
+        {
+          "chechen": "Хи",
+          "russian": "Вода",
+          "category": "food",
+          "emoji": "💧",
+          "hint": "Жизненно важная жидкость",
+          "sources": [
+            "maciev",
+            "aliroev",
+            "curated"
+          ]
+        },
+        {
+          "chechen": "Хи",
+          "russian": "Река, вода",
+          "category": "nature",
+          "emoji": "🌊",
+          "hint": "Течёт по долинам",
+          "sources": [
+            "maciev",
+            "curated"
+          ]
+        }
+      ]
+    }
+  ],
+  "auto_emoji_fixes": {}
+}

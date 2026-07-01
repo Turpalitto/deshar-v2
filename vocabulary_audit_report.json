@@ -1,0 +1,27 @@
+{
+  "dictionary_total": 7876,
+  "maciev_in_merged": 7819,
+  "aliroev_in_merged": 83,
+  "aliroev_ocr_file": 53,
+  "curated_count": 110,
+  "curated_verified_ok": 109,
+  "curated_missing_in_dictionary": [],
+  "curated_translation_mismatches": [
+    {
+      "chechen": "Хи",
+      "curated_ru": "Вода",
+      "dictionary_ru": "Река, вода",
+      "sources": [
+        "maciev",
+        "curated"
+      ]
+    }
+  ],
+  "deprecated_keys": [
+    "лор"
+  ],
+  "recommendations": [
+    "Aliroev OCR incomplete — run: python tools/ocr_aliroev.py --full",
+    "Review 1 curated/dictionary translation mismatches"
+  ]
+}

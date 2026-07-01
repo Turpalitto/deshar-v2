@@ -1,0 +1,8 @@
+маршалла: [{'chechen': 'Маршалла', 'russian': 'Приве т, приве тствие', 'pronunciation': 'марш-алла'}]
+цициг: [{'chechen': 'Цициг', 'russian': 'Ко шка, кот', 'pronunciation': 'цициг'}]
+нана: [{'chechen': 'Нана', 'russian': 'Мать', 'pronunciation': 'нана'}]
+ваха: [{'chechen': 'Ваха', 'russian': 'Пойти , пое хать за неве стой – о поезжа нине', 'pronunciation': 'ваха'}]
+деша: []
+хьун: [{'chechen': 'Хьун', 'russian': 'Хьуьнан', 'pronunciation': 'хьун'}]
+маьлхан: [{'chechen': 'Маьлхан', 'russian': 'XIy подсо лнечное се мя', 'pronunciation': 'маь-лхан'}]
+Ӏуьйре: []

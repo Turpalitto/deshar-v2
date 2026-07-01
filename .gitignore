@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Flutter
+nokhchiin/.dart_tool/
+nokhchiin/build/
+nokhchiin/.flutter-plugins-dependencies
+nokhchiin/.pub-cache/
+
+# OCR tessdata (download separately)
+tools/tessdata/*.traineddata
+
+# Temp / debug
+lor_lookup.txt
+lerg.txt
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Secrets
+.env
+.env.*
+
+# Local Cursor
+.cursor/

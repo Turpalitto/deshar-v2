@@ -1,0 +1,44 @@
+{
+  "collections": [
+    {
+      "id": "album_animals",
+      "titleRu": "Альбом животных",
+      "titleCe": "Дийнаташ",
+      "icon": "🐾",
+      "category": "animals",
+      "totalCards": 14,
+      "rarity": "common"
+    },
+    {
+      "id": "album_family",
+      "titleRu": "Моя семья",
+      "titleCe": "Сан доьзал",
+      "icon": "❤️",
+      "category": "family",
+      "totalCards": 11,
+      "rarity": "common"
+    },
+    {
+      "id": "golden_greetings",
+      "titleRu": "Золотые приветствия",
+      "titleCe": "Маршалла",
+      "icon": "👋",
+      "category": "greetings",
+      "totalCards": 12,
+      "rarity": "rare"
+    },
+    {
+      "id": "legend_wolf",
+      "titleRu": "Легенда о волке Борз",
+      "titleCe": "Борз",
+      "icon": "🐺",
+      "category": "animals",
+      "totalCards": 5,
+      "rarity": "legendary"
+    }
+  ],
+  "chests": [
+    {"id": "daily_chest", "titleRu": "Ежедневный сундук", "starsRequired": 0, "cooldownHours": 24},
+    {"id": "mastery_chest", "titleRu": "Сундук мастерства", "starsRequired": 30, "cooldownHours": 0}
+  ]
+}

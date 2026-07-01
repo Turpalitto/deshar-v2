@@ -1,0 +1,19 @@
+{
+  "style": "disney_soft",
+  "categories": {
+    "animals": {"gradient": ["#FFE0B2", "#FFCC80"], "accent": "#E65100", "shape": "circle"},
+    "family": {"gradient": ["#F8BBD9", "#F48FB1"], "accent": "#AD1457", "shape": "heart"},
+    "food": {"gradient": ["#C8E6C9", "#A5D6A7"], "accent": "#2E7D32", "shape": "rounded"},
+    "nature": {"gradient": ["#B3E5FC", "#81D4FA"], "accent": "#0277BD", "shape": "cloud"},
+    "greetings": {"gradient": ["#E1BEE7", "#CE93D8"], "accent": "#6A1B9A", "shape": "star"},
+    "verbs": {"gradient": ["#FFF9C4", "#FFF176"], "accent": "#F9A825", "shape": "bolt"},
+    "default": {"gradient": ["#E8EAF6", "#C5CAE9"], "accent": "#3949AB", "shape": "circle"}
+  },
+  "mascot": "fox_guide",
+  "wordOverrides": {
+    "маршалла": "greetings_wave",
+    "цициг": "cat_soft",
+    "борз": "wolf_brave",
+    "маьлхан": "sun_warm"
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "notes": "Проверенные исправления ошибок разбора Maciev и учебной лексики",
+  "deprecated_keys": ["лор"],
+    "overrides": {
+        "лерг": {
+            "chechen": "Лерг",
+            "russian": "Ухо",
+            "category": "body",
+            "emoji": "👂",
+            "hint": "Орган слуха",
+            "sources": ["curated", "verified"],
+            "quality": 100
+        },
+        "стол": {
+            "chechen": "Стол",
+            "russian": "Стол",
+            "category": "home",
+            "emoji": "🍽️",
+            "hint": "Мебель — за ним едят",
+            "sources": ["curated", "verified"],
+            "quality": 100
+        },
+        "книга": {
+            "chechen": "Книга",
+            "russian": "Книга",
+            "category": "home",
+            "emoji": "📚",
+            "hint": "Источник знаний",
+            "sources": ["maciev", "curated"],
+            "quality": 100
+        }
+    },
+  "curated_fixes": [
+    {
+      "wrong_chechen": "Лор",
+      "correct_chechen": "Лерг",
+      "russian": "Ухо",
+      "reason": "Ухо по-чеченски — лерг, не лор (ошибка в старых карточках)"
+    },
+    {
+      "wrong_chechen": "КогӀам",
+      "wrong_russian": "Нога",
+      "correct_chechen": "Куьг",
+      "russian": "Нога",
+      "reason": "КогӀам — рука; нога — куьг"
+    },
+    {
+      "wrong_chechen": "Стол",
+      "wrong_emoji": "🪑",
+      "correct_emoji": "🍽️",
+      "reason": "🪑 — стул; для стола — 🍽️ или иллюстрация стола"
+    },
+    {
+      "wrong_chechen": "Дешар",
+      "wrong_russian": "Книга",
+      "correct_chechen": "Книга",
+      "russian": "Книга",
+      "reason": "Дешар в Maciev = школа; книга — Книга"
+    }
+  ]
+}

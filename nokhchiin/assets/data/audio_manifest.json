@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "note": "Положите .mp3 носителей в assets/audio/ce/ и assets/audio/ru/",
+  "entries": {
+    "маршалла": {"ce": "audio/ce/marshalla.mp3", "ru": "audio/ru/marshalla.mp3"},
+    "баркалла": {"ce": "audio/ce/barkalla.mp3"},
+    "цициг": {"ce": "audio/ce/citsig.mp3", "ru": "audio/ru/koshka.mp3"},
+    "нана": {"ce": "audio/ce/nana.mp3"},
+    "ваха": {"ce": "audio/ce/vaha.mp3"}
+  },
+  "fallback": "tts"
+}

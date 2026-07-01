@@ -1,0 +1,59 @@
+{
+  "stories": [
+    {
+      "id": "fox_marshalla",
+      "titleRu": "Цхьогал говорит «Маршалла»",
+      "titleCe": "Цхьогал «Маршалла»",
+      "unitId": "greetings",
+      "requiredMastery": 60,
+      "emoji": "🦊",
+      "panels": [
+        {
+          "imageKey": "meadow_morning",
+          "narrationRu": "Утро в горах. Лисичка Цхьогал просыпается.",
+          "dialogue": [{"speaker": "Цхьогал", "chechen": "Ӏуьйра дика ду!", "russian": "Доброе утро!"}]
+        },
+        {
+          "imageKey": "fox_meets_bear",
+          "narrationRu": "Она встречает медведя Ча.",
+          "dialogue": [
+            {"speaker": "Цхьогал", "chechen": "Маршалла!", "russian": "Привет!"},
+            {"speaker": "Ча", "chechen": "Маршалла, цхьогал!", "russian": "Привет, лисичка!"}
+          ]
+        },
+        {
+          "imageKey": "fox_thanks",
+          "narrationRu": "Медведь дарит яблоко.",
+          "dialogue": [{"speaker": "Цхьогал", "chechen": "Баркалла!", "russian": "Спасибо!"}]
+        },
+        {
+          "imageKey": "sunset",
+          "narrationRu": "Вечер. Пора прощаться.",
+          "dialogue": [{"speaker": "Цхьогал", "chechen": "Марша Ӏайла!", "russian": "До свидания!"}]
+        }
+      ],
+      "quiz": [
+        {"question": "Как поздороваться по-чеченски?", "answer": "Маршалла", "options": ["Баркалла", "Маршалла", "Дика ду"]}
+      ]
+    },
+    {
+      "id": "family_dinner",
+      "titleRu": "Семейный ужин",
+      "titleCe": "Доьзалан кха",
+      "unitId": "family",
+      "requiredMastery": 50,
+      "emoji": "🍲",
+      "panels": [
+        {
+          "narrationRu": "Нана зовёт всю семью за стол.",
+          "dialogue": [{"speaker": "Нана", "chechen": "Кхига!", "russian": "Ешьте!"}]
+        },
+        {
+          "narrationRu": "Дети благодарят маму.",
+          "dialogue": [{"speaker": "Бен", "chechen": "Хьоьга баркалла, нана!", "russian": "Тебе спасибо, мама!"}]
+        }
+      ],
+      "quiz": []
+    }
+  ]
+}
