@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/onboarding/onboarding_screen.dart';
 import '../../features/home/home_screen.dart';
 import '../../features/learning_path/learning_path_screen.dart';
+import '../../features/learning_path/lesson_flow_screen.dart';
 import '../../features/learning_path/unit_detail_screen.dart';
 import '../../features/dictionary/dictionary_screen.dart';
 import '../../features/games/flashcards_screen.dart';
@@ -37,6 +38,12 @@ final appRouter = GoRouter(
           path: 'unit/:id',
           builder: (_, state) => UnitDetailScreen(
             unitId: state.pathParameters['id']!,
+          ),
+        ),
+        GoRoute(
+          path: 'lesson/:unitId',
+          builder: (_, state) => LessonFlowScreen(
+            unitId: state.pathParameters['unitId']!,
           ),
         ),
         GoRoute(

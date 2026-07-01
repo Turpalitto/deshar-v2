@@ -173,6 +173,21 @@ class UserProfileNotifier extends StateNotifier<AsyncValue<UserProfileEntity>> {
     await _repo.saveProfile(updated);
     state = AsyncValue.data(updated);
   }
+
+  Future<void> completeLesson() async {
+    final current = state.value ?? const UserProfileEntity();
+    final updated = current.copyWith(lessonsCompletedTotal: current.lessonsCompletedTotal + 1);
+    await _repo.saveProfile(updated);
+    state = AsyncValue.data(updated);
+  }
+
+  Future<void> unlockAchievement(String id) async {
+    final current = state.value ?? const UserProfileEntity();
+    if (current.achievements.contains(id)) return;
+    final updated = current.copyWith(achievements: [...current.achievements, id]);
+    await _repo.saveProfile(updated);
+    state = AsyncValue.data(updated);
+  }
 }
 
 final progressStatsProvider = Provider(

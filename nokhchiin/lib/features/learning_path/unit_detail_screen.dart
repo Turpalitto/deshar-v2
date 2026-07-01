@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/providers/providers.dart';
+import '../../core/widgets/mastery_progress_bar.dart';
+import '../../core/widgets/word_illustration.dart';
 import '../../domain/entities/word_entity.dart';
 
 class UnitDetailScreen extends ConsumerWidget {
@@ -23,42 +25,23 @@ class UnitDetailScreen extends ConsumerWidget {
               return ListView(
                 padding: const EdgeInsets.all(20),
                 children: [
-                  Text(unit.titleCe, style: Theme.of(context).textTheme.displayLarge),
-                  Text('${words.length} слов · ${unit.masteryPercent}% освоено',
-                      style: Theme.of(context).textTheme.bodyMedium),
-                  const SizedBox(height: 24),
-                  _GameButton(
-                    emoji: '🎴',
-                    title: 'Карточки',
-                    subtitle: 'Слушай и запоминай',
-                    onTap: () => context.push('/flashcards/$unitId'),
-                  ),
-                  _GameButton(
-                    emoji: '❓',
-                    title: 'Угадай перевод',
-                    subtitle: 'Выбери правильный ответ',
-                    onTap: () => context.push('/quiz/$unitId'),
-                  ),
-                  _GameButton(
-                    emoji: '🧩',
-                    title: 'Найди пару',
-                    subtitle: 'Соедини слова',
-                    onTap: () => context.push('/match/$unitId'),
-                  ),
-                  _GameButton(
-                    emoji: '👹',
-                    title: 'Босс-уровень',
-                    subtitle: 'Проверка на время',
-                    onTap: () => context.push('/boss/$unitId'),
-                  ),
-                  const SizedBox(height: 24),
-                  Text('Слова темы', style: Theme.of(context).textTheme.headlineMedium),
+                  Center(child: WordIllustration(category: unitId, emoji: null, size: 100)),
                   const SizedBox(height: 12),
-                  ...words.map((w) => ListTile(
-                        leading: Text(w.emoji ?? '📖', style: const TextStyle(fontSize: 28)),
-                        title: Text(w.chechen, style: const TextStyle(fontWeight: FontWeight.w800)),
-                        subtitle: Text(w.russian),
-                      )),
+                  Text(unit.titleCe, style: Theme.of(context).textTheme.displayLarge, textAlign: TextAlign.center),
+                  MasteryProgressBar(percent: unit.masteryPercent),
+                  Text('${unit.masteryPercent}% · ${words.length} слов', textAlign: TextAlign.center),
+                  const SizedBox(height: 20),
+                  FilledButton.icon(
+                    onPressed: () => context.push('/lesson/$unitId'),
+                    icon: const Icon(Icons.play_arrow_rounded),
+                    label: const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 14),
+                      child: Text('Начать урок', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  _GameButton(emoji: '👹', title: 'Босс мира', subtitle: 'Кульминация темы', onTap: () => context.push('/boss/$unitId')),
+                  _GameButton(emoji: '🧩', title: 'Найди пару', onTap: () => context.push('/match/$unitId')),
                 ],
               );
             },
@@ -72,25 +55,21 @@ class UnitDetailScreen extends ConsumerWidget {
 }
 
 class _GameButton extends StatelessWidget {
-  const _GameButton({
-    required this.emoji,
-    required this.title,
-    required this.subtitle,
-    required this.onTap,
-  });
-  final String emoji, title, subtitle;
+  const _GameButton({required this.emoji, required this.title, this.subtitle, required this.onTap});
+  final String emoji, title;
+  final String? subtitle;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: 10),
       child: Card(
         child: ListTile(
-          leading: Text(emoji, style: const TextStyle(fontSize: 32)),
+          leading: Text(emoji, style: const TextStyle(fontSize: 28)),
           title: Text(title, style: const TextStyle(fontWeight: FontWeight.w800)),
-          subtitle: Text(subtitle),
-          trailing: const Icon(Icons.play_circle_fill_rounded, color: Color(0xFF1A73E8)),
+          subtitle: subtitle != null ? Text(subtitle!) : null,
+          trailing: const Icon(Icons.chevron_right_rounded),
           onTap: onTap,
         ),
       ),
