@@ -7,6 +7,6 @@ npm install
 npm run dev
 ```
 
-Откройте http://localhost:5173 — terracotta splash, iOS phone frame, все 15 экранов.
+Откройте http://localhost:5173 — terracotta splash, iOS phone frame, все 15 экранов. Словарь загружается из `nokhchiin/assets/data/` (7 876+ слов, curated + maciev).
 
 **Не путать с `legacy/`** — это старый HTML-прототип.

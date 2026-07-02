@@ -13,8 +13,8 @@ import '../../core/design/widgets/app_scaffold.dart';
 import '../../core/design/widgets/app_icon_image.dart';
 import '../../core/design/widgets/loading_state.dart';
 import '../../core/design/widgets/word_exercise_card.dart';
-import '../../core/providers/content_providers.dart';
 import '../../core/providers/providers.dart';
+
 import '../../core/services/audio_service.dart';
 import '../../domain/entities/word_entity.dart';
 

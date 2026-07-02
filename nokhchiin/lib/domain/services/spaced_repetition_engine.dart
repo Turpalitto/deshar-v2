@@ -6,8 +6,9 @@ class SpacedRepetitionEngine {
   const SpacedRepetitionEngine();
 
   /// quality: 0–5 (0 = полный провал, 5 = идеально)
-  WordProgressEntity review(WordProgressEntity current, int quality) {
-    final now = DateTime.now();
+  /// [now] — текущее время; передаётся извне для тестируемости.
+  WordProgressEntity review(WordProgressEntity current, int quality, {DateTime? now}) {
+    final timestamp = now ?? DateTime.now();
     var ease = current.easeFactor;
     var interval = current.intervalDays;
     var reps = current.repetitions;
@@ -37,8 +38,8 @@ class SpacedRepetitionEngine {
       easeFactor: ease,
       intervalDays: interval,
       repetitions: reps,
-      nextReviewAt: now.add(Duration(days: interval)),
-      lastReviewedAt: now,
+      nextReviewAt: timestamp.add(Duration(days: interval)),
+      lastReviewedAt: timestamp,
       correctStreak: quality >= 3 ? current.correctStreak + 1 : 0,
       wrongCount: quality < 3 ? current.wrongCount + 1 : current.wrongCount,
       mastery: mastery,
@@ -59,13 +60,16 @@ class SpacedRepetitionEngine {
     return current;
   }
 
-  /// Первое знакомство со словом
-  WordProgressEntity markSeen(WordProgressEntity current) {
+  /// Первое знакомство со словом.
+  /// [now] — текущее время; передаётся извне для тестируемости.
+  WordProgressEntity markSeen(WordProgressEntity current, {DateTime? now}) {
     if (current.mastery != MasteryLevel.unseen) return current;
+    final timestamp = now ?? DateTime.now();
     return current.copyWith(
       mastery: MasteryLevel.seen,
-      lastReviewedAt: DateTime.now(),
-      nextReviewAt: DateTime.now().add(const Duration(hours: 4)),
+      lastReviewedAt: timestamp,
+      nextReviewAt: timestamp.add(const Duration(hours: 4)),
     );
   }
 }
+

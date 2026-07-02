@@ -21,7 +21,7 @@ void main() {
 
   group('DailySyncCalculator', () {
     test('same day — profile unchanged', () {
-      const now = DateTime(2026, 7, 2, 12);
+      final now = DateTime(2026, 7, 2, 12);
       final p = profile(lastActiveDate: '2026-07-02', streakDays: 5);
 
       final result = calculator.sync(p, now);
@@ -30,7 +30,7 @@ void main() {
     });
 
     test('yesterday active — streak increments', () {
-      const now = DateTime(2026, 7, 2, 9);
+      final now = DateTime(2026, 7, 2, 9);
       final p = profile(lastActiveDate: '2026-07-01', streakDays: 4);
 
       final result = calculator.sync(p, now);
@@ -42,7 +42,7 @@ void main() {
     });
 
     test('skipped day — streak resets to 1', () {
-      const now = DateTime(2026, 7, 2, 9);
+      final now = DateTime(2026, 7, 2, 9);
       final p = profile(lastActiveDate: '2026-06-30', streakDays: 12);
 
       final result = calculator.sync(p, now);
@@ -52,7 +52,7 @@ void main() {
     });
 
     test('new day — weeklyXp rotates (shift + trailing zero)', () {
-      const now = DateTime(2026, 7, 2, 9);
+      final now = DateTime(2026, 7, 2, 9);
       final p = profile(
         lastActiveDate: '2026-07-01',
         weeklyXp: const [1, 2, 3, 4, 5, 6, 7],
@@ -64,7 +64,7 @@ void main() {
     });
 
     test('weeklyXp padded when length is not 7', () {
-      const now = DateTime(2026, 7, 2, 9);
+      final now = DateTime(2026, 7, 2, 9);
       final p = profile(lastActiveDate: '2026-07-01', weeklyXp: const [5, 10]);
 
       final result = calculator.sync(p, now);
@@ -73,19 +73,19 @@ void main() {
     });
 
     test('streak achievements added once', () {
-      const now = DateTime(2026, 7, 8, 9);
+      final now = DateTime(2026, 7, 8, 9);
       var p = profile(lastActiveDate: '2026-07-07', streakDays: 2);
 
       p = calculator.sync(p, now);
       expect(p.streakDays, 3);
       expect(p.achievements, contains('streak_3'));
 
-      final again = calculator.sync(p, const DateTime(2026, 7, 9));
+      final again = calculator.sync(p, DateTime(2026, 7, 9));
       expect(again.achievements.where((a) => a == 'streak_3').length, 1);
     });
 
     test('streak_7 achievement when streak reaches 7', () {
-      const now = DateTime(2026, 7, 8, 9);
+      final now = DateTime(2026, 7, 8, 9);
       final p = profile(lastActiveDate: '2026-07-07', streakDays: 6);
 
       final result = calculator.sync(p, now);

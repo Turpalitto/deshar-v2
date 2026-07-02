@@ -1,4 +1,7 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import { loadFullDictionary, formatWordCount, type PreviewWord } from "./loadDictionary";
+
+const FULL_DICTIONARY = loadFullDictionary();
 
 // ─── Tokens ───────────────────────────────────────────────────────────────────
 const C = {
@@ -252,7 +255,7 @@ function OnboardingScreen({ onMode }: { onMode: (m: Mode) => void }) {
           <AppIcon size={44} />
           <div>
             <div style={{ fontSize:18, fontWeight:700, color:C.text, letterSpacing:"-0.2px" }}>Нохчийн</div>
-            <div style={{ fontSize:12, color:C.textTert, fontWeight:500 }}>Чеченский язык · 7800+ слов</div>
+            <div style={{ fontSize:12, color:C.textTert, fontWeight:500 }}>Чеченский язык · {formatWordCount(FULL_DICTIONARY.length)}+ слов</div>
           </div>
         </div>
 
@@ -401,7 +404,7 @@ function HomeScreen({ mode, nav }: { mode: Mode; nav: (s: Screen) => void }) {
           <div onClick={() => nav("dictionary")} style={{ flex:1, background:C.surface, borderRadius:16, padding:"14px", border:`1px solid ${C.sep}`, cursor:"pointer" }}>
             <div style={{ fontSize:22 }}>📖</div>
             <div style={{ fontSize:13, fontWeight:600, color:C.text, marginTop:6 }}>Словарь</div>
-            <div style={{ fontSize:11, color:C.textTert }}>7 800 слов</div>
+            <div style={{ fontSize:11, color:C.textTert }}>{formatWordCount(FULL_DICTIONARY.length)} слов</div>
           </div>
         </div>
 
@@ -841,44 +844,140 @@ function WorldsScreen({ mode, nav }: { mode: Mode; nav: (s: Screen) => void }) {
 }
 
 // ─── Dictionary ───────────────────────────────────────────────────────────────
+const DICT_ROW_H = 72;
+
 function DictionaryScreen({ nav }: { nav: (s: Screen) => void }) {
   const [q, setQ] = useState("");
-  const filtered = q ? WORDS.filter(w => w.ce.toLowerCase().includes(q.toLowerCase()) || w.ru.toLowerCase().includes(q.toLowerCase())) : WORDS;
+  const [verifiedOnly, setVerifiedOnly] = useState(false);
+  const listRef = useRef<HTMLDivElement>(null);
+  const [scrollTop, setScrollTop] = useState(0);
+  const [viewportH, setViewportH] = useState(520);
+
+  const source = verifiedOnly ? FULL_DICTIONARY.filter((w) => w.verified) : FULL_DICTIONARY;
+
+  const filtered = useMemo(() => {
+    const qq = q.trim().toLowerCase();
+    if (!qq) return source;
+    return source.filter(
+      (w) =>
+        w.ce.toLowerCase().includes(qq) ||
+        w.ru.toLowerCase().includes(qq) ||
+        (w.tr ?? "").toLowerCase().includes(qq)
+    );
+  }, [q, source]);
+
+  useEffect(() => {
+    const el = listRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => setViewportH(el.clientHeight));
+    ro.observe(el);
+    setViewportH(el.clientHeight);
+    return () => ro.disconnect();
+  }, []);
+
+  const onScroll = useCallback(() => {
+    if (listRef.current) setScrollTop(listRef.current.scrollTop);
+  }, []);
+
+  const start = Math.max(0, Math.floor(scrollTop / DICT_ROW_H) - 3);
+  const visibleCount = Math.ceil(viewportH / DICT_ROW_H) + 6;
+  const slice = filtered.slice(start, start + visibleCount);
+  const totalH = filtered.length * DICT_ROW_H;
+  const offsetY = start * DICT_ROW_H;
+
   return (
-    <div style={{ flex:1, background:C.bg, display:"flex", flexDirection:"column" }}>
+    <div style={{ flex:"1 1 0", minHeight:0, background:C.bg, display:"flex", flexDirection:"column", overflow:"hidden" }}>
       <StatusBar />
-      <div style={{ padding:"8px 20px 12px" }}>
+      <div style={{ flexShrink:0, padding:"8px 20px 12px" }}>
         <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:14 }}>
           <button onClick={() => nav("home")} style={{ background:"none", border:"none", cursor:"pointer", color:C.textTert, lineHeight:0 }}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 19L8 12L15 5"/></svg>
           </button>
           <div style={{ fontSize:22, fontWeight:700, color:C.text, letterSpacing:"-0.2px" }}>Словарь</div>
-          <Chip ch="7 800 слов" col={C.textTert} bg={C.surfMuted} />
+          <Chip ch={`${formatWordCount(source.length)} слов`} col={C.textTert} bg={C.surfMuted} />
+        </div>
+        <div style={{ display:"flex", gap:8, marginBottom:10, flexWrap:"wrap" }}>
+          <button
+            onClick={() => { setVerifiedOnly(false); setScrollTop(0); if (listRef.current) listRef.current.scrollTop = 0; }}
+            style={{
+              border:"none", borderRadius:20, padding:"6px 12px", fontSize:12, fontWeight:700, cursor:"pointer",
+              background: !verifiedOnly ? C.terraMuted : C.surfMuted,
+              color: !verifiedOnly ? C.terra : C.textTert,
+              fontFamily:"inherit",
+            }}
+          >
+            Весь словарь
+          </button>
+          <button
+            onClick={() => { setVerifiedOnly(true); setScrollTop(0); if (listRef.current) listRef.current.scrollTop = 0; }}
+            style={{
+              border:"none", borderRadius:20, padding:"6px 12px", fontSize:12, fontWeight:700, cursor:"pointer",
+              background: verifiedOnly ? C.meadowMuted : C.surfMuted,
+              color: verifiedOnly ? C.meadow : C.textTert,
+              fontFamily:"inherit",
+            }}
+          >
+            Проверено ({formatWordCount(FULL_DICTIONARY.filter(w => w.verified).length)})
+          </button>
         </div>
         <div style={{ position:"relative", marginBottom:4 }}>
           <svg style={{ position:"absolute", left:14, top:"50%", transform:"translateY(-50%)" }} width="18" height="18" viewBox="0 0 18 18" fill="none">
             <circle cx="7.5" cy="7.5" r="5.5" stroke={C.textTert} strokeWidth="1.5"/>
             <path d="M13 13l3 3" stroke={C.textTert} strokeWidth="1.5" strokeLinecap="round"/>
           </svg>
-          <input value={q} onChange={e => setQ(e.target.value)} placeholder="Поиск на чеченском или русском..."
+          <input value={q} onChange={e => { setQ(e.target.value); setScrollTop(0); if (listRef.current) listRef.current.scrollTop = 0; }} placeholder="Поиск на чеченском или русском..."
             style={{ width:"100%", background:C.surface, border:`1px solid ${C.sep}`, borderRadius:14, padding:"13px 14px 13px 40px", fontSize:15, color:C.text, outline:"none", fontFamily:"inherit", boxSizing:"border-box" }}/>
         </div>
-      </div>
-      <div style={{ flex:1, overflowY:"auto", scrollbarWidth:"none", padding:"0 20px 20px" }}>
-        {filtered.map((w, i) => (
-          <div key={i} style={{ display:"flex", alignItems:"center", gap:14, padding:"14px 0", borderBottom:`1px solid ${C.sep}` }}>
-            <div style={{ width:44, height:44, borderRadius:12, background:C.surfMuted, display:"flex", alignItems:"center", justifyContent:"center", fontSize:22, flexShrink:0 }}>{w.emoji}</div>
-            <div style={{ flex:1 }}>
-              <div style={{ fontSize:17, fontWeight:700, color:C.text, letterSpacing:"0.2px" }}>{w.ce}</div>
-              <div style={{ fontSize:12, color:C.textTert, marginTop:1 }}>[{w.tr}] · {w.cat}</div>
-            </div>
-            <div style={{ fontSize:15, color:C.textSec, fontWeight:500 }}>{w.ru}</div>
+        {q.trim() && (
+          <div style={{ fontSize:12, color:C.textTert, marginTop:8 }}>
+            Найдено: {formatWordCount(filtered.length)}
           </div>
-        ))}
-        {filtered.length === 0 && (
-          <div style={{ textAlign:"center", paddingTop:48, color:C.textTert, fontSize:15 }}>Ничего не найдено</div>
         )}
       </div>
+      <div style={{ flex:"1 1 0", minHeight:0, position:"relative" }}>
+        <div
+          ref={listRef}
+          onScroll={onScroll}
+          style={{
+            position:"absolute",
+            inset:0,
+            overflowY:"scroll",
+            overflowX:"hidden",
+            WebkitOverflowScrolling:"touch",
+            overscrollBehavior:"contain",
+            scrollbarWidth:"thin",
+            padding:"0 20px 20px",
+          }}
+        >
+          {filtered.length === 0 ? (
+            <div style={{ textAlign:"center", paddingTop:48, color:C.textTert, fontSize:15 }}>Ничего не найдено</div>
+          ) : (
+            <div style={{ height: totalH, position:"relative", width:"100%" }}>
+              <div style={{ position:"absolute", top: offsetY, left:0, right:0 }}>
+                {slice.map((w, i) => (
+                  <DictionaryRow key={`${w.ce}-${w.ru}-${start + i}`} w={w} />
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DictionaryRow({ w }: { w: PreviewWord }) {
+  const meta = [w.tr ? `[${w.tr}]` : null, w.cat].filter(Boolean).join(" · ");
+  return (
+    <div style={{ display:"flex", alignItems:"center", gap:14, padding:"14px 0", borderBottom:`1px solid ${C.sep}`, height: DICT_ROW_H, boxSizing:"border-box" }}>
+      <div style={{ width:44, height:44, borderRadius:12, background:C.surfMuted, display:"flex", alignItems:"center", justifyContent:"center", fontSize:22, flexShrink:0 }}>{w.emoji}</div>
+      <div style={{ flex:1, minWidth:0 }}>
+        <div style={{ fontSize:17, fontWeight:700, color:C.text, letterSpacing:"0.2px" }}>{w.ce}</div>
+        {meta && (
+          <div style={{ fontSize:12, color:C.textTert, marginTop:1, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{meta}</div>
+        )}
+      </div>
+      <div style={{ fontSize:15, color:C.textSec, fontWeight:500, textAlign:"right", maxWidth:"42%" }}>{w.ru}</div>
     </div>
   );
 }
@@ -993,7 +1092,7 @@ function PaywallScreen({ nav }: { nav: (s: Screen) => void }) {
 
           {/* Features */}
           <div style={{ background:C.surface, borderRadius:20, padding:"18px", marginBottom:20, border:`1px solid ${C.sep}` }}>
-            {[["♾️","Все 11 учебных миров"],["📴","Полный офлайн-режим"],["🔁","Неограниченный SRS"],["🏛️","Все культурные капсулы"],["📖","Словарь 7 800+ слов"],["👨‍👩‍👧","Родительский дашборд"]].map(([e,l]) => (
+            {[["♾️","Все 11 учебных миров"],["📴","Полный офлайн-режим"],["🔁","Неограниченный SRS"],["🏛️","Все культурные капсулы"],[`📖`,`Словарь ${formatWordCount(FULL_DICTIONARY.length)}+ слов`],["👨‍👩‍👧","Родительский дашборд"]].map(([e,l]) => (
               <div key={l} style={{ display:"flex", alignItems:"center", gap:12, padding:"9px 0", borderBottom:`1px solid ${C.sep}` }}>
                 <span style={{ fontSize:20 }}>{e}</span>
                 <span style={{ fontSize:15, color:C.text }}>{l}</span>
@@ -1224,7 +1323,7 @@ export default function App() {
   return (
     <div style={{ minHeight:"100dvh", background:"#D4C8BC", display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"'Inter',-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif", padding:"24px 16px", boxSizing:"border-box" }}>
       {/* Phone */}
-      <div style={{ width:390, maxHeight:"calc(100dvh - 48px)", background:C.bg, borderRadius:50, overflow:"hidden", display:"flex", flexDirection:"column", boxShadow:"0 48px 140px rgba(0,0,0,0.32),0 0 0 1px rgba(255,255,255,0.18),inset 0 0 0 1px rgba(0,0,0,0.08)", position:"relative" }}>
+      <div style={{ width:390, height:"min(844px, calc(100dvh - 48px))", background:C.bg, borderRadius:50, overflow:"hidden", display:"flex", flexDirection:"column", boxShadow:"0 48px 140px rgba(0,0,0,0.32),0 0 0 1px rgba(255,255,255,0.18),inset 0 0 0 1px rgba(0,0,0,0.08)", position:"relative" }}>
         {/* Dynamic Island */}
         <div style={{ position:"absolute", top:13, left:"50%", transform:"translateX(-50%)", width:118, height:35, background:"#000", borderRadius:22, zIndex:200 }}/>
 

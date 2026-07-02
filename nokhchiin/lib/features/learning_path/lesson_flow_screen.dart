@@ -11,7 +11,6 @@ import '../../core/design/widgets/reward_celebration.dart';
 import '../../core/design/widgets/progress_ring.dart';
 import '../../core/providers/providers.dart';
 import '../../domain/constants/subscription_limits.dart';
-import '../../domain/entities/learning_entities.dart';
 import '../culture/culture_capsule_flow.dart';
 import '../games/flashcards_screen.dart';
 import '../games/match_screen.dart';

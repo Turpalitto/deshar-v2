@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/config/feature_flags.dart';
 import '../../core/design/app_icons.dart';
 import '../../core/design/widgets/app_icon_image.dart';
 import '../../core/design/widgets/app_scaffold.dart'; // intentional-mix: app shell scaffold
@@ -69,7 +70,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                           letterSpacing: -0.3,
                         ),
                       ),
-                      if (!profile.isPremium) ...[
+                      if (FeatureFlags.premiumEnabled && !profile.isPremium) ...[
                         const SizedBox(height: 8),
                         Text(
                           'Free: ${profile.reviewsDoneToday}/${SubscriptionLimits.freeDailyReviewLimit}',

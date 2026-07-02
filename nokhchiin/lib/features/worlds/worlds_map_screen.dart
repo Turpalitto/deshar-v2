@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import '../../core/config/feature_flags.dart';
 import '../../core/design/app_icons.dart';
 import '../../core/design/widgets/app_scaffold.dart'; // intentional-mix: app shell scaffold
 import '../../core/design/widgets/loading_state.dart'; // intentional-mix: shared loading placeholder
 import '../../core/design_system/design_system.dart';
-import '../../core/providers/content_providers.dart';
 import '../../core/providers/providers.dart';
+
 import '../../core/utils/world_progress_util.dart';
 import '../../domain/entities/learning_entities.dart';
 
@@ -71,7 +72,9 @@ class WorldsMapScreen extends ConsumerWidget {
                         ref.read(userProfileProvider.notifier).setCurrentWorld(w['id'] as String);
                         if (unitIds.isNotEmpty) context.push('/unit/${unitIds.first}');
                       }
-                    : () => context.push('/paywall?return=/worlds'),
+                    : FeatureFlags.premiumEnabled
+                        ? () => context.push('/paywall?return=/worlds')
+                        : null,
               ).animate(delay: (i * 40).ms).fadeIn().slideY(begin: 0.06);
             },
           ),

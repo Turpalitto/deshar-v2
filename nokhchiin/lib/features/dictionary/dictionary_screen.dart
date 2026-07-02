@@ -11,6 +11,7 @@ import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/audio_service.dart';
 import '../../core/utils/chechen_text_utils.dart';
+import '../../core/utils/dictionary_labels.dart';
 import '../../domain/constants/subscription_limits.dart';
 import '../../domain/entities/word_entity.dart';
 
@@ -38,8 +39,9 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
     final l10n = context.l10n;
     final dict = ref.watch(dictionaryProvider);
     final profile = ref.watch(userProfileProvider).value;
-    final isPremium = profile?.isPremium ?? false;
+    final isPremium = FeatureFlags.premiumEnabled ? (profile?.isPremium ?? false) : true;
     final tokens = context.iosTokens;
+    final wordCount = dict.maybeWhen(data: (words) => words.length, orElse: () => null);
 
     return AppScaffold(
       body: Column(
@@ -51,13 +53,15 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
                 NokhchiinPageHeader(
                   title: l10n.dictionaryTitle,
                   onBack: () => context.pop(),
-                  trailing: NokhchiinChip(
-                    label: '7 800 слов',
-                    color: tokens.textTertiary,
-                    background: tokens.surfaceMuted,
-                  ),
+                  trailing: wordCount == null
+                      ? null
+                      : NokhchiinChip(
+                          label: '${_formatCount(wordCount)} слов',
+                          color: tokens.textTertiary,
+                          background: tokens.surfaceMuted,
+                        ),
                 ),
-                if (!isPremium) ...[
+                if (FeatureFlags.premiumEnabled && !isPremium) ...[
                   const SizedBox(height: 12),
                   NokhchiinSurfaceCard(
                     onTap: () => context.push('/paywall?return=/dictionary'),
@@ -125,6 +129,16 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
   }
 }
 
+String _formatCount(int n) {
+  final s = n.toString();
+  final buf = StringBuffer();
+  for (var i = 0; i < s.length; i++) {
+    if (i > 0 && (s.length - i) % 3 == 0) buf.write(' ');
+    buf.write(s[i]);
+  }
+  return buf.toString();
+}
+
 class _WordRow extends StatelessWidget {
   const _WordRow({
     required this.word,
@@ -145,8 +159,8 @@ class _WordRow extends StatelessWidget {
       iconAsset: word.emoji == null ? AppIcons.navDictionary : null,
       chechen: word.chechen,
       russian: word.russian,
-      transcription: word.pronunciation,
-      category: word.category,
+      transcription: DictionaryLabels.displayTranscription(word.chechen, word.pronunciation),
+      category: DictionaryLabels.categoryLabel(word.category, sources: word.sources),
       nounClassMarker: word.nounClass?.marker,
       onTap: onSpeak,
       trailing: Row(

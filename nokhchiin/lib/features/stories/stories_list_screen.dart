@@ -7,8 +7,8 @@ import '../../core/design/tokens/app_spacing.dart';
 import '../../core/design/widgets/app_card.dart';
 import '../../core/design/widgets/app_scaffold.dart';
 import '../../core/design/widgets/loading_state.dart';
-import '../../core/providers/content_providers.dart';
 import '../../core/providers/providers.dart';
+
 import '../../core/widgets/word_illustration.dart';
 
 class StoriesListScreen extends ConsumerWidget {

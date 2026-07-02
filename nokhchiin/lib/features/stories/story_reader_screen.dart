@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/design/app_icons.dart';
 import '../../core/design/widgets/app_icon_image.dart';
-import '../../core/providers/content_providers.dart';
 import '../../core/providers/providers.dart';
+
 import '../../core/widgets/word_illustration.dart';
 
 class StoryReaderScreen extends ConsumerStatefulWidget {

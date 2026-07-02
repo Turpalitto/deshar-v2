@@ -54,6 +54,11 @@ class WordEntity extends Equatable {
     List<String>? synonyms,
     List<String>? sources,
     String? emoji,
+    String? illustrationKey,
+    String? audioCeUrl,
+    String? audioRuUrl,
+    List<String>? tags,
+    String? hint,
     NounClass? nounClass,
   }) {
     return WordEntity(
@@ -68,11 +73,11 @@ class WordEntity extends Equatable {
       synonyms: synonyms ?? this.synonyms,
       sources: sources ?? this.sources,
       emoji: emoji ?? this.emoji,
-      illustrationKey: illustrationKey,
-      audioCeUrl: audioCeUrl,
-      audioRuUrl: audioRuUrl,
-      tags: tags,
-      hint: hint,
+      illustrationKey: illustrationKey ?? this.illustrationKey,
+      audioCeUrl: audioCeUrl ?? this.audioCeUrl,
+      audioRuUrl: audioRuUrl ?? this.audioRuUrl,
+      tags: tags ?? this.tags,
+      hint: hint ?? this.hint,
       nounClass: nounClass ?? this.nounClass,
     );
   }

@@ -9,8 +9,8 @@ import '../../core/design/widgets/app_scaffold.dart';
 import '../../core/design/widgets/loading_state.dart';
 import '../../core/widgets/mastery_progress_bar.dart';
 import '../../core/design_system/design_system.dart';
-import '../../core/providers/content_providers.dart';
 import '../../core/providers/providers.dart';
+
 import '../../domain/entities/enums.dart';
 import '../../domain/usecases/access_usecases.dart';
 

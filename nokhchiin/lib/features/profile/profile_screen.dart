@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/config/feature_flags.dart';
 import '../../core/design/app_icons.dart';
 import '../../core/design/widgets/app_icon_image.dart';
 import '../../core/design/tokens/app_spacing.dart'; // intentional-mix: spacing tokens; Figma widgets from design_system
@@ -71,7 +72,7 @@ class ProfileScreen extends ConsumerWidget {
                   ],
                 ),
               ),
-              if (!profile.isPremium)
+              if (FeatureFlags.premiumEnabled && !profile.isPremium)
                 KidsTapTarget(
                   minSize: isKids ? 56 : 48,
                   onTap: () => context.push('/paywall'),

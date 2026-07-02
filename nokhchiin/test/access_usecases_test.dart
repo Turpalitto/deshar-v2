@@ -1,10 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:nokhchiin/core/config/feature_flags.dart';
 import 'package:nokhchiin/domain/constants/subscription_limits.dart';
 import 'package:nokhchiin/domain/entities/learning_entities.dart';
 import 'package:nokhchiin/domain/entities/subscription_entity.dart';
 import 'package:nokhchiin/domain/repositories/billing_repository.dart';
 import 'package:nokhchiin/domain/repositories/repositories.dart';
 import 'package:nokhchiin/domain/usecases/access_usecases.dart';
+
 
 class _FakeBilling implements BillingRepository {
   _FakeBilling(this.tier);
@@ -65,6 +67,9 @@ void main() {
   });
 
   test('free user blocked from unit beyond free limit', () async {
+    // Тест актуален только когда premiumEnabled = true.
+    // При premiumEnabled = false весь контент открыт (dev-режим).
+    if (!FeatureFlags.premiumEnabled) return;
     final useCase = CanAccessUnitUseCase(
       _FakeBilling(SubscriptionTier.free),
       _FakeUserRepo(const UserProfileEntity()),
@@ -72,6 +77,7 @@ void main() {
     expect(await useCase(unitPaid, masteryUnlocked: true), isFalse);
     expect(unitPaid.order, greaterThan(SubscriptionLimits.freeUnitMaxOrder));
   });
+
 
   test('premium user can access any mastery-unlocked unit', () async {
     final useCase = CanAccessUnitUseCase(

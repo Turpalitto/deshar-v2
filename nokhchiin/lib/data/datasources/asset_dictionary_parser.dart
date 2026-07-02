@@ -4,6 +4,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../domain/entities/enums.dart';
 import '../../domain/entities/word_entity.dart';
+import '../../core/utils/dictionary_labels.dart';
 
 const _uuid = Uuid();
 
@@ -34,7 +35,7 @@ WordEntity _fromCurated(Map<String, dynamic> j) {
     id: _id(ce, ru),
     chechen: _capitalize(ce),
     russian: ru,
-    pronunciation: ce,
+    pronunciation: DictionaryLabels.displayTranscription(_capitalize(ce), ce),
     partOfSpeech: _guessPos(j['category'] as String?),
     category: j['category'] as String?,
     sources: List<String>.from(j['sources'] ?? ['curated']),
@@ -48,13 +49,17 @@ WordEntity _fromCurated(Map<String, dynamic> j) {
 WordEntity _fromDictionary(Map<String, dynamic> j) {
   final ce = (j['chechen'] as String).trim();
   final ru = j['russian'] as String;
+  final sources = List<String>.from(j['sources'] ?? ['maciev']);
   return WordEntity(
     id: _id(ce, ru),
     chechen: ce,
     russian: ru,
-    pronunciation: j['pronunciation'] as String?,
+    pronunciation: DictionaryLabels.displayTranscription(
+      ce,
+      j['pronunciation'] as String?,
+    ),
     category: j['category'] as String?,
-    sources: List<String>.from(j['sources'] ?? ['maciev']),
+    sources: sources,
     emoji: j['emoji'] as String?,
     nounClass: NounClass.fromCode(j['nounClass'] as String?),
   );

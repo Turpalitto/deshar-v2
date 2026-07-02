@@ -2,17 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import '../../core/config/feature_flags.dart';
 import '../../core/design/app_icons.dart';
 import '../../core/design/widgets/app_icon_image.dart';
 import '../../core/design/tokens/app_spacing.dart'; // intentional-mix: spacing tokens; Figma widgets from design_system
-import '../../core/design/theme/nokhchiin_theme.dart'; // intentional-mix: legacy theme helpers
+// nokhchiin_theme.dart removed — unused (analyzer warning)
+
 import '../../core/design/widgets/app_scaffold.dart'; // intentional-mix: app shell scaffold
 import '../../core/design/widgets/loading_state.dart'; // intentional-mix: shared loading placeholder
 import '../../core/design/widgets/reward_celebration.dart'; // intentional-mix: celebration overlay
 import '../../core/design/widgets/week_xp_chart.dart'; // intentional-mix: chart widget not yet in design_system
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
-import '../../core/providers/content_providers.dart';
+
 import '../../core/utils/world_progress_util.dart';
 import '../../data/culture_capsule_samples.dart';
 import '../../domain/entities/enums.dart';
@@ -37,7 +39,7 @@ class HomeScreen extends ConsumerWidget {
     return AppScaffold(
       showOrnament: true,
       actions: [
-        if (!profile.isPremium)
+        if (FeatureFlags.premiumEnabled && !profile.isPremium)
           IconButton(
             icon: const Icon(Icons.workspace_premium_outlined),
             onPressed: () => context.push('/paywall'),
@@ -230,7 +232,9 @@ class HomeScreen extends ConsumerWidget {
                               final ids = (w['units'] as List).cast<String>();
                               if (ids.isNotEmpty) context.push('/unit/${ids.first}');
                             }
-                          : () => context.push('/paywall'),
+                          : FeatureFlags.premiumEnabled
+                              ? () => context.push('/paywall')
+                              : null,
                     );
                   },
                 );

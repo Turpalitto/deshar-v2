@@ -28,6 +28,41 @@
             "hint": "Источник знаний",
             "sources": ["maciev", "curated"],
             "quality": 100
+        },
+        "хӀуьрӀап": {
+            "chechen": "ХӀуьрӀап",
+            "russian": "Перезрелый огурец",
+            "category": "food",
+            "emoji": "🥒",
+            "hint": "Огурец, переросший на лозе",
+            "sources": ["curated", "verified"],
+            "quality": 100
+        },
+        "хьаша": {
+            "chechen": "Хьаша",
+            "russian": "Гость",
+            "category": "family",
+            "emoji": "🏠",
+            "hint": "Гость в доме",
+            "sources": ["curated", "verified"],
+            "quality": 100
+        },
+        "хӀоа": {
+            "chechen": "ХӀоа",
+            "russian": "Яйцо",
+            "category": "food",
+            "emoji": "🥚",
+            "hint": "Куриное яйцо",
+            "sources": ["curated", "verified"],
+            "quality": 100
+        },
+        "рагӀ": {
+            "chechen": "РагӀ",
+            "russian": "Очередь",
+            "emoji": "📖",
+            "hint": "Стоять в очереди",
+            "sources": ["curated", "verified"],
+            "quality": 100
         }
     },
   "curated_fixes": [

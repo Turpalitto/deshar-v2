@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/config/feature_flags.dart';
 import '../../core/design/app_icons.dart';
 import '../../core/design/widgets/app_icon_image.dart';
 import '../../core/design/widgets/app_scaffold.dart'; // intentional-mix: app shell scaffold
@@ -117,7 +118,7 @@ class ProgressScreen extends ConsumerWidget {
                   accentMuted: accentMuted,
                 ),
               ),
-              if (!profile.isPremium) ...[
+              if (FeatureFlags.premiumEnabled && !profile.isPremium) ...[
                 const SizedBox(height: 14),
                 NokhchiinSurfaceCard(
                   onTap: () => context.push('/paywall?return=/progress'),
@@ -127,7 +128,7 @@ class ProgressScreen extends ConsumerWidget {
                   ),
                 ),
               ],
-              if (profile.isPremium) ...[
+              if (!FeatureFlags.premiumEnabled || profile.isPremium) ...[
                 const SizedBox(height: 14),
                 NokhchiinSurfaceCard(
                   child: Column(

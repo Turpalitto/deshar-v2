@@ -152,5 +152,28 @@ class UserProfileEntity extends Equatable {
   }
 
   @override
-  List<Object?> get props => [mode, xp, level, streakDays];
+  List<Object?> get props => [
+        mode,
+        ageGroup,
+        xp,
+        level,
+        streakDays,
+        stars,
+        coins,
+        dailyGoalMinutes,
+        dailyGoalWords,
+        todayMinutes,
+        wordsLearnedToday,
+        avatarId,
+        currentWorldId,
+        unlockedWorlds,
+        achievements,
+        lastActiveDate,
+        dailyGiftClaimed,
+        weeklyXp,
+        isPremium,
+        lessonsCompletedTotal,
+        reviewsDoneToday,
+        seenCultureCapsules,
+      ];
 }

@@ -36,9 +36,8 @@ class GetDueWordsUseCase {
 }
 
 class CanUnlockUnitUseCase {
-  CanUnlockUnitUseCase(this._pathRepo, this._progressRepo, this._dictionaryRepo);
+  CanUnlockUnitUseCase(LearningPathRepository _, this._progressRepo, this._dictionaryRepo);
 
-  final LearningPathRepository _pathRepo;
   final ProgressRepository _progressRepo;
   final DictionaryRepository _dictionaryRepo;
 
