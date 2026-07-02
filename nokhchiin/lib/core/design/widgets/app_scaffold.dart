@@ -55,14 +55,19 @@ class AppScaffold extends StatelessWidget {
                       children: [
                         if (Navigator.canPop(context))
                           IconButton(
-                            icon: const Icon(Icons.arrow_back_rounded),
+                            icon: Icon(Icons.arrow_back_ios_new_rounded, color: tokens.textTertiary, size: 20),
                             onPressed: () => Navigator.maybePop(context),
                           ),
                         if (title != null)
                           Expanded(
                             child: Text(
                               title!,
-                              style: Theme.of(context).textTheme.headlineMedium,
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.w700,
+                                color: tokens.textPrimary,
+                                letterSpacing: -0.2,
+                              ),
                             ),
                           )
                         else

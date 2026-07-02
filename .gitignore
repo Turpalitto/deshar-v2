@@ -26,6 +26,8 @@ lerg.txt
 Thumbs.db
 .idea/
 .vscode/
+node_modules/
+
 
 # Secrets
 .env

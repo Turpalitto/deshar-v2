@@ -77,7 +77,7 @@ class HomeScreen extends ConsumerWidget {
               child: Row(
                 children: [
                   Expanded(
-                    child: _GiftTile(
+                    child: NokhchiinGiftTile(
                       emoji: '🏛️',
                       title: 'Капсула',
                       subtitle: 'Гостеприимство',
@@ -95,7 +95,7 @@ class HomeScreen extends ConsumerWidget {
                   ),
                   const SizedBox(width: 10),
                   Expanded(
-                    child: _GiftTile(
+                    child: NokhchiinGiftTile(
                       emoji: profile.dailyGiftClaimed ? '✅' : '🎁',
                       title: 'Подарок',
                       subtitle: profile.dailyGiftClaimed ? 'Забран' : 'Сегодня',
@@ -116,7 +116,7 @@ class HomeScreen extends ConsumerWidget {
                   ),
                   const SizedBox(width: 10),
                   Expanded(
-                    child: _GiftTile(
+                    child: NokhchiinGiftTile(
                       emoji: '📖',
                       title: 'Словарь',
                       subtitle: '7 800 слов',
@@ -214,11 +214,12 @@ class HomeScreen extends ConsumerWidget {
                     );
                     final gradient = (w['gradient'] as List).cast<String>();
                     final color = Color(int.parse(gradient.first.replaceFirst('#', '0xFF')));
-                    return _WorldRow(
-                      world: w,
+                    return NokhchiinWorldRow(
+                      emoji: w['emoji'] as String? ?? '🌍',
+                      title: w['titleRu'] as String,
                       progressPercent: pct,
-                      unlocked: unlocked,
                       color: color,
+                      unlocked: unlocked,
                       onTap: unlocked
                           ? () {
                               ref.read(userProfileProvider.notifier).setCurrentWorld(w['id'] as String);
@@ -297,47 +298,17 @@ class _HomeHeader extends StatelessWidget {
         ),
         Row(
           children: [
-            _StatPill(emoji: '🔥', value: '${profile.streakDays}', color: accent, bg: accentMuted),
+            NokhchiinStatPill(emoji: '🔥', value: '${profile.streakDays}', color: accent, background: accentMuted),
             const SizedBox(width: 8),
-            _StatPill(
+            NokhchiinStatPill(
               emoji: '💰',
               value: '${profile.coins}',
               color: DesignTokens.gold,
-              bg: DesignTokens.goldMuted,
+              background: DesignTokens.goldMuted,
             ),
           ],
         ),
       ],
-    );
-  }
-}
-
-class _StatPill extends StatelessWidget {
-  const _StatPill({
-    required this.emoji,
-    required this.value,
-    required this.color,
-    required this.bg,
-  });
-
-  final String emoji;
-  final String value;
-  final Color color;
-  final Color bg;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(20)),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(emoji, style: const TextStyle(fontSize: 15)),
-          const SizedBox(width: 5),
-          Text(value, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: color)),
-        ],
-      ),
     );
   }
 }
@@ -431,139 +402,6 @@ class _ContinueHero extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _GiftTile extends StatelessWidget {
-  const _GiftTile({
-    required this.emoji,
-    required this.title,
-    required this.subtitle,
-    this.onTap,
-    this.gradient,
-    this.lightText = false,
-  });
-
-  final String emoji;
-  final String title;
-  final String subtitle;
-  final VoidCallback? onTap;
-  final Gradient? gradient;
-  final bool lightText;
-
-  @override
-  Widget build(BuildContext context) {
-    final tokens = context.iosTokens;
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Ink(
-          decoration: BoxDecoration(
-            gradient: gradient,
-            color: gradient == null ? tokens.surface : null,
-            borderRadius: BorderRadius.circular(16),
-            border: gradient == null ? Border.all(color: tokens.separator) : null,
-          ),
-          padding: const EdgeInsets.all(14),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(emoji, style: const TextStyle(fontSize: 22)),
-              const SizedBox(height: 6),
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: lightText ? Colors.white : tokens.textPrimary,
-                ),
-              ),
-              Text(
-                subtitle,
-                style: TextStyle(
-                  fontSize: 11,
-                  color: lightText ? Colors.white.withValues(alpha: 0.6) : tokens.textTertiary,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _WorldRow extends StatelessWidget {
-  const _WorldRow({
-    required this.world,
-    required this.progressPercent,
-    required this.unlocked,
-    required this.color,
-    this.onTap,
-  });
-
-  final Map<String, dynamic> world;
-  final int progressPercent;
-  final bool unlocked;
-  final Color color;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final tokens = context.iosTokens;
-
-    return NokhchiinSurfaceCard(
-      onTap: onTap,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      child: Row(
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.13),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            alignment: Alignment.center,
-            child: Text(world['emoji'] as String? ?? '🌍', style: const TextStyle(fontSize: 22)),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  world['titleRu'] as String,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: tokens.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 5),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(2),
-                  child: LinearProgressIndicator(
-                    value: progressPercent / 100,
-                    minHeight: 4,
-                    backgroundColor: tokens.surfaceMuted,
-                    color: color,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 8),
-          Text(
-            unlocked ? '$progressPercent%' : '🔒',
-            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: color),
-          ),
-        ],
       ),
     );
   }

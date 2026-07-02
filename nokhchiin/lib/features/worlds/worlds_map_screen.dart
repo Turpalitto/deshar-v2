@@ -2,19 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../../core/design/tokens/app_spacing.dart';
-import '../../core/design/widgets/app_card.dart';
-import '../../core/design/widgets/app_chip.dart';
 import '../../core/design/widgets/app_scaffold.dart';
 import '../../core/design/widgets/loading_state.dart';
-import '../../core/design/widgets/progress_ring.dart';
+import '../../core/design_system/design_system.dart';
 import '../../core/providers/content_providers.dart';
 import '../../core/providers/providers.dart';
 import '../../core/utils/world_progress_util.dart';
-import '../../core/widgets/mastery_progress_bar.dart';
 import '../../domain/entities/learning_entities.dart';
 
-/// Карта миров — основная навигация приключения.
+/// Карта миров — layout из Figma Make.
 class WorldsMapScreen extends ConsumerWidget {
   const WorldsMapScreen({super.key});
 
@@ -23,27 +19,30 @@ class WorldsMapScreen extends ConsumerWidget {
     final worlds = ref.watch(worldsProvider);
     final profile = ref.watch(userProfileProvider).value ?? const UserProfileEntity();
     final units = ref.watch(learningUnitsProvider);
+    final tokens = context.iosTokens;
 
     return AppScaffold(
-      title: 'Миры',
       showOrnament: true,
-      actions: [
-        AppChip(label: '${profile.coins}', emoji: '🪙'),
-        const SizedBox(width: AppSpacing.sm),
-      ],
       body: worlds.when(
         data: (list) => units.when(
-          data: (unitList) => GridView.builder(
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              mainAxisSpacing: AppSpacing.md,
-              crossAxisSpacing: AppSpacing.md,
-              childAspectRatio: 0.88,
-            ),
-            itemCount: list.length,
+          data: (unitList) => ListView.separated(
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
+            itemCount: list.length + 1,
+            separatorBuilder: (_, __) => const SizedBox(height: 14),
             itemBuilder: (context, i) {
-              final w = list[i];
+              if (i == 0) {
+                return Text(
+                  'Миры',
+                  style: TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.w700,
+                    color: tokens.textPrimary,
+                    letterSpacing: -0.3,
+                  ),
+                ).animate().fadeIn();
+              }
+
+              final w = list[i - 1];
               final unlocked = isWorldUnlocked(
                 w,
                 isPremium: profile.isPremium,
@@ -52,67 +51,25 @@ class WorldsMapScreen extends ConsumerWidget {
               );
               final pct = worldProgressPercent(w, unitList);
               final gradient = (w['gradient'] as List).cast<String>();
-              final colors = gradient.map((h) => Color(int.parse(h.replaceFirst('#', '0xFF')))).toList();
-              final isActive = w['id'] == profile.currentWorldId;
+              final color = Color(int.parse(gradient.first.replaceFirst('#', '0xFF')));
+              final unitIds = (w['units'] as List).cast<String>();
 
-              return AppCard(
+              return NokhchiinWorldCard(
+                index: i,
+                title: w['titleRu'] as String,
+                description: w['subtitleRu'] as String? ?? w['titleCe'] as String? ?? '',
+                emoji: w['emoji'] as String? ?? '🌍',
+                progressPercent: pct,
+                lessonCount: unitIds.length,
+                color: color,
+                unlocked: unlocked,
                 onTap: unlocked
                     ? () {
                         ref.read(userProfileProvider.notifier).setCurrentWorld(w['id'] as String);
-                        final unitIds = (w['units'] as List).cast<String>();
                         if (unitIds.isNotEmpty) context.push('/unit/${unitIds.first}');
                       }
                     : () => context.push('/paywall?return=/worlds'),
-                padding: EdgeInsets.zero,
-                child: Stack(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        gradient: LinearGradient(colors: colors),
-                        border: isActive
-                            ? Border.all(color: Theme.of(context).colorScheme.primary, width: 2)
-                            : null,
-                      ),
-                      padding: const EdgeInsets.all(AppSpacing.lg),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(w['emoji'] as String? ?? '🌍', style: const TextStyle(fontSize: 36)),
-                              ProgressRing(percent: pct, size: 40, strokeWidth: 4),
-                            ],
-                          ),
-                          const Spacer(),
-                          Text(
-                            w['titleRu'] as String,
-                            style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 15, color: Color(0xFF1F2937)),
-                          ),
-                          Text(
-                            w['titleCe'] as String,
-                            style: const TextStyle(fontSize: 11, color: Color(0xFF4B5563)),
-                          ),
-                          const SizedBox(height: AppSpacing.sm),
-                          MasteryProgressBar(percent: pct),
-                          Text('$pct%', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800)),
-                        ],
-                      ),
-                    ),
-                    if (!unlocked)
-                      Positioned.fill(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.black38,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: const Center(child: Text('🔒', style: TextStyle(fontSize: 32))),
-                        ),
-                      ),
-                  ],
-                ),
-              ).animate(delay: (i * 40).ms).fadeIn().scale(begin: const Offset(0.96, 0.96));
+              ).animate(delay: (i * 40).ms).fadeIn().slideY(begin: 0.06);
             },
           ),
           loading: () => const LoadingState(),

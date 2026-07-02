@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../features/splash/splash_screen.dart';
 import '../../features/onboarding/onboarding_screen.dart';
 import '../../features/home/home_screen.dart';
 import '../../features/learning_path/learning_path_screen.dart';
@@ -34,8 +35,12 @@ Page<void> _fadeScale(GoRouterState state, Widget child) => buildFadeScalePage(s
 
 final appRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
-  initialLocation: '/onboarding',
+  initialLocation: '/splash',
   routes: [
+    GoRoute(
+      path: '/splash',
+      builder: (_, __) => const SplashScreen(),
+    ),
     GoRoute(
       path: '/onboarding',
       builder: (_, __) => const OnboardingScreen(),

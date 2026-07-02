@@ -8,7 +8,7 @@ import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
 import '../../domain/entities/enums.dart';
 import '../../domain/entities/learning_entities.dart';
-import '../insights/widgets/arc_progress_ring.dart';
+import '../../core/design_system/design_system.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -64,11 +64,11 @@ class ProfileScreen extends ConsumerWidget {
           const SizedBox(height: 24),
           Row(
             children: [
-              _StatCard(emoji: '🔥', value: '${profile.streakDays}', label: 'Стрик'),
+              Expanded(child: NokhchiinStatTile(emoji: '🔥', value: '${profile.streakDays}', label: 'Стрик')),
               const SizedBox(width: 10),
-              _StatCard(emoji: '⭐', value: '${profile.xp}', label: 'XP'),
+              Expanded(child: NokhchiinStatTile(emoji: '⭐', value: '${profile.xp}', label: 'XP')),
               const SizedBox(width: 10),
-              _StatCard(emoji: '📚', value: '${profile.lessonsCompletedTotal}', label: 'Уроков'),
+              Expanded(child: NokhchiinStatTile(emoji: '📚', value: '${profile.lessonsCompletedTotal}', label: 'Уроков')),
             ],
           ),
           const SizedBox(height: 14),
@@ -77,7 +77,7 @@ class ProfileScreen extends ConsumerWidget {
             padding: const EdgeInsets.all(22),
             child: Row(
               children: [
-                ArcProgressRing(
+                NokhchiinArcProgress(
                   progress: weekGoalPct / 100,
                   size: 90,
                   strokeWidth: 7,
@@ -186,45 +186,12 @@ class ProfileScreen extends ConsumerWidget {
             }),
           ],
           const SizedBox(height: AppSpacing.md),
-          NokhchiinSurfaceCard(
+          NokhchiinSettingsRow(
+            emoji: '🔄',
+            label: 'Сменить режим при входе',
             onTap: () => context.go('/onboarding'),
-            child: const ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: Icon(Icons.swap_horiz_rounded),
-              title: Text('Сменить режим при входе'),
-              trailing: Icon(Icons.chevron_right_rounded),
-            ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _StatCard extends StatelessWidget {
-  const _StatCard({required this.emoji, required this.value, required this.label});
-
-  final String emoji;
-  final String value;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: NokhchiinSurfaceCard(
-        radius: 18,
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 10),
-        child: Column(
-          children: [
-            Text(emoji, style: const TextStyle(fontSize: 22)),
-            const SizedBox(height: 5),
-            Text(value, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
-            Text(
-              label,
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600),
-            ),
-          ],
-        ),
       ),
     );
   }

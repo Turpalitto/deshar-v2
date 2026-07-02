@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/design/tokens/app_spacing.dart';
-import '../../core/design/widgets/app_card.dart';
+import 'package:go_router/go_router.dart';
 import '../../core/design/widgets/app_scaffold.dart';
 import '../../core/design/widgets/loading_state.dart';
-import '../../core/design/widgets/progress_ring.dart';
-import '../../core/design/widgets/streak_badge.dart';
+import '../../core/design/widgets/week_xp_chart.dart';
+import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
-import 'package:go_router/go_router.dart';
+import '../../domain/entities/enums.dart';
 import '../../domain/entities/learning_entities.dart';
 
 class ProgressScreen extends ConsumerWidget {
@@ -25,10 +24,11 @@ class ProgressScreen extends ConsumerWidget {
     final profile = ref.watch(userProfileProvider).value ?? const UserProfileEntity();
     final mastery = ref.watch(languageMasteryProvider);
     final progressRepo = ref.watch(progressRepoProvider);
-    final weekXp = profile.weeklyXp.fold<int>(0, (a, b) => a + b);
+    final tokens = context.iosTokens;
+    final accent = profile.mode == AppMode.kids ? DesignTokens.meadow : tokens.accent;
+    final accentMuted = profile.mode == AppMode.kids ? DesignTokens.meadowMuted : tokens.accentMuted;
 
     return AppScaffold(
-      title: 'Прогресс SRS',
       body: FutureBuilder(
         future: progressRepo.getAllProgress(),
         builder: (context, snap) {
@@ -38,154 +38,118 @@ class ProgressScreen extends ConsumerWidget {
           }
 
           return ListView(
-            padding: const EdgeInsets.all(AppSpacing.lg),
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
             children: [
-              AppCard(
+              NokhchiinPageHeader(title: 'Прогресс SRS', onBack: () => context.pop()),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  NokhchiinStatTile(emoji: '🔥', value: '${profile.streakDays}', label: 'Стрик'),
+                  const SizedBox(width: 10),
+                  NokhchiinStatTile(emoji: '⭐', value: '${profile.xp}', label: 'XP'),
+                  const SizedBox(width: 10),
+                  NokhchiinStatTile(emoji: '📚', value: '$wordsStudied', label: 'Слов'),
+                ],
+              ),
+              const SizedBox(height: 14),
+              NokhchiinSurfaceCard(
+                radius: 22,
+                padding: const EdgeInsets.all(22),
                 child: Row(
                   children: [
-                    ProgressRing(
-                      percent: mastery.valueOrNull ?? 0,
-                      label: 'язык',
+                    NokhchiinArcProgress(
+                      progress: (mastery.valueOrNull ?? 0) / 100,
+                      size: 90,
+                      strokeWidth: 7,
+                      color: accent,
+                      trackColor: accentMuted,
+                      center: Text(
+                        '${mastery.valueOrNull ?? 0}%',
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: accent),
+                      ),
                     ),
-                    const SizedBox(width: AppSpacing.xl),
+                    const SizedBox(width: 18),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          StreakBadge(days: profile.streakDays),
-                          const SizedBox(height: AppSpacing.md),
-                          Text('Уровень ${profile.level}', style: Theme.of(context).textTheme.titleLarge),
-                          Text('${profile.xp} XP · 🪙 ${profile.coins}', style: Theme.of(context).textTheme.bodyMedium),
+                          Text(
+                            'Уровень ${profile.level}',
+                            style: TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w700,
+                              color: tokens.textPrimary,
+                            ),
+                          ),
+                          Text(
+                            '${profile.xp} XP · 🪙 ${profile.coins}',
+                            style: TextStyle(fontSize: 13, color: tokens.textSecondary),
+                          ),
+                          Text(
+                            'Слов сегодня: ${profile.wordsLearnedToday}/${profile.dailyGoalWords}',
+                            style: TextStyle(fontSize: 13, color: tokens.textTertiary),
+                          ),
                         ],
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: AppSpacing.md),
-              AppCard(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Сегодня', style: Theme.of(context).textTheme.headlineSmall),
-                    const SizedBox(height: AppSpacing.md),
-                    _Row('Слов', '${profile.wordsLearnedToday} / ${profile.dailyGoalWords}'),
-                    _Row('Уроков всего', '${profile.lessonsCompletedTotal}'),
-                  ],
+              const SizedBox(height: 14),
+              NokhchiinSurfaceCard(
+                radius: 20,
+                padding: const EdgeInsets.fromLTRB(18, 18, 18, 14),
+                child: WeekXpChart(
+                  weeklyXp: profile.weeklyXp,
+                  accent: accent,
+                  accentMuted: accentMuted,
                 ),
               ),
-              const SizedBox(height: AppSpacing.md),
-              if (!profile.isPremium)
-                AppCard(
+              if (!profile.isPremium) ...[
+                const SizedBox(height: 14),
+                NokhchiinSurfaceCard(
                   onTap: () => context.push('/paywall?return=/progress'),
-                  child: const Text('Premium — полная статистика и достижения'),
+                  child: Text(
+                    'Premium — полная статистика и достижения',
+                    style: TextStyle(fontSize: 14, color: tokens.textSecondary),
+                  ),
                 ),
-              if (!profile.isPremium) const SizedBox(height: AppSpacing.md),
+              ],
               if (profile.isPremium) ...[
-              AppCard(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Неделя', style: Theme.of(context).textTheme.headlineSmall),
-                    const SizedBox(height: AppSpacing.md),
-                    _StreakCalendar(weeklyXp: profile.weeklyXp),
-                    const SizedBox(height: AppSpacing.md),
-                    _Row('XP за неделю', '$weekXp'),
-                    _Row('Слов в работе', '$wordsStudied'),
-                  ],
-                ),
-              ),
-              const SizedBox(height: AppSpacing.md),
-              AppCard(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Достижения', style: Theme.of(context).textTheme.headlineSmall),
-                    const SizedBox(height: AppSpacing.md),
-                    ..._achievements.entries.map((e) {
-                      final unlocked = profile.achievements.contains(e.key);
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                        child: Text(
-                          unlocked ? e.value : '🔒 ${e.value.split(' ').skip(1).join(' ')}',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            color: unlocked ? null : Theme.of(context).disabledColor,
-                          ),
+                const SizedBox(height: 14),
+                NokhchiinSurfaceCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Достижения',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: tokens.textPrimary,
                         ),
-                      );
-                    }),
-                  ],
+                      ),
+                      const SizedBox(height: 12),
+                      ..._achievements.entries.map((e) {
+                        final unlocked = profile.achievements.contains(e.key);
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Text(
+                            unlocked ? e.value : '🔒 ${e.value.split(' ').skip(1).join(' ')}',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: unlocked ? tokens.textPrimary : tokens.textTertiary,
+                            ),
+                          ),
+                        );
+                      }),
+                    ],
+                  ),
                 ),
-              ),
               ],
             ],
           );
         },
-      ),
-    );
-  }
-}
-
-class _Row extends StatelessWidget {
-  const _Row(this.label, this.value);
-  final String label, value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label, style: Theme.of(context).textTheme.bodyLarge),
-          Text(value, style: const TextStyle(fontWeight: FontWeight.w800)),
-        ],
-      ),
-    );
-  }
-}
-
-class _StreakCalendar extends StatelessWidget {
-  const _StreakCalendar({required this.weeklyXp});
-  final List<int> weeklyXp;
-
-  @override
-  Widget build(BuildContext context) {
-    final data = weeklyXp.length == 7 ? weeklyXp : List.filled(7, 0);
-    final max = data.reduce((a, b) => a > b ? a : b).clamp(1, 9999);
-    const days = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
-
-    return SizedBox(
-      height: 80,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: List.generate(7, (i) {
-          final h = (data[i] / max * 48).clamp(6.0, 48.0);
-          final active = data[i] > 0;
-          return Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 2),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    height: h,
-                    decoration: BoxDecoration(
-                      color: active
-                          ? Theme.of(context).colorScheme.primary
-                          : Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(days[i], style: Theme.of(context).textTheme.labelSmall),
-                ],
-              ),
-            ),
-          );
-        }),
       ),
     );
   }

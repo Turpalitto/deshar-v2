@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../core/design/tokens/app_spacing.dart';
-import '../../core/design/widgets/app_button.dart';
-import '../../core/design/widgets/app_card.dart';
 import '../../core/design/widgets/app_scaffold.dart';
 import '../../core/design/widgets/loading_state.dart';
-import '../../core/design/widgets/word_exercise_card.dart';
-import '../../core/providers/providers.dart';
-import '../../domain/entities/learning_entities.dart';
-import '../../domain/constants/subscription_limits.dart';
 import '../../core/design/widgets/reward_celebration.dart';
+import '../../core/design/widgets/word_exercise_card.dart';
+import '../../core/design_system/design_system.dart';
+import '../../core/providers/providers.dart';
+import '../../domain/constants/subscription_limits.dart';
+import '../../domain/entities/enums.dart';
+import '../../domain/entities/learning_entities.dart';
 
 class ReviewScreen extends ConsumerStatefulWidget {
   const ReviewScreen({super.key});
@@ -36,42 +35,53 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
   Widget build(BuildContext context) {
     final due = ref.watch(dueWordsProvider);
     final profile = ref.watch(userProfileProvider).value ?? const UserProfileEntity();
+    final tokens = context.iosTokens;
+    final accent = profile.mode == AppMode.kids ? DesignTokens.meadow : tokens.accent;
 
     if (!_started) {
       return AppScaffold(
-        title: 'Повторение',
         body: due.when(
           data: (words) => Padding(
-            padding: const EdgeInsets.all(AppSpacing.xl),
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
             child: Column(
               children: [
+                NokhchiinPageHeader(title: 'Повторение', onBack: () => context.pop()),
                 const Spacer(),
-                AppCard(
+                NokhchiinSurfaceCard(
+                  radius: 22,
+                  padding: const EdgeInsets.all(28),
                   child: Column(
                     children: [
                       const Text('🔄', style: TextStyle(fontSize: 56)),
-                      const SizedBox(height: AppSpacing.lg),
+                      const SizedBox(height: 20),
                       Text(
                         'Сегодня повторить',
-                        style: Theme.of(context).textTheme.labelLarge,
+                        style: TextStyle(fontSize: 13, color: tokens.textTertiary, fontWeight: FontWeight.w600),
                       ),
                       Text(
                         '${words.length} слов',
-                        style: Theme.of(context).textTheme.displaySmall,
+                        style: TextStyle(
+                          fontSize: 34,
+                          fontWeight: FontWeight.w700,
+                          color: tokens.textPrimary,
+                          letterSpacing: -0.3,
+                        ),
                       ),
                       if (!profile.isPremium) ...[
-                        const SizedBox(height: AppSpacing.sm),
+                        const SizedBox(height: 8),
                         Text(
                           'Free: ${profile.reviewsDoneToday}/${SubscriptionLimits.freeDailyReviewLimit}',
-                          style: Theme.of(context).textTheme.bodySmall,
+                          style: TextStyle(fontSize: 13, color: tokens.textTertiary),
                         ),
                       ],
                     ],
                   ),
                 ),
                 const Spacer(),
-                AppButton(
+                NokhchiinButton(
                   label: words.isEmpty ? 'Всё повторено' : 'Начать',
+                  fullWidth: true,
+                  color: accent,
                   onPressed: words.isEmpty
                       ? () => context.pop()
                       : () async {
@@ -93,11 +103,12 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
     }
 
     return AppScaffold(
-      title: 'Повторение',
       body: due.when(
         data: (words) {
           if (words.isEmpty) {
-            return const Center(child: Text('Всё повторено 🎉'));
+            return Center(
+              child: Text('Всё повторено 🎉', style: TextStyle(color: tokens.textSecondary, fontSize: 17)),
+            );
           }
 
           if (_index >= words.length) {
@@ -117,22 +128,35 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
 
           final w = words[_index];
           return Padding(
-            padding: const EdgeInsets.all(AppSpacing.lg),
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
             child: Column(
               children: [
-                Text('${_index + 1} / ${words.length}', style: Theme.of(context).textTheme.titleMedium),
+                NokhchiinPageHeader(title: 'Повторение', onBack: () => setState(() => _started = false)),
+                const SizedBox(height: 8),
+                NokhchiinSegmentProgress(step: _index + 1, total: words.length, color: accent),
+                const SizedBox(height: 8),
+                Text(
+                  '${_index + 1} / ${words.length}',
+                  style: TextStyle(fontSize: 13, color: tokens.textTertiary, fontWeight: FontWeight.w600),
+                ),
                 const Spacer(),
                 WordExerciseCard(word: w, categoryId: w.category ?? 'general', showRussian: _showAnswer),
                 const Spacer(),
                 if (!_showAnswer)
-                  AppButton(label: 'Показать', onPressed: () => setState(() => _showAnswer = true))
+                  NokhchiinButton(
+                    label: 'Показать',
+                    fullWidth: true,
+                    color: accent,
+                    onPressed: () => setState(() => _showAnswer = true),
+                  )
                 else
                   Row(
                     children: [
                       Expanded(
-                        child: AppButton(
+                        child: NokhchiinButton(
                           label: 'Не помню',
-                          variant: AppButtonVariant.secondary,
+                          color: tokens.accentMuted,
+                          textColor: tokens.accent,
                           onPressed: () async {
                             await ref.read(reviewWordUseCaseProvider)(w.id, 1);
                             await ref.read(userProfileProvider.notifier).recordReview();
@@ -143,10 +167,11 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                           },
                         ),
                       ),
-                      const SizedBox(width: AppSpacing.md),
+                      const SizedBox(width: 12),
                       Expanded(
-                        child: AppButton(
+                        child: NokhchiinButton(
                           label: 'Помню ✓',
+                          color: accent,
                           onPressed: () async {
                             await ref.read(reviewWordUseCaseProvider)(w.id, 5);
                             await ref.read(userProfileProvider.notifier).recordReview();
