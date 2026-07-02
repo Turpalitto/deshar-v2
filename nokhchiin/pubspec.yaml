@@ -46,3 +46,4 @@ flutter:
     - assets/data/audio_manifest.json
     - assets/data/illustrations_manifest.json
     - assets/audio/
+    - assets/images/brand/

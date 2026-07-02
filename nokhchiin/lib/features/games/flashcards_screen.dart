@@ -3,12 +3,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/design_system/design_system.dart';
 import '../../core/design/tokens/app_spacing.dart';
 import '../../core/design/widgets/app_button.dart';
-import '../../core/design/widgets/app_card.dart';
 import '../../core/design/widgets/app_scaffold.dart';
 import '../../core/design/widgets/loading_state.dart';
-import '../../core/design/widgets/word_exercise_card.dart';
+import '../../core/design/widgets/app_scaffold.dart';
 import '../../core/providers/providers.dart';
 import '../../domain/entities/enums.dart';
 import '../../domain/entities/word_entity.dart';
@@ -133,6 +133,19 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
       padding: const EdgeInsets.all(AppSpacing.lg),
       child: Column(
         children: [
+          NokhchiinSegmentProgress(
+            step: _index + 1,
+            total: _words.length.clamp(1, 8),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Text(
+            'Слова · ${_index + 1} / ${_words.length}',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: context.iosTokens.textTertiary,
+                  fontWeight: FontWeight.w500,
+                ),
+          ),
+          const SizedBox(height: AppSpacing.md),
           Expanded(
             child: SpringSwipeCard(
               key: ValueKey(w.id),
@@ -145,30 +158,15 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
                 HapticFeedback.lightImpact();
                 _known(true);
               },
-              child: AppCard(
-                child: GestureDetector(
-                  onTap: () => setState(() => _showTranslation = !_showTranslation),
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        WordExerciseCard(
-                          word: w,
-                          categoryId: widget.unitId,
-                          showRussian: _showTranslation,
-                        ),
-                        if (!_showTranslation)
-                          Padding(
-                            padding: const EdgeInsets.only(top: AppSpacing.md),
-                            child: Text(
-                              'Нажми — перевод · свайп влево/вправо',
-                              style: Theme.of(context).textTheme.bodySmall,
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
+              child: NokhchiinFlipCard(
+                flipped: _showTranslation,
+                onTap: () => setState(() => _showTranslation = !_showTranslation),
+                front: NokhchiinFlashcardFace(
+                  child: _FlashcardContent(word: w, showRussian: false, unitId: widget.unitId),
+                ),
+                back: NokhchiinFlashcardFace(
+                  accent: true,
+                  child: _FlashcardContent(word: w, showRussian: true, unitId: widget.unitId, onAccent: true),
                 ),
               ),
             ),
@@ -177,16 +175,17 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
           Row(
             children: [
               Expanded(
-                child: AppButton(
-                  label: 'Ещё учу',
-                  variant: AppButtonVariant.secondary,
+                child: NokhchiinButton(
+                  label: '↻ Повторить',
+                  color: context.iosTokens.accentMuted,
+                  textColor: context.iosTokens.accent,
                   onPressed: () => _swipeController.swipeLeft(),
                 ),
               ),
               const SizedBox(width: AppSpacing.md),
               Expanded(
-                child: AppButton(
-                  label: 'Знаю ✓',
+                child: NokhchiinButton(
+                  label: '✓ Знаю',
                   onPressed: () => _swipeController.swipeRight(),
                 ),
               ),
@@ -208,6 +207,76 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
     return AppScaffold(
       title: '${_index + 1} / ${_words.length}',
       body: body,
+    );
+  }
+}
+
+class _FlashcardContent extends StatelessWidget {
+  const _FlashcardContent({
+    required this.word,
+    required this.showRussian,
+    required this.unitId,
+    this.onAccent = false,
+  });
+
+  final WordEntity word;
+  final bool showRussian;
+  final String unitId;
+  final bool onAccent;
+
+  @override
+  Widget build(BuildContext context) {
+    final tokens = context.iosTokens;
+    final fg = onAccent ? Colors.white : tokens.textPrimary;
+    final fgMuted = onAccent ? Colors.white.withValues(alpha: 0.7) : tokens.textTertiary;
+
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(word.emoji ?? '📖', style: const TextStyle(fontSize: 80)),
+          const SizedBox(height: 16),
+          Text(
+            showRussian ? word.russian : word.chechen,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: showRussian ? 34 : 30,
+              fontWeight: FontWeight.w700,
+              color: fg,
+              letterSpacing: showRussian ? 0 : 0.3,
+            ),
+          ),
+          const SizedBox(height: 4),
+          if (word.pronunciation != null && word.pronunciation!.isNotEmpty)
+            Text('[${word.pronunciation}]', style: TextStyle(fontSize: 14, color: fgMuted, letterSpacing: 0.5)),
+          if (!showRussian) ...[
+            const SizedBox(height: 16),
+            NokhchiinChip(
+              label: word.category ?? 'Слово',
+              color: tokens.textTertiary,
+              background: onAccent ? Colors.white.withValues(alpha: 0.15) : tokens.surfaceMuted,
+            ),
+            const Spacer(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 20,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    color: onAccent ? Colors.white.withValues(alpha: 0.15) : tokens.surfaceMuted,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.touch_app_outlined, size: 12, color: fgMuted),
+                ),
+                const SizedBox(width: 6),
+                Text('Нажми, чтобы перевернуть', style: TextStyle(fontSize: 11, color: fgMuted)),
+              ],
+            ),
+          ],
+        ],
+      ),
     );
   }
 }

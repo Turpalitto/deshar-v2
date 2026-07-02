@@ -52,6 +52,14 @@ class DesignTokens {
   final Color error;
   final bool isDark;
 
+  /// Семантические цвета из Figma Make (не зависят от accent variant).
+  static const meadow = Color(0xFF3D7A5C);
+  static const meadowMuted = Color(0xFFD4EDE3);
+  static const gold = Color(0xFFD4A84B);
+  static const goldMuted = Color(0xFFFFF4D4);
+  static const cultureDark = Color(0xFF1E1510);
+  static const cultureAccent = Color(0xFFE8A87C);
+
   static DesignTokens light({IosAccentVariant accent = IosAccentVariant.terracotta}) {
     final a = _accentPair(accent, isDark: false);
     return DesignTokens(

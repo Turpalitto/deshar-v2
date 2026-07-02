@@ -7,7 +7,7 @@ import '../../core/design/tokens/app_spacing.dart';
 import '../../core/design/widgets/app_button.dart';
 import '../../core/design/widgets/app_card.dart';
 import '../../core/design/widgets/app_scaffold.dart';
-import '../../core/design/theme/nokhchiin_theme.dart';
+import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/analytics_service.dart';
 import 'package:nokhchiin/l10n/app_localizations.dart';
@@ -71,7 +71,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final skin = NokhchiinSkin.of(context);
+    final tokens = context.iosTokens;
 
     return PopScope(
       onPopInvokedWithResult: (didPop, _) {
@@ -80,66 +80,109 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
         }
       },
       child: AppScaffold(
-        title: l10n.paywallTitle,
         body: SingleChildScrollView(
-          padding: const EdgeInsets.all(AppSpacing.xl),
+          padding: const EdgeInsets.fromLTRB(24, 16, 24, 36),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text('🦊', style: TextStyle(fontSize: 72), textAlign: TextAlign.center)
+              Align(
+                alignment: Alignment.centerLeft,
+                child: IconButton(
+                  onPressed: () => context.pop(),
+                  icon: Icon(Icons.close_rounded, color: tokens.textTertiary),
+                ),
+              ),
+              const Text('👑', style: TextStyle(fontSize: 52), textAlign: TextAlign.center)
                   .animate()
                   .fadeIn()
                   .scale(begin: const Offset(0.8, 0.8)),
               const SizedBox(height: AppSpacing.lg),
               Text(
-                l10n.paywallHeadline,
-                style: Theme.of(context).textTheme.headlineMedium,
+                'Нохчийн Premium',
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.3,
+                    ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: AppSpacing.sm),
               Text(
                 l10n.paywallSubtitle,
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: tokens.textSecondary),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: AppSpacing.xxl),
-              _CompareTable(l10n: l10n),
+              NokhchiinSurfaceCard(
+                radius: 20,
+                padding: const EdgeInsets.all(18),
+                child: Column(
+                  children: [
+                    for (final row in [
+                      ('♾️', l10n.compareRowPath),
+                      ('📴', l10n.compareRowOffline),
+                      ('🔁', l10n.compareRowSrs),
+                      ('🏛️', 'Все культурные капсулы'),
+                      ('📖', 'Словарь 7 800+ слов'),
+                    ])
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 9),
+                        child: Row(
+                          children: [
+                            Text(row.$1, style: const TextStyle(fontSize: 20)),
+                            const SizedBox(width: 12),
+                            Expanded(child: Text(row.$2)),
+                            Icon(Icons.check_rounded, color: tokens.success, size: 18),
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
+              ),
               const SizedBox(height: AppSpacing.xxl),
-              AppCard(
-                gradient: LinearGradient(colors: skin.heroGradient),
+              _CompareTable(l10n: l10n),
+              const SizedBox(height: AppSpacing.xl),
+              NokhchiinSurfaceCard(
+                radius: 20,
+                padding: const EdgeInsets.all(18),
                 child: Column(
                   children: [
                     Text(
                       l10n.paywallTrialTitle(SubscriptionLimits.trialDays),
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white),
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+                      textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: AppSpacing.xs),
                     Text(
                       l10n.paywallTrialSubtitle,
-                      style: const TextStyle(color: Colors.white70),
                       textAlign: TextAlign.center,
+                      style: TextStyle(color: tokens.textSecondary),
                     ),
                   ],
                 ),
               ).animate().fadeIn(delay: 200.ms),
               const SizedBox(height: AppSpacing.xl),
-              AppButton(
-                label: l10n.paywallStartTrial,
-                loading: _loading,
-                onPressed: () => _run(
-                  AnalyticsEventName.trialStarted,
-                  () => ref.read(billingServiceProvider).startTrial(),
-                ),
+              NokhchiinButton(
+                label: _loading ? '…' : l10n.paywallStartTrial,
+                fullWidth: true,
+                onPressed: _loading
+                    ? null
+                    : () => _run(
+                          AnalyticsEventName.trialStarted,
+                          () => ref.read(billingServiceProvider).startTrial(),
+                        ),
               ),
               const SizedBox(height: AppSpacing.md),
-              AppButton(
-                label: l10n.paywallBuyPremium,
-                variant: AppButtonVariant.secondary,
-                loading: _loading,
-                onPressed: () => _run(
-                  AnalyticsEventName.purchaseStarted,
-                  () => ref.read(billingServiceProvider).purchasePremium(),
-                ),
+              NokhchiinButton(
+                label: _loading ? '…' : l10n.paywallBuyPremium,
+                fullWidth: true,
+                color: tokens.accentMuted,
+                textColor: tokens.accent,
+                onPressed: _loading
+                    ? null
+                    : () => _run(
+                          AnalyticsEventName.purchaseStarted,
+                          () => ref.read(billingServiceProvider).purchasePremium(),
+                        ),
               ),
               const SizedBox(height: AppSpacing.md),
               AppButton(

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../tokens/app_spacing.dart';
+import '../../design_system/design_system.dart';
+import '../../providers/providers.dart';
+import '../../../domain/entities/enums.dart';
 
-/// Нижняя навигация: Главная · Миры · Повтор · Профиль.
-class AppShell extends StatelessWidget {
+/// Нижняя навигация в стиле Figma Make.
+class AppShell extends ConsumerWidget {
   const AppShell({super.key, required this.navigationShell});
 
   final StatefulNavigationShell navigationShell;
@@ -16,23 +19,18 @@ class AppShell extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final profile = ref.watch(userProfileProvider).value;
+    final isKids = profile?.mode == AppMode.kids;
+    final accent = isKids ? DesignTokens.meadow : context.iosTokens.accent;
 
     return Scaffold(
+      backgroundColor: context.iosTokens.background,
       body: navigationShell,
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: navigationShell.currentIndex,
-        onDestinationSelected: _onTap,
-        height: 68,
-        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-        destinations: const [
-          NavigationDestination(icon: Icon(Icons.home_rounded), label: 'Главная'),
-          NavigationDestination(icon: Icon(Icons.public_rounded), label: 'Миры'),
-          NavigationDestination(icon: Icon(Icons.autorenew_rounded), label: 'Повтор'),
-          NavigationDestination(icon: Icon(Icons.person_rounded), label: 'Профиль'),
-        ],
-        indicatorColor: cs.primary.withValues(alpha: 0.15),
+      bottomNavigationBar: NokhchiinTabBar(
+        currentIndex: navigationShell.currentIndex,
+        onTap: _onTap,
+        accent: accent,
       ),
     );
   }

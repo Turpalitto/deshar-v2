@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../tokens/app_spacing.dart';
-import 'app_button.dart';
+import '../../design_system/design_system.dart';
 
-/// Премиальная анимация награды (урок, подарок, сундук).
+/// Премиальная анимация награды — стиль Figma Reward screen.
 class RewardCelebration {
   RewardCelebration._();
 
@@ -21,65 +21,84 @@ class RewardCelebration {
     await HapticFeedback.mediumImpact();
     if (!context.mounted) return;
 
+    final tokens = context.iosTokens;
+
     await showGeneralDialog<void>(
       context: context,
       barrierDismissible: false,
-      barrierColor: Colors.black54,
-      transitionDuration: const Duration(milliseconds: 350),
+      barrierColor: tokens.background.withValues(alpha: 0.92),
+      transitionDuration: const Duration(milliseconds: 420),
       pageBuilder: (ctx, _, __) => const SizedBox.shrink(),
       transitionBuilder: (ctx, anim, _, __) {
-        final curve = CurvedAnimation(parent: anim, curve: Curves.easeOutBack);
         return Opacity(
           opacity: anim.value,
-          child: Transform.scale(
-            scale: curve.value,
-            child: Center(
-              child: Material(
-                color: Colors.transparent,
-                child: Container(
-                  margin: const EdgeInsets.all(AppSpacing.xl),
-                  padding: const EdgeInsets.all(AppSpacing.xxl),
-                  decoration: BoxDecoration(
-                    color: Theme.of(ctx).colorScheme.surface,
-                    borderRadius: BorderRadius.circular(28),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Theme.of(ctx).colorScheme.primary.withValues(alpha: 0.25),
-                        blurRadius: 32,
-                        spreadRadius: 4,
-                      ),
-                    ],
-                  ),
+          child: Stack(
+            children: [
+              const Positioned.fill(child: NokhchiinOrnament(opacity: 0.04)),
+              ...List.generate(12, (i) {
+                final colors = [
+                  tokens.accent,
+                  DesignTokens.gold,
+                  DesignTokens.meadow,
+                  tokens.accentMuted,
+                ];
+                return Positioned(
+                  left: MediaQuery.sizeOf(ctx).width * (0.1 + i * 0.07),
+                  top: MediaQuery.sizeOf(ctx).height * (0.15 + (i * 37 % 65) / 100),
+                  child: Container(
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: colors[i % 4].withValues(alpha: 0.5),
+                      shape: BoxShape.circle,
+                    ),
+                  )
+                      .animate(onPlay: (c) => c.repeat(reverse: true))
+                      .moveY(begin: 0, end: -20, duration: (1500 + i * 200).ms),
+                );
+              }),
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSpacing.xl),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(emoji, style: const TextStyle(fontSize: 72))
-                          .animate(onPlay: (c) => c.repeat(reverse: true))
+                      Text(emoji, style: const TextStyle(fontSize: 96))
+                          .animate()
                           .scale(
-                            begin: const Offset(1, 1),
-                            end: const Offset(1.08, 1.08),
-                            duration: 800.ms,
+                            begin: const Offset(0.5, 0.5),
+                            end: const Offset(1, 1),
+                            duration: 600.ms,
+                            curve: IosMotion.curveBouncy,
                           ),
-                      const SizedBox(height: AppSpacing.lg),
-                      Text(title, style: Theme.of(ctx).textTheme.headlineSmall, textAlign: TextAlign.center),
-                      const SizedBox(height: AppSpacing.sm),
-                      Text(subtitle, style: Theme.of(ctx).textTheme.bodyLarge, textAlign: TextAlign.center),
-                      const SizedBox(height: AppSpacing.xl),
+                      const SizedBox(height: 12),
+                      Text(
+                        title,
+                        textAlign: TextAlign.center,
+                        style: Theme.of(ctx).textTheme.headlineMedium?.copyWith(
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: -0.3,
+                            ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(subtitle, textAlign: TextAlign.center, style: Theme.of(ctx).textTheme.bodyLarge),
+                      const SizedBox(height: 36),
                       if (primaryAction != null && onPrimary != null) ...[
-                        AppButton(label: primaryAction, onPressed: onPrimary),
-                        const SizedBox(height: AppSpacing.sm),
+                        NokhchiinButton(label: primaryAction, fullWidth: true, onPressed: onPrimary),
+                        const SizedBox(height: 10),
                       ],
-                      AppButton(
+                      NokhchiinButton(
                         label: dismissLabel,
-                        variant: AppButtonVariant.secondary,
-                        expanded: false,
+                        fullWidth: true,
+                        color: tokens.accentMuted,
+                        textColor: tokens.accent,
                         onPressed: onDismiss ?? () => Navigator.of(ctx).pop(),
                       ),
                     ],
                   ),
                 ),
               ),
-            ),
+            ],
           ),
         );
       },

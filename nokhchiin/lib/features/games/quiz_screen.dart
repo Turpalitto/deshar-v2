@@ -6,7 +6,7 @@ import 'package:nokhchiin/core/l10n/l10n_extensions.dart';
 import '../../core/config/feature_flags.dart';
 import '../../core/design/tokens/app_durations.dart';
 import '../../core/design/tokens/app_spacing.dart';
-import '../../core/design/widgets/app_button.dart';
+import '../../core/design_system/design_system.dart';
 import '../../core/design/widgets/app_scaffold.dart';
 import '../../core/design/widgets/empty_state.dart';
 import '../../core/design/widgets/loading_state.dart';
@@ -42,6 +42,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
   int _score = 0;
   bool _loading = true;
   bool? _lastCorrect;
+  int? _selectedOption;
 
   @override
   void initState() {
@@ -113,21 +114,40 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
             ),
           ),
           const SizedBox(height: AppSpacing.md),
-          Text(l10n.quizTapHint, style: Theme.of(context).textTheme.bodySmall),
+          Text(
+            'ВОПРОС',
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1,
+                  color: context.iosTokens.textTertiary,
+                ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            l10n.quizTapHint,
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
+          ),
           if (FeatureFlags.audioEnabled) ...[
             const SizedBox(height: AppSpacing.sm),
             IconButton(onPressed: _speak, icon: const Icon(Icons.volume_up_rounded, size: 32)),
           ],
           const Spacer(),
-          ...options.map((o) => Padding(
-                padding: const EdgeInsets.only(bottom: AppSpacing.md),
-                child: AppButton(
-                  label: '${o.emoji ?? '📖'}  ${o.russian}',
-                  variant: AppButtonVariant.secondary,
-                  expanded: true,
-                  onPressed: () => _answer(o == target, target, totalQ),
-                ),
-              )),
+          ...options.asMap().entries.map((entry) {
+            final i = entry.key;
+            final o = entry.value;
+            final isTarget = o == target;
+            return Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.md),
+              child: NokhchiinQuizOption(
+                label: '${o.emoji ?? '📖'}  ${o.russian}',
+                letter: String.fromCharCode(65 + i),
+                selected: _selectedOption == i ? true : null,
+                correct: _selectedOption == i ? isTarget : null,
+                enabled: _selectedOption == null,
+                onTap: () => _answer(isTarget, target, totalQ, i),
+              ),
+            );
+          }),
           const Spacer(),
         ],
       ),
@@ -137,15 +157,21 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
     return AppScaffold(title: l10n.quizTitle(_score), body: body);
   }
 
-  Future<void> _answer(bool correct, WordEntity target, int totalQ) async {
-    setState(() => _lastCorrect = correct);
+  Future<void> _answer(bool correct, WordEntity target, int totalQ, int optionIndex) async {
+    setState(() {
+      _lastCorrect = correct;
+      _selectedOption = optionIndex;
+    });
     if (correct) _score++;
 
     await ref.read(reviewWordUseCaseProvider)(target.id, correct ? 4 : 1);
     await Future.delayed(AppDurations.normal);
     if (!mounted) return;
 
-    setState(() => _lastCorrect = null);
+    setState(() {
+      _lastCorrect = null;
+      _selectedOption = null;
+    });
 
     if (_index < totalQ - 1) {
       setState(() => _index++);

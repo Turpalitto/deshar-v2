@@ -35,6 +35,7 @@ void main() {
     expect(find.text('Нохчийн'), findsOneWidget);
     expect(find.text('Детский режим'), findsOneWidget);
     expect(find.text('Взрослый режим'), findsOneWidget);
-    expect(find.text('Лучший путь к чеченскому языку'), findsOneWidget);
+    expect(find.text('Сайн дог ду хьуна'), findsOneWidget);
+    expect(find.text('Рады тебя видеть!'), findsOneWidget);
   });
 }
