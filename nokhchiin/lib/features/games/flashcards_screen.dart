@@ -8,7 +8,6 @@ import '../../core/design/tokens/app_spacing.dart';
 import '../../core/design/widgets/app_button.dart';
 import '../../core/design/widgets/app_scaffold.dart';
 import '../../core/design/widgets/loading_state.dart';
-import '../../core/design/widgets/app_scaffold.dart';
 import '../../core/providers/providers.dart';
 import '../../domain/entities/enums.dart';
 import '../../domain/entities/word_entity.dart';
@@ -232,49 +231,60 @@ class _FlashcardContent extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.all(24),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: Stack(
         children: [
-          Text(word.emoji ?? '📖', style: const TextStyle(fontSize: 80)),
-          const SizedBox(height: 16),
-          Text(
-            showRussian ? word.russian : word.chechen,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: showRussian ? 34 : 30,
-              fontWeight: FontWeight.w700,
-              color: fg,
-              letterSpacing: showRussian ? 0 : 0.3,
-            ),
-          ),
-          const SizedBox(height: 4),
-          if (word.pronunciation != null && word.pronunciation!.isNotEmpty)
-            Text('[${word.pronunciation}]', style: TextStyle(fontSize: 14, color: fgMuted, letterSpacing: 0.5)),
-          if (!showRussian) ...[
-            const SizedBox(height: 16),
-            NokhchiinChip(
-              label: word.category ?? 'Слово',
-              color: tokens.textTertiary,
-              background: onAccent ? Colors.white.withValues(alpha: 0.15) : tokens.surfaceMuted,
-            ),
-            const Spacer(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+          Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Container(
-                  width: 20,
-                  height: 20,
-                  decoration: BoxDecoration(
-                    color: onAccent ? Colors.white.withValues(alpha: 0.15) : tokens.surfaceMuted,
-                    shape: BoxShape.circle,
+                Text(word.emoji ?? '📖', style: const TextStyle(fontSize: 80)),
+                const SizedBox(height: 16),
+                Text(
+                  showRussian ? word.russian : word.chechen,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: showRussian ? 34 : 30,
+                    fontWeight: FontWeight.w700,
+                    color: fg,
+                    letterSpacing: showRussian ? 0 : 0.3,
                   ),
-                  child: Icon(Icons.touch_app_outlined, size: 12, color: fgMuted),
                 ),
-                const SizedBox(width: 6),
-                Text('Нажми, чтобы перевернуть', style: TextStyle(fontSize: 11, color: fgMuted)),
+                const SizedBox(height: 4),
+                if (word.pronunciation != null && word.pronunciation!.isNotEmpty)
+                  Text('[${word.pronunciation}]', style: TextStyle(fontSize: 14, color: fgMuted, letterSpacing: 0.5)),
+                if (!showRussian) ...[
+                  const SizedBox(height: 16),
+                  NokhchiinChip(
+                    label: word.category ?? 'Слово',
+                    color: tokens.textTertiary,
+                    background: onAccent ? Colors.white.withValues(alpha: 0.15) : tokens.surfaceMuted,
+                  ),
+                ],
               ],
             ),
-          ],
+          ),
+          if (!showRussian)
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 20,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 20,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      color: onAccent ? Colors.white.withValues(alpha: 0.15) : tokens.surfaceMuted,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.touch_app_outlined, size: 12, color: fgMuted),
+                  ),
+                  const SizedBox(width: 6),
+                  Text('Нажми, чтобы перевернуть', style: TextStyle(fontSize: 11, color: fgMuted)),
+                ],
+              ),
+            ),
         ],
       ),
     );

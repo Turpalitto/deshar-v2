@@ -10,6 +10,7 @@ class NokhchiinDictionaryRow extends StatelessWidget {
     required this.russian,
     this.transcription,
     this.category,
+    this.nounClassMarker,
     this.onTap,
     this.trailing,
   });
@@ -19,6 +20,7 @@ class NokhchiinDictionaryRow extends StatelessWidget {
   final String russian;
   final String? transcription;
   final String? category;
+  final String? nounClassMarker;
   final VoidCallback? onTap;
   final Widget? trailing;
 
@@ -26,6 +28,7 @@ class NokhchiinDictionaryRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final tokens = context.iosTokens;
     final meta = [
+      if (nounClassMarker != null) nounClassMarker!,
       if (transcription != null && transcription!.isNotEmpty) '[$transcription]',
       if (category != null && category!.isNotEmpty) category,
     ].join(' · ');

@@ -16,6 +16,7 @@ class SpacedRepetitionEngine {
     if (quality < 3) {
       reps = 0;
       interval = 1;
+      ease = (ease - 0.2).clamp(1.3, 2.5);
       mastery = mastery.demote();
       if (mastery == MasteryLevel.unseen) mastery = MasteryLevel.seen;
     } else {

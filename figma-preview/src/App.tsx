@@ -518,7 +518,7 @@ function FlashcardScreen({ mode, nav }: { mode: Mode; nav: (s: Screen) => void }
   const accent = mode === "kids" ? C.meadow : C.terra;
   const [idx, setIdx] = useState(0);
   const [flipped, setFlipped] = useState(false);
-  const [step, setStep] = useState(2);
+  const [step, setStep] = useState(1);
   const [exit, setExit] = useState<"left"|"right"|null>(null);
   const word = WORDS[idx % WORDS.length];
 
@@ -533,10 +533,22 @@ function FlashcardScreen({ mode, nav }: { mode: Mode; nav: (s: Screen) => void }
     }, 280);
   };
 
+  const faceBase: React.CSSProperties = {
+    position: "absolute",
+    inset: 0,
+    borderRadius: 26,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 16,
+    backfaceVisibility: "hidden",
+  };
+
   return (
-    <div style={{ flex:1, background:C.bg, display:"flex", flexDirection:"column" }}>
+    <div style={{ flex:1, minHeight:0, background:C.bg, display:"flex", flexDirection:"column" }}>
       <StatusBar />
-      <div style={{ padding:"10px 20px", display:"flex", alignItems:"center", gap:12 }}>
+      <div style={{ padding:"10px 20px", display:"flex", alignItems:"center", gap:12, flexShrink:0 }}>
         <button onClick={() => nav("path")} style={{ background:"none", border:"none", cursor:"pointer", color:C.textTert, lineHeight:0 }}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 19L8 12L15 5"/></svg>
         </button>
@@ -544,43 +556,69 @@ function FlashcardScreen({ mode, nav }: { mode: Mode; nav: (s: Screen) => void }
         <span style={{ fontSize:12, color:C.textTert, fontWeight:600, whiteSpace:"nowrap" }}>{step}/5</span>
       </div>
 
-      <div style={{ flex:1, display:"flex", flexDirection:"column", padding:"12px 20px 24px" }}>
-        <div style={{ textAlign:"center", marginBottom:8 }}>
+      <div style={{ flex:1, minHeight:0, display:"flex", flexDirection:"column", padding:"12px 20px 24px" }}>
+        <div style={{ textAlign:"center", marginBottom:8, flexShrink:0 }}>
           <span style={{ fontSize:13, color:C.textTert, fontWeight:500 }}>Слова · {idx+1} / {WORDS.length}</span>
         </div>
 
-        {/* Card */}
-        <div onClick={() => setFlipped(!flipped)}
-          style={{ flex:1, cursor:"pointer", perspective:1000, marginBottom:24,
+        {/* Card area — фиксированная зона, кнопки не пересекаются */}
+        <div
+          onClick={() => setFlipped(!flipped)}
+          style={{
+            flex:"1 1 0",
+            minHeight: 280,
+            marginBottom: 16,
+            cursor: "pointer",
+            perspective: 1000,
             transform: exit ? `translateX(${exit==="left"?"-120%":"120%"}) rotate(${exit==="left"?-8:8}deg)` : "none",
-            transition: exit ? "transform 0.28s ease-in" : "none" }}>
-          <div style={{ width:"100%", height:"100%", position:"relative", transformStyle:"preserve-3d", transition:"transform 0.45s cubic-bezier(0.34,1.2,0.64,1)", transform:flipped?"rotateY(180deg)":"rotateY(0)" }}>
+            transition: exit ? "transform 0.28s ease-in" : "none",
+          }}
+        >
+          <div style={{
+            width: "100%",
+            height: "100%",
+            position: "relative",
+            transformStyle: "preserve-3d",
+            transition: "transform 0.45s cubic-bezier(0.34,1.2,0.64,1)",
+            transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
+          }}>
             {/* Front */}
-            <div style={{ position:"absolute", inset:0, backfaceVisibility:"hidden", background:C.surface, borderRadius:26, border:`1.5px solid ${C.sep}`, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:16 }}>
-              <div style={{ fontSize:80 }}>{word.emoji}</div>
+            <div style={{
+              ...faceBase,
+              background: C.surface,
+              border: `1.5px solid ${C.sep}`,
+              transform: "rotateY(0deg)",
+              visibility: flipped ? "hidden" : "visible",
+            }}>
+              <div style={{ fontSize: 80, lineHeight: 1 }}>{word.emoji}</div>
               <div>
-                <div style={{ fontSize:30, fontWeight:700, color:C.text, textAlign:"center", letterSpacing:"0.3px" }}>{word.ce}</div>
-                <div style={{ fontSize:14, color:C.textTert, textAlign:"center", marginTop:4, letterSpacing:"0.5px" }}>[{word.tr}]</div>
+                <div style={{ fontSize: 30, fontWeight: 700, color: C.text, textAlign: "center", letterSpacing: "0.3px" }}>{word.ce}</div>
+                <div style={{ fontSize: 14, color: C.textTert, textAlign: "center", marginTop: 4, letterSpacing: "0.5px" }}>[{word.tr}]</div>
               </div>
               <Chip ch={word.cat} col={C.textTert} bg={C.surfMuted} />
-              <div style={{ position:"absolute", bottom:20, display:"flex", alignItems:"center", gap:6 }}>
-                <div style={{ width:20, height:20, borderRadius:"50%", background:C.surfMuted, display:"flex", alignItems:"center", justifyContent:"center" }}>
+              <div style={{ position: "absolute", bottom: 20, left: 0, right: 0, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+                <div style={{ width: 20, height: 20, borderRadius: "50%", background: C.surfMuted, display: "flex", alignItems: "center", justifyContent: "center" }}>
                   <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 1v4l3 1.5" stroke={C.textTert} strokeWidth="1.5" strokeLinecap="round"/></svg>
                 </div>
-                <span style={{ fontSize:11, color:C.textTert }}>Нажми, чтобы перевернуть</span>
+                <span style={{ fontSize: 11, color: C.textTert }}>Нажми, чтобы перевернуть</span>
               </div>
             </div>
             {/* Back */}
-            <div style={{ position:"absolute", inset:0, backfaceVisibility:"hidden", transform:"rotateY(180deg)", background:accent, borderRadius:26, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:16 }}>
-              <div style={{ fontSize:80 }}>{word.emoji}</div>
-              <div style={{ fontSize:34, fontWeight:700, color:"#fff", textAlign:"center" }}>{word.ru}</div>
-              <div style={{ fontSize:15, color:"rgba(255,255,255,0.7)", letterSpacing:"0.5px" }}>[{word.tr}]</div>
+            <div style={{
+              ...faceBase,
+              background: accent,
+              transform: "rotateY(180deg)",
+              visibility: flipped ? "visible" : "hidden",
+            }}>
+              <div style={{ fontSize: 80, lineHeight: 1 }}>{word.emoji}</div>
+              <div style={{ fontSize: 34, fontWeight: 700, color: "#fff", textAlign: "center" }}>{word.ru}</div>
+              <div style={{ fontSize: 15, color: "rgba(255,255,255,0.7)", letterSpacing: "0.5px" }}>[{word.tr}]</div>
             </div>
           </div>
         </div>
 
-        {/* Actions */}
-        <div style={{ display:"flex", gap:12 }}>
+        {/* Actions — всегда под карточкой */}
+        <div style={{ display: "flex", gap: 12, flexShrink: 0 }}>
           <button onClick={() => next("right")} style={{ flex:1, background:C.terraMuted, color:C.terra, border:"none", borderRadius:14, padding:"15px", fontSize:15, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}>↻ Повторить</button>
           <button onClick={() => next("left")} style={{ flex:1, background:accent, color:"#fff", border:"none", borderRadius:14, padding:"15px", fontSize:15, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}>✓ Знаю</button>
         </div>
@@ -1190,7 +1228,7 @@ export default function App() {
         {/* Dynamic Island */}
         <div style={{ position:"absolute", top:13, left:"50%", transform:"translateX(-50%)", width:118, height:35, background:"#000", borderRadius:22, zIndex:200 }}/>
 
-        <div style={{ flex:1, display:"flex", flexDirection:"column", overflow:"hidden", opacity:transitioning?0:1, transition:"opacity 0.12s" }}>
+        <div style={{ flex:1, display:"flex", flexDirection:"column", overflow:"hidden", opacity:transitioning?0:1, transition:"opacity 0.12s", minHeight:0 }}>
           {renderScreen()}
         </div>
 

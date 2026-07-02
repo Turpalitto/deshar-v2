@@ -43,10 +43,11 @@ class AssetDictionaryDataSource {
 
   WordEntity _fromCurated(Map<String, dynamic> j) {
     final ce = (j['chechen'] as String).trim();
+    final ru = j['russian'] as String;
     return WordEntity(
-      id: _id(ce),
+      id: _id(ce, ru),
       chechen: _capitalize(ce),
-      russian: j['russian'] as String,
+      russian: ru,
       pronunciation: ce,
       partOfSpeech: _guessPos(j['category'] as String?),
       category: j['category'] as String?,
@@ -54,24 +55,29 @@ class AssetDictionaryDataSource {
       emoji: j['emoji'] as String?,
       tags: ['verified'],
       hint: j['hint'] as String?,
+      nounClass: NounClass.fromCode(j['nounClass'] as String?),
     );
   }
 
   WordEntity _fromDictionary(Map<String, dynamic> j) {
     final ce = (j['chechen'] as String).trim();
+    final ru = j['russian'] as String;
     return WordEntity(
-      id: _id(ce),
+      id: _id(ce, ru),
       chechen: ce,
-      russian: j['russian'] as String,
+      russian: ru,
       pronunciation: j['pronunciation'] as String?,
       category: j['category'] as String?,
       sources: List<String>.from(j['sources'] ?? ['maciev']),
       emoji: j['emoji'] as String?,
+      nounClass: NounClass.fromCode(j['nounClass'] as String?),
     );
   }
 
-  String _id(String chechen) =>
-      _uuid.v5(Uuid.NAMESPACE_URL, chechen.toLowerCase().replaceAll(' ', ''));
+  String _id(String chechen, String russian) => _uuid.v5(
+        Uuid.NAMESPACE_URL,
+        '${chechen.toLowerCase().replaceAll(' ', '')}|${russian.toLowerCase().trim()}',
+      );
 
   String _capitalize(String s) =>
       s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);

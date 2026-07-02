@@ -80,8 +80,69 @@ def capitalize_chechen(word: str) -> str:
     return word[0].upper() + word[1:] if word else word
 
 
+PALOCHKA = "\u04cf"
+_PALOCHKA_TRANSLATION = str.maketrans({
+    "1": PALOCHKA,
+    "I": PALOCHKA,
+    "i": PALOCHKA,
+    "l": PALOCHKA,
+    "|": PALOCHKA,
+    "!": PALOCHKA,
+})
+
+
+def normalize_palochka(text: str) -> str:
+    return text.translate(_PALOCHKA_TRANSLATION)
+
+
 def norm_key(chechen: str) -> str:
-    return re.sub(r"\s+", "", chechen.lower())
+    return re.sub(r"\s+", "", normalize_palochka(chechen.lower()))
+
+
+def norm_russian(russian: str) -> str:
+    return re.sub(r"\s+", " ", russian.lower().strip())
+
+
+def entry_key(chechen: str, russian: str) -> str:
+    return f"{norm_key(chechen)}|{norm_russian(russian)}"
+
+
+def infer_noun_class(chechen: str, russian: str, raw_russian: str | None = None) -> str | None:
+    text = (raw_russian or russian).lower()
+    patterns = (
+        (r"\(в\)", "v"),
+        (r"\(й\)", "y"),
+        (r"\(б\)", "b"),
+        (r"\(д\)", "d"),
+        (r"\bв\.?\s*клас", "v"),
+        (r"\bй\.?\s*клас", "y"),
+        (r"\bб\.?\s*клас", "b"),
+        (r"\bд\.?\s*клас", "d"),
+        (r"\bв-класс", "v"),
+        (r"\bй-класс", "y"),
+        (r"\bб-класс", "b"),
+        (r"\bд-класс", "d"),
+    )
+    for pattern, noun_class in patterns:
+        if re.search(pattern, text):
+            return noun_class
+    return None
+
+
+def merge_entry_pair(existing: dict, incoming: dict) -> dict:
+    qa = existing.get("quality", 50)
+    qb = incoming.get("quality", 50)
+    base = existing if qa >= qb else incoming
+    out = {
+        **base,
+        "sources": list(set(existing.get("sources", []) + incoming.get("sources", []))),
+    }
+    if qb > qa:
+        out["russian"] = incoming["russian"]
+    noun_class = existing.get("nounClass") or incoming.get("nounClass")
+    if noun_class:
+        out["nounClass"] = noun_class
+    return out
 
 
 def is_valid_chechen(word: str) -> bool:
@@ -126,7 +187,7 @@ def quality_score(chechen: str, russian: str) -> int:
     return score
 
 
-def parse_maciev_line(line: str) -> tuple[str, str] | None:
+def parse_maciev_line(line: str) -> tuple[str, str, str | None] | None:
     line = line.strip()
     if not line or len(line) < 4 or re.match(r"^\d+\.?\s*$", line):
         return None
@@ -151,13 +212,14 @@ def parse_maciev_line(line: str) -> tuple[str, str] | None:
 
     if "]" in rest:
         rest = rest[rest.find("]") + 1:].strip()
+    noun_class = infer_noun_class(chechen, "", rest)
     meaning = re.search(r"(?:^|\s)1\)\s*(.+)", rest)
     russian = clean_russian(meaning.group(1) if meaning else rest)
     if not is_valid_russian(russian):
         return None
     if quality_score(chechen, russian) < 50:
         return None
-    return chechen, russian
+    return chechen, russian, noun_class
 
 
 def parse_maciev(pdf_path: Path) -> dict[str, dict]:
@@ -168,15 +230,18 @@ def parse_maciev(pdf_path: Path) -> dict[str, dict]:
             parsed = parse_maciev_line(line.strip())
             if not parsed:
                 continue
-            chechen, russian = parsed
-            key = norm_key(chechen)
+            chechen, russian, noun_class = parsed
+            key = entry_key(chechen, russian)
             if key not in entries:
-                entries[key] = {
+                entry = {
                     "chechen": capitalize_chechen(chechen),
                     "russian": russian[0].upper() + russian[1:],
                     "sources": ["maciev"],
                     "quality": quality_score(chechen, russian),
                 }
+                if noun_class:
+                    entry["nounClass"] = noun_class
+                entries[key] = entry
     return entries
 
 
@@ -194,9 +259,11 @@ def load_corrections() -> tuple[dict[str, dict], set[str]]:
 
 
 def apply_corrections(merged: dict[str, dict], overrides: dict[str, dict], deprecated: set[str]) -> dict[str, dict]:
-    for key in deprecated:
+    to_remove = [k for k, entry in merged.items() if norm_key(entry["chechen"]) in deprecated]
+    for key in to_remove:
         merged.pop(key, None)
-    for key, entry in overrides.items():
+    for _, entry in overrides.items():
+        key = entry_key(entry["chechen"], entry["russian"])
         merged[key] = {
             **entry,
             "pronunciation": simple_pronunciation(entry["chechen"]),
@@ -211,8 +278,8 @@ def load_curated() -> dict[str, dict]:
         data = json.load(f)
     entries: dict[str, dict] = {}
     for item in data["entries"]:
-        key = norm_key(item["chechen"])
-        entries[key] = {
+        key = entry_key(item["chechen"], item["russian"])
+        entry = {
             "chechen": item["chechen"],
             "russian": item["russian"],
             "category": item.get("category"),
@@ -221,6 +288,9 @@ def load_curated() -> dict[str, dict]:
             "sources": item.get("sources", ["curated"]),
             "quality": 100,
         }
+        if item.get("nounClass"):
+            entry["nounClass"] = item["nounClass"]
+        entries[key] = entry
     return entries
 
 
@@ -231,7 +301,7 @@ def load_aliroev_ocr() -> dict[str, dict]:
         data = json.load(f)
     entries: dict[str, dict] = {}
     for item in data.get("entries", []):
-        key = norm_key(item["chechen"])
+        key = entry_key(item["chechen"], item["russian"])
         entries[key] = {
             "chechen": item["chechen"],
             "russian": item["russian"],
@@ -244,31 +314,27 @@ def load_aliroev_ocr() -> dict[str, dict]:
 def merge_entries(maciev: dict, curated: dict, aliroev: dict | None = None) -> list[dict]:
     merged: dict[str, dict] = {}
     aliroev = aliroev or {}
-    for key, entry in maciev.items():
-        merged[key] = {
+
+    def put(key: str, entry: dict, *, force: bool = False) -> None:
+        prepared = {
             **entry,
             "pronunciation": simple_pronunciation(entry["chechen"]),
         }
+        noun_class = entry.get("nounClass") or infer_noun_class(entry["chechen"], entry["russian"])
+        if noun_class:
+            prepared["nounClass"] = noun_class
+        if force or key not in merged:
+            merged[key] = prepared
+            return
+        merged[key] = merge_entry_pair(merged[key], prepared)
+
+    for key, entry in maciev.items():
+        put(key, entry)
     for key, entry in aliroev.items():
-        if key not in merged:
-            merged[key] = {
-                **entry,
-                "pronunciation": simple_pronunciation(entry["chechen"]),
-            }
-        else:
-            src = list(set(merged[key].get("sources", []) + entry.get("sources", [])))
-            merged[key]["sources"] = src
+        put(key, entry)
     for key, entry in curated.items():
-        merged[key] = {
-            "chechen": entry["chechen"],
-            "russian": entry["russian"],
-            "pronunciation": simple_pronunciation(entry["chechen"]),
-            "category": entry.get("category"),
-            "emoji": entry.get("emoji", "📖"),
-            "hint": entry.get("hint", ""),
-            "sources": entry.get("sources", ["curated"]),
-            "quality": 100,
-        }
+        put(key, entry, force=True)
+
     result = list(merged.values())
     result.sort(key=lambda x: x["chechen"].lower())
     return result
@@ -346,7 +412,7 @@ def main():
 
     merged = merge_entries(maciev, curated, aliroev)
     overrides, deprecated = load_corrections()
-    merged_dict = {norm_key(e["chechen"]): e for e in merged}
+    merged_dict = {entry_key(e["chechen"], e["russian"]): e for e in merged}
     merged_dict = apply_corrections(merged_dict, overrides, deprecated)
     merged = list(merged_dict.values())
     merged.sort(key=lambda x: x["chechen"].lower())

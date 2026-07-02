@@ -6,12 +6,26 @@ import '../../core/design/tokens/app_spacing.dart';
 import '../../core/design/widgets/app_scaffold.dart';
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
+import '../../core/widgets/kids_tap_target.dart';
+import '../../core/widgets/parental_gate.dart';
 import '../../domain/entities/enums.dart';
 import '../../domain/entities/learning_entities.dart';
-import '../../core/design_system/design_system.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
+
+  Future<void> _guarded(
+    BuildContext context,
+    WidgetRef ref, {
+    required bool needsGate,
+    required Future<void> Function() action,
+  }) async {
+    if (needsGate) {
+      final ok = await ParentalGate.requestUnlock(context);
+      if (!ok || !context.mounted) return;
+    }
+    await action();
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -54,10 +68,17 @@ class ProfileScreen extends ConsumerWidget {
                 ),
               ),
               if (!profile.isPremium)
-                IconButton(
-                  onPressed: () => context.push('/paywall'),
-                  style: IconButton.styleFrom(backgroundColor: DesignTokens.goldMuted),
-                  icon: const Text('👑', style: TextStyle(fontSize: 18)),
+                KidsTapTarget(
+                  minSize: isKids ? 56 : 48,
+                  onTap: () => context.push('/paywall'),
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: DesignTokens.goldMuted,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Text('👑', style: TextStyle(fontSize: 18)),
+                  ),
                 ),
             ],
           ),
@@ -151,18 +172,24 @@ class ProfileScreen extends ConsumerWidget {
             width: double.infinity,
             child: CupertinoSlidingSegmentedControl<AppMode>(
               groupValue: profile.mode,
-              children: const {
+              children: {
                 AppMode.kids: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  child: Text('🦊 Дети'),
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: isKids ? 12 : 8),
+                  child: const Text('🦊 Дети'),
                 ),
                 AppMode.adult: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  child: Text('📚 Взрослые'),
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: isKids ? 12 : 8),
+                  child: const Text('📚 Взрослые'),
                 ),
               },
               onValueChanged: (mode) {
-                if (mode != null) ref.read(userProfileProvider.notifier).setMode(mode);
+                if (mode == null || mode == profile.mode) return;
+                _guarded(
+                  context,
+                  ref,
+                  needsGate: isKids || mode == AppMode.adult,
+                  action: () async => ref.read(userProfileProvider.notifier).setMode(mode),
+                );
               },
             ),
           ),
@@ -175,13 +202,22 @@ class ProfileScreen extends ConsumerWidget {
                 KidsAgeGroup.age6to9 => '6–9 лет',
                 KidsAgeGroup.age9to12 => '9–12 лет',
               };
-              return RadioListTile<KidsAgeGroup>(
-                title: Text(label),
-                value: age,
-                groupValue: profile.ageGroup,
-                onChanged: (v) {
-                  if (v != null) ref.read(userProfileProvider.notifier).setAgeGroup(v);
-                },
+              return KidsTapTarget(
+                minSize: 56,
+                expand: true,
+                onTap: () => _guarded(
+                  context,
+                  ref,
+                  needsGate: true,
+                  action: () async => ref.read(userProfileProvider.notifier).setAgeGroup(age),
+                ),
+                child: RadioListTile<KidsAgeGroup>(
+                  title: Text(label),
+                  value: age,
+                  groupValue: profile.ageGroup,
+                  onChanged: null,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                ),
               );
             }),
           ],
@@ -189,7 +225,14 @@ class ProfileScreen extends ConsumerWidget {
           NokhchiinSettingsRow(
             emoji: '🔄',
             label: 'Сменить режим при входе',
-            onTap: () => context.go('/onboarding'),
+            onTap: () => _guarded(
+              context,
+              ref,
+              needsGate: isKids,
+              action: () async {
+                if (context.mounted) context.go('/onboarding');
+              },
+            ),
           ),
         ],
       ),

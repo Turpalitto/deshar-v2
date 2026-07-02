@@ -8,6 +8,7 @@ import '../../core/design/tokens/app_spacing.dart';
 import '../../core/design/widgets/app_scaffold.dart';
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
+import '../../core/widgets/kids_tap_target.dart';
 import '../../domain/entities/enums.dart';
 
 class OnboardingScreen extends ConsumerWidget {
@@ -169,9 +170,10 @@ class _TrackCard extends StatelessWidget {
     return Material(
       color: tokens.surface,
       borderRadius: BorderRadius.circular(20),
-      child: InkWell(
+      child: KidsTapTarget(
+        minSize: 64,
+        expand: true,
         onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
         child: Ink(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
@@ -257,7 +259,9 @@ class _AgeRow extends ConsumerWidget {
       child: Material(
         color: tokens.surface,
         borderRadius: BorderRadius.circular(16),
-        child: InkWell(
+        child: KidsTapTarget(
+          minSize: 64,
+          expand: true,
           onTap: () async {
             await ref.read(userProfileProvider.notifier).setAgeGroup(age);
             if (context.mounted) {
@@ -265,7 +269,6 @@ class _AgeRow extends ConsumerWidget {
               context.go('/lesson/$kFirstLessonUnitId');
             }
           },
-          borderRadius: BorderRadius.circular(16),
           child: Ink(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),

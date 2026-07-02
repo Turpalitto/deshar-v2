@@ -20,6 +20,7 @@ class WordEntity extends Equatable {
     this.audioRuUrl,
     this.tags = const [],
     this.hint,
+    this.nounClass,
   });
 
   final String id;
@@ -38,6 +39,7 @@ class WordEntity extends Equatable {
   final String? audioRuUrl;
   final List<String> tags;
   final String? hint;
+  final NounClass? nounClass;
 
   bool get isPhrase => chechen.contains(' ') || partOfSpeech == PartOfSpeech.phrase;
 
@@ -52,6 +54,7 @@ class WordEntity extends Equatable {
     List<String>? synonyms,
     List<String>? sources,
     String? emoji,
+    NounClass? nounClass,
   }) {
     return WordEntity(
       id: id,
@@ -69,6 +72,8 @@ class WordEntity extends Equatable {
       audioCeUrl: audioCeUrl,
       audioRuUrl: audioRuUrl,
       tags: tags,
+      hint: hint,
+      nounClass: nounClass ?? this.nounClass,
     );
   }
 

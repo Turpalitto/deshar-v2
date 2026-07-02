@@ -39,3 +39,23 @@ enum AppMode { kids, adult }
 enum KidsAgeGroup { age3to6, age6to9, age9to12 }
 
 enum VoiceProfile { childSlow, childNormal, adultSlow, adultNormal }
+
+/// Грамматический класс существительного (согласование й / в / б / д).
+enum NounClass {
+  v('в', 'В-класс'),
+  y('й', 'Й-класс'),
+  b('б', 'Б-класс'),
+  d('д', 'Д-класс');
+
+  const NounClass(this.marker, this.labelRu);
+  final String marker;
+  final String labelRu;
+
+  static NounClass? fromCode(String? code) {
+    if (code == null || code.isEmpty) return null;
+    for (final c in NounClass.values) {
+      if (c.name == code) return c;
+    }
+    return null;
+  }
+}

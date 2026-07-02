@@ -9,6 +9,7 @@ import '../../core/design/widgets/loading_state.dart';
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/audio_service.dart';
+import '../../core/utils/chechen_text_utils.dart';
 import '../../domain/constants/subscription_limits.dart';
 import '../../domain/entities/word_entity.dart';
 
@@ -82,9 +83,11 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
                 final filtered = _query.isEmpty
                     ? words.take(browseLimit).toList()
                     : words
-                        .where((w) =>
-                            w.chechen.toLowerCase().contains(_query.toLowerCase()) ||
-                            w.russian.toLowerCase().contains(_query.toLowerCase()))
+                        .where((w) => ChechenTextUtils.matchesWordQuery(
+                              query: _query,
+                              chechen: w.chechen,
+                              russian: w.russian,
+                            ))
                         .take(searchLimit)
                         .toList();
 
@@ -142,6 +145,7 @@ class _WordRow extends StatelessWidget {
       russian: word.russian,
       transcription: word.pronunciation,
       category: word.category,
+      nounClassMarker: word.nounClass?.marker,
       onTap: onSpeak,
       trailing: Row(
         mainAxisSize: MainAxisSize.min,

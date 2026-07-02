@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../design_system.dart';
 
 /// 3D flip-карточка из Figma (только презентация).
-class NokhchiinFlipCard extends StatelessWidget {
+class NokhchiinFlipCard extends StatefulWidget {
   const NokhchiinFlipCard({
     super.key,
     required this.flipped,
@@ -20,35 +20,75 @@ class NokhchiinFlipCard extends StatelessWidget {
   final double radius;
 
   @override
+  State<NokhchiinFlipCard> createState() => _NokhchiinFlipCardState();
+}
+
+class _NokhchiinFlipCardState extends State<NokhchiinFlipCard> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 450),
+    );
+    _animation = CurvedAnimation(parent: _controller, curve: IosMotion.curveGentle);
+    if (widget.flipped) _controller.value = 1;
+  }
+
+  @override
+  void didUpdateWidget(covariant NokhchiinFlipCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.flipped != widget.flipped) {
+      if (widget.flipped) {
+        _controller.forward();
+      } else {
+        _controller.reverse();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 450),
-        switchInCurve: IosMotion.curveGentle,
-        switchOutCurve: Curves.easeIn,
-        transitionBuilder: (child, animation) {
-          final rotate = Tween(begin: math.pi, end: 0.0).animate(animation);
-          return AnimatedBuilder(
-            animation: rotate,
-            child: child,
-            builder: (context, child) {
-              final isUnder = child!.key != ValueKey(flipped);
-              final value = isUnder ? math.min(rotate.value, math.pi / 2) : rotate.value;
-              return Transform(
-                transform: Matrix4.identity()
-                  ..setEntry(3, 2, 0.001)
-                  ..rotateY(value),
-                alignment: Alignment.center,
-                child: child,
-              );
-            },
-          );
-        },
-        child: flipped
-            ? KeyedSubtree(key: const ValueKey(true), child: back)
-            : KeyedSubtree(key: const ValueKey(false), child: front),
-      ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SizedBox(
+          width: constraints.maxWidth,
+          height: constraints.maxHeight.isFinite ? constraints.maxHeight : null,
+          child: GestureDetector(
+            onTap: widget.onTap,
+            child: AnimatedBuilder(
+              animation: _animation,
+              builder: (context, _) {
+                final angle = _animation.value * math.pi;
+                final showFront = angle < math.pi / 2;
+
+                return Transform(
+                  alignment: Alignment.center,
+                  transform: Matrix4.identity()
+                    ..setEntry(3, 2, 0.001)
+                    ..rotateY(angle),
+                  child: showFront
+                      ? widget.front
+                      : Transform(
+                          alignment: Alignment.center,
+                          transform: Matrix4.identity()..rotateY(math.pi),
+                          child: widget.back,
+                        ),
+                );
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 }
@@ -70,14 +110,15 @@ class NokhchiinFlashcardFace extends StatelessWidget {
   Widget build(BuildContext context) {
     final tokens = context.iosTokens;
 
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: accent ? tokens.accent : tokens.surface,
-        borderRadius: BorderRadius.circular(radius),
-        border: accent ? null : Border.all(color: tokens.separator, width: 1.5),
+    return SizedBox.expand(
+      child: Container(
+        decoration: BoxDecoration(
+          color: accent ? tokens.accent : tokens.surface,
+          borderRadius: BorderRadius.circular(radius),
+          border: accent ? null : Border.all(color: tokens.separator, width: 1.5),
+        ),
+        child: child,
       ),
-      child: child,
     );
   }
 }
