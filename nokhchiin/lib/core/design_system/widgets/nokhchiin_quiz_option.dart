@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../design_system.dart';
 
 /// Вариант ответа в квизе — subtle green/red borders из Figma.
@@ -26,21 +27,21 @@ class NokhchiinQuizOption extends StatelessWidget {
     final textTheme = IosTypography.of(context, tokens);
 
     Color bg = tokens.surface;
-    Color border = const Color(0x1A3D3832);
+    Color border = tokens.separator;
     Color textColor = tokens.textPrimary;
     Color badgeBg = tokens.surfaceMuted;
     Color badgeFg = tokens.textTertiary;
     String badge = letter;
 
     if (selected == true && correct == true) {
-      bg = const Color(0xFFE8F5EE);
+      bg = tokens.success.withValues(alpha: 0.09);
       border = tokens.success;
       textColor = tokens.success;
       badgeBg = tokens.success;
       badgeFg = Colors.white;
       badge = '✓';
     } else if (selected == true && correct == false) {
-      bg = const Color(0xFFFBF0F0);
+      bg = tokens.error.withValues(alpha: 0.09);
       border = tokens.error;
       textColor = tokens.error;
       badgeBg = tokens.error;
@@ -51,7 +52,18 @@ class NokhchiinQuizOption extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: enabled ? onTap : null,
+        onTap: enabled
+            ? () {
+                if (correct == true) {
+                  HapticFeedback.lightImpact();
+                } else if (correct == false) {
+                  HapticFeedback.heavyImpact();
+                } else {
+                  HapticFeedback.selectionClick();
+                }
+                onTap?.call();
+              }
+            : null,
         borderRadius: BorderRadius.circular(14),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 220),
@@ -69,7 +81,7 @@ class NokhchiinQuizOption extends StatelessWidget {
                 height: 28,
                 decoration: BoxDecoration(
                   color: badgeBg,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(14),
                 ),
                 alignment: Alignment.center,
                 child: Text(

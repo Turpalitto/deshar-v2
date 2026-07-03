@@ -11,6 +11,7 @@ class NokhchiinSurfaceCard extends StatelessWidget {
     this.radius = 16,
     this.background,
     this.border,
+    this.shadow = false,
   });
 
   final Widget child;
@@ -19,6 +20,7 @@ class NokhchiinSurfaceCard extends StatelessWidget {
   final double radius;
   final Color? background;
   final Color? border;
+  final bool shadow;
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +32,15 @@ class NokhchiinSurfaceCard extends StatelessWidget {
         color: background ?? tokens.surface,
         borderRadius: BorderRadius.circular(radius),
         border: Border.all(color: border ?? tokens.separator),
+        boxShadow: shadow
+            ? [
+                BoxShadow(
+                  color: tokens.textPrimary.withValues(alpha: 0.08),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ]
+            : null,
       ),
       child: child,
     );

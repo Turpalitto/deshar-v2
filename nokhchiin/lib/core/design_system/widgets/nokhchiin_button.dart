@@ -12,6 +12,7 @@ class NokhchiinButton extends StatefulWidget {
     this.textColor,
     this.small = false,
     this.child,
+    this.coloredShadow = true,
   });
 
   final String? label;
@@ -21,6 +22,8 @@ class NokhchiinButton extends StatefulWidget {
   final Color? color;
   final Color? textColor;
   final bool small;
+  /// Цветная тень CTA (как в Deshar): тень цвета кнопки, soft.
+  final bool coloredShadow;
 
   @override
   State<NokhchiinButton> createState() => _NokhchiinButtonState();
@@ -55,6 +58,15 @@ class _NokhchiinButtonState extends State<NokhchiinButton> {
           decoration: BoxDecoration(
             color: bg,
             borderRadius: BorderRadius.circular(14),
+            boxShadow: widget.coloredShadow && widget.onPressed != null
+                ? [
+                    BoxShadow(
+                      color: bg.withValues(alpha: 0.25),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ]
+                : null,
           ),
           alignment: Alignment.center,
           child: widget.child ??

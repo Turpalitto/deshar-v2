@@ -12,7 +12,7 @@ class IosDesignSystem extends ThemeExtension<IosDesignSystem> {
     required this.tokens,
     required this.textTheme,
     required this.cupertinoTheme,
-    this.accentVariant = IosAccentVariant.terracotta,
+    this.accentVariant = IosAccentVariant.meadow,
   });
 
   final DesignTokens tokens;
@@ -21,7 +21,7 @@ class IosDesignSystem extends ThemeExtension<IosDesignSystem> {
   final IosAccentVariant accentVariant;
 
   factory IosDesignSystem.light({
-    IosAccentVariant accent = IosAccentVariant.terracotta,
+    IosAccentVariant accent = IosAccentVariant.meadow,
     TextScaler textScaler = TextScaler.noScaling,
   }) {
     final t = DesignTokens.light(accent: accent);
@@ -35,7 +35,7 @@ class IosDesignSystem extends ThemeExtension<IosDesignSystem> {
   }
 
   factory IosDesignSystem.dark({
-    IosAccentVariant accent = IosAccentVariant.terracotta,
+    IosAccentVariant accent = IosAccentVariant.meadow,
     TextScaler textScaler = TextScaler.noScaling,
   }) {
     final t = DesignTokens.dark(accent: accent);
@@ -91,7 +91,7 @@ class IosDesignSystem extends ThemeExtension<IosDesignSystem> {
   /// (не ломает текущую архитектуру / NokhchiinTheme).
   static ThemeData enhance(
     ThemeData base, {
-    IosAccentVariant accent = IosAccentVariant.terracotta,
+    IosAccentVariant accent = IosAccentVariant.meadow,
     TextScaler textScaler = TextScaler.noScaling,
   }) {
     final isDark = base.brightness == Brightness.dark;
@@ -124,6 +124,7 @@ class IosDesignSystem extends ThemeExtension<IosDesignSystem> {
             ? IosDesignSystem.dark()
             : IosDesignSystem.light());
   }
+
 
   @override
   IosDesignSystem copyWith({

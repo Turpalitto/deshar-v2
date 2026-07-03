@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../design/widgets/app_icon_image.dart';
 import '../design_system.dart';
@@ -26,7 +27,7 @@ class NokhchiinTabBar extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: tokens.backgroundElevated,
-        border: Border(top: BorderSide(color: tokens.separator)),
+        border: Border(top: BorderSide(color: tokens.separator, width: 0.5)),
       ),
       padding: const EdgeInsets.only(top: 8, bottom: 20),
       child: Row(
@@ -35,7 +36,10 @@ class NokhchiinTabBar extends StatelessWidget {
           final iconColor = isActive ? active : tokens.textTertiary;
           return Expanded(
             child: InkWell(
-              onTap: () => onTap(i),
+              onTap: () {
+                HapticFeedback.selectionClick();
+                onTap(i);
+              },
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -44,7 +48,7 @@ class NokhchiinTabBar extends StatelessWidget {
                   Text(
                     _labels[i],
                     style: TextStyle(
-                      fontSize: 10,
+                      fontSize: 11,
                       fontWeight: FontWeight.w600,
                       letterSpacing: 0.2,
                       color: iconColor,

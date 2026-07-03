@@ -18,6 +18,7 @@ abstract final class DesignSystemIntegration {
     return IosDesignSystem.enhance(baseTheme, accent: defaultAccent);
   }
 
-  /// Акцент по умолчанию — терракота (основной бренд). Для наград см. [IosAccentVariant.sunGold].
-  static const IosAccentVariant defaultAccent = IosAccentVariant.terracotta;
+  /// Акцент по умолчанию — национальный зелёный (Deshar primary, основной бренд
+  /// adult-трека). Терракота — культурный акцент, sunGold — для наград.
+  static const IosAccentVariant defaultAccent = IosAccentVariant.meadow;
 }

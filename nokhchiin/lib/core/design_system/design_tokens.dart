@@ -52,52 +52,56 @@ class DesignTokens {
   final Color error;
   final bool isDark;
 
-  /// Семантические цвета из Figma Make (не зависят от accent variant).
-  static const meadow = Color(0xFF3D7A5C);
-  static const meadowMuted = Color(0xFFD4EDE3);
+  /// Культурные цвета чеченской идентичности (орнаменты, раздел «Культура»).
+  /// Сохраняются поверх deshar-палитры как акценты наследия.
+  static const meadow = Color(0xFF1B6B4A);
+  static const meadowMuted = Color(0xFFD4F0E0);
   static const gold = Color(0xFFD4A84B);
   static const goldMuted = Color(0xFFFFF4D4);
   static const cultureDark = Color(0xFF1E1510);
   static const cultureAccent = Color(0xFFE8A87C);
 
-  static DesignTokens light({IosAccentVariant accent = IosAccentVariant.terracotta}) {
+  /// Палитра adult-трека перенесена из визуального языка Deshar (Manus):
+  /// чистый светлый фон, национальный зелёный primary, мягкие семантические
+  /// цвета. Kids-трек использует [NokhchiinColors] (тёплая кремовая палитра).
+  static DesignTokens light({IosAccentVariant accent = IosAccentVariant.meadow}) {
     final a = _accentPair(accent, isDark: false);
     return DesignTokens(
-      background: const Color(0xFFF7F4EF),
-      backgroundElevated: const Color(0xFFFFFCF8),
+      background: const Color(0xFFFAFBFC),
+      backgroundElevated: const Color(0xFFFFFFFF),
       surface: const Color(0xFFFFFFFF),
-      surfaceMuted: const Color(0xFFF0EBE4),
-      separator: const Color(0x1A3D3832),
-      textPrimary: const Color(0xFF1C1917),
-      textSecondary: const Color(0xFF57534E),
-      textTertiary: const Color(0xFF78716C),
+      surfaceMuted: const Color(0xFFF0F2F5),
+      separator: const Color(0xFFE8ECF0),
+      textPrimary: const Color(0xFF1A1A2E),
+      textSecondary: const Color(0xFF6B7280),
+      textTertiary: const Color(0xFF9CA3AF),
       accent: a.$1,
       accentMuted: a.$2,
       accentOn: const Color(0xFFFFFFFF),
-      success: const Color(0xFF3D7A5C),
-      warning: const Color(0xFFB8860B),
-      error: const Color(0xFFB54A4A),
+      success: const Color(0xFF10B981),
+      warning: const Color(0xFFF59E0B),
+      error: const Color(0xFFEF4444),
       isDark: false,
     );
   }
 
-  static DesignTokens dark({IosAccentVariant accent = IosAccentVariant.terracotta}) {
+  static DesignTokens dark({IosAccentVariant accent = IosAccentVariant.meadow}) {
     final a = _accentPair(accent, isDark: true);
     return DesignTokens(
-      background: const Color(0xFF121110),
-      backgroundElevated: const Color(0xFF1A1816),
-      surface: const Color(0xFF221F1C),
-      surfaceMuted: const Color(0xFF2C2824),
-      separator: const Color(0x33F5F0E8),
-      textPrimary: const Color(0xFFF5F0E8),
-      textSecondary: const Color(0xFFC9C2B8),
-      textTertiary: const Color(0xFF9C948A),
+      background: const Color(0xFF0F1419),
+      backgroundElevated: const Color(0xFF131A22),
+      surface: const Color(0xFF1A2332),
+      surfaceMuted: const Color(0xFF2F3B4A),
+      separator: const Color(0xFF2F3B4A),
+      textPrimary: const Color(0xFFF0F4F8),
+      textSecondary: const Color(0xFF8899A6),
+      textTertiary: const Color(0xFF6B7280),
       accent: a.$1,
       accentMuted: a.$2,
-      accentOn: const Color(0xFF1C1917),
-      success: const Color(0xFF6BBF8A),
-      warning: const Color(0xFFE8C468),
-      error: const Color(0xFFE88A8A),
+      accentOn: const Color(0xFF0F1419),
+      success: const Color(0xFF34D399),
+      warning: const Color(0xFFFBBF24),
+      error: const Color(0xFFF87171),
       isDark: true,
     );
   }
@@ -105,9 +109,11 @@ class DesignTokens {
   /// accent, accentMuted
   static (Color, Color) _accentPair(IosAccentVariant variant, {required bool isDark}) {
     return switch (variant) {
+      // Чеченский национальный зелёный (Deshar primary).
       IosAccentVariant.meadow => isDark
-          ? (const Color(0xFF6BBF8A), const Color(0xFF2A4D38))
-          : (const Color(0xFF3D7A5C), const Color(0xFFD4E8DC)),
+          ? (const Color(0xFF2ECC71), const Color(0xFF1A3A28))
+          : (const Color(0xFF1B6B4A), const Color(0xFFD4F0E0)),
+      // Терракота — культурный акцент (орнамент, heritage).
       IosAccentVariant.terracotta => isDark
           ? (const Color(0xFFE8A87C), const Color(0xFF5C3D2E))
           : (const Color(0xFFC4724E), const Color(0xFFF5E0D4)),
