@@ -13,7 +13,7 @@
       "title": "Проверенная учебная лексика"
     }
   ],
-  "totalEntries": 206,
+  "totalEntries": 205,
   "entries": [
     {
       "chechen": "Алгебраически",
@@ -35,8 +35,8 @@
       "emoji": "⚡",
       "hint": "Слово из словаря: Бскомписьме",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -48,8 +48,8 @@
       "emoji": "🌳",
       "hint": "Слово из словаря: ЛамАраратгора",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -61,8 +61,8 @@
       "emoji": "🫀",
       "hint": "Слово из словаря: Хапобороть",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -74,8 +74,8 @@
       "emoji": "⚡",
       "hint": "Слово из словаря: Читься",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -87,8 +87,8 @@
       "emoji": "🌳",
       "hint": "Слово из словаря: Поросшаялесомме стностьна северномсклоне",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 75
@@ -100,8 +100,8 @@
       "emoji": "❤️",
       "hint": "Слово из словаря: Хромать",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -113,8 +113,8 @@
       "emoji": "🌳",
       "hint": "Слово из словаря: Фольк. снегурочка",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -126,8 +126,8 @@
       "emoji": "⚡",
       "hint": "Слово из словаря: Однаиз четырѐхсторонигральной",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -139,8 +139,8 @@
       "emoji": "⚡",
       "hint": "Слово из словаря: Ла* стать непослушным",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -152,8 +152,8 @@
       "emoji": "🐾",
       "hint": "Слово из словаря: Кхокоровий помѐт",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -179,8 +179,8 @@
       "emoji": "🫀",
       "hint": "Слово из словаря: Диснадети осиротели",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -192,8 +192,8 @@
       "emoji": "🫀",
       "hint": "Слово из словаря: Нога большого размера",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -205,8 +205,8 @@
       "emoji": "⚡",
       "hint": "Слово из словаря: Нговоритьправду",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -218,8 +218,8 @@
       "emoji": "🌳",
       "hint": "Слово из словаря: Землянаягруша",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -231,8 +231,8 @@
       "emoji": "🍎",
       "hint": "Слово из словаря: Лорхо хлопковод",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -244,8 +244,8 @@
       "emoji": "🫀",
       "hint": "Слово из словаря: Погребальные носилки",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -271,8 +271,8 @@
       "emoji": "⚡",
       "hint": "Слово из словаря: Уговор",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -284,11 +284,11 @@
       "emoji": "8️⃣",
       "hint": "Число 8",
       "sources": [
-        "curated",
         "verified",
-        "aliroev",
+        "maciev",
         "lessons",
-        "maciev"
+        "aliroev",
+        "curated"
       ],
       "quality": 100
     },
@@ -299,8 +299,8 @@
       "emoji": "🔢",
       "hint": "Слово из словаря: Числ. восемьраз",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -312,8 +312,8 @@
       "emoji": "⚡",
       "hint": "Слово из словаря: Дан наступить",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -325,8 +325,8 @@
       "emoji": "🫀",
       "hint": "Слово из словаря: Рот",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -338,8 +338,8 @@
       "emoji": "🐾",
       "hint": "Слово из словаря: Медныйкувшин (в котором",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -351,8 +351,8 @@
       "emoji": "🌳",
       "hint": "Слово из словаря: Снеговаягора",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -364,8 +364,8 @@
       "emoji": "🐾",
       "hint": "Слово из словаря: Погов. безтруда невы ловишьирыбку изпруда",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 75
@@ -377,8 +377,8 @@
       "emoji": "🍎",
       "hint": "Слово из словаря: Хлебозавод",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -390,8 +390,8 @@
       "emoji": "🍎",
       "hint": "Слово из словаря: Буьйдигхлебныймякиш",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -417,8 +417,8 @@
       "emoji": "🫀",
       "hint": "Слово из словаря: Тельность",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -444,8 +444,8 @@
       "emoji": "🐾",
       "hint": "Слово из словаря: Крупный рогатыйскот",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -457,8 +457,8 @@
       "emoji": "🐾",
       "hint": "Слово из словаря: Ден зарезать скотинудля употреблениявпрок",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 75
@@ -470,8 +470,8 @@
       "emoji": "⚡",
       "hint": "Слово из словаря: Безработица",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -483,8 +483,8 @@
       "emoji": "🌳",
       "hint": "Слово из словаря: Хьуьнар трудовая доблесть",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -496,8 +496,8 @@
       "emoji": "⚡",
       "hint": "Слово из словаря: Работник",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -523,8 +523,8 @@
       "emoji": "❤️",
       "hint": "Слово из словаря: Хьеян пожимать плечами",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -559,16 +559,16 @@
     },
     {
       "chechen": "Берг",
-      "russian": "Копыто 2) игральныекарты отдвой кидо",
+      "russian": "Копыто 2) игральныекартыотдвой кидо",
       "category": "verbs",
       "emoji": "⚡",
       "hint": "Слово из словаря: Копыто 2) игральныекарты отдвойкидо",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
-      "quality": 65
+      "quality": 90
     },
     {
       "chechen": "Бертада",
@@ -577,8 +577,8 @@
       "emoji": "⚡",
       "hint": "Слово из словаря: Ло уговорить",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -590,8 +590,8 @@
       "emoji": "⚡",
       "hint": "Слово из словаря: Договоритьсяо чѐм-л",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -603,8 +603,8 @@
       "emoji": "🔢",
       "hint": "Слово из словаря: Числ. восемнадцать",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -616,8 +616,8 @@
       "emoji": "🔢",
       "hint": "Слово из словаря: Числ. восемнадцатьраз",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -629,8 +629,8 @@
       "emoji": "🫀",
       "hint": "Слово из словаря: Бледность",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -642,8 +642,8 @@
       "emoji": "🐾",
       "hint": "Слово из словаря: Чноеживотное",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -655,8 +655,8 @@
       "emoji": "🫀",
       "hint": "Слово из словаря: Дноборотьсяс врагами",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -668,8 +668,8 @@
       "emoji": "🫀",
       "hint": "Слово из словаря: А) доносить",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -681,8 +681,8 @@
       "emoji": "⚡",
       "hint": "Слово из словаря: Кхелобвини тельный приговор",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -694,8 +694,8 @@
       "emoji": "🍎",
       "hint": "Слово из словаря: Лорхо садовод",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -707,8 +707,8 @@
       "emoji": "🍎",
       "hint": "Слово из словаря: Водосточнаятруба",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -720,8 +720,8 @@
       "emoji": "❤️",
       "hint": "Слово из словаря: Свинчатка (костьдляигрывбабки",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -733,8 +733,8 @@
       "emoji": "🫀",
       "hint": "Слово из словаря: Детскаярука",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -746,8 +746,8 @@
       "emoji": "🔢",
       "hint": "Слово из словаря: Мекха ' четыребороны",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -759,8 +759,8 @@
       "emoji": "❤️",
       "hint": "Слово из словаря: Дех-ненах старший сынотделилсяот родителей",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 75
@@ -772,8 +772,8 @@
       "emoji": "⚡",
       "hint": "Слово из словаря: Вразн. знач. работа",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -787,8 +787,8 @@
       "sources": [
         "lessons",
         "verified",
-        "aliroev",
-        "curated"
+        "curated",
+        "aliroev"
       ],
       "quality": 100
     },
@@ -799,8 +799,8 @@
       "emoji": "🔢",
       "hint": "Слово из словаря: Цетридня",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -812,8 +812,8 @@
       "emoji": "🐾",
       "hint": "Слово из словаря: Пѐстраямастькоров",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -839,8 +839,8 @@
       "emoji": "🎨",
       "hint": "Слово из словаря: Цвет",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -852,8 +852,8 @@
       "emoji": "🍎",
       "hint": "Слово из словаря: Лорхосадовод",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -865,8 +865,8 @@
       "emoji": "⚡",
       "hint": "Слово из словаря: Прочитано′",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -878,8 +878,8 @@
       "emoji": "🫀",
       "hint": "Слово из словаря: Носзаложило",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -891,8 +891,8 @@
       "emoji": "🫀",
       "hint": "Слово из словаря: Ллаплотность",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -904,8 +904,8 @@
       "emoji": "🐾",
       "hint": "Слово из словаря: Мякоть",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -917,8 +917,8 @@
       "emoji": "🌳",
       "hint": "Слово из словаря: Небольшой глиняныйгоршок",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -930,8 +930,8 @@
       "emoji": "🫀",
       "hint": "Слово из словаря: Глаз",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -957,8 +957,8 @@
       "emoji": "🎨",
       "hint": "Слово из словаря: Вокне мелькнулисиниеглаза",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -970,8 +970,8 @@
       "emoji": "🫀",
       "hint": "Слово из словаря: А лчность",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -983,8 +983,8 @@
       "emoji": "🫀",
       "hint": "Слово из словаря: Знакглазами",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -996,8 +996,8 @@
       "emoji": "🔢",
       "hint": "Слово из словаря: Числ. сто",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -1009,8 +1009,8 @@
       "emoji": "🏠",
       "hint": "Слово из словаря: Столб",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -1022,8 +1022,8 @@
       "emoji": "🔢",
       "hint": "Слово из словаря: Числ. стораз",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -1035,8 +1035,8 @@
       "emoji": "🫀",
       "hint": "Слово из словаря: Противоположность",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -1061,8 +1061,8 @@
       "emoji": "🫀",
       "hint": "Слово из словаря: Детскийматрац (принадлежность",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -1074,8 +1074,8 @@
       "emoji": "🐾",
       "hint": "Слово из словаря: Рыб. перемѐт",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -1087,8 +1087,8 @@
       "emoji": "🌳",
       "hint": "Слово из словаря: Боковыебалкив земляных",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -1100,11 +1100,11 @@
       "emoji": "🚶",
       "hint": "Движение пешком",
       "sources": [
-        "curated",
         "verified",
-        "aliroev",
+        "maciev",
         "lessons",
-        "maciev"
+        "aliroev",
+        "curated"
       ],
       "quality": 100
     },
@@ -1129,8 +1129,8 @@
       "emoji": "🫀",
       "hint": "Слово из словаря: Посл. ктооткла дывалобя занностиназавтра",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 75
@@ -1142,8 +1142,8 @@
       "emoji": "⚡",
       "hint": "Слово из словаря: ′побежал′",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -1155,8 +1155,8 @@
       "emoji": "❤️",
       "hint": "Слово из словаря: Братство",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -1168,8 +1168,8 @@
       "emoji": "❤️",
       "hint": "Слово из словаря: Ваша единокровныйбрат",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -1181,8 +1181,8 @@
       "emoji": "🫀",
       "hint": "Слово из словаря: Разновидностьгрибов",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -1194,8 +1194,8 @@
       "emoji": "🍎",
       "hint": "Слово из словаря: Снаяпища",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -1207,8 +1207,8 @@
       "emoji": "🔢",
       "hint": "Слово из словаря: Щаетсявосемь вѐдерводы",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -1220,8 +1220,8 @@
       "emoji": "⚡",
       "hint": "Слово из словаря: Таде ношдахка назначить днивстречи",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -1233,8 +1233,8 @@
       "emoji": "⚡",
       "hint": "Слово из словаря: Сцепиться",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -1246,8 +1246,8 @@
       "emoji": "🌳",
       "hint": "Слово из словаря: Нно-морскиебазы",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -1259,8 +1259,8 @@
       "emoji": "⚡",
       "hint": "Слово из словаря: Чить",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -1272,8 +1272,8 @@
       "emoji": "🫀",
       "hint": "Слово из словаря: Жностипойти туда",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -1285,8 +1285,8 @@
       "emoji": "🏠",
       "hint": "Слово из словаря: Гстола",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -1298,8 +1298,8 @@
       "emoji": "🐾",
       "hint": "Слово из словаря: О возрасте животных) сколько лет?",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -1311,11 +1311,11 @@
       "emoji": "7️⃣",
       "hint": "Число 7",
       "sources": [
-        "curated",
         "verified",
-        "aliroev",
+        "maciev",
         "lessons",
-        "maciev"
+        "aliroev",
+        "curated"
       ],
       "quality": 100
     },
@@ -1326,8 +1326,8 @@
       "emoji": "🔢",
       "hint": "Слово из словаря: Числ. семь",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -1339,8 +1339,8 @@
       "emoji": "🔢",
       "hint": "Слово из словаря: Числ. семьраз",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -1352,8 +1352,8 @@
       "emoji": "🔢",
       "hint": "Слово из словаря: Числ. семьсот",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -1365,8 +1365,8 @@
       "emoji": "❤️",
       "hint": "Слово из словаря: Братство",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -1378,8 +1378,8 @@
       "emoji": "❤️",
       "hint": "Слово из словаря: Сын",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -1391,8 +1391,8 @@
       "emoji": "🌳",
       "hint": "Слово из словаря: НиеТерекавморе",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -1404,8 +1404,8 @@
       "emoji": "🍎",
       "hint": "Слово из словаря: Хлебныхзлаков",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -1417,8 +1417,8 @@
       "emoji": "🔢",
       "hint": "Слово из словаря: Числ. семнадцать",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -1430,8 +1430,8 @@
       "emoji": "🔢",
       "hint": "Слово из словаря: Числ. семнадцатьраз",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -1456,8 +1456,8 @@
       "emoji": "🫀",
       "hint": "Слово из словаря: Сузитьворот",
       "sources": [
-        "curated",
         "verified",
+        "curated",
         "maciev"
       ],
       "quality": 100
@@ -1525,11 +1525,11 @@
       "emoji": "👨",
       "hint": "Отец",
       "sources": [
-        "curated",
         "verified",
-        "aliroev",
+        "maciev",
         "lessons",
-        "maciev"
+        "aliroev",
+        "curated"
       ],
       "quality": 100
     },
@@ -1542,8 +1542,8 @@
       "sources": [
         "lessons",
         "verified",
-        "aliroev",
-        "curated"
+        "curated",
+        "aliroev"
       ],
       "quality": 100
     },
@@ -1556,8 +1556,8 @@
       "sources": [
         "lessons",
         "verified",
-        "aliroev",
-        "curated"
+        "curated",
+        "aliroev"
       ],
       "quality": 100
     },
@@ -1596,11 +1596,11 @@
       "emoji": "📖",
       "hint": "Воспринимать текст",
       "sources": [
-        "curated",
         "verified",
-        "aliroev",
+        "maciev",
         "lessons",
-        "maciev"
+        "aliroev",
+        "curated"
       ],
       "quality": 100
     },
@@ -1652,6 +1652,7 @@
       "emoji": "👍",
       "hint": "Ответ на «как дела?»",
       "sources": [
+        "lessons",
         "verified",
         "curated"
       ],
@@ -1664,11 +1665,11 @@
       "emoji": "4️⃣",
       "hint": "Число 4",
       "sources": [
-        "curated",
         "verified",
-        "aliroev",
+        "maciev",
         "lessons",
-        "maciev"
+        "aliroev",
+        "curated"
       ],
       "quality": 100
     },
@@ -1681,8 +1682,8 @@
       "sources": [
         "lessons",
         "verified",
-        "aliroev",
-        "curated"
+        "curated",
+        "aliroev"
       ],
       "quality": 100
     },
@@ -1735,11 +1736,11 @@
       "emoji": "🐶",
       "hint": "Верный друг человека",
       "sources": [
-        "curated",
         "verified",
-        "aliroev",
+        "maciev",
         "lessons",
-        "maciev"
+        "aliroev",
+        "curated"
       ],
       "quality": 100
     },
@@ -1776,12 +1777,10 @@
       "russian": "Заяц",
       "category": "animals",
       "emoji": "🐇",
-      "hint": "Быстроногий зверёк",
+      "hint": "Быстроногий лесной зверёк",
       "sources": [
-        "lessons",
-        "verified",
-        "aliroev",
-        "curated"
+        "curated",
+        "verified"
       ],
       "quality": 100
     },
@@ -1792,11 +1791,11 @@
       "emoji": "9️⃣",
       "hint": "Число 9",
       "sources": [
-        "curated",
         "verified",
-        "aliroev",
+        "maciev",
         "lessons",
-        "maciev"
+        "aliroev",
+        "curated"
       ],
       "quality": 100
     },
@@ -1807,11 +1806,11 @@
       "emoji": "🔟",
       "hint": "Число 10",
       "sources": [
-        "curated",
         "verified",
-        "aliroev",
+        "maciev",
         "lessons",
-        "maciev"
+        "aliroev",
+        "curated"
       ],
       "quality": 100
     },
@@ -1890,11 +1889,11 @@
       "emoji": "🗣️",
       "hint": "Часть тела",
       "sources": [
-        "curated",
         "verified",
-        "aliroev",
+        "maciev",
         "lessons",
-        "maciev"
+        "aliroev",
+        "curated"
       ],
       "quality": 100
     },
@@ -1907,8 +1906,8 @@
       "sources": [
         "lessons",
         "verified",
-        "aliroev",
-        "curated"
+        "curated",
+        "aliroev"
       ],
       "quality": 100
     },
@@ -1933,11 +1932,11 @@
       "emoji": "🦵",
       "hint": "Нижняя конечность",
       "sources": [
-        "curated",
         "verified",
-        "aliroev",
+        "maciev",
         "lessons",
-        "maciev"
+        "aliroev",
+        "curated"
       ],
       "quality": 100
     },
@@ -1976,11 +1975,11 @@
       "emoji": "3️⃣",
       "hint": "Число 3",
       "sources": [
-        "curated",
         "verified",
-        "aliroev",
+        "maciev",
         "lessons",
-        "maciev"
+        "aliroev",
+        "curated"
       ],
       "quality": 100
     },
@@ -2074,8 +2073,8 @@
       "sources": [
         "lessons",
         "verified",
-        "aliroev",
-        "curated"
+        "curated",
+        "aliroev"
       ],
       "quality": 100
     },
@@ -2169,11 +2168,11 @@
       "emoji": "☀️",
       "hint": "Светило",
       "sources": [
-        "curated",
         "verified",
-        "aliroev",
+        "maciev",
         "lessons",
-        "maciev"
+        "aliroev",
+        "curated"
       ],
       "quality": 100
     },
@@ -2226,11 +2225,11 @@
       "emoji": "👩",
       "hint": "Мать",
       "sources": [
-        "curated",
         "verified",
-        "aliroev",
+        "maciev",
         "lessons",
-        "maciev"
+        "aliroev",
+        "curated"
       ],
       "quality": 100
     },
@@ -2269,11 +2268,11 @@
       "emoji": "5️⃣",
       "hint": "Число 5",
       "sources": [
-        "curated",
         "verified",
-        "aliroev",
+        "maciev",
         "lessons",
-        "maciev"
+        "aliroev",
+        "curated"
       ],
       "quality": 100
     },
@@ -2286,8 +2285,8 @@
       "sources": [
         "lessons",
         "verified",
-        "aliroev",
-        "curated"
+        "curated",
+        "aliroev"
       ],
       "quality": 100
     },
@@ -2311,9 +2310,10 @@
       "emoji": "✨",
       "hint": "Прощание с пожеланием здоровья",
       "sources": [
+        "lessons",
         "verified",
-        "aliroev",
-        "curated"
+        "curated",
+        "aliroev"
       ],
       "quality": 100
     },
@@ -2381,8 +2381,8 @@
       "sources": [
         "lessons",
         "verified",
-        "aliroev",
-        "curated"
+        "curated",
+        "aliroev"
       ],
       "quality": 100
     },
@@ -2516,11 +2516,11 @@
       "emoji": "🌲",
       "hint": "Деревья и звери",
       "sources": [
-        "curated",
         "verified",
-        "aliroev",
+        "maciev",
         "lessons",
-        "maciev"
+        "aliroev",
+        "curated"
       ],
       "quality": 100
     },
@@ -2555,11 +2555,11 @@
       "emoji": "🐱",
       "hint": "Домашнее животное",
       "sources": [
-        "curated",
         "verified",
-        "aliroev",
+        "maciev",
         "lessons",
-        "maciev"
+        "aliroev",
+        "curated"
       ],
       "quality": 100
     },
@@ -2570,11 +2570,11 @@
       "emoji": "1️⃣",
       "hint": "Число 1",
       "sources": [
-        "curated",
         "verified",
-        "aliroev",
+        "maciev",
         "lessons",
-        "maciev"
+        "aliroev",
+        "curated"
       ],
       "quality": 100
     },
@@ -2593,31 +2593,17 @@
       "quality": 100
     },
     {
-      "chechen": "ЦӀе",
-      "russian": "Красный",
-      "category": "colors",
-      "emoji": "🔴",
-      "hint": "Цвет огня",
-      "sources": [
-        "lessons",
-        "verified",
-        "curated",
-        "maciev"
-      ],
-      "quality": 100
-    },
-    {
       "chechen": "ЦӀий",
       "russian": "Дом",
       "category": "home",
       "emoji": "🏠",
       "hint": "Жилище",
       "sources": [
-        "curated",
         "verified",
-        "aliroev",
+        "maciev",
         "lessons",
-        "maciev"
+        "aliroev",
+        "curated"
       ],
       "quality": 100
     },
@@ -2669,11 +2655,11 @@
       "emoji": "2️⃣",
       "hint": "Число 2",
       "sources": [
-        "curated",
         "verified",
-        "aliroev",
+        "maciev",
         "lessons",
-        "maciev"
+        "aliroev",
+        "curated"
       ],
       "quality": 100
     },
@@ -2724,10 +2710,8 @@
       "emoji": "🍽️",
       "hint": "Принимать пищу",
       "sources": [
-        "lessons",
-        "verified",
         "curated",
-        "maciev"
+        "verified"
       ],
       "quality": 100
     },
@@ -2796,8 +2780,8 @@
       "sources": [
         "lessons",
         "verified",
-        "aliroev",
-        "curated"
+        "curated",
+        "aliroev"
       ],
       "quality": 100
     }

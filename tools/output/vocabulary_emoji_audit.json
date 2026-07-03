@@ -1,32 +1,106 @@
 {
   "emoji_issues": [],
-  "translation_issues": [],
+  "translation_issues": [
+    {
+      "chechen": "БӀо",
+      "curated": "Столб",
+      "dictionary": "Вой ско"
+    }
+  ],
   "duplicate_chechen": [
     {
-      "chechen_key": "хи",
+      "chechen_key": "ворхӏ",
       "entries": [
         {
-          "chechen": "Хи",
-          "russian": "Вода",
-          "category": "food",
-          "emoji": "💧",
-          "hint": "Жизненно важная жидкость",
+          "chechen": "ВорхӀ",
+          "russian": "Семь",
+          "category": "numbers",
+          "emoji": "7️⃣",
+          "hint": "Число 7",
           "sources": [
+            "verified",
             "maciev",
+            "lessons",
             "aliroev",
             "curated"
-          ]
+          ],
+          "quality": 100
         },
         {
-          "chechen": "Хи",
-          "russian": "Река, вода",
-          "category": "nature",
-          "emoji": "🌊",
-          "hint": "Течёт по долинам",
+          "chechen": "Ворхӏ",
+          "russian": "Числ. семь",
+          "category": "numbers",
+          "emoji": "🔢",
+          "hint": "Слово из словаря: Числ. семь",
           "sources": [
-            "maciev",
+            "verified",
+            "curated",
+            "maciev"
+          ],
+          "quality": 100
+        }
+      ]
+    },
+    {
+      "chechen_key": "дикаду",
+      "entries": [
+        {
+          "chechen": "Дика ду",
+          "russian": "Хорошо, всё в порядке",
+          "category": "greetings",
+          "emoji": "👍",
+          "hint": "Ответ на «как дела?»",
+          "sources": [
+            "curated",
+            "verified",
+            "lessons"
+          ],
+          "quality": 100
+        },
+        {
+          "chechen": "Дика ду",
+          "russian": "Хорошо, всёв порядке",
+          "category": "greetings",
+          "emoji": "👍",
+          "hint": "Ответ на «как дела?»",
+          "sources": [
+            "lessons",
+            "verified",
             "curated"
-          ]
+          ],
+          "quality": 100
+        }
+      ]
+    },
+    {
+      "chechen_key": "саламатбе",
+      "entries": [
+        {
+          "chechen": "Саламат бе",
+          "russian": "До свидания, будь здоров",
+          "category": "greetings",
+          "emoji": "✨",
+          "hint": "Прощание с пожеланием здоровья",
+          "sources": [
+            "curated",
+            "verified",
+            "lessons"
+          ],
+          "quality": 100
+        },
+        {
+          "chechen": "Саламат бе",
+          "russian": "До свидания, будьздоров",
+          "category": "greetings",
+          "emoji": "✨",
+          "hint": "Прощание с пожеланием здоровья",
+          "sources": [
+            "lessons",
+            "verified",
+            "curated",
+            "aliroev"
+          ],
+          "quality": 100
         }
       ]
     }

@@ -1,6 +1,6 @@
 {
   "notes": "Проверенные исправления ошибок разбора Maciev и учебной лексики",
-  "deprecated_keys": ["лор"],
+  "deprecated_keys": ["лор", "гӏе", "гӀо", "зӀа", "цӀе", "Ӏа"],
     "overrides": {
         "лерг": {
             "chechen": "Лерг",
@@ -61,6 +61,51 @@
             "russian": "Очередь",
             "emoji": "📖",
             "hint": "Стоять в очереди",
+            "sources": ["curated", "verified"],
+            "quality": 100
+        },
+        "гӏе": {
+            "chechen": "Гӏе",
+            "russian": "Олово",
+            "category": "default",
+            "emoji": "📖",
+            "hint": "Химический элемент, олово",
+            "sources": ["curated", "verified"],
+            "quality": 100
+        },
+        "гӀо": {
+            "chechen": "ГӀо",
+            "russian": "Помощь",
+            "category": "default",
+            "emoji": "📖",
+            "hint": "Помощь, содействие",
+            "sources": ["curated", "verified"],
+            "quality": 100
+        },
+        "зӀа": {
+            "chechen": "ЗӀа",
+            "russian": "Заяц",
+            "category": "animals",
+            "emoji": "🐇",
+            "hint": "Быстроногий лесной зверёк",
+            "sources": ["curated", "verified"],
+            "quality": 100
+        },
+        "цӀе": {
+            "chechen": "ЦӀе",
+            "russian": "Kрасный",
+            "category": "colors",
+            "emoji": "🔴",
+            "hint": "Яркий красный цвет",
+            "sources": ["curated", "verified"],
+            "quality": 100
+        },
+        "Ӏа": {
+            "chechen": "Ӏа",
+            "russian": "Есть, кушать",
+            "category": "verbs",
+            "emoji": "🍽️",
+            "hint": "Принимать пищу",
             "sources": ["curated", "verified"],
             "quality": 100
         }
