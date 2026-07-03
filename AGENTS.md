@@ -1,7 +1,7 @@
 # AGENTS.md — Нохчийн (workspace root)
 
 **Корень workspace:** `C:\АББА\`  
-**GitHub:** [Turpalitto/deshar](https://github.com/Turpalitto/deshar)
+**GitHub:** [Turpalitto/deshar-v2](https://github.com/Turpalitto/deshar-v2) (основной) · [deshar](https://github.com/Turpalitto/deshar) (legacy)
 
 Этот файл — **главная точка входа** для любой IDE, открытой на `C:\АББА\`.  
 Дополнительно: `nokhchiin/.agents/AGENTS.md` — углублённые правила Flutter (провайдеры, entities, CI).
