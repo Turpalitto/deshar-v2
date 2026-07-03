@@ -69,6 +69,7 @@ class _LessonFlowScreenState extends ConsumerState<LessonFlowScreen> {
     final next = idx >= 0 && idx < units.length - 1 ? units[idx + 1] : null;
     final hasNext = next != null && next.isUnlocked;
 
+    if (!mounted) return;
     await RewardCelebration.show(
       context,
       iconAsset: AppIcons.rewardTrophy,
@@ -78,12 +79,12 @@ class _LessonFlowScreenState extends ConsumerState<LessonFlowScreen> {
       onPrimary: hasNext
           ? () {
               Navigator.of(context).pop();
-              context.push('/lesson/${next.id}');
+              context.go('/lesson/${next.id}');
             }
           : null,
       onDismiss: () {
         Navigator.of(context).pop();
-        context.pop();
+        context.go('/');
       },
     );
   }

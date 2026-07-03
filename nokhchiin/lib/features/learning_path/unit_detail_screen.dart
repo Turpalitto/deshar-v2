@@ -44,6 +44,9 @@ class UnitDetailScreen extends ConsumerWidget {
                   const SizedBox(height: 16),
                   _GameButton(iconAsset: AppIcons.gameBoss, title: 'Босс мира', subtitle: 'Кульминация темы', onTap: () => context.push('/boss/$unitId')),
                   _GameButton(iconAsset: AppIcons.gamePuzzle, title: 'Найди пару', onTap: () => context.push('/match/$unitId')),
+                  _GameButton(iconAsset: AppIcons.navDictionary, title: 'Карточки', subtitle: 'Свайп и запоминай', onTap: () => context.push('/flashcards/$unitId')),
+                  _GameButton(iconAsset: AppIcons.actionReview, title: 'Квиз', subtitle: 'Проверь себя', onTap: () => context.push('/quiz/$unitId')),
+                  _GameButton(iconAsset: AppIcons.actionTyping, title: 'Ввод', subtitle: 'Напиши по-чеченски', onTap: () => context.push('/typing/$unitId')),
                 ],
               );
             },

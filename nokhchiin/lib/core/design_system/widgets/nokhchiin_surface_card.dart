@@ -7,6 +7,7 @@ class NokhchiinSurfaceCard extends StatelessWidget {
     super.key,
     required this.child,
     this.onTap,
+    this.semanticLabel,
     this.padding = const EdgeInsets.all(16),
     this.radius = 16,
     this.background,
@@ -16,6 +17,7 @@ class NokhchiinSurfaceCard extends StatelessWidget {
 
   final Widget child;
   final VoidCallback? onTap;
+  final String? semanticLabel;
   final EdgeInsetsGeometry padding;
   final double radius;
   final Color? background;
@@ -47,12 +49,16 @@ class NokhchiinSurfaceCard extends StatelessWidget {
 
     if (onTap == null) return content;
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(radius),
-        child: content,
+    return Semantics(
+      button: true,
+      label: semanticLabel,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(radius),
+          child: content,
+        ),
       ),
     );
   }

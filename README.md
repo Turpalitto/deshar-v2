@@ -1,5 +1,7 @@
 # Нохчийн — Платформа изучения чеченского языка
 
+**Репозиторий:** [github.com/Turpalitto/deshar-v2](https://github.com/Turpalitto/deshar-v2) (последняя версия)
+
 ## Что создано
 
 ### Flutter-приложение (`nokhchiin/`)

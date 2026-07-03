@@ -26,6 +26,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
   int _index = 0;
   bool _showAnswer = false;
   int _correct = 0;
+  bool _rewardShown = false;
 
   Future<bool> _canReview() async {
     final profile = ref.read(userProfileProvider).value ?? const UserProfileEntity();
@@ -122,17 +123,30 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
           }
 
           if (_index >= words.length) {
-            WidgetsBinding.instance.addPostFrameCallback((_) async {
-              await ref.read(userProfileProvider.notifier).addXp(_correct * 5, _correct);
-              if (!mounted) return;
-              await RewardCelebration.show(
-                context,
-                iconAsset: AppIcons.rewardCelebration,
-                title: 'Отлично!',
-                subtitle: 'Правильно: $_correct · +${_correct * 5} XP',
-                onDismiss: () => Navigator.of(context).pop(),
-              );
-            });
+            if (!_rewardShown) {
+              _rewardShown = true;
+              WidgetsBinding.instance.addPostFrameCallback((_) async {
+                await ref.read(userProfileProvider.notifier).addXp(_correct * 5, _correct);
+                if (!mounted) return;
+                await RewardCelebration.show(
+                  context,
+                  iconAsset: AppIcons.rewardCelebration,
+                  title: 'Отлично!',
+                  subtitle: 'Правильно: $_correct · +${_correct * 5} XP',
+                  onDismiss: () {
+                    Navigator.of(context).pop();
+                    if (mounted) {
+                      setState(() {
+                        _started = false;
+                        _index = 0;
+                        _correct = 0;
+                        _rewardShown = false;
+                      });
+                    }
+                  },
+                );
+              });
+            }
             return const LoadingState();
           }
 

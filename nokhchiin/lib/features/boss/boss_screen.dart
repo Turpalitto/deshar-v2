@@ -13,10 +13,12 @@ import '../../core/design/widgets/app_scaffold.dart';
 import '../../core/design/widgets/app_icon_image.dart';
 import '../../core/design/widgets/loading_state.dart';
 import '../../core/design/widgets/word_exercise_card.dart';
+import '../../core/design/tokens/app_durations.dart';
 import '../../core/providers/providers.dart';
 
 import '../../core/services/audio_service.dart';
 import '../../domain/entities/word_entity.dart';
+import '../../domain/entities/content_entities.dart';
 
 final _audioProvider = Provider((_) => AudioService());
 final _rng = Random();
@@ -31,12 +33,14 @@ class BossScreen extends ConsumerStatefulWidget {
 
 class _BossScreenState extends ConsumerState<BossScreen> {
   List<WordEntity> _words = [];
-  Map<String, dynamic>? _boss;
+  BossEntity? _boss;
   int _index = 0;
   int _score = 0;
   int _secondsLeft = 120;
   Timer? _timer;
   bool _finished = false;
+  bool? _lastCorrect;
+  int? _selectedOption;
 
   @override
   void initState() {
@@ -54,8 +58,8 @@ class _BossScreenState extends ConsumerState<BossScreen> {
     words.shuffle(_rng);
     if (!mounted) return;
     setState(() {
-      _words = words.take(_boss?['questionsCount'] as int? ?? 10).toList();
-      _secondsLeft = _boss?['timeLimitSec'] as int? ?? 120;
+      _words = words.take(_boss?.questionsCount ?? 10).toList();
+      _secondsLeft = _boss?.timeLimitSec ?? 120;
     });
     _timer = Timer.periodic(const Duration(seconds: 1), (t) {
       if (_secondsLeft <= 0) {
@@ -73,9 +77,9 @@ class _BossScreenState extends ConsumerState<BossScreen> {
 
   Future<void> _unlockNextWorld() async {
     final worlds = await ref.read(worldsProvider.future);
-    final idx = worlds.indexWhere((w) => (w['units'] as List).contains(widget.unitId));
+    final idx = worlds.indexWhere((w) => w.units.contains(widget.unitId));
     if (idx >= 0 && idx < worlds.length - 1) {
-      final nextId = worlds[idx + 1]['id'] as String;
+      final nextId = worlds[idx + 1].id;
       await ref.read(userProfileProvider.notifier).unlockWorld(nextId);
     }
   }
@@ -83,12 +87,12 @@ class _BossScreenState extends ConsumerState<BossScreen> {
   void _finish() {
     if (_finished) return;
     _finished = true;
-    final pass = _boss?['passScore'] as int? ?? 8;
+    final pass = _boss?.passScore ?? 8;
     final won = _score >= pass;
     if (won) {
       ref.read(userProfileProvider.notifier).addXp(
-            _boss?['rewardXp'] as int? ?? 100,
-            _boss?['rewardStars'] as int? ?? 25,
+            _boss?.rewardXp ?? 100,
+            _boss?.rewardStars ?? 25,
           );
       _unlockNextWorld();
       ref.read(userProfileProvider.notifier).unlockAchievement('collector');
@@ -140,7 +144,7 @@ class _BossScreenState extends ConsumerState<BossScreen> {
     final options = [target, ...others.take(3)]..shuffle(_rng);
 
     return AppScaffold(
-      title: 'Босс: ${_boss!['titleRu']}',
+      title: 'Босс: ${_boss!.titleRu}',
       actions: [Padding(padding: const EdgeInsets.all(16), child: Text('⏱ $_secondsLeft'))],
       body: Padding(
         padding: const EdgeInsets.all(AppSpacing.lg),
@@ -157,23 +161,49 @@ class _BossScreenState extends ConsumerState<BossScreen> {
                 onPressed: () => ref.read(_audioProvider).speakChechen(target.chechen),
               ),
             const Spacer(),
-            ...options.map((o) => Padding(
-                  padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                  child: AppButton(
-                    label: o.russian,
-                    variant: AppButtonVariant.secondary,
-                    expanded: true,
-                    onPressed: () async {
-                      if (o.id == target.id) {
-                        _score++;
-                        await ref.read(reviewWordUseCaseProvider)(target.id, 5);
-                      } else {
-                        await ref.read(reviewWordUseCaseProvider)(target.id, 1);
-                      }
-                      setState(() => _index++);
-                    },
-                  ),
-                )),
+            ...options.asMap().entries.map((entry) {
+              final i = entry.key;
+              final o = entry.value;
+              final isCorrectAnswer = o.id == target.id;
+              Color? btnColor;
+              if (_selectedOption == i) {
+                btnColor = isCorrectAnswer
+                    ? const Color(0xFF2E7D32)
+                    : const Color(0xFFC62828);
+              }
+              return Padding(
+                padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                child: AppButton(
+                  label: o.russian,
+                  variant: btnColor != null
+                      ? AppButtonVariant.primary
+                      : AppButtonVariant.secondary,
+                  expanded: true,
+                  onPressed: _selectedOption != null
+                      ? null
+                      : () async {
+                          final correct = o.id == target.id;
+                          setState(() {
+                            _lastCorrect = correct;
+                            _selectedOption = i;
+                          });
+                          if (correct) {
+                            _score++;
+                            await ref.read(reviewWordUseCaseProvider)(target.id, 5);
+                          } else {
+                            await ref.read(reviewWordUseCaseProvider)(target.id, 1);
+                          }
+                          await Future.delayed(AppDurations.normal);
+                          if (!mounted) return;
+                          setState(() {
+                            _lastCorrect = null;
+                            _selectedOption = null;
+                            _index++;
+                          });
+                        },
+                ),
+              );
+            }),
             const Spacer(),
           ],
         ),

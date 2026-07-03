@@ -39,6 +39,7 @@ class QuizScreen extends ConsumerStatefulWidget {
 
 class _QuizScreenState extends ConsumerState<QuizScreen> {
   List<WordEntity> _words = [];
+  List<WordEntity> _options = [];
   int _index = 0;
   int _score = 0;
   bool _loading = true;
@@ -61,8 +62,17 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
         _words = words;
         _loading = false;
       });
+      _buildOptions();
       if (FeatureFlags.audioEnabled) _speak();
     }
+  }
+
+  void _buildOptions() {
+    if (_words.length < 4) return;
+    final target = _words[_index];
+    final others = [..._words]..removeAt(_index);
+    others.shuffle(_rng);
+    _options = [target, ...others.take(3)]..shuffle(_rng);
   }
 
   void _speak() {
@@ -87,9 +97,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
     final totalQ = questionLimit.clamp(1, _words.length);
 
     final target = _words[_index];
-    final others = [..._words]..removeAt(_index);
-    others.shuffle(_rng);
-    final options = [target, ...others.take(3)]..shuffle(_rng);
+    final options = _options;
 
     final body = Padding(
       padding: const EdgeInsets.all(AppSpacing.lg),
@@ -176,6 +184,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
 
     if (_index < totalQ - 1) {
       setState(() => _index++);
+      _buildOptions();
       if (FeatureFlags.audioEnabled) _speak();
     } else if (widget.embedded) {
       widget.onComplete?.call();

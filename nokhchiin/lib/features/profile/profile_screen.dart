@@ -253,6 +253,18 @@ class ProfileScreen extends ConsumerWidget {
               },
             ),
           ),
+          const SizedBox(height: AppSpacing.sm),
+          Text('Правовая информация', style: Theme.of(context).textTheme.titleMedium),
+          NokhchiinSettingsRow(
+            iconAsset: AppIcons.navDictionary,
+            label: 'Политика конфиденциальности',
+            onTap: () => context.push('/legal/privacy'),
+          ),
+          NokhchiinSettingsRow(
+            iconAsset: AppIcons.navProfile,
+            label: 'Условия использования',
+            onTap: () => context.push('/legal/terms'),
+          ),
         ],
       ),
     );

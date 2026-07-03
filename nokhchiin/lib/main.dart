@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'app.dart';
+import 'core/services/crash_reporter.dart';
 import 'data/datasources/local_storage_datasource.dart';
 
 // Design system: core/design_system/ — ThemeExtension [IosDesignSystem].
@@ -10,6 +11,10 @@ import 'data/datasources/local_storage_datasource.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await CrashReporter.bootstrap(_initAndRun);
+}
+
+Future<void> _initAndRun() async {
   await Hive.initFlutter();
   await LocalProgressDataSource().init();
   await LocalUserDataSource().init();

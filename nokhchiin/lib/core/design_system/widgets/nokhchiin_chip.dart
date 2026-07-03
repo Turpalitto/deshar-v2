@@ -18,18 +18,21 @@ class NokhchiinChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final tokens = context.iosTokens;
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: background ?? tokens.accentMuted,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          color: color ?? tokens.accent,
-          fontSize: 12,
-          fontWeight: FontWeight.w700,
+    return Semantics(
+      label: label,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: background ?? tokens.accentMuted,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: color ?? tokens.accent,
+            fontSize: 12,
+            fontWeight: FontWeight.w700,
+          ),
         ),
       ),
     );

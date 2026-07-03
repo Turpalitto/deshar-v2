@@ -8,6 +8,7 @@ import '../../core/design/widgets/app_card.dart';
 import '../../core/design/widgets/app_scaffold.dart';
 import '../../core/design/widgets/loading_state.dart';
 import '../../core/providers/providers.dart';
+import '../../domain/entities/content_entities.dart';
 
 import '../../core/widgets/word_illustration.dart';
 
@@ -40,17 +41,17 @@ class StoriesListScreen extends ConsumerWidget {
                 ...List.generate(list.length, (i) {
                   final s = list[i];
                   final unlocked = access[i];
-                  final panels = (s['panels'] as List?)?.length ?? 0;
-                  final required = s['requiredMastery'] as int? ?? 50;
+                  final panels = s.panels.length;
+                  final required = s.requiredMastery;
                   return Padding(
                     padding: const EdgeInsets.only(bottom: AppSpacing.md),
                     child: AppCard(
-                      onTap: unlocked ? () => context.push('/story/${s['id']}') : null,
+                      onTap: unlocked ? () => context.push('/story/${s.id}') : null,
                       child: Row(
                         children: [
                           WordIllustration(
-                            category: s['unitId'] as String?,
-                            emoji: s['emoji'] as String?,
+                            category: s.unitId,
+                            emoji: s.emoji,
                             size: 80,
                           ),
                           const SizedBox(width: AppSpacing.lg),
@@ -58,7 +59,7 @@ class StoriesListScreen extends ConsumerWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(s['titleRu'] as String, style: Theme.of(context).textTheme.titleLarge),
+                                Text(s.titleRu, style: Theme.of(context).textTheme.titleLarge),
                                 Text(
                                   unlocked ? '$panels сцен · награда' : 'Нужно $required% юнита',
                                   style: Theme.of(context).textTheme.bodySmall,
@@ -85,16 +86,12 @@ class StoriesListScreen extends ConsumerWidget {
     );
   }
 
-  Future<List<bool>> _storyAccess(WidgetRef ref, List<Map<String, dynamic>> list) async {
+  Future<List<bool>> _storyAccess(WidgetRef ref, List<StoryEntity> list) async {
     final mastery = ref.read(unitMasteryUseCaseProvider);
     final result = <bool>[];
     for (final s in list) {
-      final unitId = s['unitId'] as String?;
-      final required = s['requiredMastery'] as int? ?? 50;
-      if (unitId == null) {
-        result.add(false);
-        continue;
-      }
+      final unitId = s.unitId;
+      final required = s.requiredMastery;
       final pct = await mastery(unitId);
       result.add(pct >= required);
     }

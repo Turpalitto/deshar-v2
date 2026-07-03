@@ -23,26 +23,30 @@ class NokhchiinSettingsRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final tokens = context.iosTokens;
 
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        child: Row(
-          children: [
-            if (iconAsset != null)
-              AppIconImage(asset: iconAsset!, size: 20, color: tokens.accent)
-            else
-              Text(emoji!, style: const TextStyle(fontSize: 20)),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                label,
-                style: TextStyle(fontSize: 15, color: tokens.textPrimary),
+    return Semantics(
+      button: onTap != null,
+      label: label,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: Row(
+            children: [
+              if (iconAsset != null)
+                AppIconImage(asset: iconAsset!, size: 20, color: tokens.accent)
+              else
+                Text(emoji!, style: const TextStyle(fontSize: 20)),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  label,
+                  style: TextStyle(fontSize: 15, color: tokens.textPrimary),
+                ),
               ),
-            ),
-            trailing ??
-                Icon(Icons.chevron_right_rounded, color: tokens.textTertiary, size: 22),
-          ],
+              trailing ??
+                  Icon(Icons.chevron_right_rounded, color: tokens.textTertiary, size: 22),
+            ],
+          ),
         ),
       ),
     );

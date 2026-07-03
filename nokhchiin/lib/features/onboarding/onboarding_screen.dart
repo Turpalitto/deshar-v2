@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../core/router/app_router.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:nokhchiin/core/l10n/l10n_extensions.dart';
 import '../../core/design/app_icons.dart';
@@ -11,6 +10,7 @@ import '../../core/design/widgets/app_scaffold.dart'; // intentional-mix: app sh
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
 import '../../core/widgets/kids_tap_target.dart';
+import '../../core/widgets/legal_links_row.dart';
 import '../../domain/entities/enums.dart';
 
 class OnboardingScreen extends ConsumerWidget {
@@ -24,10 +24,15 @@ class OnboardingScreen extends ConsumerWidget {
     return AppScaffold(
       showOrnament: true,
       body: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 28, 24, 40),
+        padding: const EdgeInsets.fromLTRB(24, 28, 24, 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
             Row(
               children: [
                 const NokhchiinAppIcon(size: 44),
@@ -82,7 +87,7 @@ class OnboardingScreen extends ConsumerWidget {
               accentMuted: tokens.accentMuted,
               onTap: () async {
                 await ref.read(userProfileProvider.notifier).setMode(AppMode.adult);
-                if (context.mounted) context.go('/lesson/$kFirstLessonUnitId');
+                if (context.mounted) context.go('/');
               },
             ).animate().fadeIn(delay: 160.ms).slideX(),
             const SizedBox(height: 12),
@@ -98,7 +103,7 @@ class OnboardingScreen extends ConsumerWidget {
                 if (context.mounted) _showAgePicker(context, ref);
               },
             ).animate().fadeIn(delay: 220.ms).slideX(),
-            const Spacer(),
+            const SizedBox(height: 24),
             Row(
               children: [
                 _FeatureTile(iconAsset: AppIcons.actionReview, label: 'SM-2 SRS'),
@@ -108,6 +113,12 @@ class OnboardingScreen extends ConsumerWidget {
                 _FeatureTile(iconAsset: AppIcons.cultureMountains, label: 'Культура'),
               ],
             ).animate().fadeIn(delay: 280.ms),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            const LegalLinksRow(compact: true),
           ],
         ),
       ),
@@ -174,7 +185,10 @@ class _TrackCard extends StatelessWidget {
     return Material(
       color: tokens.surface,
       borderRadius: BorderRadius.circular(20),
-      child: KidsTapTarget(
+      child: Semantics(
+        button: true,
+        label: '$title. $subtitle',
+        child: KidsTapTarget(
         minSize: 64,
         expand: true,
         onTap: onTap,
@@ -216,6 +230,7 @@ class _TrackCard extends StatelessWidget {
             ],
           ),
         ),
+      ),
       ),
     );
   }
@@ -282,7 +297,7 @@ class _AgeRow extends ConsumerWidget {
             await ref.read(userProfileProvider.notifier).setAgeGroup(age);
             if (context.mounted) {
               Navigator.pop(context);
-              context.go('/lesson/$kFirstLessonUnitId');
+              context.go('/');
             }
           },
           child: Ink(

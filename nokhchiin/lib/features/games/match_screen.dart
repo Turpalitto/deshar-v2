@@ -32,6 +32,7 @@ class MatchScreen extends ConsumerStatefulWidget {
 
 class _MatchScreenState extends ConsumerState<MatchScreen> {
   List<WordEntity> _words = [];
+  List<WordEntity> _shuffledRu = [];
   String? _selCe;
   String? _selRu;
   final _matched = <String>{};
@@ -50,8 +51,11 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
       words = (await ref.read(dictionaryRepoProvider).getAllWords()).take(5).toList();
     }
     if (mounted) {
+      final taken = words.take(5).toList();
+      final ru = [...taken]..shuffle(_rng);
       setState(() {
-        _words = words.take(5).toList();
+        _words = taken;
+        _shuffledRu = ru;
         _loading = false;
       });
     }
@@ -101,7 +105,6 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
     }
 
     final tokens = context.iosTokens;
-    final ruList = [..._words]..shuffle(_rng);
     final body = Padding(
       padding: const EdgeInsets.all(AppSpacing.lg),
       child: Column(
@@ -134,7 +137,7 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
                   const SizedBox(width: AppSpacing.md),
                   Expanded(
                     child: ListView(
-                      children: ruList
+                      children: _shuffledRu
                           .map((w) => _MatchBtn(
                                 label: w.russian,
                                 emoji: null,

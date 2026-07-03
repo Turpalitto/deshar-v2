@@ -21,6 +21,7 @@ import '../../features/stories/stories_list_screen.dart';
 import '../../features/stories/story_reader_screen.dart';
 import '../../features/progress/progress_screen.dart';
 import '../../features/paywall/paywall_screen.dart';
+import '../../features/legal/legal_document_screen.dart';
 import '../../features/games/typing_exercise_screen.dart';
 import '../../features/culture/culture_capsule_preview_screen.dart';
 import '../design/widgets/app_shell.dart';
@@ -158,6 +159,18 @@ final appRouter = GoRouter(
       parentNavigatorKey: _rootNavigatorKey,
       path: '/progress',
       pageBuilder: (context, state) => _fadeScale(state, const ProgressScreen()),
+    ),
+    GoRoute(
+      parentNavigatorKey: _rootNavigatorKey,
+      path: '/legal/privacy',
+      pageBuilder: (context, state) =>
+          _fadeScale(state, const LegalDocumentScreen(type: LegalDocumentType.privacy)),
+    ),
+    GoRoute(
+      parentNavigatorKey: _rootNavigatorKey,
+      path: '/legal/terms',
+      pageBuilder: (context, state) =>
+          _fadeScale(state, const LegalDocumentScreen(type: LegalDocumentType.terms)),
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,

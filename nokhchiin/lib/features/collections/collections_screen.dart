@@ -12,6 +12,7 @@ import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
 
 import '../../domain/entities/enums.dart';
+import '../../domain/entities/content_entities.dart';
 import '../../domain/usecases/access_usecases.dart';
 
 class CollectionsScreen extends ConsumerWidget {
@@ -39,20 +40,20 @@ class CollectionsScreen extends ConsumerWidget {
                   final owned = stats[i].$1;
                   final total = stats[i].$2;
                   final pct = total > 0 ? (owned / total * 100).round() : 0;
-                  final legendary = col['rarity'] == 'legendary';
+                  final legendary = col.rarity == 'legendary';
                   return Padding(
                     padding: const EdgeInsets.only(bottom: AppSpacing.md),
                     child: AppCard(
                       onTap: () => _openAlbum(context, ref, legendary),
                       child: Row(
                         children: [
-                          Text(col['icon'] as String? ?? '📘', style: const TextStyle(fontSize: 40)),
+                          Text(col.icon ?? '📘', style: const TextStyle(fontSize: 40)),
                           const SizedBox(width: AppSpacing.lg),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(col['titleRu'] as String, style: Theme.of(context).textTheme.titleLarge),
+                                Text(col.titleRu, style: Theme.of(context).textTheme.titleLarge),
                                 Text('$owned / $total', style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18)),
                                 const SizedBox(height: AppSpacing.sm),
                                 MasteryProgressBar(percent: pct),
@@ -64,7 +65,7 @@ class CollectionsScreen extends ConsumerWidget {
                           else if (legendary)
                             const AppIconImage(asset: AppIcons.rewardCrown, size: 24)
                           else
-                            Text(col['icon'] as String? ?? '📗', style: const TextStyle(fontSize: 24)),
+                            Text(col.icon ?? '📗', style: const TextStyle(fontSize: 24)),
                         ],
                       ),
                     ),
@@ -80,14 +81,14 @@ class CollectionsScreen extends ConsumerWidget {
     );
   }
 
-  Future<List<(int, int)>> _loadAlbumStats(WidgetRef ref, List<Map<String, dynamic>> list) async {
+  Future<List<(int, int)>> _loadAlbumStats(WidgetRef ref, List<CollectionEntity> list) async {
     final progress = await ref.read(progressRepoProvider).getAllProgress();
     final dict = ref.read(dictionaryRepoProvider);
     final result = <(int, int)>[];
     for (final col in list) {
-      final cat = col['category'] as String? ?? '';
+      final cat = col.category;
       final words = await dict.getWordsByCategory(cat);
-      final total = col['totalCards'] as int? ?? words.length;
+      final total = col.totalCards > 0 ? col.totalCards : words.length;
       var owned = 0;
       for (final w in words) {
         final p = progress[w.id];

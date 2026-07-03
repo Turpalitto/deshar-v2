@@ -35,12 +35,16 @@ class NokhchiinTabBar extends StatelessWidget {
           final isActive = currentIndex == i;
           final iconColor = isActive ? active : tokens.textTertiary;
           return Expanded(
-            child: InkWell(
-              onTap: () {
-                HapticFeedback.selectionClick();
-                onTap(i);
-              },
-              child: Column(
+            child: Semantics(
+              button: true,
+              selected: isActive,
+              label: _labels[i],
+              child: InkWell(
+                onTap: () {
+                  HapticFeedback.selectionClick();
+                  onTap(i);
+                },
+                child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   AppTabIcon(index: i, color: iconColor),
@@ -56,6 +60,7 @@ class NokhchiinTabBar extends StatelessWidget {
                   ),
                 ],
               ),
+            ),
             ),
           );
         }),

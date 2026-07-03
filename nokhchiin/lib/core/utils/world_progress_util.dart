@@ -1,8 +1,9 @@
+import '../../domain/entities/content_entities.dart';
 import '../../domain/entities/learning_entities.dart';
 
 /// Процент прохождения мира по mastery юнитов.
-int worldProgressPercent(Map<String, dynamic> world, List<LearningUnitEntity> units) {
-  final ids = (world['units'] as List?)?.cast<String>() ?? [];
+int worldProgressPercent(WorldEntity world, List<LearningUnitEntity> units) {
+  final ids = world.units;
   if (ids.isEmpty || units.isEmpty) return 0;
   var sum = 0;
   var n = 0;
@@ -18,14 +19,13 @@ int worldProgressPercent(Map<String, dynamic> world, List<LearningUnitEntity> un
 }
 
 bool isWorldUnlocked(
-  Map<String, dynamic> world, {
+  WorldEntity world, {
   required bool isPremium,
   required List<String> unlockedWorlds,
   required int coins,
 }) {
   if (isPremium) return true;
-  final id = world['id'] as String? ?? '';
-  if (unlockedWorlds.contains(id)) return true;
-  final cost = world['unlockStars'] as int? ?? 0;
+  if (unlockedWorlds.contains(world.id)) return true;
+  final cost = world.unlockStars;
   return cost == 0 || coins >= cost;
 }

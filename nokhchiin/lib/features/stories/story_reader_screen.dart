@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/design/app_icons.dart';
 import '../../core/design/widgets/app_icon_image.dart';
 import '../../core/providers/providers.dart';
+import '../../domain/entities/content_entities.dart';
 
 import '../../core/widgets/word_illustration.dart';
 
@@ -19,7 +20,7 @@ class _StoryReaderScreenState extends ConsumerState<StoryReaderScreen> {
   bool _quizMode = false;
   int _quizIndex = 0;
   int _quizScore = 0;
-  Map<String, dynamic>? _story;
+  StoryEntity? _story;
 
   @override
   void initState() {
@@ -32,11 +33,9 @@ class _StoryReaderScreenState extends ConsumerState<StoryReaderScreen> {
     if (mounted) setState(() => _story = s);
   }
 
-  List<Map<String, dynamic>> get _panels =>
-      (_story?['panels'] as List?)?.cast<Map<String, dynamic>>() ?? [];
+  List<StoryPanelEntity> get _panels => _story?.panels ?? [];
 
-  List<Map<String, dynamic>> get _quiz =>
-      (_story?['quiz'] as List?)?.cast<Map<String, dynamic>>() ?? [];
+  List<StoryQuizEntity> get _quiz => _story?.quiz ?? [];
 
   void _nextPanel() {
     if (_panel < _panels.length - 1) {
@@ -80,12 +79,11 @@ class _StoryReaderScreenState extends ConsumerState<StoryReaderScreen> {
     }
 
     final panel = _panels[_panel];
-    final dialogue = (panel['dialogue'] as List?)?.cast<Map<String, dynamic>>() ?? [];
-    final unitId = _story!['unitId'] as String?;
+    final unitId = _story!.unitId;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_story!['titleRu'] as String),
+        title: Text(_story!.titleRu),
         actions: [
           Text('${_panel + 1}/${_panels.length}', style: const TextStyle(fontSize: 16)),
           const SizedBox(width: 16),
@@ -98,21 +96,20 @@ class _StoryReaderScreenState extends ConsumerState<StoryReaderScreen> {
           children: [
             WordIllustration(
               category: unitId,
-              emoji: _story!['emoji'] as String?,
+              emoji: _story!.emoji,
               size: 200,
             ),
             const SizedBox(height: 16),
-            if (panel['narrationRu'] != null)
-              Text(
-                panel['narrationRu'] as String,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontStyle: FontStyle.italic),
-                textAlign: TextAlign.center,
-              ),
+            Text(
+              panel.narrationRu,
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontStyle: FontStyle.italic),
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: 20),
-            ...dialogue.map((d) => _DialogueBubble(
-                  speaker: d['speaker'] as String? ?? '',
-                  chechen: d['chechen'] as String? ?? '',
-                  russian: d['russian'] as String? ?? '',
+            ...panel.dialogue.map((d) => _DialogueBubble(
+                  speaker: d.speaker,
+                  chechen: d.chechen,
+                  russian: d.russian,
                 )),
             const SizedBox(height: 24),
             Row(
@@ -142,8 +139,8 @@ class _StoryReaderScreenState extends ConsumerState<StoryReaderScreen> {
     }
 
     final q = _quiz[_quizIndex];
-    final options = (q['options'] as List?)?.cast<String>() ?? [];
-    final answer = q['answer'] as String;
+    final options = q.options;
+    final answer = q.answer;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Проверь себя')),
@@ -152,7 +149,7 @@ class _StoryReaderScreenState extends ConsumerState<StoryReaderScreen> {
         child: Column(
           children: [
             const FoxMascot(size: 64, emotion: FoxEmotion.thinking),
-            Text(q['question'] as String, style: Theme.of(context).textTheme.headlineMedium, textAlign: TextAlign.center),
+            Text(q.question, style: Theme.of(context).textTheme.headlineMedium, textAlign: TextAlign.center),
             const Spacer(),
             ...options.map((o) => Padding(
                   padding: const EdgeInsets.only(bottom: 10),

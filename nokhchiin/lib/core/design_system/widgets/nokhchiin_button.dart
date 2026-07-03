@@ -47,7 +47,12 @@ class _NokhchiinButtonState extends State<NokhchiinButton> {
       onTapUp: widget.onPressed != null ? (_) => setState(() => _pressed = false) : null,
       onTapCancel: widget.onPressed != null ? () => setState(() => _pressed = false) : null,
       onTap: widget.onPressed,
-      child: AnimatedScale(
+      child: Semantics(
+        button: true,
+        enabled: widget.onPressed != null,
+        label: widget.label,
+        child: ExcludeSemantics(
+          child: AnimatedScale(
         scale: _pressed ? 0.97 : 1,
         duration: const Duration(milliseconds: 150),
         curve: IosMotion.curveSnappy,
@@ -79,6 +84,8 @@ class _NokhchiinButtonState extends State<NokhchiinButton> {
                   letterSpacing: -0.2,
                 ),
               ),
+        ),
+          ),
         ),
       ),
     );

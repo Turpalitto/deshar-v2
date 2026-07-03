@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import '../utils/app_logger.dart';
 import '../../domain/constants/subscription_limits.dart';
 import '../../domain/entities/subscription_entity.dart';
 import '../../domain/repositories/billing_repository.dart';
@@ -30,7 +31,8 @@ class BillingService implements BillingRepository {
       _iapReady = await _iap.isAvailable();
       if (!_iapReady) return;
       _purchaseSub = _iap.purchaseStream.listen(_onPurchases);
-    } catch (_) {
+    } catch (e, st) {
+      AppLogger.warn('IAP init failed', error: e, stackTrace: st);
       _iapReady = false;
     }
   }

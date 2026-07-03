@@ -1,22 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/design_system/design_system.dart';
+import '../../core/providers/providers.dart';
 
 /// Splash — terracotta экран из Figma Make.
-class SplashScreen extends StatefulWidget {
+class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   void initState() {
     super.initState();
     Future<void>.delayed(const Duration(milliseconds: 2200), () {
-      if (mounted) context.go('/onboarding');
+      if (!mounted) return;
+      final profile = ref.read(userProfileProvider).value;
+      final hasOnboarded = profile != null && profile.mode != null;
+      context.go(hasOnboarded ? '/' : '/onboarding');
     });
   }
 

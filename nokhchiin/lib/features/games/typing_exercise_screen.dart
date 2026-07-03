@@ -7,9 +7,11 @@ import 'package:go_router/go_router.dart';
 import '../../core/design/tokens/app_durations.dart';
 import '../../core/design/tokens/app_spacing.dart';
 import '../../core/design/tokens/nokhchiin_colors.dart';
+import '../../core/design/app_icons.dart';
 import '../../core/design/widgets/app_button.dart';
 import '../../core/design/widgets/app_card.dart';
 import '../../core/design/widgets/app_scaffold.dart';
+import '../../core/design/widgets/reward_celebration.dart';
 import '../../core/design/widgets/word_exercise_card.dart';
 import '../../core/providers/providers.dart';
 import '../../domain/entities/word_entity.dart';
@@ -77,7 +79,7 @@ class _TypingExerciseScreenState extends ConsumerState<TypingExerciseScreen> {
       ref.read(reviewWordUseCaseProvider)(target.id, 1);
     }
 
-    Future.delayed(AppDurations.normal, () {
+    Future.delayed(AppDurations.normal, () async {
       if (!mounted) return;
       if (_index < _words.length - 1) {
         setState(() {
@@ -86,9 +88,18 @@ class _TypingExerciseScreenState extends ConsumerState<TypingExerciseScreen> {
           _lastCorrect = null;
         });
       } else {
-        ref.read(userProfileProvider.notifier).addXp(30, 6);
-        context.pop();
-      }
+        await ref.read(userProfileProvider.notifier).addXp(30, 6);
+        if (!mounted) return;
+        await RewardCelebration.show(
+          context,
+          iconAsset: AppIcons.rewardCelebration,
+          title: 'Отлично!',
+          subtitle: 'Правильно: $_score / ${_words.length} · +30 XP',
+          onDismiss: () {
+            Navigator.of(context).pop();
+            context.pop();
+          },
+        );
     });
   }
 

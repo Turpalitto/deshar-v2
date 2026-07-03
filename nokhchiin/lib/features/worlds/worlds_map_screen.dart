@@ -4,8 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/config/feature_flags.dart';
 import '../../core/design/app_icons.dart';
-import '../../core/design/widgets/app_scaffold.dart'; // intentional-mix: app shell scaffold
-import '../../core/design/widgets/loading_state.dart'; // intentional-mix: shared loading placeholder
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
 
@@ -52,25 +50,22 @@ class WorldsMapScreen extends ConsumerWidget {
                 coins: profile.coins,
               );
               final pct = worldProgressPercent(w, unitList);
-              final gradient = (w['gradient'] as List).cast<String>();
-              final color = Color(int.parse(gradient.first.replaceFirst('#', '0xFF')));
-              final unitIds = (w['units'] as List).cast<String>();
+              final color = Color(int.parse(w.gradient.first.replaceFirst('#', '0xFF')));
 
-              final worldEmoji = w['emoji'] as String?;
               return NokhchiinWorldCard(
                 index: i,
-                title: w['titleRu'] as String,
-                description: w['subtitleRu'] as String? ?? w['titleCe'] as String? ?? '',
-                emoji: worldEmoji,
-                iconAsset: worldEmoji == null ? AppIcons.navWorlds : null,
+                title: w.titleRu,
+                description: w.subtitleRu ?? w.titleCe,
+                emoji: w.emoji,
+                iconAsset: w.emoji == null ? AppIcons.navWorlds : null,
                 progressPercent: pct,
-                lessonCount: unitIds.length,
+                lessonCount: w.units.length,
                 color: color,
                 unlocked: unlocked,
                 onTap: unlocked
                     ? () {
-                        ref.read(userProfileProvider.notifier).setCurrentWorld(w['id'] as String);
-                        if (unitIds.isNotEmpty) context.push('/unit/${unitIds.first}');
+                        ref.read(userProfileProvider.notifier).setCurrentWorld(w.id);
+                        if (w.units.isNotEmpty) context.push('/unit/${w.units.first}');
                       }
                     : FeatureFlags.premiumEnabled
                         ? () => context.push('/paywall?return=/worlds')
@@ -78,10 +73,10 @@ class WorldsMapScreen extends ConsumerWidget {
               ).animate(delay: (i * 40).ms).fadeIn().slideY(begin: 0.06);
             },
           ),
-          loading: () => const LoadingState(),
+          loading: () => const NokhchiinLoadingState(),
           error: (e, _) => Center(child: Text('$e')),
         ),
-        loading: () => const LoadingState(),
+        loading: () => const NokhchiinLoadingState(),
         error: (e, _) => Center(child: Text('$e')),
       ),
     );

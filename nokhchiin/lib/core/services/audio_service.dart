@@ -3,6 +3,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import '../config/feature_flags.dart';
+import '../utils/app_logger.dart';
 import '../../domain/entities/enums.dart';
 import '../../domain/repositories/repositories.dart';
 
@@ -24,7 +25,9 @@ class AudioService implements AudioRepository {
     try {
       final raw = await rootBundle.loadString('assets/data/audio_manifest.json');
       _manifest = jsonDecode(raw) as Map<String, dynamic>;
-    } catch (_) {}
+    } catch (e, st) {
+      AppLogger.warn('Failed to load audio manifest', error: e, stackTrace: st);
+    }
   }
 
   String? _audioPath(String word, {required bool chechen}) {
@@ -44,7 +47,8 @@ class AudioService implements AudioRepository {
     try {
       await _player.play(AssetSource(path.replaceFirst('assets/', '')));
       return true;
-    } catch (_) {
+    } catch (e, st) {
+      AppLogger.warn('Failed to play audio asset: $path', error: e, stackTrace: st);
       return false;
     }
   }

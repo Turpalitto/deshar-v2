@@ -216,21 +216,20 @@ class HomeScreen extends ConsumerWidget {
                       unlockedWorlds: profile.unlockedWorlds,
                       coins: profile.coins,
                     );
-                    final gradient = (w['gradient'] as List).cast<String>();
+                    final gradient = w.gradient;
                     final color = Color(int.parse(gradient.first.replaceFirst('#', '0xFF')));
-                    final worldEmoji = w['emoji'] as String?;
+                    final worldEmoji = w.emoji;
                     return NokhchiinWorldRow(
                       emoji: worldEmoji,
                       iconAsset: worldEmoji == null ? AppIcons.navWorlds : null,
-                      title: w['titleRu'] as String,
+                      title: w.titleRu,
                       progressPercent: pct,
                       color: color,
                       unlocked: unlocked,
                       onTap: unlocked
                           ? () {
-                              ref.read(userProfileProvider.notifier).setCurrentWorld(w['id'] as String);
-                              final ids = (w['units'] as List).cast<String>();
-                              if (ids.isNotEmpty) context.push('/unit/${ids.first}');
+                              ref.read(userProfileProvider.notifier).setCurrentWorld(w.id);
+                              if (w.units.isNotEmpty) context.push('/unit/${w.units.first}');
                             }
                           : FeatureFlags.premiumEnabled
                               ? () => context.push('/paywall')
