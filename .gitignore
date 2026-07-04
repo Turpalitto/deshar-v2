@@ -1,6 +1,8 @@
-# Dictionary PDFs (download separately — see README)
+# Legacy — replaced by HF dataset
 Maciev_dictionary.pdf
 Aliroev_dictionary.pdf
+aliroev_ocr_entries.json
+aliroev_sample.txt
 
 # Python
 __pycache__/
@@ -36,6 +38,6 @@ node_modules/
 # Local Cursor
 .cursor/
 
-# Extracted Manus archive � reference only, not part of project
+# Extracted Manus archive � reference only, not part of project
 deshar-premium/
 

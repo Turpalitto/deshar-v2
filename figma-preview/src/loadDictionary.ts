@@ -88,7 +88,7 @@ function dedupeKey(w: PreviewWord) {
 }
 
 /** Полный офлайн-словарь (curated + maciev), как в Flutter-приложении.
- *  Async: fetch dictionary.json (62 МБ) вместо статического import.
+ *  Async: fetch preview_dictionary.json (первые 5k из 134k HF-датасета).
  *  Preview лимит: 5000 слов из dictionary для производительности. */
 export async function loadFullDictionary(): Promise<PreviewWord[]> {
   const seen = new Set<string>();

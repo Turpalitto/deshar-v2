@@ -1,8 +1,0 @@
-маршалла: [{'chechen': 'Маршалла', 'russian': 'Привет, здравствуйте', 'pronunciation': 'Марш·алла', 'category': 'greetings', 'emoji': '👋', 'hint': 'Традиционное пожелание мира', 'sources': ['maciev', 'curated'], 'quality': 100}]
-цициг: [{'chechen': 'Цициг', 'russian': 'Кошка', 'pronunciation': 'Цициг', 'category': 'animals', 'emoji': '🐱', 'hint': 'Домашнее животное', 'sources': ['maciev', 'aliroev', 'curated'], 'quality': 100}]
-нана: [{'chechen': 'Нана', 'russian': 'Мама, мать', 'pronunciation': 'Нана', 'category': 'family', 'emoji': '👩', 'hint': 'Мать', 'sources': ['maciev', 'aliroev', 'curated'], 'quality': 100}]
-ваха: [{'chechen': 'Ваха', 'russian': 'Идти, пойти', 'pronunciation': 'Ваха', 'category': 'verbs', 'emoji': '🚶', 'hint': 'Движение пешком', 'sources': ['maciev', 'aliroev', 'curated'], 'quality': 100}]
-деша: [{'chechen': 'Деша', 'russian': 'Читать', 'pronunciation': 'Деша', 'category': 'verbs', 'emoji': '📖', 'hint': 'Воспринимать текст', 'sources': ['maciev', 'aliroev', 'curated'], 'quality': 100}]
-хьун: [{'chechen': 'Хьун', 'russian': 'Лес', 'pronunciation': 'Хьун', 'category': 'nature', 'emoji': '🌲', 'hint': 'Деревья и звери', 'sources': ['maciev', 'aliroev', 'curated'], 'quality': 100}]
-маьлхан: [{'chechen': 'Маьлхан', 'russian': 'Солнце', 'pronunciation': 'Маь·лхан', 'category': 'nature', 'emoji': '☀️', 'hint': 'Светило', 'sources': ['maciev', 'aliroev', 'curated'], 'quality': 100}]
-Ӏуьйре: []

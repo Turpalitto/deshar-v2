@@ -11,19 +11,18 @@ Production-ready архитектура уровня Khan Academy + Duolingo:
 - **Два режима** — детский (3–6, 6–9, 9–12) и взрослый
 - **Mastery Learning** — 6 уровней владения словом
 - **SRS (SM-2)** — интервальное повторение
-- **Путь обучения** — 11 юнитов с блокировкой до освоения
-- **7800+ слов** — Мациев + Алироев (curated) + учебник
+- **Путь обучения** — 15 юнитов с блокировкой до освоения
+- **134 000+ слов/фраз** — Hugging Face nmd-ce-ru-171k-v0 (Bible исключён)
+- **326 проверенных** — curated для уроков и игр
 - **Мини-игры** — карточки, викторина, пары
-- **Словарь** — поиск, транскрипция, избранное (озвучка — за фиче-флагом)
+- **Словарь** — поиск, транскрипция, избранное
 - **Кабинет родителя** — статистика
 - **Офлайн** — Hive + assets
 
 ### Инструменты (`tools/`)
-- `tools/build_dictionary.py` — слияние PDF Мациева + curated + Алироев
-- `tools/expand_curated.py` — расширение curated до 1000+ из dictionary.json
-- `tools/analyze_dict.py`, `tools/audit_*.py` — аудит словаря
-- `tools/output/` — отчёты и промежуточные файлы
-- `curated_vocabulary.json` — 1050+ проверенных слов
+- `tools/build_dictionary.py` — импорт из HF датасета + сборка curated
+- `tools/audit_emoji_vocabulary.py` — валидация curated
+- `tools/output/` — отчёты и long-form записи
 
 ### Legacy Web (`legacy/`)
 Устаревший HTML/JS прототип — заменён Flutter-приложением.
@@ -37,18 +36,21 @@ flutter run          # Android / iOS / Chrome
 flutter run -d chrome
 ```
 
-## Обновление словаря из PDF
+## Обновление словаря
 
 ```bash
-# Скачайте Maciev_dictionary.pdf в корень репозитория (не в git)
-python tools/build_dictionary.py --copy-assets
+# Полный импорт из Hugging Face датасета
+pip install datasets pandas pyarrow
+python tools/build_dictionary.py --hf-dataset NM-development/nmd-ce-ru-171k-v0 --copy-assets
+
+# Или пересборка curated без перезагрузки датасета
+python tools/build_dictionary.py --curate-only --copy-assets
 ```
 
-Флаг `--copy-assets` копирует `dictionary.json` и `lessons.json` в `nokhchiin/assets/data/`.
+Флаг `--copy-assets` копирует `dictionary.json` и `curated_vocabulary.json` в `nokhchiin/assets/data/`.
 
-## Источники
-- [Мациев А.Г.](https://ps95.ru/wp-content/uploads/2018/07/Maciev_A.G_Chechensko-russkiy_slovar.pdf)
-- [Алироев И.Ю. (2005)](https://karchava.wordpress.com/wp-content/uploads/2012/09/aliroev_i_yu_-_chechensko-russky_slovar_-_2005.pdf)
+## Источник данных
+- [Hugging Face: NM-development/nmd-ce-ru-171k-v0](https://huggingface.co/datasets/NM-development/nmd-ce-ru-171k-v0)
 
 ## Документация
 См. `nokhchiin/ARCHITECTURE.md`

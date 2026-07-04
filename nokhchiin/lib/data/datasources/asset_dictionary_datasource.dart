@@ -9,9 +9,12 @@ import '../../core/utils/app_logger.dart';
 import 'asset_dictionary_parser.dart';
 
 class AssetDictionaryDataSource {
-  /// Загрузка словаря с error handling.
+  Result<List<WordEntity>>? _cached;
+
+  /// Загрузка словаря с error handling и кэшированием (один парсинг на всё приложение).
   /// Возвращает Result — Success(List<WordEntity>) или Failure.
   Future<Result<List<WordEntity>>> loadBundledDictionary() async {
+    if (_cached != null) return _cached!;
     try {
       final curatedRaw = await rootBundle.loadString('assets/data/curated_vocabulary.json');
       final dictRaw = await rootBundle.loadString('assets/data/dictionary.json');
@@ -20,7 +23,8 @@ class AssetDictionaryDataSource {
         'curated': curatedRaw,
         'dictionary': dictRaw,
       });
-      return Success(words);
+      _cached = Success(words);
+      return _cached!;
     } catch (e, st) {
       AppLogger.error('Failed to load bundled dictionary', error: e, stackTrace: st);
       return Failure(e, st);

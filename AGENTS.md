@@ -19,7 +19,7 @@
 | Аудитория | Взрослый трек (SRS, инсайты, культура) + детский (игры) |
 | Данные | JSON в `nokhchiin/assets/`, прогресс в Hive |
 | Визуал | Порт из Figma Make; бизнес-логика — Dart |
-| Словарь | ~5 500 проверенных пар чеченский↔русский (после sanitize) |
+| Словарь | ~134 000 записей из Hugging Face датасета (Bible исключён) |
 | Preview | `figma-preview/` — React/Vite, только UI |
 
 **Главное правило:** при работе с UI переносить **только визуал**. **Не переписывать** без явной просьбы: Riverpod providers, use cases, SRS, billing, unlock, GoRouter, Hive.
@@ -39,10 +39,9 @@ C:\АББА\                         ← workspace root (открывать IDE 
 ├── figma-preview/                ← Vite + React: визуальный прототип экранов
 ├── tools/                        ← Python: сборка и очистка словаря
 ├── legacy/                       ← устаревший HTML-прототип (не трогать)
-├── vocabulary_corrections.json   ← ручные исправления OCR / учебной лексики
-├── dictionary.json               ← копия после sanitize (--copy-root)
-├── curated_vocabulary.json       ← подмножество verified/lesson-слов
-└── Maciev_dictionary.pdf         ← (опционально) источник полной пересборки
+├── vocabulary_corrections.json   ← ручные overrides учебной лексики
+├── dictionary.json               ← сгенерирован build_dictionary.py (HF датасет)
+└── curated_vocabulary.json       ← проверенные слова для уроков и игр
 ```
 
 | Путь | Что это | Можно менять логику? |
@@ -70,10 +69,9 @@ npm install
 npm run dev          # http://localhost:5173
 npm run build
 
-# Словарь — из tools/
-cd tools
-python sanitize_dictionary.py --copy-root
-python build_dictionary.py --copy-assets   # если есть Maciev_dictionary.pdf
+# Словарь — из корня (pip install datasets pandas pyarrow)
+python tools/build_dictionary.py --hf-dataset NM-development/nmd-ce-ru-171k-v0 --copy-assets
+python tools/build_dictionary.py --curate-only --copy-assets
 ```
 
 ---
@@ -105,24 +103,23 @@ python build_dictionary.py --copy-assets   # если есть Maciev_dictionary
 
 | Файл | Содержимое |
 |------|------------|
-| `dictionary.json` | Полный словарь (~5 471 записей после sanitize) |
+| `dictionary.json` | Полный словарь (~134 000 записей из HF датасета, компактный формат) |
 | `curated_vocabulary.json` | Verified + lesson-слова (~200+) |
 | `lessons.json` | Уроки (greetings, animals, body, …) |
 | `learning_path.json` | Юниты learning path |
 | `worlds.json`, `collections.json`, `stories.json`, `bosses.json` | Контент |
 | `audio_manifest.json`, `illustrations_manifest.json` | Медиа |
 
-Корневые `dictionary.json` / `curated_vocabulary.json` — **копии** после `sanitize_dictionary.py --copy-root`. Менять данные в `nokhchiin/assets/data/`, затем при необходимости копировать в корень.
+Корневые `dictionary.json` / `curated_vocabulary.json` — **копии** после `build_dictionary.py --copy-assets`. Менять данные в `nokhchiin/assets/data/`, затем при необходимости копировать в корень.
 
 ### Пайплайн (`tools/`)
 
-1. **`build_dictionary.py`** — PDF Мациева + curated + Aliroev OCR
-2. **`dictionary_quality.py`** — OCR Latin→Cyrillic, палочка `Ӏ`, чистка RU, валидация
-3. **`sanitize_dictionary.py`** — прогон JSON + `lessons.json` + `vocabulary_corrections.json`
-4. **`vocabulary_corrections.json`** — overrides (Лерг→Ухо, Хьаша→Гость, …)
+1. **`build_dictionary.py`** — импорт из HF датасета + curated из `vocabulary_corrections.json` + майнинг по категориям
+2. **`audit_emoji_vocabulary.py`** — валидация curated после сборки
+3. **`vocabulary_corrections.json`** — ручные overrides (Лерг→Ухо, Хьаша→Гость, …)
 
 ```bash
-cd tools && python sanitize_dictionary.py --copy-root
+python tools/build_dictionary.py --curate-only --copy-assets
 ```
 
 ### Flutter: загрузка словаря
@@ -254,7 +251,7 @@ cd nokhchiin && flutter test
 |----------|---------|
 | IDE не видит preview/tools | Открыть workspace на `C:\АББА\`, не только `nokhchiin/` |
 | Белый экран на web | Onboarding через `builder`, не opacity 0 на initial route |
-| Словарь «грязный» (7876 OCR) | `cd tools && python sanitize_dictionary.py --copy-root` |
+| Словарь не обновлён | `python tools/build_dictionary.py --curate-only --copy-assets` |
 | Preview не скроллит словарь | `flex:1; minHeight:0` + `position:absolute; inset:0` на scroll |
 | Preview не читает JSON | `vite.config.ts` → `fs.allow: [..]` |
 | Дубли `[ХӀоа]` в UI | `DictionaryLabels` / `loadDictionary.ts` |
@@ -267,14 +264,13 @@ cd nokhchiin && flutter test
 
 - [ ] `cd nokhchiin && flutter test`
 - [ ] Визуал не трогает providers / SRS / billing
-- [ ] Данные словаря — через `sanitize_dictionary.py`
+- [ ] Данные словаря — через `build_dictionary.py`
 - [ ] Preview и Flutter читают `nokhchiin/assets/data/`
 - [ ] Коммит — только по просьбе пользователя
 
 ---
 
-## Источники словаря
+## Источник словаря
 
-- [Мациев — PDF](https://ps95.ru/wp-content/uploads/2018/07/Maciev_A.G_Chechensko-russkiy_slovar.pdf)
-- [Алироев 2005 — PDF](https://karchava.wordpress.com/wp-content/uploads/2012/09/aliroev_i_yu_-_chechensko-russky_slovar_-_2005.pdf) (опционально в build)
-- Учебная лексика: `nokhchiin/assets/data/lessons.json` + `vocabulary_corrections.json`
+- [Hugging Face: NM-development/nmd-ce-ru-171k-v0](https://huggingface.co/datasets/NM-development/nmd-ce-ru-171k-v0)
+- Учебная лексика: `vocabulary_corrections.json`
