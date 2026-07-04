@@ -12,6 +12,7 @@ final billingServiceProvider = Provider<BillingRepository>((ref) {
   );
 });
 
-final subscriptionProvider = FutureProvider<SubscriptionEntity>((ref) async {
+final subscriptionProvider =
+    FutureProvider.autoDispose<SubscriptionEntity>((ref) async {
   return ref.watch(billingServiceProvider).getSubscription();
 });

@@ -26,6 +26,6 @@ bool isWorldUnlocked(
 }) {
   if (isPremium) return true;
   if (unlockedWorlds.contains(world.id)) return true;
-  final cost = world.unlockStars;
+  final cost = world.unlockCoins;
   return cost == 0 || coins >= cost;
 }

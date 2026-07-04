@@ -23,6 +23,7 @@ class LearningPathRepositoryImpl implements LearningPathRepository {
         icon: u['icon'] as String,
         requiredMastery: u['requiredMastery'] as int,
         wordIds: words.map((w) => w.id).toList(),
+        enabled: u['enabled'] as bool? ?? true,
       ));
     }
     units.sort((a, b) => a.order.compareTo(b.order));
@@ -52,7 +53,7 @@ class LearningPathRepositoryImpl implements LearningPathRepository {
   Future<bool> isUnitUnlocked(String unitId) async {
     final units = await getUnits();
     final unit = units.firstWhere((u) => u.id == unitId);
-    if (unit.order == 1) return true;
+    if (unit.requiredMastery == 0) return true;
     return false; // computed in provider with use case
   }
 }

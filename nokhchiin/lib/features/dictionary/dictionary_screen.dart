@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nokhchiin/core/l10n/l10n_extensions.dart';
@@ -27,9 +29,20 @@ class DictionaryScreen extends ConsumerStatefulWidget {
 class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
   String _query = '';
   final _controller = TextEditingController();
+  // Debounce поиска — аудит §3.3: раньше setState на каждый keystroke →
+  // линейный scan по 728КБ словаря 6 раз подряд при вводе 6-буквенного слова.
+  Timer? _debounce;
+
+  void _onSearchChanged(String value) {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 300), () {
+      if (mounted) setState(() => _query = value);
+    });
+  }
 
   @override
   void dispose() {
+    _debounce?.cancel();
     _controller.dispose();
     super.dispose();
   }
@@ -75,7 +88,7 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
                 NokhchiinSearchField(
                   controller: _controller,
                   hintText: l10n.dictionarySearchHint,
-                  onChanged: (v) => setState(() => _query = v),
+                  onChanged: _onSearchChanged,
                 ),
               ],
             ),

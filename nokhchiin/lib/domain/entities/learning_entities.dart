@@ -12,6 +12,7 @@ class LearningUnitEntity extends Equatable {
     this.wordIds = const [],
     this.isUnlocked = false,
     this.masteryPercent = 0,
+    this.enabled = true,
   });
 
   final String id;
@@ -23,6 +24,10 @@ class LearningUnitEntity extends Equatable {
   final List<String> wordIds;
   final bool isUnlocked;
   final int masteryPercent;
+  /// Юнит активен в Path. false = скрыт (нет контента/уроков).
+  /// Скрывает school/adjectives/phrases/dialogues/stories пока контент
+  /// не наполнен — аудит logic §3.
+  final bool enabled;
 
   @override
   List<Object?> get props => [id];

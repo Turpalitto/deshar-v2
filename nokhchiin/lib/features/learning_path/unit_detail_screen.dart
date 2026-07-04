@@ -17,7 +17,19 @@ class UnitDetailScreen extends ConsumerWidget {
     final units = ref.watch(learningUnitsProvider);
     return units.when(
       data: (list) {
-        final unit = list.firstWhere((u) => u.id == unitId);
+        final unit = list.firstWhere(
+          (u) => u.id == unitId,
+          orElse: () => list.first, // защита от disabled-юнитов
+        );
+        // Проверка доступа независимо от точки входа (Path / Worlds / deep link).
+        // Аудит logic §1: раньше UnitDetailScreen доверял, что его открыли
+        // законно — Worlds обходили mastery-гейт за 1 тап.
+        if (!unit.isUnlocked) {
+          return _LockedUnitScreen(
+            titleRu: unit.titleRu,
+            requiredMastery: unit.requiredMastery,
+          );
+        }
         return Scaffold(
           appBar: AppBar(title: Text(unit.titleRu)),
           body: FutureBuilder<List<WordEntity>>(
@@ -55,6 +67,45 @@ class UnitDetailScreen extends ConsumerWidget {
       },
       loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
       error: (e, _) => Scaffold(body: Center(child: Text('$e'))),
+    );
+  }
+}
+
+/// Экран заблокированного юнита — показывается когда юнит открыт в обход
+/// mastery-гейта (через Worlds, deep link, patched state).
+class _LockedUnitScreen extends StatelessWidget {
+  const _LockedUnitScreen({required this.titleRu, required this.requiredMastery});
+  final String titleRu;
+  final int requiredMastery;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(titleRu)),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.lock_outline_rounded, size: 72, color: Theme.of(context).colorScheme.primary),
+              const SizedBox(height: 16),
+              Text('Юнит заблокирован', style: Theme.of(context).textTheme.headlineSmall),
+              const SizedBox(height: 8),
+              Text(
+                'Пройдите предыдущий юнит на $requiredMastery%, чтобы открыть «$titleRu».',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 24),
+              FilledButton(
+                onPressed: () => context.go('/path'),
+                child: const Text('К карте пути'),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

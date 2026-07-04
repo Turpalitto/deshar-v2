@@ -6,7 +6,7 @@ class WorldEntity extends Equatable {
     required this.titleRu,
     required this.titleCe,
     required this.gradient,
-    required this.unlockStars,
+    required this.unlockCoins,
     required this.units,
     this.emoji,
     this.subtitleRu,
@@ -17,7 +17,9 @@ class WorldEntity extends Equatable {
   final String titleCe;
   final String? emoji;
   final List<String> gradient;
-  final int unlockStars;
+  /// Стоимость открытия мира в монетах. Раньше `unlockStars`, но фактически
+  /// сравнивается с `coins` (аудит logic §6). Переименовано для честности.
+  final int unlockCoins;
   final List<String> units;
   final String? subtitleRu;
 

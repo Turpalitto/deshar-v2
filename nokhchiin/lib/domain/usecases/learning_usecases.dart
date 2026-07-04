@@ -4,6 +4,8 @@ import '../entities/learning_entities.dart';
 import '../entities/enums.dart';
 import '../repositories/repositories.dart';
 import '../services/spaced_repetition_engine.dart';
+// ignore: unused_import — нужен только для AppLogger в fail-closed ветке.
+import '../../core/utils/app_logger.dart';
 
 class ReviewWordUseCase {
   ReviewWordUseCase(this._progressRepo, [this._srs = const SpacedRepetitionEngine()]);
@@ -42,10 +44,24 @@ class CanUnlockUnitUseCase {
   final DictionaryRepository _dictionaryRepo;
 
   Future<bool> call(LearningUnitEntity unit, LearningUnitEntity? previousUnit) async {
-    if (unit.order == 1) return true;
+    // Открыт по умолчанию если requiredMastery == 0 (стартовые юниты:
+    // greetings/colors/numbers/body/animals). Раньше проверка по order==1,
+    // но это ломалось при нескольких стартовых юнитах.
+    if (unit.requiredMastery == 0) return true;
     if (previousUnit == null) return false;
     final prevWords = await _dictionaryRepo.getWordsByCategory(previousUnit.id);
-    if (prevWords.isEmpty) return true;
+    // fail-closed: предыдущий юнит без размеченных слов = ошибка конфигурации
+    // контента, не "разрешить всем". Раньше return true → 4 юнита открывались
+    // без проверки mastery (аудит logic §2).
+    if (prevWords.isEmpty) {
+      AppLogger.warn(
+        'CanUnlockUnitUseCase: юнит "${unit.id}" (order=${unit.order}) '
+        'идёт после "${previousUnit.id}" без размеченных слов в словаре — '
+        'блокирую разблокировку. Нужно либо наполнить контент, либо '
+        'пометить enabled:false в learning_path.json.',
+      );
+      return false;
+    }
     final progress = await _progressRepo.getAllProgress();
     var mastered = 0;
     for (final w in prevWords) {

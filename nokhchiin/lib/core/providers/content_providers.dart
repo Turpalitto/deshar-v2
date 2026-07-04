@@ -22,13 +22,21 @@ final dictionaryProvider = FutureProvider<List<WordEntity>>((ref) async {
   return ref.watch(dictionaryRepoProvider).getAllWords();
 });
 
-final dueWordsProvider = FutureProvider<List<WordEntity>>((ref) async {
+final dueWordsProvider =
+    FutureProvider.autoDispose<List<WordEntity>>((ref) async {
+  // autoDispose: только Review-экран. Аудит §3.2 — screen-scope, не копить
+  // состояние между навигацией.
   return ref.watch(getDueWordsUseCaseProvider)();
 });
 
 final learningUnitsProvider =
     FutureProvider<List<LearningUnitEntity>>((ref) async {
-  final units = await ref.watch(learningPathRepoProvider).getUnits();
+  final all = await ref.watch(learningPathRepoProvider).getUnits();
+  // Скрываем юниты без контента (enabled: false в learning_path.json).
+  // Аудит logic §3: school/adjectives/phrases/dialogues/stories не имеют
+  // ни категории в dictionary.json, ни уроков в lessons.json — показ
+  // случайных слов под правильным заголовком = баг.
+  final units = all.where((u) => u.enabled).toList();
   final mastery = ref.watch(unitMasteryUseCaseProvider);
   final canAccess = ref.watch(canAccessUnitUseCaseProvider);
 
@@ -36,7 +44,9 @@ final learningUnitsProvider =
   LearningUnitEntity? prev;
   for (final u in units) {
     final pct = await mastery(u.id);
-    var masteryUnlocked = u.order == 1;
+    // Открыт по умолчанию если requiredMastery == 0 (стартовые юниты).
+    // Раньше order == 1 — ломалось при нескольких стартовых.
+    var masteryUnlocked = u.requiredMastery == 0;
     if (!masteryUnlocked && prev != null) {
       final prevPct = await mastery(prev.id);
       masteryUnlocked = prevPct >= u.requiredMastery;
@@ -52,6 +62,7 @@ final learningUnitsProvider =
       wordIds: u.wordIds,
       isUnlocked: unlocked,
       masteryPercent: pct,
+      enabled: u.enabled,
     ));
     prev = u;
   }
@@ -66,11 +77,13 @@ final progressStatsProvider = Provider(
   ),
 );
 
-final languageMasteryProvider = FutureProvider<int>((ref) async {
+final languageMasteryProvider =
+    FutureProvider.autoDispose<int>((ref) async {
   return ref.watch(progressStatsProvider).languageMasteryPercent();
 });
 
-final learnerInsightsProvider = FutureProvider<LearnerInsights>((ref) async {
+final learnerInsightsProvider =
+    FutureProvider.autoDispose<LearnerInsights>((ref) async {
   final units = await ref.watch(learningUnitsProvider.future);
   final language = await ref.watch(languageMasteryProvider.future);
   final profile = ref.watch(userProfileProvider).value ?? const UserProfileEntity();
@@ -85,7 +98,8 @@ final learnerInsightsProvider = FutureProvider<LearnerInsights>((ref) async {
   );
 });
 
-final continueUnitProvider = FutureProvider<LearningUnitEntity?>((ref) async {
+final continueUnitProvider =
+    FutureProvider.autoDispose<LearningUnitEntity?>((ref) async {
   final units = await ref.watch(learningUnitsProvider.future);
   return ref.watch(progressStatsProvider).findContinueUnit(units);
 });

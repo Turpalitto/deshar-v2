@@ -103,7 +103,7 @@ WorldEntity parseWorld(Map<String, dynamic> json, {String file = 'worlds.json'})
     titleCe: _requireString(json, 'titleCe', file),
     emoji: json['emoji'] as String?,
     gradient: _requireStringList(json['gradient'], 'gradient', file),
-    unlockStars: json['unlockStars'] as int? ?? 0,
+    unlockCoins: (json['unlockCoins'] ?? json['unlockStars']) as int? ?? 0,
     units: _requireStringList(json['units'], 'units', file),
     subtitleRu: json['subtitleRu'] as String?,
   );

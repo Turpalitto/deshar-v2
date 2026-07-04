@@ -47,10 +47,10 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
   }
 
   Future<void> _load() async {
-    var words = await ref.read(dictionaryRepoProvider).getWordsByCategory(widget.unitId);
-    if (words.isEmpty) {
-      words = (await ref.read(dictionaryRepoProvider).getAllWords()).take(10).toList();
-    }
+    final words = await ref.read(dictionaryRepoProvider).getWordsByCategory(widget.unitId);
+    // Раньше: если категория пуста → 10 случайных слов из всего словаря.
+    // Аудит logic §3 следствие 2: показывал нерелевантный контент под
+    // правильным заголовком. Теперь — пустой список = empty state в UI.
     words.shuffle(_rng);
     if (mounted) {
       setState(() {

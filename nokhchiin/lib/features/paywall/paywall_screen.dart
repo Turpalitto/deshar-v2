@@ -12,9 +12,11 @@ import '../../core/design/widgets/app_scaffold.dart';
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/analytics_service.dart';
+import '../../core/widgets/legal_links_row.dart';
 import 'package:nokhchiin/l10n/app_localizations.dart';
 import '../../domain/constants/subscription_limits.dart';
 import '../../domain/entities/analytics_event.dart';
+import '../../domain/repositories/billing_repository.dart';
 
 class PaywallScreen extends ConsumerStatefulWidget {
   const PaywallScreen({super.key, this.returnPath});
@@ -60,10 +62,26 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
       } else {
         context.pop();
       }
+    } on BillingUnavailableException catch (e) {
+      await analytics.track(
+        AnalyticsEventName.purchaseFailed,
+        properties: {'error': e.message, 'kind': 'unavailable'},
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.message),
+          duration: const Duration(seconds: 4),
+        ),
+      );
     } catch (e) {
       await analytics.track(
         AnalyticsEventName.purchaseFailed,
         properties: {'error': e.toString()},
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Ошибка: $e')),
       );
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -204,11 +222,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                         ),
               ),
               const SizedBox(height: AppSpacing.lg),
-              Text(
-                l10n.paywallLegal,
-                style: Theme.of(context).textTheme.labelSmall,
-                textAlign: TextAlign.center,
-              ),
+              const LegalLinksRow(compact: true),
             ],
           ),
         ),

@@ -1,75 +1,75 @@
-{
+﻿{
   "worlds": [
     {
       "id": "home_world",
-      "titleRu": "Дом",
-      "titleCe": "ЦӀий",
-      "emoji": "🏡",
+      "titleRu": "Р”РѕРј",
+      "titleCe": "Р¦УЂРёР№",
+      "emoji": "рџЏЎ",
       "gradient": ["#E8EAF6", "#C5CAE9"],
-      "unlockStars": 0,
+      "unlockCoins": 0,
       "units": ["home", "greetings"]
     },
     {
       "id": "meadow",
-      "titleRu": "Животные",
-      "titleCe": "Дийнаташ",
-      "emoji": "🐻",
+      "titleRu": "Р–РёРІРѕС‚РЅС‹Рµ",
+      "titleCe": "Р”РёР№РЅР°С‚Р°С€",
+      "emoji": "рџђ»",
       "gradient": ["#A8E6CF", "#DCEDC1"],
-      "unlockStars": 0,
+      "unlockCoins": 0,
       "units": ["animals"]
     },
     {
       "id": "food_world",
-      "titleRu": "Еда",
-      "titleCe": "Кхача",
-      "emoji": "🍎",
+      "titleRu": "Р•РґР°",
+      "titleCe": "РљС…Р°С‡Р°",
+      "emoji": "рџЌЋ",
       "gradient": ["#FFE0B2", "#FFCC80"],
-      "unlockStars": 20,
+      "unlockCoins": 20,
       "units": ["food"]
     },
     {
       "id": "village",
-      "titleRu": "Семья",
-      "titleCe": "Доьзал",
-      "emoji": "👨‍👩‍👧",
+      "titleRu": "РЎРµРјСЊСЏ",
+      "titleCe": "Р”РѕСЊР·Р°Р»",
+      "emoji": "рџ‘ЁвЂЌрџ‘©вЂЌрџ‘§",
       "gradient": ["#F8BBD9", "#F48FB1"],
-      "unlockStars": 40,
+      "unlockCoins": 40,
       "units": ["family"]
     },
     {
       "id": "school_world",
-      "titleRu": "Школа",
-      "titleCe": "Дешар",
-      "emoji": "🏫",
+      "titleRu": "РЁРєРѕР»Р°",
+      "titleCe": "Р”РµС€Р°СЂ",
+      "emoji": "рџЏ«",
       "gradient": ["#E1BEE7", "#F3E5F5"],
-      "unlockStars": 80,
+      "unlockCoins": 80,
       "units": ["verbs", "home"]
     },
     {
       "id": "nature_world",
-      "titleRu": "Природа",
-      "titleCe": "Ӏалам",
-      "emoji": "🌳",
+      "titleRu": "РџСЂРёСЂРѕРґР°",
+      "titleCe": "УЂР°Р»Р°Рј",
+      "emoji": "рџЊі",
       "gradient": ["#B3E5FC", "#81D4FA"],
-      "unlockStars": 100,
+      "unlockCoins": 100,
       "units": ["nature", "colors"]
     },
     {
       "id": "sport_world",
-      "titleRu": "Спорт",
-      "titleCe": "Спорт",
-      "emoji": "⚽",
+      "titleRu": "РЎРїРѕСЂС‚",
+      "titleCe": "РЎРїРѕСЂС‚",
+      "emoji": "вљЅ",
       "gradient": ["#C8E6C9", "#A5D6A7"],
-      "unlockStars": 150,
+      "unlockCoins": 150,
       "units": ["verbs"]
     },
     {
       "id": "legend",
-      "titleRu": "Легенды",
-      "titleCe": "Легендаш",
-      "emoji": "🌙",
+      "titleRu": "Р›РµРіРµРЅРґС‹",
+      "titleCe": "Р›РµРіРµРЅРґР°С€",
+      "emoji": "рџЊ™",
       "gradient": ["#FFE0B2", "#FFF3E0"],
-      "unlockStars": 200,
+      "unlockCoins": 200,
       "units": ["greetings", "family"]
     }
   ]

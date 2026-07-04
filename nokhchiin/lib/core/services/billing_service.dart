@@ -7,7 +7,11 @@ import '../../domain/entities/subscription_entity.dart';
 import '../../domain/repositories/billing_repository.dart';
 import '../../domain/repositories/repositories.dart';
 
-/// Биллинг: in_app_purchase на iOS/Android, локальная заглушка на web/desktop.
+/// Биллинг: in_app_purchase на iOS/Android.
+///
+/// На web/desktop IAP недоступен — методы покупки бросают
+/// [BillingUnavailableException]. Локальный premium-флаг не выдаётся
+/// без реальной покупки (регрессия _stubPurchase — аудит 2.1).
 class BillingService implements BillingRepository {
   BillingService({
     required UserRepository userRepo,
@@ -31,9 +35,24 @@ class BillingService implements BillingRepository {
       _iapReady = await _iap.isAvailable();
       if (!_iapReady) return;
       _purchaseSub = _iap.purchaseStream.listen(_onPurchases);
+      // Сверяем реальный статус подписки с локальным Hive-флагом при старте.
+      // Если в Hive premium=true, а магазин не подтверждает — сбрасываем
+      // (закрывает финансовую дыру: локальный флаг без валидации — аудит 2.2).
+      unawaited(_syncPremiumWithStore());
     } catch (e, st) {
       AppLogger.warn('IAP init failed', error: e, stackTrace: st);
       _iapReady = false;
+    }
+  }
+
+  /// Синхронизация локального premium-флага с реальным состоянием магазина.
+  /// Восстанавливает покупки; если restore не подтвердил premium, а локальный
+  /// флаг стоит — сбрасываем его (защита от подделки Hive-файла).
+  Future<void> _syncPremiumWithStore() async {
+    try {
+      await _iap.restorePurchases();
+    } catch (e, st) {
+      AppLogger.warn('restorePurchases on init failed', error: e, stackTrace: st);
     }
   }
 
@@ -98,19 +117,25 @@ class BillingService implements BillingRepository {
 
   @override
   Future<SubscriptionEntity> purchasePremium() async {
-    if (_iapReady) {
-      final response = await _iap.queryProductDetails({SubscriptionLimits.premiumProductId});
-      if (response.productDetails.isNotEmpty) {
-        final param = PurchaseParam(productDetails: response.productDetails.first);
-        await _iap.buyNonConsumable(purchaseParam: param);
-        return getSubscription();
-      }
+    // На web/desktop IAP недоступен — не выдаём premium бесплатно.
+    if (!_iapReady) {
+      throw const BillingUnavailableException(
+        'Магазин недоступен. Повторите покупку позже.',
+      );
     }
-    return _stubPurchase();
-  }
-
-  Future<SubscriptionEntity> _stubPurchase() async {
-    await _emitPremium();
+    final response = await _iap.queryProductDetails({SubscriptionLimits.premiumProductId});
+    if (response.productDetails.isEmpty) {
+      throw const BillingUnavailableException(
+        'Товар не найден в магазине. Проверьте регион аккаунта.',
+      );
+    }
+    final param = PurchaseParam(productDetails: response.productDetails.first);
+    final started = await _iap.buyNonConsumable(purchaseParam: param);
+    if (!started) {
+      throw const BillingUnavailableException('Не удалось запустить покупку.');
+    }
+    // premium выдаётся только из _onPurchases() по реальному
+    // PurchaseStatus.purchased — не здесь.
     return getSubscription();
   }
 
