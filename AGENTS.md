@@ -222,6 +222,32 @@ cd nokhchiin && flutter test
 
 ---
 
+## Политика монетизации
+
+**До публикации — все ограничения сняты.** Никаких замков, paywall, лимитов.
+
+| Компонент | Статус | Где |
+|-----------|--------|-----|
+| `FeatureFlags.premiumEnabled` | `false` | `lib/core/config/feature_flags.dart` |
+| `SubscriptionLimits.freeUnitMaxOrder` | `9999` | `lib/domain/constants/subscription_limits.dart` |
+| `SubscriptionLimits.freeDailyReviewLimit` | `9999` | — |
+| `SubscriptionLimits.freeDictionaryBrowseLimit` | `9999` | — |
+| `SubscriptionLimits.freeDictionarySearchLimit` | `9999` | — |
+| `CanAccessUnitUseCase` | `return true` | `lib/domain/usecases/access_usecases.dart` |
+| `CanAccessFeatureUseCase` | `return true` | — |
+| `CanStartReviewUseCase` | `return true` | — |
+| `isWorldUnlocked()` | `return true` | `lib/core/utils/world_progress_util.dart` |
+| Paywall UI | скрыт (`premiumEnabled=false`) | `lib/features/paywall/`, `dictionary_screen`, `profile_screen` |
+
+**Когда будете готовы к публикации:**
+1. `FeatureFlags.premiumEnabled = true`
+2. Вернуть реальные лимиты в `SubscriptionLimits` (3 юнита, 20 SRS/день, 50 словарь, 20 поиск)
+3. Вернуть реальные проверки в `access_usecases.dart` (см. git history до `49fa448`)
+4. Вернуть `isWorldUnlocked()` с реальной логикой
+5. Проверить paywall + billing flow на реальном устройстве
+
+---
+
 ## Частые ошибки (для агентов)
 
 | Проблема | Решение |

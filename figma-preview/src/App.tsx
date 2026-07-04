@@ -67,13 +67,13 @@ const WORLDS = [
   { title: "Тело и здоровье", emoji: "💪", prog: 0, color: "#7A5C8B", lessons: 9, desc: "Анатомия, самочувствие" },
 ];
 
-const QUIZ_Q = {
-  q: "Как переводится «Хьаша»?",
-  ce: "Хьаша",
-  hint: "хьаша",
-  opts: ["Друг", "Гость", "Сосед", "Брат"],
-  correct: 1,
-};
+const QUIZ_QUESTIONS = [
+  { q: "Как переводится «Хьаша»?", ce: "Хьаша", hint: "хьаша", opts: ["Друг", "Гость", "Сосед", "Брат"], correct: 1 },
+  { q: "Как переводится «Нана»?", ce: "Нана", hint: "nana", opts: ["Сестра", "Бабушка", "Мать", "Тётя"], correct: 2 },
+  { q: "Как переводится «Даймохк»?", ce: "Даймохк", hint: "daymokhk", opts: ["Дом", "Родина", "Гора", "Село"], correct: 1 },
+  { q: "Как переводится «Марша ваийла»?", ce: "Марша ваийла", hint: "marsha vaiyla", opts: ["До свидания", "Спасибо", "Добро пожаловать", "Извините"], correct: 2 },
+  { q: "Как переводится «Стаг»?", ce: "Стаг", hint: "stag", opts: ["Ребёнок", "Человек", "Воин", "Старик"], correct: 1 },
+];
 
 const MATCH_PAIRS = [
   { ce: "Нана", ru: "Мать" },
@@ -702,41 +702,60 @@ function MatchScreen({ mode, nav }: { mode: Mode; nav: (s: Screen) => void }) {
 function QuizScreen({ mode, nav }: { mode: Mode; nav: (s: Screen) => void }) {
   const accent = mode === "kids" ? C.meadow : C.terra;
   const [sel, setSel] = useState<number|null>(null);
-  const [step, setStep] = useState(3);
+  const [qIdx, setQIdx] = useState(0);
+  const [step, setStep] = useState(5);
+  const [score, setScore] = useState(0);
+  const [wrong, setWrong] = useState(false);
   const show = useAnimIn(50);
+  const q = QUIZ_QUESTIONS[qIdx];
 
   const choose = (i: number) => {
     if (sel !== null) return;
     setSel(i);
-    setTimeout(() => { setSel(null); const ns = Math.min(step+1, 5); setStep(ns); if(ns>=5) nav("reward"); }, 900);
+    if (i === q.correct) {
+      setScore(s => s + 1);
+      setTimeout(() => {
+        if (qIdx + 1 >= QUIZ_QUESTIONS.length) {
+          nav("reward");
+        } else {
+          setSel(null);
+          setQIdx(idx => idx + 1);
+          setStep(s => Math.min(s + 1, 10));
+        }
+      }, 900);
+    } else {
+      setWrong(true);
+      setTimeout(() => { setWrong(false); setSel(null); }, 900);
+    }
   };
 
   return (
     <div style={{ flex:1, background:C.bg, display:"flex", flexDirection:"column" }}>
       <StatusBar />
       <div style={{ padding:"10px 20px", display:"flex", alignItems:"center", gap:12 }}>
-        <button onClick={() => nav("home")} style={{ background:"none", border:"none", cursor:"pointer", color:C.textTert, lineHeight:0 }}>
+        <button onClick={() => nav("path")} style={{ background:"none", border:"none", cursor:"pointer", color:C.textTert, lineHeight:0 }}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 19L8 12L15 5"/></svg>
         </button>
-        <ProgBar step={step} col={accent} />
-        <span style={{ fontSize:12, color:C.textTert, fontWeight:600 }}>{step}/5</span>
+        <ProgBar step={step} total={10} col={accent} />
+        <span style={{ fontSize:12, color:C.textTert, fontWeight:600 }}>{qIdx+1}/{QUIZ_QUESTIONS.length}</span>
       </div>
       <div style={{ padding:"16px 20px 24px", flex:1, display:"flex", flexDirection:"column" }}>
-        <div style={{ fontSize:12, color:C.textTert, fontWeight:700, letterSpacing:"1px", marginBottom:8 }}>ВОПРОС</div>
-        <div style={{ fontSize:22, fontWeight:700, color:C.text, letterSpacing:"-0.2px", marginBottom:22, ...spring(show) }}>
-          {QUIZ_Q.q}
+        <div style={{ fontSize:12, color:C.textTert, fontWeight:700, letterSpacing:"1px", marginBottom:8 }}>ВОПРОС {qIdx+1}</div>
+        <div key={qIdx} style={{ fontSize:22, fontWeight:700, color:C.text, letterSpacing:"-0.2px", marginBottom:22, ...spring(show) }}>
+          {q.q}
         </div>
-        <div style={{ background:C.surface, borderRadius:22, padding:"28px", marginBottom:28, display:"flex", flexDirection:"column", alignItems:"center", border:`1.5px solid ${C.sep}`, ...spring(show) }}>
+        <div key={"card-"+qIdx} style={{ background:C.surface, borderRadius:22, padding:"28px", marginBottom:28, display:"flex", flexDirection:"column", alignItems:"center", border:`1.5px solid ${C.sep}`, ...spring(show) }}>
           <div style={{ fontSize:52, marginBottom:10 }}>📖</div>
-          <div style={{ fontSize:34, fontWeight:700, color:C.text, letterSpacing:"0.3px" }}>{QUIZ_Q.ce}</div>
-          <div style={{ fontSize:14, color:C.textTert, marginTop:6 }}>[{QUIZ_Q.hint}]</div>
+          <div style={{ fontSize:34, fontWeight:700, color:C.text, letterSpacing:"0.3px" }}>{q.ce}</div>
+          <div style={{ fontSize:14, color:C.textTert, marginTop:6 }}>[{q.hint}]</div>
         </div>
         <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
-          {QUIZ_Q.opts.map((opt, i) => {
-            const isCorr = i === QUIZ_Q.correct, isSel = sel === i;
+          {q.opts.map((opt, i) => {
+            const isCorr = i === q.correct, isSel = sel === i;
             let bg = C.surface, border = `1.5px solid rgba(61,56,50,0.1)`, col = C.text;
             if (isSel && isCorr) { bg = "#E8F5EE"; border = `1.5px solid ${C.ok}`; col = C.ok; }
             if (isSel && !isCorr) { bg = "#FBF0F0"; border = `1.5px solid ${C.err}`; col = C.err; }
+            if (wrong && isCorr) { bg = "#E8F5EE"; border = `1.5px solid ${C.ok}`; col = C.ok; }
             return (
               <button key={opt} onClick={() => choose(i)}
                 style={{ background:bg, border, borderRadius:14, padding:"16px 18px", textAlign:"left", fontSize:16, fontWeight:500, color:col, cursor:sel===null?"pointer":"default", display:"flex", alignItems:"center", gap:12, transition:"all 0.22s", fontFamily:"inherit" }}>
@@ -748,6 +767,11 @@ function QuizScreen({ mode, nav }: { mode: Mode; nav: (s: Screen) => void }) {
             );
           })}
         </div>
+        {wrong && (
+          <div style={{ marginTop:16, textAlign:"center", fontSize:14, color:C.err, fontWeight:600 }}>
+            Неверно. Попробуйте ещё раз.
+          </div>
+        )}
       </div>
     </div>
   );

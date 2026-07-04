@@ -24,8 +24,7 @@ bool isWorldUnlocked(
   required List<String> unlockedWorlds,
   required int coins,
 }) {
-  if (isPremium) return true;
-  if (unlockedWorlds.contains(world.id)) return true;
-  final cost = world.unlockCoins;
-  return cost == 0 || coins >= cost;
+  // POLICY: до публикации — все миры открыты.
+  // См. AGENTS.md → «Политика монетизации».
+  return true;
 }
