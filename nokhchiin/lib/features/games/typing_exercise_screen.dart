@@ -100,6 +100,7 @@ class _TypingExerciseScreenState extends ConsumerState<TypingExerciseScreen> {
             context.pop();
           },
         );
+      }
     });
   }
 

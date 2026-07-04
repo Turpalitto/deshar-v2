@@ -1,8 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'design_tokens.dart';
-import 'motion.dart';
-import 'spacing.dart';
 import 'typography.dart';
 
 /// ThemeExtension: premium iOS design system (Cupertino-first, без Material elevation).
@@ -106,7 +104,7 @@ class IosDesignSystem extends ThemeExtension<IosDesignSystem> {
       scaffoldBackgroundColor: ds.tokens.background,
       extensions: _mergeExtensions(base, ds),
       // Без Material elevation — плоские поверхности.
-      cardTheme: base.cardTheme?.copyWith(elevation: 0, shadowColor: Colors.transparent),
+      cardTheme: base.cardTheme.copyWith(elevation: 0, shadowColor: Colors.transparent),
       elevatedButtonTheme: null,
       filledButtonTheme: null,
     );

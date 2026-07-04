@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 /// Legacy aliases → NokhchiinColors.
 export '../design/tokens/nokhchiin_colors.dart';
 

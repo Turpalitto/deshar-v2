@@ -8,7 +8,6 @@ import '../../core/config/feature_flags.dart';
 import '../../core/design/tokens/app_spacing.dart';
 import '../../core/design/app_icons.dart';
 import '../../core/design/widgets/app_button.dart';
-import '../../core/design/widgets/app_card.dart';
 import '../../core/design/widgets/app_scaffold.dart';
 import '../../core/design/widgets/app_icon_image.dart';
 import '../../core/design/widgets/loading_state.dart';
@@ -39,7 +38,6 @@ class _BossScreenState extends ConsumerState<BossScreen> {
   int _secondsLeft = 120;
   Timer? _timer;
   bool _finished = false;
-  bool? _lastCorrect;
   int? _selectedOption;
 
   @override
@@ -184,7 +182,6 @@ class _BossScreenState extends ConsumerState<BossScreen> {
                       : () async {
                           final correct = o.id == target.id;
                           setState(() {
-                            _lastCorrect = correct;
                             _selectedOption = i;
                           });
                           if (correct) {
@@ -196,7 +193,6 @@ class _BossScreenState extends ConsumerState<BossScreen> {
                           await Future.delayed(AppDurations.normal);
                           if (!mounted) return;
                           setState(() {
-                            _lastCorrect = null;
                             _selectedOption = null;
                             _index++;
                           });

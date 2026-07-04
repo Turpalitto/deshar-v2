@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../tokens/app_spacing.dart';
-import '../app_icons.dart';
 import 'app_icon_image.dart';
 import '../../design_system/design_system.dart';
 
@@ -68,7 +67,7 @@ class RewardCelebration {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       if (iconAsset != null)
-                        AppIconImage(asset: iconAsset!, size: 96, color: tokens.accent)
+                        AppIconImage(asset: iconAsset, size: 96, color: tokens.accent)
                             .animate()
                             .scale(
                               begin: const Offset(0.5, 0.5),

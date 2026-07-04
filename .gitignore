@@ -35,3 +35,7 @@ node_modules/
 
 # Local Cursor
 .cursor/
+
+# Extracted Manus archive — reference only, not part of project
+deshar-premium/
+

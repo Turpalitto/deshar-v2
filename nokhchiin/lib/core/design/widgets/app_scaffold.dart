@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import '../../design_system/design_system.dart';
 import '../tokens/app_spacing.dart';
-import 'ornament_accent.dart';
 
 class AppScaffold extends StatelessWidget {
   const AppScaffold({

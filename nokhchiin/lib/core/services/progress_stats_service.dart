@@ -1,6 +1,5 @@
 import '../../domain/entities/enums.dart';
 import '../../domain/entities/learning_entities.dart';
-import '../../domain/entities/word_progress_entity.dart';
 import '../../domain/repositories/repositories.dart';
 
 /// Локальная аналитика прогресса без сервера.

@@ -17,7 +17,7 @@ class LocalProgressDataSource {
     final result = <String, WordProgressEntity>{};
     for (final key in _box.keys) {
       final map = _box.get(key);
-      if (map != null) result[key as String] = _fromMap(key as String, map);
+      if (map != null) result[key] = _fromMap(key, map);
     }
     return result;
   }

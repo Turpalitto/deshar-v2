@@ -20,7 +20,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     Future<void>.delayed(const Duration(milliseconds: 2200), () {
       if (!mounted) return;
       final profile = ref.read(userProfileProvider).value;
-      final hasOnboarded = profile != null && profile.mode != null;
+      final hasOnboarded = profile != null;
       context.go(hasOnboarded ? '/' : '/onboarding');
     });
   }

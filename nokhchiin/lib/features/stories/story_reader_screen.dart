@@ -19,7 +19,6 @@ class _StoryReaderScreenState extends ConsumerState<StoryReaderScreen> {
   int _panel = 0;
   bool _quizMode = false;
   int _quizIndex = 0;
-  int _quizScore = 0;
   StoryEntity? _story;
 
   @override
@@ -140,7 +139,6 @@ class _StoryReaderScreenState extends ConsumerState<StoryReaderScreen> {
 
     final q = _quiz[_quizIndex];
     final options = q.options;
-    final answer = q.answer;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Проверь себя')),
@@ -157,7 +155,6 @@ class _StoryReaderScreenState extends ConsumerState<StoryReaderScreen> {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
-                        if (o == answer) _quizScore++;
                         setState(() => _quizIndex++);
                       },
                       child: Padding(padding: const EdgeInsets.all(14), child: Text(o)),
