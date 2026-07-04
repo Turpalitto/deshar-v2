@@ -1,4 +1,3 @@
-import dictionaryJson from "../../nokhchiin/assets/data/dictionary.json";
 import curatedJson from "../../nokhchiin/assets/data/curated_vocabulary.json";
 
 export type PreviewWord = {
@@ -34,6 +33,8 @@ const CATEGORY_LABELS: Record<string, string> = {
 };
 
 const LESSON_CATEGORIES = new Set(Object.keys(CATEGORY_LABELS));
+
+const PREVIEW_DICT_LIMIT = 5000;
 
 function capitalize(s: string) {
   const t = s.trim();
@@ -86,8 +87,10 @@ function dedupeKey(w: PreviewWord) {
   return `${w.ce.toLowerCase().replace(/\s+/g, "")}|${w.ru.toLowerCase()}`;
 }
 
-/** Полный офлайн-словарь (curated + maciev), как в Flutter-приложении. */
-export function loadFullDictionary(): PreviewWord[] {
+/** Полный офлайн-словарь (curated + maciev), как в Flutter-приложении.
+ *  Async: fetch dictionary.json (62 МБ) вместо статического import.
+ *  Preview лимит: 5000 слов из dictionary для производительности. */
+export async function loadFullDictionary(): Promise<PreviewWord[]> {
   const seen = new Set<string>();
   const words: PreviewWord[] = [];
 
@@ -101,7 +104,8 @@ export function loadFullDictionary(): PreviewWord[] {
     words.push(w);
   }
 
-  const dict = dictionaryJson as { entries: RawEntry[] };
+  const resp = await fetch("/assets/data/preview_dictionary.json");
+  const dict = await resp.json() as { entries: RawEntry[] };
   for (const item of dict.entries) {
     const w = mapEntry(item, false);
     if (!w) continue;

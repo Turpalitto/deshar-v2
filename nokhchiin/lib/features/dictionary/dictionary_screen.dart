@@ -2,23 +2,17 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nokhchiin/core/l10n/l10n_extensions.dart';
 import 'package:go_router/go_router.dart';
-import '../../core/config/feature_flags.dart';
-import '../../core/design/app_icons.dart';
-import '../../core/design/widgets/app_scaffold.dart'; // intentional-mix: app shell scaffold
-import '../../core/design/widgets/error_state.dart'; // intentional-mix: error fallback UI
-import '../../core/design/widgets/loading_state.dart'; // intentional-mix: shared loading placeholder
+
 import '../../core/design_system/design_system.dart';
-import '../../core/providers/providers.dart';
-import '../../core/services/audio_service.dart';
-import '../../core/utils/chechen_text_utils.dart';
-import '../../core/utils/dictionary_labels.dart';
-import '../../domain/constants/subscription_limits.dart';
-import '../../domain/entities/word_entity.dart';
+import '../../core/l10n/l10n_extensions.dart';
+import '../../core/providers/dictionary_search_providers.dart';
+import 'dictionary_card.dart';
 
-final _audioProvider = Provider((_) => AudioService());
-
+/// Переработанный экран словаря — Apple Dictionary style.
+///
+/// Header + search + filter chips + virtualized list.
+/// UI получает только [DictionaryEntry] — никогда сырой JSON.
 class DictionaryScreen extends ConsumerStatefulWidget {
   const DictionaryScreen({super.key});
 
@@ -27,118 +21,225 @@ class DictionaryScreen extends ConsumerStatefulWidget {
 }
 
 class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
-  String _query = '';
-  final _controller = TextEditingController();
-  // Debounce поиска — аудит §3.3: раньше setState на каждый keystroke →
-  // линейный scan по 728КБ словаря 6 раз подряд при вводе 6-буквенного слова.
+  final _scrollController = ScrollController();
+  final _searchController = TextEditingController();
   Timer? _debounce;
 
-  void _onSearchChanged(String value) {
-    _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 300), () {
-      if (mounted) setState(() => _query = value);
-    });
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
   }
 
   @override
   void dispose() {
     _debounce?.cancel();
-    _controller.dispose();
+    _searchController.dispose();
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
     super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+      final result = ref.read(dictionarySearchResultProvider).valueOrNull;
+      if (result != null && result.hasMore) {
+        ref.read(dictionaryPageProvider.notifier).state++;
+      }
+    }
+  }
+
+  void _onSearchChanged(String value) {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 300), () {
+      ref.read(dictionaryQueryProvider.notifier).state = value;
+      ref.read(dictionaryPageProvider.notifier).state = 0;
+      if (_scrollController.hasClients) _scrollController.jumpTo(0);
+    });
+  }
+
+  void _onFilterChanged(DictionaryFilter filter) {
+    ref.read(dictionaryFilterProvider.notifier).state = filter;
+    ref.read(dictionaryPageProvider.notifier).state = 0;
+    if (_scrollController.hasClients) _scrollController.jumpTo(0);
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final dict = ref.watch(dictionaryProvider);
-    final profile = ref.watch(userProfileProvider).value;
-    final isPremium = FeatureFlags.premiumEnabled ? (profile?.isPremium ?? false) : true;
     final tokens = context.iosTokens;
-    final wordCount = dict.maybeWhen(data: (words) => words.length, orElse: () => null);
+    final result = ref.watch(dictionarySearchResultProvider);
+    final totalCount = ref.watch(dictionaryTotalCountProvider).valueOrNull ?? 0;
+    final currentFilter = ref.watch(dictionaryFilterProvider);
 
-    return AppScaffold(
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
-            child: Column(
-              children: [
-                NokhchiinPageHeader(
-                  title: l10n.dictionaryTitle,
-                  onBack: () => context.pop(),
-                  trailing: wordCount == null
-                      ? null
-                      : NokhchiinChip(
-                          label: '${_formatCount(wordCount)} слов',
-                          color: tokens.textTertiary,
-                          background: tokens.surfaceMuted,
+    return Scaffold(
+      backgroundColor: tokens.background,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Header
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.arrow_back_rounded),
+                        onPressed: () => context.pop(),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        l10n.dictionaryTitle,
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w700,
+                          color: tokens.textPrimary,
+                          letterSpacing: -0.3,
                         ),
-                ),
-                if (FeatureFlags.premiumEnabled && !isPremium) ...[
-                  const SizedBox(height: 12),
-                  NokhchiinSurfaceCard(
-                    onTap: () => context.push('/paywall?return=/dictionary'),
-                    child: Text(
-                      'Free: ${SubscriptionLimits.freeDictionaryBrowseLimit} слов · Premium — весь словарь',
-                      style: TextStyle(fontSize: 13, color: tokens.textSecondary),
+                      ),
+                      const Spacer(),
+                      if (totalCount > 0)
+                        Text(
+                          _formatCount(totalCount),
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: tokens.textTertiary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+                  // Search
+                  Container(
+                    decoration: BoxDecoration(
+                      color: tokens.surface,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: tokens.separator),
+                    ),
+                    child: TextField(
+                      controller: _searchController,
+                      onChanged: _onSearchChanged,
+                      style: TextStyle(fontSize: 15, color: tokens.textPrimary),
+                      decoration: InputDecoration(
+                        hintText: l10n.dictionarySearchHint,
+                        hintStyle: TextStyle(color: tokens.textTertiary, fontSize: 15),
+                        prefixIcon: Icon(Icons.search_rounded, color: tokens.textTertiary, size: 20),
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
                     ),
                   ),
                 ],
-                const SizedBox(height: 14),
-                NokhchiinSearchField(
-                  controller: _controller,
-                  hintText: l10n.dictionarySearchHint,
-                  onChanged: _onSearchChanged,
-                ),
-              ],
+              ),
             ),
-          ),
-          Expanded(
-            child: dict.when(
-              data: (words) {
-                final browseLimit = isPremium ? words.length : SubscriptionLimits.freeDictionaryBrowseLimit;
-                final searchLimit = isPremium ? words.length : SubscriptionLimits.freeDictionarySearchLimit;
-                final filtered = _query.isEmpty
-                    ? words.take(browseLimit).toList()
-                    : words
-                        .where((w) => ChechenTextUtils.matchesWordQuery(
-                              query: _query,
-                              chechen: w.chechen,
-                              russian: w.russian,
-                            ))
-                        .take(searchLimit)
-                        .toList();
-
-                if (filtered.isEmpty) {
-                  return Center(
-                    child: Text(
-                      'Ничего не найдено',
-                      style: TextStyle(fontSize: 15, color: tokens.textTertiary),
+            // Filter chips
+            SizedBox(
+              height: 44,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                children: DictionaryFilter.values.map((f) {
+                  final selected = f == currentFilter;
+                  final color = _filterColor(f, tokens);
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: FilterChip(
+                      label: Text(f.label),
+                      selected: selected,
+                      onSelected: (_) => _onFilterChanged(f),
+                      selectedColor: color.withValues(alpha: 0.15),
+                      labelStyle: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: selected ? color : tokens.textSecondary,
+                      ),
+                      backgroundColor: tokens.surface,
+                      side: BorderSide(color: selected ? color.withValues(alpha: 0.3) : tokens.separator),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      showCheckmark: false,
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
                     ),
                   );
-                }
-
-                return ListView.separated(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  itemCount: filtered.length,
-                  separatorBuilder: (_, __) => Divider(height: 1, color: tokens.separator),
-                  itemBuilder: (context, i) => _WordRow(
-                    word: filtered[i],
-                    audioEnabled: FeatureFlags.audioEnabled,
-                    onSpeak: FeatureFlags.audioEnabled
-                        ? () => ref.read(_audioProvider).speakChechen(filtered[i].chechen)
-                        : null,
-                    onFavorite: () => ref.read(progressRepoProvider).toggleFavorite(filtered[i].id),
-                  ),
-                );
-              },
-              loading: () => LoadingState(message: l10n.loading),
-              error: (e, _) => ErrorState(message: '$e', onRetry: () => ref.invalidate(dictionaryProvider)),
+                }).toList(),
+              ),
             ),
-          ),
-        ],
+            const SizedBox(height: 8),
+            // List
+            Expanded(
+              child: result.when(
+                data: (data) {
+                  if (data.entries.isEmpty && data.page == 0) {
+                    return Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.search_off_rounded, size: 48, color: tokens.textTertiary),
+                          const SizedBox(height: 12),
+                          Text(
+                            'Ничего не найдено',
+                            style: TextStyle(fontSize: 15, color: tokens.textTertiary),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                  return ListView.builder(
+                    controller: _scrollController,
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    itemCount: data.entries.length + (data.hasMore ? 1 : 0),
+                    itemBuilder: (context, i) {
+                      if (i >= data.entries.length) {
+                        return const Padding(
+                          padding: EdgeInsets.all(20),
+                          child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                        );
+                      }
+                      final entry = data.entries[i];
+                      return DictionaryCard(
+                        entry: entry,
+                        onTap: () => context.push('/dictionary/${entry.id}'),
+                        onFavorite: () {
+                          ref.read(dictionarySearchRepoProvider).toggleFavorite(entry.id);
+                          ref.invalidate(dictionarySearchResultProvider);
+                        },
+                      );
+                    },
+                  );
+                },
+                loading: () => const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                error: (e, _) => Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text('Ошибка загрузки'),
+                      const SizedBox(height: 12),
+                      TextButton(
+                        onPressed: () => ref.invalidate(dictionarySearchResultProvider),
+                        child: const Text('Повторить'),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
+  }
+
+  Color _filterColor(DictionaryFilter f, DesignTokens tokens) {
+    return switch (f) {
+      DictionaryFilter.all => tokens.accent,
+      DictionaryFilter.words => const Color(0xFF1B6B4A),
+      DictionaryFilter.phrases => const Color(0xFF3D7A5C),
+      DictionaryFilter.sentences => const Color(0xFF6B7280),
+      DictionaryFilter.favorites => Colors.redAccent,
+    };
   }
 }
 
@@ -149,54 +250,5 @@ String _formatCount(int n) {
     if (i > 0 && (s.length - i) % 3 == 0) buf.write(' ');
     buf.write(s[i]);
   }
-  return buf.toString();
-}
-
-class _WordRow extends StatelessWidget {
-  const _WordRow({
-    required this.word,
-    required this.onFavorite,
-    this.onSpeak,
-    this.audioEnabled = false,
-  });
-
-  final WordEntity word;
-  final VoidCallback onFavorite;
-  final VoidCallback? onSpeak;
-  final bool audioEnabled;
-
-  @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      label: '${word.chechen} — ${word.russian}',
-      child: NokhchiinDictionaryRow(
-      emoji: word.emoji,
-      iconAsset: word.emoji == null ? AppIcons.navDictionary : null,
-      chechen: word.chechen,
-      russian: word.russian,
-      transcription: DictionaryLabels.displayTranscription(word.chechen, word.pronunciation),
-      category: DictionaryLabels.categoryLabel(word.category, sources: word.sources),
-      nounClassMarker: word.nounClass?.marker,
-      onTap: onSpeak,
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          IconButton(
-            icon: const Icon(Icons.favorite_border_rounded, size: 20),
-            onPressed: onFavorite,
-            visualDensity: VisualDensity.compact,
-            tooltip: 'Избранное',
-          ),
-          if (audioEnabled && onSpeak != null)
-            IconButton(
-              icon: const Icon(Icons.volume_up_rounded, size: 20),
-              onPressed: onSpeak,
-              visualDensity: VisualDensity.compact,
-              tooltip: 'Произношение',
-            ),
-        ],
-      ),
-      ),
-    );
-  }
+  return '${buf} слов';
 }

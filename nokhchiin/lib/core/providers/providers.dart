@@ -14,3 +14,4 @@ export 'usecase_providers.dart';
 export 'user_profile_provider.dart';
 export 'billing_providers.dart';
 export 'content_providers.dart';
+export 'dictionary_search_providers.dart';

@@ -1,2 +1,4 @@
 node_modules/
 dist/
+# Junction → nokhchiin/assets/data/ — actual files tracked there
+public/assets/data/

@@ -7,6 +7,7 @@ import '../../features/learning_path/learning_path_screen.dart';
 import '../../features/learning_path/lesson_flow_screen.dart';
 import '../../features/learning_path/unit_detail_screen.dart';
 import '../../features/dictionary/dictionary_screen.dart';
+import '../../features/dictionary/dictionary_detail_screen.dart';
 import '../../features/games/flashcards_screen.dart';
 import '../../features/games/quiz_screen.dart';
 import '../../features/games/match_screen.dart';
@@ -104,6 +105,12 @@ final appRouter = GoRouter(
       parentNavigatorKey: _rootNavigatorKey,
       path: '/dictionary',
       pageBuilder: (context, state) => _fadeScale(state, const DictionaryScreen()),
+    ),
+    GoRoute(
+      parentNavigatorKey: _rootNavigatorKey,
+      path: '/dictionary/:id',
+      pageBuilder: (context, state) =>
+          _fadeScale(state, DictionaryDetailScreen(id: state.pathParameters['id']!)),
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,

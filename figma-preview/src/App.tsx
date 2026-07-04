@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { loadFullDictionary, formatWordCount, type PreviewWord } from "./loadDictionary";
 
-const FULL_DICTIONARY = loadFullDictionary();
+let FULL_DICTIONARY: PreviewWord[] = [];
 
 // ─── Tokens ───────────────────────────────────────────────────────────────────
 const C = {
@@ -868,7 +868,7 @@ function WorldsScreen({ mode, nav }: { mode: Mode; nav: (s: Screen) => void }) {
 }
 
 // ─── Dictionary ───────────────────────────────────────────────────────────────
-const DICT_ROW_H = 72;
+const DICT_ROW_H = 76;
 
 function DictionaryScreen({ nav }: { nav: (s: Screen) => void }) {
   const [q, setQ] = useState("");
@@ -876,6 +876,7 @@ function DictionaryScreen({ nav }: { nav: (s: Screen) => void }) {
   const listRef = useRef<HTMLDivElement>(null);
   const [scrollTop, setScrollTop] = useState(0);
   const [viewportH, setViewportH] = useState(520);
+  const [dictLoaded, setDictLoaded] = useState(FULL_DICTIONARY.length > 0);
 
   const source = verifiedOnly ? FULL_DICTIONARY.filter((w) => w.verified) : FULL_DICTIONARY;
 
@@ -974,7 +975,9 @@ function DictionaryScreen({ nav }: { nav: (s: Screen) => void }) {
           }}
         >
           {filtered.length === 0 ? (
-            <div style={{ textAlign:"center", paddingTop:48, color:C.textTert, fontSize:15 }}>Ничего не найдено</div>
+            <div style={{ textAlign:"center", paddingTop:48, color:C.textTert, fontSize:15 }}>
+              {dictLoaded ? "Ничего не найдено" : "Загрузка словаря…"}
+            </div>
           ) : (
             <div style={{ height: totalH, position:"relative", width:"100%" }}>
               <div style={{ position:"absolute", top: offsetY, left:0, right:0 }}>
@@ -993,15 +996,15 @@ function DictionaryScreen({ nav }: { nav: (s: Screen) => void }) {
 function DictionaryRow({ w }: { w: PreviewWord }) {
   const meta = [w.tr ? `[${w.tr}]` : null, w.cat].filter(Boolean).join(" · ");
   return (
-    <div style={{ display:"flex", alignItems:"center", gap:14, padding:"14px 0", borderBottom:`1px solid ${C.sep}`, height: DICT_ROW_H, boxSizing:"border-box" }}>
+    <div style={{ display:"flex", alignItems:"center", gap:14, padding:"14px 0", borderBottom:`1px solid ${C.sep}`, height: DICT_ROW_H, boxSizing:"border-box", overflow:"hidden" }}>
       <div style={{ width:44, height:44, borderRadius:12, background:C.surfMuted, display:"flex", alignItems:"center", justifyContent:"center", fontSize:22, flexShrink:0 }}>{w.emoji}</div>
-      <div style={{ flex:1, minWidth:0 }}>
-        <div style={{ fontSize:17, fontWeight:700, color:C.text, letterSpacing:"0.2px" }}>{w.ce}</div>
+      <div style={{ flex:1, minWidth:0, overflow:"hidden" }}>
+        <div style={{ fontSize:17, fontWeight:700, color:C.text, letterSpacing:"0.2px", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{w.ce}</div>
         {meta && (
           <div style={{ fontSize:12, color:C.textTert, marginTop:1, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{meta}</div>
         )}
       </div>
-      <div style={{ fontSize:15, color:C.textSec, fontWeight:500, textAlign:"right", maxWidth:"42%" }}>{w.ru}</div>
+      <div style={{ fontSize:15, color:C.textSec, fontWeight:500, textAlign:"right", maxWidth:"42%", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{w.ru}</div>
     </div>
   );
 }
@@ -1300,6 +1303,14 @@ export default function App() {
   const [tab, setTab] = useState<Tab>("home");
   const [prevScreen, setPrev] = useState<Screen | null>(null);
   const [transitioning, setTransitioning] = useState(false);
+  const [, forceUpdate] = useState(0);
+
+  useEffect(() => {
+    loadFullDictionary().then((words) => {
+      FULL_DICTIONARY = words;
+      forceUpdate((n) => n + 1);
+    });
+  }, []);
 
   const nav = (s: Screen) => {
     if (s === screen) return;
