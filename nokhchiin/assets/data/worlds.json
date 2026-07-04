@@ -2,72 +2,72 @@
   "worlds": [
     {
       "id": "home_world",
-      "titleRu": "Р”РѕРј",
-      "titleCe": "Р¦УЂРёР№",
-      "emoji": "рџЏЎ",
+      "titleRu": "Дом",
+      "titleCe": "ЦӀий",
+      "emoji": "🏡",
       "gradient": ["#E8EAF6", "#C5CAE9"],
       "unlockCoins": 0,
       "units": ["home", "greetings"]
     },
     {
       "id": "meadow",
-      "titleRu": "Р–РёРІРѕС‚РЅС‹Рµ",
-      "titleCe": "Р”РёР№РЅР°С‚Р°С€",
-      "emoji": "рџђ»",
+      "titleRu": "Животные",
+      "titleCe": "Дийнаташ",
+      "emoji": "🐻",
       "gradient": ["#A8E6CF", "#DCEDC1"],
       "unlockCoins": 0,
       "units": ["animals"]
     },
     {
       "id": "food_world",
-      "titleRu": "Р•РґР°",
-      "titleCe": "РљС…Р°С‡Р°",
-      "emoji": "рџЌЋ",
+      "titleRu": "Еда",
+      "titleCe": "Кхача",
+      "emoji": "🍎",
       "gradient": ["#FFE0B2", "#FFCC80"],
       "unlockCoins": 20,
       "units": ["food"]
     },
     {
       "id": "village",
-      "titleRu": "РЎРµРјСЊСЏ",
-      "titleCe": "Р”РѕСЊР·Р°Р»",
-      "emoji": "рџ‘ЁвЂЌрџ‘©вЂЌрџ‘§",
+      "titleRu": "Семья",
+      "titleCe": "Доьзал",
+      "emoji": "👨‍👩‍👧",
       "gradient": ["#F8BBD9", "#F48FB1"],
       "unlockCoins": 40,
       "units": ["family"]
     },
     {
       "id": "school_world",
-      "titleRu": "РЁРєРѕР»Р°",
-      "titleCe": "Р”РµС€Р°СЂ",
-      "emoji": "рџЏ«",
+      "titleRu": "Школа",
+      "titleCe": "Дешар",
+      "emoji": "🏫",
       "gradient": ["#E1BEE7", "#F3E5F5"],
       "unlockCoins": 80,
-      "units": ["verbs", "home"]
+      "units": ["numbers", "body"]
     },
     {
       "id": "nature_world",
-      "titleRu": "РџСЂРёСЂРѕРґР°",
-      "titleCe": "УЂР°Р»Р°Рј",
-      "emoji": "рџЊі",
+      "titleRu": "Природа",
+      "titleCe": "Ӏалам",
+      "emoji": "🌳",
       "gradient": ["#B3E5FC", "#81D4FA"],
       "unlockCoins": 100,
       "units": ["nature", "colors"]
     },
     {
       "id": "sport_world",
-      "titleRu": "РЎРїРѕСЂС‚",
-      "titleCe": "РЎРїРѕСЂС‚",
-      "emoji": "вљЅ",
+      "titleRu": "Спорт",
+      "titleCe": "Спорт",
+      "emoji": "⚽",
       "gradient": ["#C8E6C9", "#A5D6A7"],
       "unlockCoins": 150,
       "units": ["verbs"]
     },
     {
       "id": "legend",
-      "titleRu": "Р›РµРіРµРЅРґС‹",
-      "titleCe": "Р›РµРіРµРЅРґР°С€",
-      "emoji": "рџЊ™",
+      "titleRu": "Легенды",
+      "titleCe": "Легендаш",
+      "emoji": "🌙",
       "gradient": ["#FFE0B2", "#FFF3E0"],
       "unlockCoins": 200,
       "units": ["greetings", "family"]

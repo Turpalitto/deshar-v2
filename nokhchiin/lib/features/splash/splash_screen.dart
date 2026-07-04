@@ -20,7 +20,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     Future<void>.delayed(const Duration(milliseconds: 2200), () {
       if (!mounted) return;
       final profile = ref.read(userProfileProvider).value;
-      final hasOnboarded = profile != null;
+      // Проверяем hasCompletedOnboarding, а не profile != null.
+      // profile всегда non-null (default = kids), но hasCompletedOnboarding
+      // false до выбора трека в onboarding. Аудит logic §9.
+      final hasOnboarded = profile?.hasCompletedOnboarding ?? false;
       context.go(hasOnboarded ? '/' : '/onboarding');
     });
   }

@@ -20,7 +20,12 @@ class ProgressRepositoryImpl implements ProgressRepository {
   @override
   Future<List<WordProgressEntity>> getDueForReview() async {
     final all = await _local.getAll();
-    return all.values.where((p) => p.needsReview).toList();
+    // Фильтр: только слова, которые реально изучались (repetitions > 0).
+    // Предотвращает попадание случайно увиденных слов в SRS-очередь.
+    // Аудит logic §7.
+    return all.values
+        .where((p) => p.repetitions > 0 && p.needsReview)
+        .toList();
   }
 
   @override

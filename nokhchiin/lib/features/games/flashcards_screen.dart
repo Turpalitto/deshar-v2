@@ -238,9 +238,13 @@ class _FlashcardContent extends StatelessWidget {
     final fg = onAccent ? Colors.white : tokens.textPrimary;
     final fgMuted = onAccent ? Colors.white.withValues(alpha: 0.7) : tokens.textTertiary;
 
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Stack(
+    return Semantics(
+      label: showRussian
+          ? 'Карточка: ${word.russian}'
+          : 'Карточка: ${word.chechen}',
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Stack(
         children: [
           Center(
             child: Column(
@@ -298,6 +302,7 @@ class _FlashcardContent extends StatelessWidget {
               ),
             ),
         ],
+      ),
       ),
     );
   }

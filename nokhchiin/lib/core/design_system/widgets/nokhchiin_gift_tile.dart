@@ -13,6 +13,7 @@ class NokhchiinGiftTile extends StatelessWidget {
     this.onTap,
     this.gradient,
     this.lightText = false,
+    this.semanticLabel,
   }) : assert(emoji != null || iconAsset != null);
 
   final String? emoji;
@@ -22,17 +23,21 @@ class NokhchiinGiftTile extends StatelessWidget {
   final VoidCallback? onTap;
   final Gradient? gradient;
   final bool lightText;
+  final String? semanticLabel;
 
   @override
   Widget build(BuildContext context) {
     final tokens = context.iosTokens;
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Ink(
+    return Semantics(
+      button: onTap != null,
+      label: semanticLabel ?? '$title, $subtitle',
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Ink(
           decoration: BoxDecoration(
             gradient: gradient,
             color: gradient == null ? tokens.surface : null,
@@ -70,6 +75,7 @@ class NokhchiinGiftTile extends StatelessWidget {
             ],
           ),
         ),
+      ),
       ),
     );
   }

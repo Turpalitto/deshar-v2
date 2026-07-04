@@ -167,7 +167,9 @@ class _WordRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return NokhchiinDictionaryRow(
+    return Semantics(
+      label: '${word.chechen} — ${word.russian}',
+      child: NokhchiinDictionaryRow(
       emoji: word.emoji,
       iconAsset: word.emoji == null ? AppIcons.navDictionary : null,
       chechen: word.chechen,
@@ -183,14 +185,17 @@ class _WordRow extends StatelessWidget {
             icon: const Icon(Icons.favorite_border_rounded, size: 20),
             onPressed: onFavorite,
             visualDensity: VisualDensity.compact,
+            tooltip: 'Избранное',
           ),
           if (audioEnabled && onSpeak != null)
             IconButton(
               icon: const Icon(Icons.volume_up_rounded, size: 20),
               onPressed: onSpeak,
               visualDensity: VisualDensity.compact,
+              tooltip: 'Произношение',
             ),
         ],
+      ),
       ),
     );
   }

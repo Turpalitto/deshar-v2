@@ -10,7 +10,8 @@ class LearningPathRepositoryImpl implements LearningPathRepository {
 
   @override
   Future<List<LearningUnitEntity>> getUnits() async {
-    final path = await _assets.loadLearningPathJson();
+    final pathResult = await _assets.loadLearningPathJson();
+    final path = pathResult.getOr([]);
     final units = <LearningUnitEntity>[];
     for (final u in path) {
       final id = u['id'] as String;
@@ -32,7 +33,8 @@ class LearningPathRepositoryImpl implements LearningPathRepository {
 
   @override
   Future<List<LessonEntity>> getLessons() async {
-    final raw = await _assets.loadLessonsJson();
+    final rawResult = await _assets.loadLessonsJson();
+    final raw = rawResult.getOr([]);
     return raw.map((l) {
       final words = (l['words'] as List).cast<Map<String, dynamic>>();
       return LessonEntity(

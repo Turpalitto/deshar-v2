@@ -12,8 +12,10 @@ class DictionaryRepositoryImpl implements DictionaryRepository {
 
   Future<List<WordEntity>> _load() async {
     if (_cache == null) {
-      _cache = await _assets.loadBundledDictionary();
-      _indexById = {for (final w in _cache!) w.id: w};
+      final result = await _assets.loadBundledDictionary();
+      final words = result.getOr([]);
+      _cache = words;
+      _indexById = {for (final w in words) w.id: w};
     }
     return _cache!;
   }

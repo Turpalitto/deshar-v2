@@ -9,13 +9,14 @@ import 'user_profile_provider.dart';
 import '../../data/datasources/content_datasource.dart';
 
 // --- Worlds / Collections / Stories ---
+// autoDispose: экран-scope, лёгкая JSON-загрузка. Аудит §3.2.
 final contentSourceProvider = Provider((_) => ContentDataSource());
 final worldsProvider =
-    FutureProvider((ref) => ref.read(contentSourceProvider).loadWorlds());
+    FutureProvider.autoDispose((ref) => ref.read(contentSourceProvider).loadWorlds());
 final collectionsProvider =
-    FutureProvider((ref) => ref.read(contentSourceProvider).loadCollections());
+    FutureProvider.autoDispose((ref) => ref.read(contentSourceProvider).loadCollections());
 final storiesProvider =
-    FutureProvider((ref) => ref.read(contentSourceProvider).loadStories());
+    FutureProvider.autoDispose((ref) => ref.read(contentSourceProvider).loadStories());
 
 // --- Dictionary & Learning units ---
 final dictionaryProvider = FutureProvider<List<WordEntity>>((ref) async {

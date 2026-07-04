@@ -138,6 +138,7 @@ class NokhchiinWorldRow extends StatelessWidget {
     required this.color,
     this.unlocked = true,
     this.onTap,
+    this.semanticLabel,
   }) : assert(emoji != null || iconAsset != null);
 
   final String? emoji;
@@ -147,6 +148,7 @@ class NokhchiinWorldRow extends StatelessWidget {
   final Color color;
   final bool unlocked;
   final VoidCallback? onTap;
+  final String? semanticLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -154,6 +156,7 @@ class NokhchiinWorldRow extends StatelessWidget {
 
     return NokhchiinSurfaceCard(
       onTap: onTap,
+      semanticLabel: semanticLabel ?? title,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       child: Row(
         children: [

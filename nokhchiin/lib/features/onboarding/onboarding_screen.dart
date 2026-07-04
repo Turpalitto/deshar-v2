@@ -87,6 +87,7 @@ class OnboardingScreen extends ConsumerWidget {
               accentMuted: tokens.accentMuted,
               onTap: () async {
                 await ref.read(userProfileProvider.notifier).setMode(AppMode.adult);
+                await ref.read(userProfileProvider.notifier).completeOnboarding();
                 if (context.mounted) context.go('/');
               },
             ).animate().fadeIn(delay: 160.ms).slideX(),
@@ -100,6 +101,7 @@ class OnboardingScreen extends ConsumerWidget {
               accentMuted: DesignTokens.meadowMuted,
               onTap: () async {
                 await ref.read(userProfileProvider.notifier).setMode(AppMode.kids);
+                await ref.read(userProfileProvider.notifier).completeOnboarding();
                 if (context.mounted) _showAgePicker(context, ref);
               },
             ).animate().fadeIn(delay: 220.ms).slideX(),

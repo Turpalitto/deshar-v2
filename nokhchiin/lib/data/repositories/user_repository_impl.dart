@@ -39,6 +39,7 @@ class UserRepositoryImpl implements UserRepository {
       reviewsDoneToday: data['reviewsDoneToday'] as int? ?? 0,
       seenCultureCapsules:
           (data['seenCultureCapsules'] as List?)?.cast<String>() ?? const [],
+      hasCompletedOnboarding: data['hasCompletedOnboarding'] as bool? ?? false,
     );
   }
 
@@ -67,6 +68,7 @@ class UserRepositoryImpl implements UserRepository {
       'lessonsCompletedTotal': profile.lessonsCompletedTotal,
       'reviewsDoneToday': profile.reviewsDoneToday,
       'seenCultureCapsules': profile.seenCultureCapsules,
+      'hasCompletedOnboarding': profile.hasCompletedOnboarding,
     });
   }
 }

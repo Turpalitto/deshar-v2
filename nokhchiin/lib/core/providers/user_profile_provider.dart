@@ -129,6 +129,9 @@ class UserProfileNotifier extends AsyncNotifier<UserProfileEntity> {
   Future<void> setPremium(bool value) =>
       _update(_current.copyWith(isPremium: value));
 
+  Future<void> completeOnboarding() =>
+      _update(_current.copyWith(hasCompletedOnboarding: true));
+
   Future<void> markCultureCapsuleSeen(String capsuleId) async {
     if (_current.seenCultureCapsules.contains(capsuleId)) return;
     await _update(_current.copyWith(

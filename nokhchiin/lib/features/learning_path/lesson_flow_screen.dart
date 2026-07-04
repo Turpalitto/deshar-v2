@@ -68,8 +68,30 @@ class _LessonFlowScreenState extends ConsumerState<LessonFlowScreen> {
     final idx = units.indexWhere((u) => u.id == widget.unitId);
     final next = idx >= 0 && idx < units.length - 1 ? units[idx + 1] : null;
     final hasNext = next != null && next.isUnlocked;
+    final isLastUnit = idx == units.length - 1;
 
     if (!mounted) return;
+
+    if (isLastUnit) {
+      // Путь завершён — особый экран. Аудит logic §8.
+      await RewardCelebration.show(
+        context,
+        iconAsset: AppIcons.rewardTrophy,
+        title: 'Путь завершён!',
+        subtitle: 'Ты прошёл все уроки. Повторяй слова в SRS, чтобы не забыть.',
+        primaryAction: 'Повторить (SRS)',
+        onPrimary: () {
+          Navigator.of(context).pop();
+          context.go('/review');
+        },
+        onDismiss: () {
+          Navigator.of(context).pop();
+          context.go('/');
+        },
+      );
+      return;
+    }
+
     await RewardCelebration.show(
       context,
       iconAsset: AppIcons.rewardTrophy,

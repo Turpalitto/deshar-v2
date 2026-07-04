@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../theme/app_colors.dart';
+import '../design/tokens/nokhchiin_colors.dart';
 
 class StatPill extends StatelessWidget {
   const StatPill({super.key, required this.icon, required this.value});
@@ -11,7 +11,7 @@ class StatPill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: NokhchiinColors.lightSurface,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: const Color(0xFFE8EAED)),
       ),

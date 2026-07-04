@@ -151,6 +151,7 @@ class HomeScreen extends ConsumerWidget {
               sliver: SliverToBoxAdapter(
                 child: NokhchiinSurfaceCard(
                   onTap: () => context.go('/review'),
+                  semanticLabel: 'Повторить ${due.value!.length} слов, сеанс SRS',
                   child: Row(
                     children: [
                       AppIconImage(asset: AppIcons.actionReview, size: 28, color: accent),
@@ -226,6 +227,7 @@ class HomeScreen extends ConsumerWidget {
                       progressPercent: pct,
                       color: color,
                       unlocked: unlocked,
+                      semanticLabel: '${w.titleRu}, прогресс $pct%',
                       onTap: unlocked
                           ? () {
                               ref.read(userProfileProvider.notifier).setCurrentWorld(w.id);
@@ -350,9 +352,12 @@ class _ContinueHero extends StatelessWidget {
     final pct = unit?.masteryPercent ?? 0;
     final step = ((pct / 100) * 5).ceil().clamp(1, 5);
 
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
+    return Semantics(
+      button: true,
+      label: 'Продолжить урок: $title, шаг $step из 5',
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
         padding: const EdgeInsets.all(22),
         decoration: BoxDecoration(
           color: accent,
@@ -423,6 +428,7 @@ class _ContinueHero extends StatelessWidget {
           ],
         ),
       ),
+      ),
     );
   }
 }
@@ -442,25 +448,29 @@ class _QuickLink extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return NokhchiinSurfaceCard(
-      onTap: onTap,
-      radius: 12,
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
-      child: Column(
-        children: [
-          if (iconAsset != null)
-            AppIconImage(asset: iconAsset!, size: 20, color: context.iosTokens.accent)
-          else
-            Text(emoji!, style: const TextStyle(fontSize: 20)),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600),
-          ),
-        ],
+    return Semantics(
+      button: true,
+      label: label,
+      child: NokhchiinSurfaceCard(
+        onTap: onTap,
+        radius: 12,
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
+        child: Column(
+          children: [
+            if (iconAsset != null)
+              AppIconImage(asset: iconAsset!, size: 20, color: context.iosTokens.accent)
+            else
+              Text(emoji!, style: const TextStyle(fontSize: 20)),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600),
+            ),
+          ],
+        ),
       ),
     );
   }

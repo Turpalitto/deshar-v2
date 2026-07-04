@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../theme/app_colors.dart';
+import '../design/tokens/nokhchiin_colors.dart';
 
 /// Мягкие Disney-подобные иллюстрации без стоковых иконок — CustomPainter + градиенты.
 class WordIllustration extends StatelessWidget {
@@ -149,8 +149,8 @@ class _FoxPainter extends CustomPainter {
     canvas.drawCircle(Offset(cx, cy + size.height * 0.06), size.width * 0.04, Paint()..color = const Color(0xFF3E2723));
 
     if (emotion == FoxEmotion.celebrate) {
-      canvas.drawCircle(Offset(cx - size.width * 0.35, cy - size.height * 0.35), 4, Paint()..color = AppColors.warning);
-      canvas.drawCircle(Offset(cx + size.width * 0.38, cy - size.height * 0.3), 3, Paint()..color = AppColors.primary);
+      canvas.drawCircle(Offset(cx - size.width * 0.35, cy - size.height * 0.35), 4, Paint()..color = NokhchiinColors.warning);
+      canvas.drawCircle(Offset(cx + size.width * 0.38, cy - size.height * 0.3), 3, Paint()..color = NokhchiinColors.meadow);
     }
   }
 
