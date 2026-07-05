@@ -31,7 +31,7 @@ class NotificationService {
     tz_data.initializeTimeZones();
     try {
       final localZone = await FlutterTimezone.getLocalTimezone();
-      tz.setLocalLocation(tz.getLocation(localZone));
+      tz.setLocalLocation(tz.getLocation(localZone.identifier));
     } catch (_) {
       // Не удалось определить таймзону устройства — оставляем UTC-фолбэк
       // timezone-пакета, чем падать целиком.
@@ -40,7 +40,7 @@ class NotificationService {
     const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosInit = DarwinInitializationSettings();
     await _plugin.initialize(
-      const InitializationSettings(android: androidInit, iOS: iosInit),
+      settings: const InitializationSettings(android: androidInit, iOS: iosInit),
     );
 
     final androidPlugin = _plugin
@@ -71,7 +71,7 @@ class NotificationService {
     }
 
     final iosPlugin = _plugin
-        .resolvePlatformSpecificImplementation<DarwinFlutterLocalNotificationsPlugin>();
+        .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>();
     if (iosPlugin != null) {
       return await iosPlugin.requestPermissions(alert: true, badge: true, sound: true) ?? false;
     }
@@ -81,7 +81,8 @@ class NotificationService {
 
   tz.TZDateTime _nextInstanceOfTime(TimeOfDay time) {
     final now = tz.TZDateTime.now(tz.local);
-    var scheduled = tz.TZDateTime(now.year, now.month, now.day, time.hour, time.minute);
+    var scheduled =
+        tz.TZDateTime(tz.local, now.year, now.month, now.day, time.hour, time.minute);
     if (scheduled.isBefore(now)) {
       scheduled = scheduled.add(const Duration(days: 1));
     }
@@ -94,11 +95,11 @@ class NotificationService {
   Future<void> scheduleDailyStreakReminder({required TimeOfDay time}) async {
     await _ensureInitialized();
     await _plugin.zonedSchedule(
-      _streakNotificationId,
-      'Не теряй стрик! 🔥',
-      'Зайди в Нохчийн сегодня, чтобы продолжить серию дней подряд.',
-      _nextInstanceOfTime(time),
-      const NotificationDetails(
+      id: _streakNotificationId,
+      title: 'Не теряй стрик! 🔥',
+      body: 'Зайди в Нохчийн сегодня, чтобы продолжить серию дней подряд.',
+      scheduledDate: _nextInstanceOfTime(time),
+      notificationDetails: const NotificationDetails(
         android: AndroidNotificationDetails(_streakChannelId, _streakChannelName),
         iOS: DarwinNotificationDetails(),
       ),
@@ -120,11 +121,11 @@ class NotificationService {
   }) async {
     await _ensureInitialized();
     await _plugin.zonedSchedule(
-      _wordNotificationId,
-      'Слово дня: $chechen',
-      russian,
-      _nextInstanceOfTime(time),
-      const NotificationDetails(
+      id: _wordNotificationId,
+      title: 'Слово дня: $chechen',
+      body: russian,
+      scheduledDate: _nextInstanceOfTime(time),
+      notificationDetails: const NotificationDetails(
         android: AndroidNotificationDetails(_wordChannelId, _wordChannelName),
         iOS: DarwinNotificationDetails(),
       ),

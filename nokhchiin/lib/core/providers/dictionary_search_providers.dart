@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../data/datasources/asset_dictionary_datasource.dart';
 import '../../data/repositories/dictionary_search_repository_impl.dart';
 import '../../domain/entities/dictionary_entry.dart';
 import '../../domain/entities/entry_type.dart';
@@ -111,12 +110,10 @@ class DictionarySearchNotifier extends AutoDisposeAsyncNotifier<DictionarySearch
     state = AsyncData(current.copyWith(isLoadingMore: true));
     try {
       final next = await _fetchPage(page: current.page + 1, existing: current.entries);
-      if (!ref.mounted) return;
       state = AsyncData(next);
     } catch (_) {
       // Транзиентная ошибка подгрузки — не теряем уже показанные записи,
       // просто гасим индикатор, чтобы пользователь мог доскроллить снова.
-      if (!ref.mounted) return;
       state = AsyncData(current.copyWith(isLoadingMore: false));
     }
   }
@@ -126,7 +123,7 @@ class DictionarySearchNotifier extends AutoDisposeAsyncNotifier<DictionarySearch
   Future<void> toggleFavorite(String id) async {
     final current = state.valueOrNull;
     await ref.read(dictionarySearchRepoProvider).toggleFavorite(id);
-    if (current == null || !ref.mounted) return;
+    if (current == null) return;
 
     final idx = current.entries.indexWhere((e) => e.id == id);
     if (idx < 0) return;

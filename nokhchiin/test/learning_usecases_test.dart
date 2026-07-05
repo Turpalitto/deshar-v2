@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nokhchiin/domain/entities/enums.dart';
-import 'package:nokhchiin/domain/entities/learning_entities.dart';
 import 'package:nokhchiin/domain/entities/word_entity.dart';
 import 'package:nokhchiin/domain/entities/word_progress_entity.dart';
 import 'package:nokhchiin/domain/usecases/learning_usecases.dart';

@@ -15,8 +15,8 @@ class DictionaryParser {
   DictionaryEntry parse(Map<String, dynamic> row, {String Function(String, String)? idFactory}) {
     final ceRaw = _read(row, const ['chechen', 'ce']);
     final ruRaw = _read(row, const ['russian', 'ru']);
-    final category = _read(row, const ['category'])?.trim();
-    final pronunciation = _read(row, const ['pronunciation'])?.trim();
+    final category = _read(row, const ['category']).trim();
+    final pronunciation = _read(row, const ['pronunciation']).trim();
     final sourcesRaw = row['sources'];
     final sources = sourcesRaw is List
         ? sourcesRaw.map((e) => e.toString()).toList()
@@ -37,8 +37,8 @@ class DictionaryParser {
       russian: ru,
       preview: preview,
       searchTokens: tokens,
-      category: (category?.isEmpty ?? true) ? null : category,
-      pronunciation: (pronunciation?.isEmpty ?? true) ? null : pronunciation,
+      category: category.isEmpty ? null : category,
+      pronunciation: pronunciation.isEmpty ? null : pronunciation,
       sources: sources,
     );
   }
