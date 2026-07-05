@@ -36,4 +36,12 @@ abstract final class GameplayConstants {
 
   /// Количество дней в weekly XP массиве.
   static const int weeklyXpDays = 7;
+
+  // --- Заморозка стрика ---
+
+  /// Стоимость одной заморозки стрика (монеты).
+  static const int streakFreezeCoinCost = 150;
+
+  /// Максимум одновременно хранимых заморозок.
+  static const int maxStreakFreezes = 2;
 }

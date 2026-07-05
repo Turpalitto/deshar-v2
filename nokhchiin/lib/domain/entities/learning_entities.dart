@@ -79,6 +79,7 @@ class UserProfileEntity extends Equatable {
     this.reviewsDoneToday = 0,
     this.seenCultureCapsules = const [],
     this.hasCompletedOnboarding = false,
+    this.streakFreezeCount = 0,
   });
 
   final AppMode mode;
@@ -104,6 +105,9 @@ class UserProfileEntity extends Equatable {
   final int reviewsDoneToday;
   final List<String> seenCultureCapsules;
   final bool hasCompletedOnboarding;
+
+  /// Число накопленных заморозок стрика (см. [DailySyncCalculator]).
+  final int streakFreezeCount;
 
   int get dailyGoalProgress =>
       dailyGoalWords > 0 ? (wordsLearnedToday / dailyGoalWords * 100).round().clamp(0, 100) : 0;
@@ -132,6 +136,7 @@ class UserProfileEntity extends Equatable {
     int? reviewsDoneToday,
     List<String>? seenCultureCapsules,
     bool? hasCompletedOnboarding,
+    int? streakFreezeCount,
   }) {
     return UserProfileEntity(
       mode: mode ?? this.mode,
@@ -157,6 +162,7 @@ class UserProfileEntity extends Equatable {
       reviewsDoneToday: reviewsDoneToday ?? this.reviewsDoneToday,
       seenCultureCapsules: seenCultureCapsules ?? this.seenCultureCapsules,
       hasCompletedOnboarding: hasCompletedOnboarding ?? this.hasCompletedOnboarding,
+      streakFreezeCount: streakFreezeCount ?? this.streakFreezeCount,
     );
   }
 
@@ -185,5 +191,6 @@ class UserProfileEntity extends Equatable {
         reviewsDoneToday,
         seenCultureCapsules,
         hasCompletedOnboarding,
+        streakFreezeCount,
       ];
 }

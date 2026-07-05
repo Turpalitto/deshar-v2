@@ -137,4 +137,17 @@ class UserProfileNotifier extends AsyncNotifier<UserProfileEntity> {
     await _update(_current.copyWith(
         seenCultureCapsules: [..._current.seenCultureCapsules, capsuleId]));
   }
+
+  /// Покупает заморозку стрика за монеты. Возвращает false без побочных
+  /// эффектов, если не хватает монет или уже достигнут максимум.
+  Future<bool> buyStreakFreeze() async {
+    final current = _current;
+    if (current.streakFreezeCount >= GameplayConstants.maxStreakFreezes) return false;
+    if (current.coins < GameplayConstants.streakFreezeCoinCost) return false;
+    await _update(current.copyWith(
+      coins: current.coins - GameplayConstants.streakFreezeCoinCost,
+      streakFreezeCount: current.streakFreezeCount + 1,
+    ));
+    return true;
+  }
 }

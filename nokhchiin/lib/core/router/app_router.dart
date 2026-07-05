@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/splash/splash_screen.dart';
 import '../../features/onboarding/onboarding_screen.dart';
+import '../../features/onboarding/placement_test_screen.dart';
 import '../../features/home/home_screen.dart';
 import '../../features/learning_path/learning_path_screen.dart';
 import '../../features/learning_path/lesson_flow_screen.dart';
@@ -46,6 +47,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/onboarding',
       builder: (_, __) => const OnboardingScreen(),
+    ),
+    GoRoute(
+      path: '/onboarding/placement',
+      builder: (_, __) => const PlacementTestScreen(),
     ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) => AppShell(navigationShell: navigationShell),

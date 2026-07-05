@@ -87,8 +87,7 @@ class OnboardingScreen extends ConsumerWidget {
               accentMuted: tokens.accentMuted,
               onTap: () async {
                 await ref.read(userProfileProvider.notifier).setMode(AppMode.adult);
-                await ref.read(userProfileProvider.notifier).completeOnboarding();
-                if (context.mounted) context.go('/');
+                if (context.mounted) context.push('/onboarding/placement');
               },
             ).animate().fadeIn(delay: 160.ms).slideX(),
             const SizedBox(height: 12),

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/config/feature_flags.dart';
+import '../../domain/constants/gameplay_constants.dart';
 import '../../core/design/app_icons.dart';
 import '../../core/design/widgets/app_icon_image.dart';
 import '../../core/design/tokens/app_spacing.dart'; // intentional-mix: spacing tokens; Figma widgets from design_system
@@ -20,6 +21,7 @@ import '../../data/culture_capsule_samples.dart';
 import '../../domain/entities/enums.dart';
 import '../../domain/entities/learning_entities.dart';
 import '../culture/culture_capsule_modal.dart';
+import 'widgets/word_of_the_day_card.dart';
 
 /// Главный экран — визуал из Figma Make, логика без изменений.
 class HomeScreen extends ConsumerWidget {
@@ -180,6 +182,10 @@ class HomeScreen extends ConsumerWidget {
               ),
             ),
           SliverPadding(
+            padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
+            sliver: const SliverToBoxAdapter(child: WordOfTheDayCard()),
+          ),
+          SliverPadding(
             padding: const EdgeInsets.fromLTRB(20, 18, 20, 10),
             sliver: SliverToBoxAdapter(
               child: Row(
@@ -264,7 +270,7 @@ class HomeScreen extends ConsumerWidget {
   }
 }
 
-class _HomeHeader extends StatelessWidget {
+class _HomeHeader extends ConsumerWidget {
   const _HomeHeader({
     required this.profile,
     required this.isKids,
@@ -278,7 +284,7 @@ class _HomeHeader extends StatelessWidget {
   final Color accentMuted;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final tokens = context.iosTokens;
     final greeting = isKids ? 'Привет, ученик' : 'Доброе утро';
 
@@ -328,9 +334,71 @@ class _HomeHeader extends StatelessWidget {
               color: DesignTokens.gold,
               background: DesignTokens.goldMuted,
             ),
+            const SizedBox(width: 8),
+            NokhchiinStatPill(
+              emoji: '🧊',
+              value: '${profile.streakFreezeCount}',
+              color: tokens.textSecondary,
+              background: tokens.surfaceMuted,
+              onTap: () => _showStreakFreezeSheet(context, ref, profile),
+            ),
           ],
         ),
       ],
+    );
+  }
+
+  void _showStreakFreezeSheet(BuildContext context, WidgetRef ref, UserProfileEntity profile) {
+    final tokens = context.iosTokens;
+    final atMax = profile.streakFreezeCount >= GameplayConstants.maxStreakFreezes;
+    final canAfford = profile.coins >= GameplayConstants.streakFreezeCoinCost;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: tokens.background,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => Padding(
+        padding: const EdgeInsets.all(AppSpacing.xl),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Заморозка стрика',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: tokens.textPrimary),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Сохраняет твой стрик, если пропустишь один день. У тебя: ${profile.streakFreezeCount} из ${GameplayConstants.maxStreakFreezes}.',
+              style: TextStyle(color: tokens.textTertiary),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            ElevatedButton(
+              onPressed: atMax || !canAfford
+                  ? null
+                  : () async {
+                      final ok = await ref.read(userProfileProvider.notifier).buyStreakFreeze();
+                      if (ctx.mounted) Navigator.pop(ctx);
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(ok ? 'Заморозка куплена' : 'Не получилось купить'),
+                            duration: const Duration(seconds: 2),
+                          ),
+                        );
+                      }
+                    },
+              child: Text(
+                atMax
+                    ? 'Уже максимум'
+                    : 'Купить за ${GameplayConstants.streakFreezeCoinCost} монет',
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

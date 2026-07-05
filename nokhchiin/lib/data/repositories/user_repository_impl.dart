@@ -40,6 +40,7 @@ class UserRepositoryImpl implements UserRepository {
       seenCultureCapsules:
           (data['seenCultureCapsules'] as List?)?.cast<String>() ?? const [],
       hasCompletedOnboarding: data['hasCompletedOnboarding'] as bool? ?? false,
+      streakFreezeCount: data['streakFreezeCount'] as int? ?? 0,
     );
   }
 
@@ -69,6 +70,7 @@ class UserRepositoryImpl implements UserRepository {
       'reviewsDoneToday': profile.reviewsDoneToday,
       'seenCultureCapsules': profile.seenCultureCapsules,
       'hasCompletedOnboarding': profile.hasCompletedOnboarding,
+      'streakFreezeCount': profile.streakFreezeCount,
     });
   }
 }
