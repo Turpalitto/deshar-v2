@@ -5,17 +5,45 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:nokhchiin/l10n/app_localizations.dart';
 import 'core/design_system/ios_design_system.dart';
 import 'core/design_system/theme_integration.dart';
+import 'core/providers/notification_provider.dart';
 import 'core/router/app_router.dart';
 import 'core/design/theme/nokhchiin_theme.dart';
 import 'core/design/theme/theme_provider.dart';
 import 'core/providers/providers.dart';
 import 'domain/entities/enums.dart';
 
-class NokhchiinApp extends ConsumerWidget {
+class NokhchiinApp extends ConsumerStatefulWidget {
   const NokhchiinApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<NokhchiinApp> createState() => _NokhchiinAppState();
+}
+
+class _NokhchiinAppState extends ConsumerState<NokhchiinApp> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      refreshWordOfDayNotificationIfEnabled(ref);
+    });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      refreshWordOfDayNotificationIfEnabled(ref);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final profile = ref.watch(userProfileProvider).value;
     final themeMode = ref.watch(themeBrightnessProvider);
     final mode = profile?.mode ?? AppMode.kids;

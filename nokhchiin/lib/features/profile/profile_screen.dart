@@ -253,6 +253,21 @@ class ProfileScreen extends ConsumerWidget {
               },
             ),
           ),
+          NokhchiinSettingsRow(
+            emoji: '🔔',
+            label: 'Уведомления',
+            trailing: Switch.adaptive(
+              value: profile.notificationsEnabled,
+              onChanged: (value) async {
+                final ok = await ref.read(userProfileProvider.notifier).setNotificationsEnabled(value);
+                if (value && !ok && context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text('Включите уведомления в настройках устройства, чтобы получать напоминания'),
+                  ));
+                }
+              },
+            ),
+          ),
           const SizedBox(height: AppSpacing.sm),
           Text('Правовая информация', style: Theme.of(context).textTheme.titleMedium),
           NokhchiinSettingsRow(

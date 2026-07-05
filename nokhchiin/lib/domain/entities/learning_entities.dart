@@ -80,6 +80,7 @@ class UserProfileEntity extends Equatable {
     this.seenCultureCapsules = const [],
     this.hasCompletedOnboarding = false,
     this.streakFreezeCount = 0,
+    this.notificationsEnabled = false,
   });
 
   final AppMode mode;
@@ -109,6 +110,10 @@ class UserProfileEntity extends Equatable {
   /// Число накопленных заморозок стрика (см. [DailySyncCalculator]).
   final int streakFreezeCount;
 
+  /// Включены ли локальные уведомления (стрик-напоминание + слово дня).
+  /// Opt-in: true только после того, как ОС реально выдала разрешение.
+  final bool notificationsEnabled;
+
   int get dailyGoalProgress =>
       dailyGoalWords > 0 ? (wordsLearnedToday / dailyGoalWords * 100).round().clamp(0, 100) : 0;
 
@@ -137,6 +142,7 @@ class UserProfileEntity extends Equatable {
     List<String>? seenCultureCapsules,
     bool? hasCompletedOnboarding,
     int? streakFreezeCount,
+    bool? notificationsEnabled,
   }) {
     return UserProfileEntity(
       mode: mode ?? this.mode,
@@ -163,6 +169,7 @@ class UserProfileEntity extends Equatable {
       seenCultureCapsules: seenCultureCapsules ?? this.seenCultureCapsules,
       hasCompletedOnboarding: hasCompletedOnboarding ?? this.hasCompletedOnboarding,
       streakFreezeCount: streakFreezeCount ?? this.streakFreezeCount,
+      notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
     );
   }
 
@@ -192,5 +199,6 @@ class UserProfileEntity extends Equatable {
         seenCultureCapsules,
         hasCompletedOnboarding,
         streakFreezeCount,
+        notificationsEnabled,
       ];
 }

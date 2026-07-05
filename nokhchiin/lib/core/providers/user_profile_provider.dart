@@ -4,6 +4,9 @@ import '../../domain/entities/enums.dart';
 import '../../domain/repositories/repositories.dart';
 import '../../domain/constants/gameplay_constants.dart';
 import '../../domain/services/daily_sync_calculator.dart';
+import '../services/notification_service.dart';
+import 'dictionary_search_providers.dart';
+import 'notification_provider.dart';
 import 'repository_providers.dart';
 
 /// Провайдер профиля пользователя.
@@ -148,6 +151,25 @@ class UserProfileNotifier extends AsyncNotifier<UserProfileEntity> {
       coins: current.coins - GameplayConstants.streakFreezeCoinCost,
       streakFreezeCount: current.streakFreezeCount + 1,
     ));
+    return true;
+  }
+
+  /// Включает/выключает локальные уведомления. При включении сначала
+  /// запрашивает системное разрешение — если отказано, флаг не
+  /// сохраняется (возвращает false), чтобы состояние никогда не врало
+  /// про реально выданное разрешение ОС.
+  Future<bool> setNotificationsEnabled(bool value) async {
+    final notifSvc = ref.read(notificationServiceProvider);
+    if (value) {
+      final granted = await notifSvc.requestPermission();
+      if (!granted) return false;
+      await _update(_current.copyWith(notificationsEnabled: true));
+      await notifSvc.scheduleDailyStreakReminder(time: kStreakReminderNotificationTime);
+      await rescheduleWordOfDay(notifSvc, ref.read(dictionarySearchRepoProvider));
+    } else {
+      await notifSvc.cancelAll();
+      await _update(_current.copyWith(notificationsEnabled: false));
+    }
     return true;
   }
 }
