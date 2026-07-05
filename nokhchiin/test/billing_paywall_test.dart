@@ -54,7 +54,7 @@ class _FakeBilling implements BillingRepository {
 }
 
 void main() {
-  final hiveDir = Directory('test/.hive');
+  final hiveDir = Directory('test/.hive_billing_paywall');
 
   setUp(() async {
     TestWidgetsFlutterBinding.ensureInitialized();
