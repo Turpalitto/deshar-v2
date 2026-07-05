@@ -8,6 +8,8 @@ import '../../domain/repositories/dictionary_search_repository.dart';
 import 'datasource_providers.dart';
 import 'repository_providers.dart';
 
+const _pageSize = 40;
+
 /// Глобальный репозиторий словаря (search + pagination + favorites).
 /// Живёт весь app lifecycle — не autoDispose: индекс дорогой.
 final dictionarySearchRepoProvider = Provider<DictionarySearchRepository>((ref) {
@@ -23,25 +25,126 @@ final dictionaryFilterProvider = StateProvider<DictionaryFilter>((_) => Dictiona
 /// Запрос поиска.
 final dictionaryQueryProvider = StateProvider<String>((_) => '');
 
-/// Страница пагинации.
-final dictionaryPageProvider = StateProvider<int>((_) => 0);
+/// Накопленный список результатов поиска + состояние пагинации.
+///
+/// В отличие от одиночной страницы из [DictionarySearchResult], [entries]
+/// растёт с каждым вызовом [DictionarySearchNotifier.loadMore] — экран
+/// показывает уже загруженные записи, а не заменяет их следующей порцией.
+class DictionarySearchViewState {
+  const DictionarySearchViewState({
+    required this.entries,
+    required this.page,
+    required this.totalCount,
+    required this.hasMore,
+    this.isLoadingMore = false,
+  });
 
-/// Результаты поиска (autoDispose: пересоздаётся при выходе с экрана).
-final dictionarySearchResultProvider =
-    FutureProvider.autoDispose<DictionarySearchResult>((ref) async {
-  final repo = ref.watch(dictionarySearchRepoProvider);
-  final query = ref.watch(dictionaryQueryProvider);
-  final filter = ref.watch(dictionaryFilterProvider);
-  final page = ref.watch(dictionaryPageProvider);
+  final List<DictionaryEntry> entries;
+  final int page;
+  final int totalCount;
+  final bool hasMore;
+  final bool isLoadingMore;
 
-  return repo.search(
-    query: query,
-    page: page,
-    pageSize: 40,
-    typeFilter: filter.toTypeFilter(),
-    favoritesOnly: filter == DictionaryFilter.favorites,
-  );
-});
+  DictionarySearchViewState copyWith({
+    List<DictionaryEntry>? entries,
+    int? page,
+    int? totalCount,
+    bool? hasMore,
+    bool? isLoadingMore,
+  }) {
+    return DictionarySearchViewState(
+      entries: entries ?? this.entries,
+      page: page ?? this.page,
+      totalCount: totalCount ?? this.totalCount,
+      hasMore: hasMore ?? this.hasMore,
+      isLoadingMore: isLoadingMore ?? this.isLoadingMore,
+    );
+  }
+}
+
+/// Результаты поиска словаря (infinite scroll с накоплением страниц).
+///
+/// [build] следит за query/filter — при их смене Riverpod пересоздаёт
+/// нотифаер с чистого листа (страница 0). [loadMore] дописывает следующую
+/// страницу к уже накопленному списку, не сбрасывая его.
+final dictionarySearchProvider =
+    AsyncNotifierProvider.autoDispose<DictionarySearchNotifier, DictionarySearchViewState>(
+  DictionarySearchNotifier.new,
+);
+
+class DictionarySearchNotifier extends AutoDisposeAsyncNotifier<DictionarySearchViewState> {
+  late String _query;
+  late DictionaryFilter _filter;
+
+  @override
+  Future<DictionarySearchViewState> build() async {
+    _query = ref.watch(dictionaryQueryProvider);
+    _filter = ref.watch(dictionaryFilterProvider);
+    return _fetchPage(page: 0, existing: const []);
+  }
+
+  Future<DictionarySearchViewState> _fetchPage({
+    required int page,
+    required List<DictionaryEntry> existing,
+  }) async {
+    final result = await ref.read(dictionarySearchRepoProvider).search(
+          query: _query,
+          page: page,
+          pageSize: _pageSize,
+          typeFilter: _filter.toTypeFilter(),
+          favoritesOnly: _filter == DictionaryFilter.favorites,
+        );
+    return DictionarySearchViewState(
+      entries: [...existing, ...result.entries],
+      page: result.page,
+      totalCount: result.totalCount,
+      hasMore: result.hasMore,
+    );
+  }
+
+  /// Подгружает следующую страницу и дописывает её к списку. No-op, если
+  /// страниц больше нет или подгрузка уже идёт.
+  Future<void> loadMore() async {
+    final current = state.valueOrNull;
+    if (current == null || !current.hasMore || current.isLoadingMore) return;
+
+    state = AsyncData(current.copyWith(isLoadingMore: true));
+    try {
+      final next = await _fetchPage(page: current.page + 1, existing: current.entries);
+      if (!ref.mounted) return;
+      state = AsyncData(next);
+    } catch (_) {
+      // Транзиентная ошибка подгрузки — не теряем уже показанные записи,
+      // просто гасим индикатор, чтобы пользователь мог доскроллить снова.
+      if (!ref.mounted) return;
+      state = AsyncData(current.copyWith(isLoadingMore: false));
+    }
+  }
+
+  /// Переключает избранное и правит уже накопленный список локально —
+  /// без ref.invalidate, чтобы не сбрасывать пагинацию/скролл.
+  Future<void> toggleFavorite(String id) async {
+    final current = state.valueOrNull;
+    await ref.read(dictionarySearchRepoProvider).toggleFavorite(id);
+    if (current == null || !ref.mounted) return;
+
+    final idx = current.entries.indexWhere((e) => e.id == id);
+    if (idx < 0) return;
+    final updated = current.entries[idx].copyWith(favorite: !current.entries[idx].favorite);
+
+    if (_filter == DictionaryFilter.favorites && !updated.favorite) {
+      final entries = [...current.entries]..removeAt(idx);
+      state = AsyncData(current.copyWith(
+        entries: entries,
+        totalCount: current.totalCount > 0 ? current.totalCount - 1 : 0,
+      ));
+    } else {
+      final entries = [...current.entries];
+      entries[idx] = updated;
+      state = AsyncData(current.copyWith(entries: entries));
+    }
+  }
+}
 
 /// Запись по id (для detail screen).
 final dictionaryEntryProvider =

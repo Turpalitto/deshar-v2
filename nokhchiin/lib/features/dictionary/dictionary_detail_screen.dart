@@ -5,14 +5,15 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/dictionary_search_providers.dart';
+import '../../core/utils/dictionary_labels.dart';
 import '../../domain/entities/dictionary_entry.dart';
 import '../../domain/entities/entry_type.dart';
 import 'dictionary_card.dart';
 
 /// Экран детали записи словаря.
 ///
-/// Большой заголовок, перевод, бейдж типа, примеры, связанные записи,
-/// favorite, copy, share, add-to-review.
+/// Большой заголовок, перевод, категория, источники, связанные записи,
+/// favorite, copy.
 class DictionaryDetailScreen extends ConsumerWidget {
   const DictionaryDetailScreen({super.key, required this.id});
   final String id;
@@ -57,6 +58,7 @@ class _DetailContent extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final tokens = context.iosTokens;
+    final categoryLabel = DictionaryLabels.categoryLabel(entry.category, sources: entry.sources);
 
     return CustomScrollView(
       slivers: [
@@ -78,13 +80,10 @@ class _DetailContent extends ConsumerWidget {
               onPressed: onFavorite,
               tooltip: 'Избранное',
             ),
-            PopupMenuButton<String>(
-              onSelected: (v) => _onMenuAction(context, v),
-              itemBuilder: (_) => const [
-                PopupMenuItem(value: 'copy', child: Text('Копировать')),
-                PopupMenuItem(value: 'share', child: Text('Поделиться')),
-                PopupMenuItem(value: 'review', child: Text('Добавить в повторение')),
-              ],
+            IconButton(
+              icon: const Icon(Icons.copy_rounded),
+              tooltip: 'Копировать',
+              onPressed: () => _onCopy(context),
             ),
           ],
         ),
@@ -147,9 +146,9 @@ class _DetailContent extends ConsumerWidget {
                 ),
               ),
               // Категория
-              if (entry.category != null) ...[
+              if (categoryLabel != null) ...[
                 const SizedBox(height: 20),
-                _Row(label: 'Категория', value: entry.category!),
+                _Row(label: 'Категория', value: categoryLabel),
               ],
               // Источники
               if (entry.sources.isNotEmpty) ...[
@@ -184,25 +183,11 @@ class _DetailContent extends ConsumerWidget {
     );
   }
 
-  void _onMenuAction(BuildContext context, String action) {
-    switch (action) {
-      case 'copy':
-        Clipboard.setData(ClipboardData(text: '${entry.chechen} — ${entry.russian}'));
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Скопировано'), duration: Duration(seconds: 1)),
-        );
-      case 'share':
-        // TODO: share via platform
-        Clipboard.setData(ClipboardData(text: '${entry.chechen} — ${entry.russian}'));
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Скопировано для шеринга'), duration: Duration(seconds: 1)),
-        );
-      case 'review':
-        // TODO: add to SRS queue
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Добавлено в повторение'), duration: Duration(seconds: 1)),
-        );
-    }
+  void _onCopy(BuildContext context) {
+    Clipboard.setData(ClipboardData(text: '${entry.chechen} — ${entry.russian}'));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Скопировано'), duration: Duration(seconds: 1)),
+    );
   }
 }
 

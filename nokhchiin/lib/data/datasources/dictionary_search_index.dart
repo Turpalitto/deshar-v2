@@ -1,3 +1,4 @@
+import '../../core/utils/chechen_text_utils.dart';
 import '../../domain/entities/entry_type.dart';
 import '../../domain/entities/dictionary_entry.dart';
 
@@ -28,19 +29,30 @@ class DictionarySearchIndex {
 
   /// Partial match: каждое слово запроса должно быть префиксом хотя бы одного
   /// токена записи. Возвращает до [limit] записей.
+  ///
+  /// Каждый термин ищется в двух формах — обычной lowercase (для русских
+  /// токенов) и палочка-нормализованной через [ChechenTextUtils] (для
+  /// чеченских, проиндексированных с заменой 1/I/l/| → Ӏ) — индекс не знает
+  /// заранее, на каком языке термин, поэтому объединяем оба совпадения.
   List<DictionaryEntry> search(String query, {int limit = 80, EntryType? typeFilter}) {
-    final q = query.toLowerCase().trim();
-    if (q.isEmpty) return const [];
+    final trimmed = query.trim();
+    if (trimmed.isEmpty) return const [];
 
-    final terms = q.split(RegExp(r'\s+')).where((t) => t.isNotEmpty).toList();
+    final terms = trimmed.split(RegExp(r'\s+')).where((t) => t.isNotEmpty).toList();
     if (terms.isEmpty) return const [];
 
-    // Пересечение postings для всех термов.
+    final termForms = <(String raw, String normalized)>[];
     Set<int>? result;
     for (final term in terms) {
-      final hit = _postings[term];
-      if (hit == null) return const [];
-      result = result == null ? Set.of(hit) : result.intersection(hit);
+      final raw = term.toLowerCase();
+      final normalized = ChechenTextUtils.normalizeForSearch(term);
+      termForms.add((raw, normalized));
+
+      final hit = <int>{...?_postings[raw]};
+      if (normalized != raw) hit.addAll(_postings[normalized] ?? const {});
+      if (hit.isEmpty) return const [];
+      result = result == null ? hit : result.intersection(hit);
+      if (result.isEmpty) return const [];
     }
 
     final matches = <MapEntry<int, int>>[]; // index, score
@@ -49,8 +61,10 @@ class DictionarySearchIndex {
       if (typeFilter != null && e.type != typeFilter) continue;
       // Score: точное совпадение слова > префикс.
       var score = 0;
-      for (final term in terms) {
-        if (e.searchTokens.contains(term)) score += 10;
+      for (final (raw, normalized) in termForms) {
+        final exact = e.searchTokens.contains(raw) ||
+            (normalized != raw && e.searchTokens.contains(normalized));
+        if (exact) score += 10;
       }
       matches.add(MapEntry(idx, score));
     }

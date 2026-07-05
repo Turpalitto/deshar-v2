@@ -1,3 +1,4 @@
+import '../../core/utils/chechen_text_utils.dart';
 import '../../domain/entities/dictionary_entry.dart';
 import '../../domain/entities/entry_type.dart';
 
@@ -119,7 +120,11 @@ class DictionaryParser {
     final tokens = <String>{};
     for (final word in ce.split(RegExp(r'\s+'))) {
       if (word.isEmpty) continue;
-      final lower = word.toLowerCase();
+      // Нормализуем ASCII-заменители палочки (1/I/l/|) в Ӏ — иначе поиск
+      // не найдёт слово, если пользователь набрал его без палочки.
+      // Слово уже одиночное (после split), поэтому схлопывание пробелов
+      // внутри normalizeForSearch безопасно.
+      final lower = ChechenTextUtils.normalizeForSearch(word);
       tokens.add(lower);
       // Префиксы для partial match (минимум 2 буквы).
       if (lower.length > 2) {

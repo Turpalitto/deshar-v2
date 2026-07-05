@@ -42,10 +42,7 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
 
   void _onScroll() {
     if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
-      final result = ref.read(dictionarySearchResultProvider).valueOrNull;
-      if (result != null && result.hasMore) {
-        ref.read(dictionaryPageProvider.notifier).state++;
-      }
+      ref.read(dictionarySearchProvider.notifier).loadMore();
     }
   }
 
@@ -53,14 +50,12 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
     _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 300), () {
       ref.read(dictionaryQueryProvider.notifier).state = value;
-      ref.read(dictionaryPageProvider.notifier).state = 0;
       if (_scrollController.hasClients) _scrollController.jumpTo(0);
     });
   }
 
   void _onFilterChanged(DictionaryFilter filter) {
     ref.read(dictionaryFilterProvider.notifier).state = filter;
-    ref.read(dictionaryPageProvider.notifier).state = 0;
     if (_scrollController.hasClients) _scrollController.jumpTo(0);
   }
 
@@ -68,7 +63,7 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final tokens = context.iosTokens;
-    final result = ref.watch(dictionarySearchResultProvider);
+    final result = ref.watch(dictionarySearchProvider);
     final totalCount = ref.watch(dictionaryTotalCountProvider).valueOrNull ?? 0;
     final currentFilter = ref.watch(dictionaryFilterProvider);
 
@@ -172,7 +167,7 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
             Expanded(
               child: result.when(
                 data: (data) {
-                  if (data.entries.isEmpty && data.page == 0) {
+                  if (data.entries.isEmpty) {
                     return Center(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -202,10 +197,8 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
                       return DictionaryCard(
                         entry: entry,
                         onTap: () => context.push('/dictionary/${entry.id}'),
-                        onFavorite: () {
-                          ref.read(dictionarySearchRepoProvider).toggleFavorite(entry.id);
-                          ref.invalidate(dictionarySearchResultProvider);
-                        },
+                        onFavorite: () =>
+                            ref.read(dictionarySearchProvider.notifier).toggleFavorite(entry.id),
                       );
                     },
                   );
@@ -218,7 +211,10 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
                       const Text('Ошибка загрузки'),
                       const SizedBox(height: 12),
                       TextButton(
-                        onPressed: () => ref.invalidate(dictionarySearchResultProvider),
+                        onPressed: () {
+                          ref.invalidate(dictionarySearchProvider);
+                          ref.invalidate(dictionaryTotalCountProvider);
+                        },
                         child: const Text('Повторить'),
                       ),
                     ],
