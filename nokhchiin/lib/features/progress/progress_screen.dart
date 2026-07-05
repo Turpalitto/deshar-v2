@@ -35,7 +35,10 @@ class ProgressScreen extends ConsumerWidget {
       body: FutureBuilder(
         future: progressRepo.getAllProgress(),
         builder: (context, snap) {
-          final wordsStudied = snap.data?.length ?? 0;
+          final wordsStudied =
+              snap.data?.values.where((p) => !p.seededFromPlacement).length ?? 0;
+          final alreadyKnown =
+              snap.data?.values.where((p) => p.seededFromPlacement).length ?? 0;
           if (snap.connectionState == ConnectionState.waiting) {
             return const LoadingState();
           }
@@ -102,6 +105,11 @@ class ProgressScreen extends ConsumerWidget {
                             'Слов сегодня: ${profile.wordsLearnedToday}/${profile.dailyGoalWords}',
                             style: TextStyle(fontSize: 13, color: tokens.textTertiary),
                           ),
+                          if (alreadyKnown > 0)
+                            Text(
+                              'Уже знал: $alreadyKnown слов',
+                              style: TextStyle(fontSize: 13, color: tokens.textTertiary),
+                            ),
                         ],
                       ),
                     ),

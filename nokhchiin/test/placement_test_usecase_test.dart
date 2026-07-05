@@ -84,6 +84,7 @@ void main() {
         expect(p, isNotNull);
         expect(p!.mastery, MasteryLevel.mastered);
         expect(p.repetitions, 0);
+        expect(p.seededFromPlacement, isTrue);
       }
       // Другая категория не тронута.
       expect(await progress.getProgress('w4'), isNull);

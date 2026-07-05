@@ -22,6 +22,7 @@ class SeedUnitMasteryFromPlacementUseCase {
         wordId: w.id,
         mastery: MasteryLevel.mastered,
         repetitions: 0,
+        seededFromPlacement: true,
       ));
     }
   }

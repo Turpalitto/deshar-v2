@@ -14,6 +14,7 @@ class WordProgressEntity extends Equatable {
     this.correctStreak = 0,
     this.wrongCount = 0,
     this.isFavorite = false,
+    this.seededFromPlacement = false,
   });
 
   final String wordId;
@@ -26,6 +27,14 @@ class WordProgressEntity extends Equatable {
   final int correctStreak;
   final int wrongCount;
   final bool isFavorite;
+
+  /// true — слово засчитано освоенным через placement-тест при онбординге
+  /// (см. `SeedUnitMasteryFromPlacementUseCase`), а не через реальную
+  /// практику в приложении. Используется, чтобы статистика прогресса не
+  /// путала «уже знал» с «выучил здесь» — но НЕ влияет на mastery-проценты
+  /// юнитов/разблокировку, где placement-слова обязаны учитываться как
+  /// освоенные.
+  final bool seededFromPlacement;
 
   bool get needsReview {
     if (nextReviewAt == null) return mastery != MasteryLevel.unseen;
@@ -42,6 +51,7 @@ class WordProgressEntity extends Equatable {
     int? correctStreak,
     int? wrongCount,
     bool? isFavorite,
+    bool? seededFromPlacement,
   }) {
     return WordProgressEntity(
       wordId: wordId,
@@ -54,6 +64,7 @@ class WordProgressEntity extends Equatable {
       correctStreak: correctStreak ?? this.correctStreak,
       wrongCount: wrongCount ?? this.wrongCount,
       isFavorite: isFavorite ?? this.isFavorite,
+      seededFromPlacement: seededFromPlacement ?? this.seededFromPlacement,
     );
   }
 

@@ -17,7 +17,8 @@ class ParentDashboardScreen extends ConsumerWidget {
         future: ref.read(progressRepoProvider).getAllProgress(),
         builder: (context, snap) {
           final all = snap.data ?? {};
-          final mastered = all.values.where((p) => p.mastery.isMastered).length;
+          final mastered =
+              all.values.where((p) => p.mastery.isMastered && !p.seededFromPlacement).length;
           final learning = all.values.where((p) => p.mastery.isLearned && !p.mastery.isMastered).length;
           final struggling = all.values.where((p) => p.wrongCount > 2).length;
 
