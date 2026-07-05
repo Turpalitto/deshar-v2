@@ -5,7 +5,6 @@ import '../../domain/repositories/repositories.dart';
 import '../../domain/constants/gameplay_constants.dart';
 import '../../domain/services/daily_sync_calculator.dart';
 import '../services/notification_service.dart';
-import 'dictionary_search_providers.dart';
 import 'notification_provider.dart';
 import 'repository_providers.dart';
 
@@ -165,7 +164,7 @@ class UserProfileNotifier extends AsyncNotifier<UserProfileEntity> {
       if (!granted) return false;
       await _update(_current.copyWith(notificationsEnabled: true));
       await notifSvc.scheduleDailyStreakReminder(time: kStreakReminderNotificationTime);
-      await rescheduleWordOfDay(notifSvc, ref.read(dictionarySearchRepoProvider));
+      await rescheduleWordOfDay(notifSvc, ref.read(dictionaryRepoProvider));
     } else {
       await notifSvc.cancelAll();
       await _update(_current.copyWith(notificationsEnabled: false));

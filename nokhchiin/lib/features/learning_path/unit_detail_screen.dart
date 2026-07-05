@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/design/app_icons.dart';
 import '../../core/design/widgets/app_icon_image.dart';
+import '../../core/design/widgets/error_state.dart';
 import '../../core/providers/providers.dart';
 import '../../core/widgets/mastery_progress_bar.dart';
 import '../../core/widgets/word_illustration.dart';
@@ -32,10 +33,18 @@ class UnitDetailScreen extends ConsumerWidget {
         }
         return Scaffold(
           appBar: AppBar(title: Text(unit.titleRu)),
-          body: FutureBuilder<List<WordEntity>>(
-            future: ref.read(dictionaryRepoProvider).getWordsByCategory(unitId),
+          body: FutureBuilder<(List<WordEntity>, bool)>(
+            future: () async {
+              final words = await ref.read(dictionaryRepoProvider).getWordsByCategory(unitId);
+              // Не показываем кнопку "Босс", если для юнита нет boss-контента
+              // в bosses.json — иначе экран босса вешается навсегда без
+              // выхода (аудит logic §6).
+              final boss = await ref.read(contentSourceProvider).loadBossForUnit(unitId);
+              return (words, boss != null);
+            }(),
             builder: (context, snap) {
-              final words = snap.data ?? [];
+              final words = snap.data?.$1 ?? [];
+              final hasBoss = snap.data?.$2 ?? false;
               return ListView(
                 padding: const EdgeInsets.all(20),
                 children: [
@@ -54,7 +63,8 @@ class UnitDetailScreen extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  _GameButton(iconAsset: AppIcons.gameBoss, title: 'Босс мира', subtitle: 'Кульминация темы', onTap: () => context.push('/boss/$unitId')),
+                  if (hasBoss)
+                    _GameButton(iconAsset: AppIcons.gameBoss, title: 'Босс мира', subtitle: 'Кульминация темы', onTap: () => context.push('/boss/$unitId')),
                   _GameButton(iconAsset: AppIcons.gamePuzzle, title: 'Найди пару', onTap: () => context.push('/match/$unitId')),
                   _GameButton(iconAsset: AppIcons.navDictionary, title: 'Карточки', subtitle: 'Свайп и запоминай', onTap: () => context.push('/flashcards/$unitId')),
                   _GameButton(iconAsset: AppIcons.actionReview, title: 'Квиз', subtitle: 'Проверь себя', onTap: () => context.push('/quiz/$unitId')),
@@ -66,7 +76,12 @@ class UnitDetailScreen extends ConsumerWidget {
         );
       },
       loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
-      error: (e, _) => Scaffold(body: Center(child: Text('$e'))),
+      error: (_, __) => Scaffold(
+        body: ErrorState(
+          message: 'Не удалось загрузить юнит',
+          onRetry: () => ref.invalidate(learningUnitsProvider),
+        ),
+      ),
     );
   }
 }

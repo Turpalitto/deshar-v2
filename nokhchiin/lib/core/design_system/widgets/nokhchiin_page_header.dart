@@ -26,7 +26,12 @@ class NokhchiinPageHeader extends StatelessWidget {
             onPressed: onBack ?? () => Navigator.maybePop(context),
             icon: Icon(Icons.arrow_back_ios_new_rounded, color: tokens.textTertiary, size: 20),
             padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+            // HIG-минимум 44×44 (аудит §3) — тот же порог, что уже объявлен
+            // как IosSpacing.minTouchTarget.
+            constraints: const BoxConstraints(
+              minWidth: IosSpacing.minTouchTarget,
+              minHeight: IosSpacing.minTouchTarget,
+            ),
           ),
         if (canPop) const SizedBox(width: 8),
         Expanded(

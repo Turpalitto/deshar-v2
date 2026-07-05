@@ -14,6 +14,7 @@ import '../../core/design/widgets/app_scaffold.dart';
 import '../../core/design/widgets/reward_celebration.dart';
 import '../../core/design/widgets/word_exercise_card.dart';
 import '../../core/providers/providers.dart';
+import '../../core/utils/chechen_text_utils.dart';
 import '../../domain/entities/word_entity.dart';
 
 final _rng = Random();
@@ -63,9 +64,14 @@ class _TypingExerciseScreenState extends ConsumerState<TypingExerciseScreen> {
 
   void _check() {
     if (_words.isEmpty) return;
+    if (_lastCorrect != null) return; // блокируем повторный тап, пока идёт фидбек (аудит §2)
     final target = _words[_index];
-    final input = _controller.text.trim().toLowerCase();
-    final expected = target.chechen.trim().toLowerCase();
+    // Нормализуем палочку Ӏ и её ASCII-замены (1/I/i/l/|/!) тем же способом,
+    // что и поиск словаря — иначе ввод "kIant" вместо "кӀант" (обычная
+    // практика без чеченской раскладки) засчитывается как ошибка, хотя то
+    // же самое прекрасно находится в поиске (аудит §7).
+    final input = ChechenTextUtils.normalizeForSearch(_controller.text);
+    final expected = ChechenTextUtils.normalizeForSearch(target.chechen);
     final correct = input == expected;
 
     setState(() => _lastCorrect = correct);

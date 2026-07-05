@@ -6,6 +6,7 @@ import '../../core/design/widgets/app_icon_image.dart';
 import '../../core/design/tokens/app_spacing.dart';
 import '../../core/design/widgets/app_card.dart';
 import '../../core/design/widgets/app_scaffold.dart';
+import '../../core/design/widgets/error_state.dart';
 import '../../core/design/widgets/loading_state.dart';
 import '../../core/providers/providers.dart';
 import '../../domain/entities/content_entities.dart';
@@ -81,7 +82,10 @@ class StoriesListScreen extends ConsumerWidget {
           },
         ),
         loading: () => const LoadingState(),
-        error: (e, _) => Center(child: Text('$e')),
+        error: (_, __) => ErrorState(
+          message: 'Не удалось загрузить истории',
+          onRetry: () => ref.invalidate(storiesProvider),
+        ),
       ),
     );
   }

@@ -5,6 +5,7 @@ import '../../core/config/feature_flags.dart';
 import '../../core/design/app_icons.dart';
 import '../../core/design/widgets/app_icon_image.dart';
 import '../../core/design/widgets/app_scaffold.dart'; // intentional-mix: app shell scaffold
+import '../../core/design/widgets/error_state.dart'; // intentional-mix: shared error placeholder
 import '../../core/design/widgets/loading_state.dart'; // intentional-mix: shared loading placeholder
 import '../../core/design/widgets/reward_celebration.dart'; // intentional-mix: celebration overlay
 import '../../core/design/widgets/word_exercise_card.dart'; // intentional-mix: exercise card layout
@@ -101,7 +102,10 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
             ),
           ),
           loading: () => const LoadingState(),
-          error: (e, _) => Center(child: Text('$e')),
+          error: (_, __) => ErrorState(
+            message: 'Не удалось загрузить слова для повторения',
+            onRetry: () => ref.invalidate(dueWordsProvider),
+          ),
         ),
       );
     }
@@ -184,6 +188,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                           onPressed: () async {
                             await ref.read(reviewWordUseCaseProvider)(w.id, 1);
                             await ref.read(userProfileProvider.notifier).recordReview();
+                            if (!mounted) return;
                             setState(() {
                               _showAnswer = false;
                               _index++;
@@ -199,6 +204,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                           onPressed: () async {
                             await ref.read(reviewWordUseCaseProvider)(w.id, 5);
                             await ref.read(userProfileProvider.notifier).recordReview();
+                            if (!mounted) return;
                             _correct++;
                             setState(() {
                               _showAnswer = false;
@@ -214,7 +220,10 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
           );
         },
         loading: () => const LoadingState(),
-        error: (e, _) => Center(child: Text('$e')),
+        error: (_, __) => ErrorState(
+          message: 'Не удалось загрузить слова для повторения',
+          onRetry: () => ref.invalidate(dueWordsProvider),
+        ),
       ),
     );
   }

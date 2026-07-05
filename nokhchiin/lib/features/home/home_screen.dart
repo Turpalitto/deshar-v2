@@ -10,6 +10,7 @@ import '../../core/design/tokens/app_spacing.dart'; // intentional-mix: spacing 
 // nokhchiin_theme.dart removed — unused (analyzer warning)
 
 import '../../core/design/widgets/app_scaffold.dart'; // intentional-mix: app shell scaffold
+import '../../core/design/widgets/error_state.dart'; // intentional-mix: shared error placeholder
 import '../../core/design/widgets/loading_state.dart'; // intentional-mix: shared loading placeholder
 import '../../core/design/widgets/reward_celebration.dart'; // intentional-mix: celebration overlay
 import '../../core/design/widgets/week_xp_chart.dart'; // intentional-mix: chart widget not yet in design_system
@@ -247,7 +248,12 @@ class HomeScreen extends ConsumerWidget {
                 );
               },
               loading: () => const SliverToBoxAdapter(child: LoadingState()),
-              error: (e, _) => SliverToBoxAdapter(child: Text('$e')),
+              error: (_, __) => SliverToBoxAdapter(
+                child: ErrorState(
+                  message: 'Не удалось загрузить миры',
+                  onRetry: () => ref.invalidate(worldsProvider),
+                ),
+              ),
             ),
           ),
           SliverPadding(

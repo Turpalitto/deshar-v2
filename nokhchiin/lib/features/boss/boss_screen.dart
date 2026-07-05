@@ -33,6 +33,7 @@ class BossScreen extends ConsumerStatefulWidget {
 class _BossScreenState extends ConsumerState<BossScreen> {
   List<WordEntity> _words = [];
   BossEntity? _boss;
+  bool _loading = true;
   int _index = 0;
   int _score = 0;
   int _secondsLeft = 120;
@@ -48,7 +49,16 @@ class _BossScreenState extends ConsumerState<BossScreen> {
 
   Future<void> _load() async {
     final content = ref.read(contentSourceProvider);
-    _boss = await content.loadBossForUnit(widget.unitId);
+    final boss = await content.loadBossForUnit(widget.unitId);
+    if (boss == null) {
+      // Нет контента босса для этого юнита — не вешаем экран навсегда
+      // (аудит logic §6: раньше тут был бесконечный LoadingState без
+      // кнопки назад), а честно показываем, что тут ловить нечего.
+      if (!mounted) return;
+      setState(() => _loading = false);
+      return;
+    }
+    _boss = boss;
     var words = await ref.read(dictionaryRepoProvider).getWordsByCategory(widget.unitId);
     if (words.length < 5) {
       words = (await ref.read(dictionaryRepoProvider).getAllWords()).take(10).toList();
@@ -56,8 +66,9 @@ class _BossScreenState extends ConsumerState<BossScreen> {
     words.shuffle(_rng);
     if (!mounted) return;
     setState(() {
-      _words = words.take(_boss?.questionsCount ?? 10).toList();
-      _secondsLeft = _boss?.timeLimitSec ?? 120;
+      _words = words.take(boss.questionsCount).toList();
+      _secondsLeft = boss.timeLimitSec;
+      _loading = false;
     });
     _timer = Timer.periodic(const Duration(seconds: 1), (t) {
       if (_secondsLeft <= 0) {
@@ -128,7 +139,31 @@ class _BossScreenState extends ConsumerState<BossScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_words.isEmpty || _boss == null) {
+    if (_loading) {
+      return const AppScaffold(body: LoadingState(message: 'Босс готовится…'));
+    }
+    if (_boss == null) {
+      return AppScaffold(
+        title: 'Босс недоступен',
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.hourglass_empty_rounded, size: 56),
+                const SizedBox(height: AppSpacing.md),
+                const Text(
+                  'Для этого юнита пока нет босса. Загляни сюда позже.',
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+    if (_words.isEmpty) {
       return const AppScaffold(body: LoadingState(message: 'Босс готовится…'));
     }
     if (_index >= _words.length) {
@@ -139,7 +174,16 @@ class _BossScreenState extends ConsumerState<BossScreen> {
     final target = _words[_index];
     final others = [..._words]..removeAt(_index);
     others.shuffle(_rng);
-    final options = [target, ...others.take(3)]..shuffle(_rng);
+    // Дедупликация по переводу — см. quiz_screen.dart, тот же баг
+    // (аудит §7): без неё узкая категория даёт неотвечаемый вопрос.
+    final seen = <String>{target.russian.trim().toLowerCase()};
+    final distractors = <WordEntity>[];
+    for (final o in others) {
+      final key = o.russian.trim().toLowerCase();
+      if (seen.add(key)) distractors.add(o);
+      if (distractors.length == 3) break;
+    }
+    final options = [target, ...distractors]..shuffle(_rng);
 
     return AppScaffold(
       title: 'Босс: ${_boss!.titleRu}',

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/config/feature_flags.dart';
 import '../../core/design/app_icons.dart';
+import '../../core/design/widgets/error_state.dart';
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
 
@@ -74,10 +75,16 @@ class WorldsMapScreen extends ConsumerWidget {
             },
           ),
           loading: () => const NokhchiinLoadingState(),
-          error: (e, _) => Center(child: Text('$e')),
+          error: (_, __) => ErrorState(
+            message: 'Не удалось загрузить юниты',
+            onRetry: () => ref.invalidate(learningUnitsProvider),
+          ),
         ),
         loading: () => const NokhchiinLoadingState(),
-        error: (e, _) => Center(child: Text('$e')),
+        error: (_, __) => ErrorState(
+          message: 'Не удалось загрузить миры',
+          onRetry: () => ref.invalidate(worldsProvider),
+        ),
       ),
     );
   }

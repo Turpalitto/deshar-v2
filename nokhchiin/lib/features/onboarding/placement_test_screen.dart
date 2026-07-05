@@ -14,10 +14,6 @@ import '../../domain/entities/word_entity.dart';
 
 final _rng = Random();
 
-/// Стартовые юниты (requiredMastery: 0 в learning_path.json) — те самые,
-/// с которых сейчас начинают все взрослые независимо от реального уровня.
-const _starterUnitIds = ['greetings', 'colors', 'numbers', 'body', 'animals'];
-
 /// Сколько правильных ответов из вопросов юнита достаточно, чтобы
 /// засчитать его пройденным — мягкий порог (не оба из двух), т.к. аудитория
 /// часто знает язык частично, а не идеально.
@@ -58,7 +54,15 @@ class _PlacementTestScreenState extends ConsumerState<PlacementTestScreen> {
     final allWords = await dictionaryRepo.getAllWords();
     final questions = <_Question>[];
 
-    for (final unitId in _starterUnitIds) {
+    // Тестируем по реально включённым юнитам (enabled: true в
+    // learning_path.json), а не по захардкоженному списку — иначе список
+    // расходится с контентом при каждой правке learning_path.json (см.
+    // аудит §7: категории вроде colors/numbers/body были отключены после
+    // проверки контента).
+    final units = await ref.read(learningPathRepoProvider).getUnits();
+    final starterUnitIds = units.where((u) => u.enabled).map((u) => u.id);
+
+    for (final unitId in starterUnitIds) {
       var words = await dictionaryRepo.getWordsByCategory(unitId);
       if (words.isEmpty) continue;
       _correctByUnit[unitId] = 0;
@@ -69,12 +73,26 @@ class _PlacementTestScreenState extends ConsumerState<PlacementTestScreen> {
       for (final target in targets) {
         final pool = [...words]..removeWhere((w) => w.id == target.id);
         pool.shuffle(_rng);
-        var distractors = pool.take(3).toList();
+        // Дедупликация по переводу — иначе при узкой категории (напр.
+        // "Глаголы", где почти все слова переводятся как "бежать") вопрос
+        // физически неотвечаем (тот же баг, что в quiz_screen.dart — аудит §7).
+        final seen = <String>{target.russian.trim().toLowerCase()};
+        final distractors = <WordEntity>[];
+        for (final w in pool) {
+          final key = w.russian.trim().toLowerCase();
+          if (seen.add(key)) distractors.add(w);
+          if (distractors.length == 3) break;
+        }
         if (distractors.length < 3) {
-          // Категория слишком маленькая — добираем дистракторы из всего словаря.
-          final usedIds = {target.id, ...distractors.map((w) => w.id)};
-          final extra = allWords.where((w) => !usedIds.contains(w.id)).toList()..shuffle(_rng);
-          distractors = [...distractors, ...extra.take(3 - distractors.length)];
+          // Категория слишком маленькая/однообразная — добираем дистракторы
+          // из всего словаря, тоже с проверкой на уникальность перевода.
+          final extra = allWords.where((w) => !seen.contains(w.russian.trim().toLowerCase())).toList()
+            ..shuffle(_rng);
+          for (final w in extra) {
+            final key = w.russian.trim().toLowerCase();
+            if (seen.add(key)) distractors.add(w);
+            if (distractors.length == 3) break;
+          }
         }
         final options = [target, ...distractors]..shuffle(_rng);
         questions.add(_Question(unitId: unitId, target: target, options: options));

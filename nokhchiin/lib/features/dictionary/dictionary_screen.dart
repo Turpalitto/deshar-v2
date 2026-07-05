@@ -83,7 +83,8 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
                         icon: const Icon(Icons.arrow_back_rounded),
                         onPressed: () => context.pop(),
                         padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                        // HIG-минимум 44×44 (аудит §3).
+                        constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
                       ),
                       const SizedBox(width: 8),
                       Text(

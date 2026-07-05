@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../domain/repositories/dictionary_search_repository.dart';
+import '../../domain/repositories/repositories.dart';
 import '../services/notification_service.dart';
-import 'dictionary_search_providers.dart';
+import 'repository_providers.dart';
 import 'user_profile_provider.dart';
 import 'word_of_the_day_provider.dart';
 
@@ -22,7 +22,7 @@ const kStreakReminderNotificationTime = TimeOfDay(hour: 20, minute: 0);
 /// его заново при каждом шансе.
 Future<void> rescheduleWordOfDay(
   NotificationService notifSvc,
-  DictionarySearchRepository repo,
+  DictionaryRepository repo,
 ) async {
   final tomorrow = DateTime.now().add(const Duration(days: 1));
   final entry = await wordForDate(repo, tomorrow);
@@ -42,6 +42,6 @@ Future<void> refreshWordOfDayNotificationIfEnabled(WidgetRef ref) async {
 
   await rescheduleWordOfDay(
     ref.read(notificationServiceProvider),
-    ref.read(dictionarySearchRepoProvider),
+    ref.read(dictionaryRepoProvider),
   );
 }

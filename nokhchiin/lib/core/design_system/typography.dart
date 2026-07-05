@@ -4,7 +4,14 @@ import 'design_tokens.dart';
 
 /// SF Pro–like метрики через Inter (лицензия Google Fonts, кириллица + Ӏ).
 ///
-/// Dynamic Type: все размеры масштабируются через [TextScaler] из MediaQuery.
+/// Dynamic Type: размеры здесь — настоящие, немасштабированные. Flutter's
+/// `Text`/`RichText` сам применяет системный [TextScaler] поверх любого
+/// переданного `fontSize` (по умолчанию — из ambient MediaQuery), поэтому
+/// домножать размер здесь ещё раз нельзя: иначе масштаб применяется дважды
+/// и при системном увеличении текста на 150-200% заголовок в 22pt
+/// превращается в ~88pt вместо ожидаемых 44pt (аудит §3). Параметр
+/// [textScaler] сохранён ради обратной совместимости вызывающего кода, но
+/// намеренно не участвует в расчёте fontSize.
 abstract final class IosTypography {
   /// Базовая семья — Inter (пропорции близки к SF Pro Text).
   static String get fontFamily => GoogleFonts.inter().fontFamily!;
@@ -14,7 +21,7 @@ abstract final class IosTypography {
 
   static TextTheme textTheme({
     required DesignTokens tokens,
-    required TextScaler textScaler,
+    TextScaler? textScaler,
   }) {
     TextStyle style({
       required double size,
@@ -24,10 +31,9 @@ abstract final class IosTypography {
       double letterSpacing = 0,
       String? family,
     }) {
-      final scaled = textScaler.scale(size);
       return TextStyle(
         fontFamily: family ?? fontFamily,
-        fontSize: scaled,
+        fontSize: size,
         fontWeight: weight,
         height: height,
         letterSpacing: letterSpacing,

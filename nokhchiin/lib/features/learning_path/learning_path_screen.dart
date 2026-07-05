@@ -18,7 +18,10 @@ class LearningPathScreen extends ConsumerWidget {
       body: units.when(
         data: (list) => LearningPathTrail(units: list),
         loading: () => const LoadingState(message: 'Строим путь…'),
-        error: (e, _) => ErrorState(message: '$e'),
+        error: (_, __) => ErrorState(
+          message: 'Не удалось загрузить путь обучения',
+          onRetry: () => ref.invalidate(learningUnitsProvider),
+        ),
       ),
     );
   }

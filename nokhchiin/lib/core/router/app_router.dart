@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/splash/splash_screen.dart';
@@ -190,11 +191,14 @@ final appRouter = GoRouter(
       pageBuilder: (context, state) =>
           _fadeScale(state, PaywallScreen(returnPath: state.uri.queryParameters['return'])),
     ),
-    GoRoute(
-      parentNavigatorKey: _rootNavigatorKey,
-      path: '/dev/culture-capsules',
-      pageBuilder: (context, state) => _fadeScale(state, const CultureCapsulePreviewScreen()),
-    ),
+    // Dev-only превью, никогда не должен быть достижим в прод-сборке
+    // (аудит §3: раньше был доступен по прямой ссылке в релизе).
+    if (kDebugMode)
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        path: '/dev/culture-capsules',
+        pageBuilder: (context, state) => _fadeScale(state, const CultureCapsulePreviewScreen()),
+      ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
       path: '/typing/:unitId',

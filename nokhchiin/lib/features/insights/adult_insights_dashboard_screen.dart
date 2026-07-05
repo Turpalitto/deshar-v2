@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/design/widgets/error_state.dart'; // intentional-mix: shared error placeholder
 import '../../core/design/widgets/loading_state.dart'; // intentional-mix: shared loading placeholder; tiles from design_system
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
@@ -34,7 +35,10 @@ class AdultInsightsDashboardScreen extends ConsumerWidget {
       child: SafeArea(
         child: insights.when(
           loading: () => const LoadingState(message: 'Считаем прогресс…'),
-          error: (e, _) => Center(child: Text('$e')),
+          error: (_, __) => ErrorState(
+            message: 'Не удалось посчитать инсайты',
+            onRetry: () => ref.invalidate(learnerInsightsProvider),
+          ),
           data: (data) => ListView(
             padding: const EdgeInsets.all(IosSpacing.screenHorizontal),
             children: [
