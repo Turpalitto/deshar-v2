@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/design/widgets/app_scaffold.dart';
+import '../../core/design/widgets/loading_state.dart';
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
 import '../../domain/entities/culture_capsule.dart';
@@ -12,37 +14,29 @@ class CultureCapsulePreviewScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tokens = context.iosTokens;
-    final textTheme = IosTypography.of(context, tokens);
     final capsules = ref.watch(_allCapsulesProvider);
 
-    return CupertinoPageScaffold(
-      backgroundColor: tokens.background,
-      navigationBar: CupertinoNavigationBar(
-        backgroundColor: tokens.surface.withValues(alpha: 0.92),
-        border: Border(bottom: BorderSide(color: tokens.separator)),
-        middle: Text(
-          'Culture Capsules',
-          style: textTheme.headlineSmall,
+    // Единый шелл AppScaffold вместо CupertinoPageScaffold — раньше в
+    // приложении было 4 несовместимых системы шапки экрана (аудит §3/§8).
+    // Заодно название по-русски — раньше был единственный англоязычный
+    // экран во всём приложении (аудит §3).
+    return AppScaffold(
+      title: 'Культурные капсулы (dev)',
+      body: capsules.when(
+        data: (list) => ListView.separated(
+          padding: const EdgeInsets.all(IosSpacing.screenHorizontal),
+          itemCount: list.length,
+          separatorBuilder: (_, __) => const SizedBox(height: IosSpacing.x3),
+          itemBuilder: (context, index) {
+            final capsule = list[index];
+            return _PreviewTile(
+              capsule: capsule,
+              onTap: () => CultureCapsuleModal.show(context, capsule),
+            );
+          },
         ),
-      ),
-      child: SafeArea(
-        child: capsules.when(
-          data: (list) => ListView.separated(
-            padding: const EdgeInsets.all(IosSpacing.screenHorizontal),
-            itemCount: list.length,
-            separatorBuilder: (_, __) => const SizedBox(height: IosSpacing.x3),
-            itemBuilder: (context, index) {
-              final capsule = list[index];
-              return _PreviewTile(
-                capsule: capsule,
-                onTap: () => CultureCapsuleModal.show(context, capsule),
-              );
-            },
-          ),
-          loading: () => const Center(child: CupertinoActivityIndicator()),
-          error: (_, __) => const Center(child: Text('Не удалось загрузить капсулы')),
-        ),
+        loading: () => const LoadingState(),
+        error: (_, __) => const Center(child: Text('Не удалось загрузить капсулы')),
       ),
     );
   }

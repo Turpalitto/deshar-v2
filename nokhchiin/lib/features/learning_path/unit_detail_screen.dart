@@ -4,7 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/design/app_icons.dart';
 import '../../core/design/widgets/app_icon_image.dart';
+import '../../core/design/widgets/app_scaffold.dart';
 import '../../core/design/widgets/error_state.dart';
+import '../../core/design/widgets/loading_state.dart';
 import '../../core/providers/providers.dart';
 import '../../core/utils/number_format.dart';
 import '../../core/widgets/mastery_progress_bar.dart';
@@ -36,8 +38,10 @@ class UnitDetailScreen extends ConsumerWidget {
             requiredMastery: unit.requiredMastery,
           );
         }
-        return Scaffold(
-          appBar: AppBar(title: Text(unit.titleRu)),
+        // Единый шелл AppScaffold вместо голого Scaffold+AppBar — раньше в
+        // приложении было 4 несовместимых системы шапки экрана (аудит §3/§8).
+        return AppScaffold(
+          title: unit.titleRu,
           body: FutureBuilder<(List<WordEntity>, bool)>(
             future: () async {
               final words = await ref.read(dictionaryRepoProvider).getWordsByCategory(unitId);
@@ -80,8 +84,8 @@ class UnitDetailScreen extends ConsumerWidget {
           ),
         );
       },
-      loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
-      error: (_, __) => Scaffold(
+      loading: () => const AppScaffold(body: LoadingState()),
+      error: (_, __) => AppScaffold(
         body: ErrorState(
           message: 'Не удалось загрузить юнит',
           onRetry: () => ref.invalidate(learningUnitsProvider),
@@ -100,8 +104,8 @@ class _LockedUnitScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(titleRu)),
+    return AppScaffold(
+      title: titleRu,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(32),
@@ -137,7 +141,7 @@ class _UnitNotFoundScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(32),

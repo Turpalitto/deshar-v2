@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/design/widgets/app_scaffold.dart';
 import '../../core/design/widgets/week_xp_chart.dart';
 import '../../core/providers/providers.dart';
 import '../../domain/entities/learning_entities.dart';
@@ -11,8 +12,10 @@ class ParentDashboardScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final profile = ref.watch(userProfileProvider).value ?? const UserProfileEntity();
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Кабинет родителя')),
+    // Единый шелл AppScaffold вместо голого Scaffold+AppBar — раньше в
+    // приложении было 4 несовместимых системы шапки экрана (аудит §3/§8).
+    return AppScaffold(
+      title: 'Кабинет родителя',
       body: FutureBuilder(
         future: ref.read(progressRepoProvider).getAllProgress(),
         builder: (context, snap) {
