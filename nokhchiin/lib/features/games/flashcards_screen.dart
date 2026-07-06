@@ -6,10 +6,10 @@ import 'package:go_router/go_router.dart';
 import '../../core/design_system/design_system.dart';
 import '../../core/design/tokens/app_spacing.dart'; // intentional-mix: spacing tokens; Figma widgets from design_system
 import '../../core/design/app_icons.dart';
-import '../../core/design/widgets/app_button.dart';
 import '../../core/design/widgets/app_icon_image.dart'; // intentional-mix: reward dialog actions
 import '../../core/design/widgets/app_scaffold.dart'; // intentional-mix: app shell scaffold
 import '../../core/design/widgets/loading_state.dart'; // intentional-mix: shared loading placeholder
+import '../../core/design/widgets/reward_celebration.dart';
 import '../../core/providers/providers.dart';
 import '../../domain/entities/enums.dart';
 import '../../domain/entities/word_entity.dart';
@@ -81,46 +81,23 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
     }
   }
 
-  void _showReward() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const AppIconImage(asset: AppIcons.rewardCelebration, size: 28),
-            const SizedBox(width: 10),
-            const Text('Урок пройден!'),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('+25 XP · +5 монет'),
-            const SizedBox(height: AppSpacing.md),
-            AppButton(
-              label: 'Ввод по-чеченски',
-              variant: AppButtonVariant.secondary,
-              onPressed: () {
-                Navigator.pop(ctx);
-                context.push('/typing/${widget.unitId}');
-              },
-            ),
-          ],
-        ),
-        actions: [
-          AppButton(
-            label: 'Отлично',
-            expanded: false,
-            onPressed: () {
-              Navigator.pop(ctx);
-              context.pop();
-            },
-          ),
-        ],
-      ),
+  // Единый фирменный RewardCelebration вместо голого AlertDialog — раньше
+  // в приложении было три разных диалога "успех" (аудит §2/§3).
+  Future<void> _showReward() async {
+    await RewardCelebration.show(
+      context,
+      iconAsset: AppIcons.rewardCelebration,
+      title: 'Урок пройден!',
+      subtitle: '+25 XP · +5 монет',
+      primaryAction: 'Ввод по-чеченски',
+      onPrimary: () {
+        Navigator.of(context).pop();
+        context.push('/typing/${widget.unitId}');
+      },
+      onDismiss: () {
+        Navigator.of(context).pop();
+        context.pop();
+      },
     );
   }
 
@@ -185,17 +162,29 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
             children: [
               Expanded(
                 child: NokhchiinButton(
-                  label: '↻ Повторить',
+                  label: 'Повторить',
                   color: context.iosTokens.accentMuted,
                   textColor: context.iosTokens.accent,
                   onPressed: () => _swipeController.swipeLeft(),
+                  // Иконка вместо сырого юникод-символа "↻" (аудит §low).
+                  child: _ButtonLabel(
+                    iconAsset: AppIcons.actionReview,
+                    label: 'Повторить',
+                    color: context.iosTokens.accent,
+                  ),
                 ),
               ),
               const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: NokhchiinButton(
-                  label: '✓ Знаю',
+                  label: 'Знаю',
                   onPressed: () => _swipeController.swipeRight(),
+                  // Иконка вместо сырого юникод-символа "✓" (аудит §low).
+                  child: _ButtonLabel(
+                    iconAsset: AppIcons.stateSuccess,
+                    label: 'Знаю',
+                    color: context.iosTokens.accentOn,
+                  ),
                 ),
               ),
             ],
@@ -305,6 +294,42 @@ class _FlashcardContent extends StatelessWidget {
         ],
       ),
       ),
+    );
+  }
+}
+
+/// Иконка + текст с той же типографикой, что NokhchiinButton рисует для
+/// обычного [label] — сохраняет визуальную согласованность при передаче
+/// кастомного [child] ради иконки.
+class _ButtonLabel extends StatelessWidget {
+  const _ButtonLabel({
+    required this.iconAsset,
+    required this.label,
+    required this.color,
+  });
+
+  final String iconAsset;
+  final String label;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = IosTypography.of(context, context.iosTokens);
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        AppIconImage(asset: iconAsset, size: 18, color: color),
+        const SizedBox(width: 8),
+        Text(
+          label,
+          style: textTheme.headlineSmall?.copyWith(
+            color: color,
+            fontWeight: FontWeight.w600,
+            fontSize: 17,
+            letterSpacing: -0.2,
+          ),
+        ),
+      ],
     );
   }
 }

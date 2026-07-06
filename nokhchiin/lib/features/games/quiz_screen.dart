@@ -55,7 +55,11 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
   Future<void> _load() async {
     var words = await ref.read(dictionaryRepoProvider).getWordsByCategory(widget.unitId);
     if (words.length < 4) {
-      words = (await ref.read(dictionaryRepoProvider).getAllWords()).take(10).toList();
+      // Раньше .take(10) без shuffle — всегда одни и те же (зачастую худшие
+      // по качеству) записи при каждом фолбэке (аудит §7). Копируем перед
+      // shuffle — getAllWords() отдаёт общий закэшированный список.
+      final all = [...await ref.read(dictionaryRepoProvider).getAllWords()]..shuffle(_rng);
+      words = all.take(10).toList();
     }
     if (mounted) {
       setState(() {

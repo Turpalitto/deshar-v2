@@ -2,11 +2,13 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/design/app_icons.dart';
 import '../../core/design/tokens/app_durations.dart'; // intentional-mix: motion tokens; Figma widgets from design_system
 import '../../core/design/tokens/app_spacing.dart'; // intentional-mix: spacing tokens
 import '../../core/design/widgets/app_button.dart'; // intentional-mix: legacy button in dialogs
 import '../../core/design/widgets/app_card.dart'; // intentional-mix: legacy card container
 import '../../core/design/widgets/app_scaffold.dart'; // intentional-mix: app shell scaffold
+import '../../core/design/widgets/empty_state.dart'; // intentional-mix: shared empty placeholder
 import '../../core/design/widgets/loading_state.dart'; // intentional-mix: shared loading placeholder
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
@@ -48,7 +50,12 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
   Future<void> _load() async {
     var words = await ref.read(dictionaryRepoProvider).getWordsByCategory(widget.unitId);
     if (words.length < 4) {
-      words = (await ref.read(dictionaryRepoProvider).getAllWords()).take(5).toList();
+      // Раньше .take(5) без shuffle — всегда одни и те же (первые в
+      // порядке следования словаря, зачастую худшие по качеству) записи
+      // при каждом фолбэке (аудит §7). Копируем перед shuffle — getAllWords()
+      // отдаёт общий закэшированный список, мутировать его на месте нельзя.
+      final all = [...await ref.read(dictionaryRepoProvider).getAllWords()]..shuffle(_rng);
+      words = all.take(5).toList();
     }
     if (mounted) {
       final taken = words.take(5).toList();
@@ -101,7 +108,10 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
           : const AppScaffold(body: LoadingState());
     }
     if (_words.isEmpty) {
-      return const Center(child: Text('Недостаточно слов'));
+      // Общий EmptyState вместо голого Text — тот же паттерн, что уже
+      // использует quiz_screen.dart (аудит §low).
+      final empty = EmptyState(iconAsset: AppIcons.stateEmpty, title: 'Недостаточно слов');
+      return widget.embedded ? empty : AppScaffold(body: empty);
     }
 
     final tokens = context.iosTokens;

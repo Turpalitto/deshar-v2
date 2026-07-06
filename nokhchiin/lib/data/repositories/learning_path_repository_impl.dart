@@ -1,3 +1,4 @@
+import '../../core/utils/app_logger.dart';
 import '../../domain/entities/learning_entities.dart';
 import '../../domain/repositories/repositories.dart';
 import '../datasources/asset_dictionary_datasource.dart';
@@ -14,18 +15,26 @@ class LearningPathRepositoryImpl implements LearningPathRepository {
     final path = pathResult.getOr([]);
     final units = <LearningUnitEntity>[];
     for (final u in path) {
-      final id = u['id'] as String;
-      final words = await _dictionary.getWordsByCategory(id);
-      units.add(LearningUnitEntity(
-        id: id,
-        order: u['order'] as int,
-        titleRu: u['titleRu'] as String,
-        titleCe: u['titleCe'] as String,
-        icon: u['icon'] as String,
-        requiredMastery: u['requiredMastery'] as int,
-        wordIds: words.map((w) => w.id).toList(),
-        enabled: u['enabled'] as bool? ?? true,
-      ));
+      // Один юнит с неверным типом поля не должен валить весь путь обучения
+      // (аудит §2: раньше здесь не было try/catch, в отличие от
+      // dictionary_search_repository_impl.dart) — пропускаем битую запись
+      // и продолжаем с остальными.
+      try {
+        final id = u['id'] as String;
+        final words = await _dictionary.getWordsByCategory(id);
+        units.add(LearningUnitEntity(
+          id: id,
+          order: u['order'] as int,
+          titleRu: u['titleRu'] as String,
+          titleCe: u['titleCe'] as String,
+          icon: u['icon'] as String,
+          requiredMastery: u['requiredMastery'] as int,
+          wordIds: words.map((w) => w.id).toList(),
+          enabled: u['enabled'] as bool? ?? true,
+        ));
+      } catch (e, st) {
+        AppLogger.error('Skipping malformed unit in learning_path.json: $u', error: e, stackTrace: st);
+      }
     }
     units.sort((a, b) => a.order.compareTo(b.order));
     return units;

@@ -54,7 +54,8 @@ class OnboardingScreen extends ConsumerWidget {
                     Text(
                       // Реальное число вместо устаревшего "7800+" (аудит §7:
                       // реально ≈134k слов после слияния с датасетом HF).
-                      'Чеченский язык · ${formatThousands(dictionaryWordCount)}+ слов',
+                      'Чеченский язык · ${formatThousands(dictionaryWordCount)}+ '
+                      '${pluralize(dictionaryWordCount, one: 'слово', few: 'слова', many: 'слов')}',
                       style: TextStyle(fontSize: 12, color: tokens.textTertiary, fontWeight: FontWeight.w500),
                     ),
                   ],

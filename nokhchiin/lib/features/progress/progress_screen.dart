@@ -9,6 +9,7 @@ import '../../core/design/widgets/loading_state.dart'; // intentional-mix: share
 import '../../core/design/widgets/week_xp_chart.dart'; // intentional-mix: chart widget not yet in design_system
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
+import '../../core/utils/number_format.dart';
 import '../../domain/entities/enums.dart';
 import '../../domain/entities/learning_entities.dart';
 
@@ -107,7 +108,7 @@ class ProgressScreen extends ConsumerWidget {
                           ),
                           if (alreadyKnown > 0)
                             Text(
-                              'Уже знал: $alreadyKnown слов',
+                              'Уже знал: ${wordsCount(alreadyKnown)}',
                               style: TextStyle(fontSize: 13, color: tokens.textTertiary),
                             ),
                         ],

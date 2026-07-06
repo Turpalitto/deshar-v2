@@ -1,10 +1,17 @@
 import '../domain/entities/culture_capsule.dart';
 
 /// Заглушки для разработки — замените на выверенный контент.
+///
+/// relatedUnitId указывает на greetings/adjectives/verbs — единственные три
+/// юнита, реально включённые в learning_path.json на момент правки (аудит
+/// §7: colors/animals/home/family/food/numbers/body/nature отключены из-за
+/// неверных категорий словаря). Раньше капсулы были привязаны к family/home/
+/// food — после отключения этих юнитов капсулы стали недостижимы из обычного
+/// флоу обучения (доступны только через dev-превью).
 abstract final class CultureCapsuleSamples {
   static const adatAfterFamily = CultureCapsule(
     id: 'capsule_adat_family',
-    relatedUnitId: 'family',
+    relatedUnitId: 'greetings',
     title: 'Адат и гость',
     body:
         'В традиционной культуре уважение к старшим и гостю часто выражается через простые бытовые жесты: уступить место, спокойно выслушать, не перебивать.\n\n'
@@ -14,7 +21,7 @@ abstract final class CultureCapsuleSamples {
 
   static const teipRoots = CultureCapsule(
     id: 'capsule_teip_roots',
-    relatedUnitId: 'home',
+    relatedUnitId: 'adjectives',
     title: 'Тейп: корни и окружение',
     body:
         'Тейп — это не только родственники по крови, но и люди, с которыми связывает общая история, помощь и ответственность друг перед другом.\n\n'
@@ -23,7 +30,7 @@ abstract final class CultureCapsuleSamples {
 
   static const hospitality = CultureCapsule(
     id: 'capsule_hospitality',
-    relatedUnitId: 'food',
+    relatedUnitId: 'verbs',
     title: 'Гостеприимство — больше чем традиция',
     body:
         'В чеченской культуре гость — священен. Хозяин обязан принять любого путника, накормить и защитить — даже врага. Это не просто вежливость, это хьост — честь дома.\n\n'

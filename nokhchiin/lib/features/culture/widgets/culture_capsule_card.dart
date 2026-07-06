@@ -10,10 +10,20 @@ class CultureCapsuleCard extends StatelessWidget {
     super.key,
     required this.capsule,
     required this.onContinue,
+    required this.onClose,
   });
 
   final CultureCapsule capsule;
+
+  /// "Продолжить →" — пользователь реально прочитал капсулу, отмечаем как
+  /// увиденную навсегда.
   final VoidCallback onContinue;
+
+  /// "✕ Закрыть" — просто закрыть сейчас, без отметки "увидено навсегда"
+  /// (аудит §3: раньше обе кнопки делали одно и то же, вопреки ожиданию от
+  /// иконки закрытия — капсула больше никогда не показывалась, даже если
+  /// пользователь её просто закрыл, не читая).
+  final VoidCallback onClose;
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +46,7 @@ class CultureCapsuleCard extends StatelessWidget {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: TextButton(
-                      onPressed: onContinue,
+                      onPressed: onClose,
                       style: TextButton.styleFrom(
                         backgroundColor: Colors.white.withValues(alpha: 0.1),
                         foregroundColor: Colors.white.withValues(alpha: 0.65),
@@ -168,13 +178,17 @@ class _CapsuleIllustration extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Декодируем под реальный размер контейнера (180pt высотой), а не в
+    // исходном разрешении картинки (2560×2160) — раньше не было ни одного
+    // cacheWidth/cacheHeight во всём приложении (аудит §4).
+    final cacheHeight = (180 * MediaQuery.devicePixelRatioOf(context)).round();
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
       child: SizedBox(
         height: 180,
         width: double.infinity,
         child: imagePath != null
-            ? Image.asset(imagePath!, fit: BoxFit.cover)
+            ? Image.asset(imagePath!, fit: BoxFit.cover, cacheHeight: cacheHeight)
             : Container(
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(

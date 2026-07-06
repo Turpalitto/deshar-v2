@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/design/widgets/week_xp_chart.dart';
 import '../../core/providers/providers.dart';
-
+import '../../domain/entities/learning_entities.dart';
 
 class ParentDashboardScreen extends ConsumerWidget {
   const ParentDashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profile = ref.watch(userProfileProvider).value;
-    final progress = ref.watch(dictionaryProvider);
+    final profile = ref.watch(userProfileProvider).value ?? const UserProfileEntity();
 
     return Scaffold(
       appBar: AppBar(title: const Text('Кабинет родителя')),
@@ -25,19 +25,23 @@ class ParentDashboardScreen extends ConsumerWidget {
           return ListView(
             padding: const EdgeInsets.all(20),
             children: [
-              _StatCard('Время сегодня', '${profile?.todayMinutes ?? 0} мин'),
-              _StatCard('Серия дней', '${profile?.streakDays ?? 0}'),
+              _StatCard('Время сегодня', '${profile.todayMinutes} мин'),
+              _StatCard('Серия дней', '${profile.streakDays}'),
               _StatCard('Освоено слов', '$mastered'),
               _StatCard('В процессе', '$learning'),
               _StatCard('Нужно повторить', '$struggling'),
               const SizedBox(height: 24),
               Text('Отчёт за неделю', style: Theme.of(context).textTheme.headlineMedium),
-              const SizedBox(height: 8),
-              const Text('Детальная аналитика по словам — в следующем обновлении.'),
-              progress.when(
-                data: (words) => Text('В словаре: ${words.length} слов'),
-                loading: () => const SizedBox(),
-                error: (_, __) => const SizedBox(),
+              const SizedBox(height: 12),
+              // Реальный график недельного XP вместо заглушки "в следующем
+              // обновлении" — данные уже собираются (используются в
+              // home_screen.dart/progress_screen.dart), теперь родитель тоже
+              // видит реальную картину, а не пустое обещание (аудит §low).
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: WeekXpChart(weeklyXp: profile.weeklyXp),
+                ),
               ),
             ],
           );

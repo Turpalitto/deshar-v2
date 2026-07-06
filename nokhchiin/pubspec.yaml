@@ -73,5 +73,12 @@ flutter:
     - assets/data/audio_manifest.json
     - assets/data/illustrations_manifest.json
     - assets/audio/
-    - assets/images/brand/
+    # Явный список вместо всей директории: остальные файлы в
+    # assets/images/brand/ (icon.png, splash-icon.png, android-icon-*.png,
+    # favicon.png) — это исходники для flutter_launcher_icons/
+    # flutter_native_splash, которые читают их напрямую из pubspec при
+    # генерации нативных ресурсов и не нуждаются в бандлинге как рантайм-
+    # ассеты — раньше ~1.3 МБ лишнего веса в каждой сборке (аудит §4).
+    - assets/images/brand/culture_guest.png
+    - assets/images/brand/culture_hospitality.png
     - assets/icons/

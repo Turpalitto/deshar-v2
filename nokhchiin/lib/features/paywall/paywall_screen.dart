@@ -145,7 +145,11 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                       (AppIcons.actionReview, l10n.compareRowSrs),
                       (AppIcons.cultureHeritage, 'Все культурные капсулы'),
                       // Реальное число вместо устаревшего "7 800" (аудит §7).
-                      (AppIcons.navDictionary, 'Словарь ${formatThousands(dictionaryWordCount)}+ слов'),
+                      (
+                        AppIcons.navDictionary,
+                        'Словарь ${formatThousands(dictionaryWordCount)}+ '
+                            '${pluralize(dictionaryWordCount, one: 'слово', few: 'слова', many: 'слов')}',
+                      ),
                     ])
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 9),

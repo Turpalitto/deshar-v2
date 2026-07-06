@@ -9,8 +9,8 @@ import '../../core/design/tokens/app_spacing.dart';
 import '../../core/design/app_icons.dart';
 import '../../core/design/widgets/app_button.dart';
 import '../../core/design/widgets/app_scaffold.dart';
-import '../../core/design/widgets/app_icon_image.dart';
 import '../../core/design/widgets/loading_state.dart';
+import '../../core/design/widgets/reward_celebration.dart';
 import '../../core/design/widgets/word_exercise_card.dart';
 import '../../core/design/tokens/app_durations.dart';
 import '../../core/providers/providers.dart';
@@ -61,7 +61,11 @@ class _BossScreenState extends ConsumerState<BossScreen> {
     _boss = boss;
     var words = await ref.read(dictionaryRepoProvider).getWordsByCategory(widget.unitId);
     if (words.length < 5) {
-      words = (await ref.read(dictionaryRepoProvider).getAllWords()).take(10).toList();
+      // Раньше .take(10) без shuffle пула — всегда один и тот же набор
+      // первых 10 слов словаря (аудит §7). Копируем перед shuffle —
+      // getAllWords() отдаёт общий закэшированный список.
+      final all = [...await ref.read(dictionaryRepoProvider).getAllWords()]..shuffle(_rng);
+      words = all.take(10).toList();
     }
     words.shuffle(_rng);
     if (!mounted) return;
@@ -84,57 +88,53 @@ class _BossScreenState extends ConsumerState<BossScreen> {
     super.dispose();
   }
 
-  Future<void> _unlockNextWorld() async {
+  /// Возвращает true, только если реально разблокирован новый мир —
+  /// вызывающий код честно показывает "Новый мир открыт!" только тогда.
+  Future<bool> _unlockNextWorld() async {
     final worlds = await ref.read(worldsProvider.future);
-    if (!mounted) return; // аудит §2: экран может быть закрыт до завершения await
+    if (!mounted) return false; // аудит §2: экран может быть закрыт до завершения await
     final idx = worlds.indexWhere((w) => w.units.contains(widget.unitId));
     if (idx >= 0 && idx < worlds.length - 1) {
       final nextId = worlds[idx + 1].id;
       await ref.read(userProfileProvider.notifier).unlockWorld(nextId);
+      return true;
     }
+    return false;
   }
 
-  void _finish() {
+  Future<void> _finish() async {
     if (_finished) return;
     _finished = true;
     final pass = _boss?.passScore ?? 8;
     final won = _score >= pass;
+    var unlockedWorld = false;
     if (won) {
-      ref.read(userProfileProvider.notifier).addXp(
+      // Ждём запись награды перед диалогом — раньше это было "выстрелил и
+      // забыл" (аудит §2). Плюс единый фирменный RewardCelebration вместо
+      // голого AlertDialog (аудит §2/§3) — и честная подпись: раньше
+      // "Новый мир открыт!" показывалось всегда, даже когда открывать
+      // было нечего (последний юнит в последнем мире).
+      await ref.read(userProfileProvider.notifier).addXp(
             _boss?.rewardXp ?? 100,
             _boss?.rewardStars ?? 25,
           );
-      _unlockNextWorld();
-      ref.read(userProfileProvider.notifier).unlockAchievement('collector');
+      unlockedWorld = await _unlockNextWorld();
+      await ref.read(userProfileProvider.notifier).unlockAchievement('collector');
     }
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (won) const AppIconImage(asset: AppIcons.rewardTrophy, size: 28),
-            if (won) const SizedBox(width: 10),
-            Text(won ? 'Победа!' : 'Попробуй ещё'),
-          ],
-        ),
-        content: Text(
-          won
-              ? 'Счёт: $_score / ${_words.length}\nНовый мир открыт!'
-              : 'Счёт: $_score / ${_words.length}',
-        ),
-        actions: [
-          AppButton(
-            label: 'OK',
-            expanded: false,
-            onPressed: () {
-              Navigator.pop(ctx);
-              context.pop();
-            },
-          ),
-        ],
-      ),
+    if (!mounted) return;
+    await RewardCelebration.show(
+      context,
+      iconAsset: won ? AppIcons.rewardTrophy : AppIcons.stateEmpty,
+      title: won ? 'Победа!' : 'Попробуй ещё',
+      subtitle: won
+          ? 'Счёт: $_score / ${_words.length}'
+              '${unlockedWorld ? '\nНовый мир открыт!' : ''}'
+          : 'Счёт: $_score / ${_words.length}',
+      dismissLabel: 'OK',
+      onDismiss: () {
+        Navigator.of(context).pop();
+        context.pop();
+      },
     );
   }
 
@@ -188,7 +188,20 @@ class _BossScreenState extends ConsumerState<BossScreen> {
 
     return AppScaffold(
       title: 'Босс: ${_boss!.titleRu}',
-      actions: [Padding(padding: const EdgeInsets.all(16), child: Text('⏱ $_secondsLeft'))],
+      actions: [
+        Padding(
+          padding: const EdgeInsets.all(16),
+          // Иконка вместо сырого эмодзи "⏱" в проде (аудит §low).
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.timer_outlined, size: 18),
+              const SizedBox(width: 4),
+              Text('$_secondsLeft'),
+            ],
+          ),
+        ),
+      ],
       body: Padding(
         padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
@@ -208,17 +221,19 @@ class _BossScreenState extends ConsumerState<BossScreen> {
               final i = entry.key;
               final o = entry.value;
               final isCorrectAnswer = o.id == target.id;
-              Color? btnColor;
-              if (_selectedOption == i) {
-                btnColor = isCorrectAnswer
-                    ? const Color(0xFF2E7D32)
-                    : const Color(0xFFC62828);
-              }
+              final answered = _selectedOption == i;
+              // Раньше и верный, и неверный выбор красились в один и тот же
+              // variant.primary (btnColor считался, но никуда не применялся)
+              // — реальной разницы между "верно"/"неверно" не было вовсе.
+              // Плюс иконка, а не только цвет — WCAG 1.4.1 (аудит §medium).
               return Padding(
                 padding: const EdgeInsets.only(bottom: AppSpacing.sm),
                 child: AppButton(
                   label: o.russian,
-                  variant: btnColor != null
+                  icon: answered
+                      ? (isCorrectAnswer ? Icons.check_circle_rounded : Icons.cancel_rounded)
+                      : null,
+                  variant: answered && isCorrectAnswer
                       ? AppButtonVariant.primary
                       : AppButtonVariant.secondary,
                   expanded: true,

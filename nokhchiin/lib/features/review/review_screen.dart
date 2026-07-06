@@ -7,6 +7,7 @@ import '../../core/design/widgets/app_icon_image.dart';
 import '../../core/design/widgets/app_scaffold.dart'; // intentional-mix: app shell scaffold
 import '../../core/design/widgets/error_state.dart'; // intentional-mix: shared error placeholder
 import '../../core/design/widgets/loading_state.dart'; // intentional-mix: shared loading placeholder
+import '../../core/utils/number_format.dart';
 import '../../core/design/widgets/reward_celebration.dart'; // intentional-mix: celebration overlay
 import '../../core/design/widgets/word_exercise_card.dart'; // intentional-mix: exercise card layout
 import '../../core/design_system/design_system.dart';
@@ -34,6 +35,27 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
     return ref.read(canStartReviewUseCaseProvider)(
       reviewsDoneToday: profile.reviewsDoneToday,
     );
+  }
+
+  /// Ближайшее время следующего повторения среди уже изучаемых слов
+  /// (null, если пользователь ещё ничего не изучал).
+  Future<DateTime?> _nextReviewTime() async {
+    final all = await ref.read(progressRepoProvider).getAllProgress();
+    DateTime? soonest;
+    for (final p in all.values) {
+      final next = p.nextReviewAt;
+      if (next == null) continue;
+      if (soonest == null || next.isBefore(soonest)) soonest = next;
+    }
+    return soonest;
+  }
+
+  String _formatNextReview(DateTime next) {
+    final diff = next.difference(DateTime.now());
+    if (diff.inMinutes <= 0) return 'уже скоро';
+    if (diff.inHours < 1) return 'через ${diff.inMinutes} мин';
+    if (diff.inHours < 24) return 'через ${diff.inHours} ч';
+    return 'через ${diff.inDays} дн';
   }
 
   @override
@@ -64,7 +86,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                         style: TextStyle(fontSize: 13, color: tokens.textTertiary, fontWeight: FontWeight.w600),
                       ),
                       Text(
-                        '${words.length} слов',
+                        wordsCount(words.length),
                         style: TextStyle(
                           fontSize: 34,
                           fontWeight: FontWeight.w700,
@@ -121,6 +143,24 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                   AppIconImage(asset: AppIcons.rewardCelebration, size: 40, color: accent),
                   const SizedBox(height: 12),
                   Text('Всё повторено', style: TextStyle(color: tokens.textSecondary, fontSize: 17)),
+                  const SizedBox(height: 6),
+                  // Раньше пустое состояние не объясняло, когда появятся новые
+                  // слова — пользователь не понимал, стоит ли возвращаться
+                  // (аудит §low).
+                  FutureBuilder<DateTime?>(
+                    future: _nextReviewTime(),
+                    builder: (context, snap) {
+                      final next = snap.data;
+                      final label = next == null
+                          ? 'Новые слова появятся, когда пройдёт время SRS-интервала'
+                          : 'Следующее повторение — ${_formatNextReview(next)}';
+                      return Text(
+                        label,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: tokens.textTertiary, fontSize: 13),
+                      );
+                    },
+                  ),
                 ],
               ),
             );

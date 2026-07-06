@@ -37,6 +37,10 @@ class UserProfileNotifier extends AsyncNotifier<UserProfileEntity> {
 
   UserProfileEntity get _current => state.value ?? const UserProfileEntity();
 
+  /// Уровень по общему XP — единственное место с этой формулой (аудит §1:
+  /// раньше была продублирована в addXp() и recordWordLearned()).
+  static int _levelForXp(int xp) => (xp / GameplayConstants.xpPerLevel).floor() + 1;
+
   Future<void> _update(UserProfileEntity updated) async {
     await _repo.saveProfile(updated);
     state = AsyncData(updated);
@@ -57,7 +61,7 @@ class UserProfileNotifier extends AsyncNotifier<UserProfileEntity> {
     if (weekly.length == GameplayConstants.weeklyXpDays) weekly[6] += xp;
     await _update(current.copyWith(
       xp: newXp,
-      level: (newXp / GameplayConstants.xpPerLevel).floor() + 1,
+      level: _levelForXp(newXp),
       stars: current.stars + stars,
       coins: current.coins + stars,
       weeklyXp: weekly,
@@ -74,7 +78,7 @@ class UserProfileNotifier extends AsyncNotifier<UserProfileEntity> {
     if (weekly.length == GameplayConstants.weeklyXpDays) weekly[6] += xp;
     await _update(current.copyWith(
       xp: newXp,
-      level: (newXp / GameplayConstants.xpPerLevel).floor() + 1,
+      level: _levelForXp(newXp),
       coins: current.coins + coins,
       stars: current.stars + coins,
       wordsLearnedToday: current.wordsLearnedToday + 1,

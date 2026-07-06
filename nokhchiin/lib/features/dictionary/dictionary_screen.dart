@@ -100,7 +100,8 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
                       const Spacer(),
                       if (totalCount > 0)
                         Text(
-                          '${formatThousands(totalCount)} слов',
+                          '${formatThousands(totalCount)} '
+                          '${pluralize(totalCount, one: 'слово', few: 'слова', many: 'слов')}',
                           style: TextStyle(
                             fontSize: 13,
                             color: tokens.textTertiary,

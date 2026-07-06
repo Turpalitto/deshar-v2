@@ -6,6 +6,7 @@ import '../../core/design/app_icons.dart';
 import '../../core/design/widgets/app_icon_image.dart';
 import '../../core/design/widgets/error_state.dart';
 import '../../core/providers/providers.dart';
+import '../../core/utils/number_format.dart';
 import '../../core/widgets/mastery_progress_bar.dart';
 import '../../core/widgets/word_illustration.dart';
 import '../../domain/entities/word_entity.dart';
@@ -56,7 +57,7 @@ class UnitDetailScreen extends ConsumerWidget {
                   const SizedBox(height: 12),
                   Text(unit.titleCe, style: Theme.of(context).textTheme.displayLarge, textAlign: TextAlign.center),
                   MasteryProgressBar(percent: unit.masteryPercent),
-                  Text('${unit.masteryPercent}% · ${words.length} слов', textAlign: TextAlign.center),
+                  Text('${unit.masteryPercent}% · ${wordsCount(words.length)}', textAlign: TextAlign.center),
                   const SizedBox(height: 20),
                   FilledButton.icon(
                     onPressed: () => context.push('/lesson/$unitId'),

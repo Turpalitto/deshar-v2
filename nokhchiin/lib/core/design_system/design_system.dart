@@ -21,7 +21,6 @@ export 'widgets/nokhchiin_search_field.dart';
 export 'widgets/nokhchiin_gift_tile.dart';
 export 'widgets/nokhchiin_stat_tile.dart';
 export 'widgets/nokhchiin_world_card.dart';
-export 'widgets/nokhchiin_dictionary_row.dart';
 export 'widgets/nokhchiin_settings_row.dart';
 export 'widgets/nokhchiin_page_header.dart';
 export 'widgets/nokhchiin_loading_state.dart';

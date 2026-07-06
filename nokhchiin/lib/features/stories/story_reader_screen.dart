@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../core/design/app_icons.dart';
-import '../../core/design/widgets/app_icon_image.dart';
+import '../../core/design/widgets/reward_celebration.dart';
 import '../../core/providers/providers.dart';
 import '../../domain/entities/content_entities.dart';
 
@@ -46,24 +47,24 @@ class _StoryReaderScreenState extends ConsumerState<StoryReaderScreen> {
     }
   }
 
-  void _finish() {
-    ref.read(userProfileProvider.notifier).addXp(40, 10);
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AppIconImage(asset: AppIcons.rewardCelebration, size: 28),
-            SizedBox(width: 10),
-            Text('История прочитана!'),
-          ],
-        ),
-        content: const Text('Отличная работа! +40 XP'),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Ура!')),
-        ],
-      ),
+  Future<void> _finish() async {
+    // Ждём запись награды перед диалогом — раньше addXp() не был
+    // awaited, и прогресс мог тихо потеряться, если приложение убьют в
+    // этом окне (аудит §2). Плюс единый фирменный RewardCelebration
+    // вместо голого AlertDialog — раньше в приложении было три разных
+    // диалога "успех" (аудит §2/§3).
+    await ref.read(userProfileProvider.notifier).addXp(40, 10);
+    if (!mounted) return;
+    await RewardCelebration.show(
+      context,
+      iconAsset: AppIcons.rewardCelebration,
+      title: 'История прочитана!',
+      subtitle: 'Отличная работа! +40 XP',
+      dismissLabel: 'Ура!',
+      onDismiss: () {
+        Navigator.of(context).pop();
+        context.pop();
+      },
     );
   }
 

@@ -19,7 +19,6 @@ import '../../core/providers/providers.dart';
 
 import '../../core/utils/number_format.dart';
 import '../../core/utils/world_progress_util.dart';
-import '../../data/culture_capsule_samples.dart';
 import '../../domain/entities/enums.dart';
 import '../../domain/entities/learning_entities.dart';
 import '../culture/culture_capsule_modal.dart';
@@ -96,10 +95,14 @@ class HomeScreen extends ConsumerWidget {
                         colors: [Color(0xFF5C3D2E), Color(0xFF8B5E3C)],
                       ),
                       lightText: true,
-                      onTap: () => CultureCapsuleModal.show(
-                        context,
-                        CultureCapsuleSamples.hospitality,
-                      ),
+                      onTap: () async {
+                        final capsule = await ref
+                            .read(cultureCapsuleRepoProvider)
+                            .byId('capsule_hospitality');
+                        if (capsule != null && context.mounted) {
+                          CultureCapsuleModal.show(context, capsule);
+                        }
+                      },
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -132,7 +135,7 @@ class HomeScreen extends ConsumerWidget {
                       // "7 800" (реально ≈134k — аудит §7).
                       subtitle: dictionaryCount == null
                           ? '…'
-                          : '${formatThousands(dictionaryCount)} слов',
+                          : '${formatThousands(dictionaryCount)} ${pluralize(dictionaryCount, one: 'слово', few: 'слова', many: 'слов')}',
                       onTap: () => context.push('/dictionary'),
                     ),
                   ),
@@ -160,7 +163,7 @@ class HomeScreen extends ConsumerWidget {
               sliver: SliverToBoxAdapter(
                 child: NokhchiinSurfaceCard(
                   onTap: () => context.go('/review'),
-                  semanticLabel: 'Повторить ${due.value!.length} слов, сеанс SRS',
+                  semanticLabel: 'Повторить ${wordsCount(due.value!.length)}, сеанс SRS',
                   child: Row(
                     children: [
                       AppIconImage(asset: AppIcons.actionReview, size: 28, color: accent),
@@ -170,7 +173,7 @@ class HomeScreen extends ConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Повторить ${due.value!.length} слов',
+                              'Повторить ${wordsCount(due.value!.length)}',
                               style: Theme.of(context).textTheme.titleMedium,
                             ),
                             Text(
