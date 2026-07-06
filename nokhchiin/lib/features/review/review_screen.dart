@@ -170,6 +170,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
             if (!_rewardShown) {
               _rewardShown = true;
               WidgetsBinding.instance.addPostFrameCallback((_) async {
+                if (!mounted) return;
                 await ref.read(userProfileProvider.notifier).addXp(_correct * 5, _correct);
                 if (!mounted) return;
                 await RewardCelebration.show(

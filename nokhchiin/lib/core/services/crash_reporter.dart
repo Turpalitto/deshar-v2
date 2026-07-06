@@ -55,10 +55,15 @@ abstract final class CrashReporter {
     String? hint,
   }) async {
     if (!isEnabled) return;
+    Hint? hintObj;
+    if (hint != null) {
+      hintObj = Hint();
+      hintObj.set('hint', hint);
+    }
     await Sentry.captureException(
       error,
       stackTrace: stackTrace,
-      hint: hint != null ? Hint() : null,
+      hint: hintObj,
     );
   }
 }

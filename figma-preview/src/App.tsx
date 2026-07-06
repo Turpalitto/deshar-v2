@@ -525,14 +525,19 @@ function FlashcardScreen({ mode, nav }: { mode: Mode; nav: (s: Screen) => void }
   const [exit, setExit] = useState<"left"|"right"|null>(null);
   const word = WORDS[idx % WORDS.length];
 
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current); }, []);
   const next = (dir: "left"|"right") => {
     setExit(dir);
-    setTimeout(() => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => {
       setFlipped(false); setExit(null);
       setIdx(i => (i+1) % WORDS.length);
-      const ns = Math.min(step+1, 5);
-      setStep(ns);
-      if (ns >= 5) nav("quiz");
+      setStep(s => {
+        const ns = Math.min(s+1, 5);
+        if (ns >= 5) nav("quiz");
+        return ns;
+      });
     }, 280);
   };
 
@@ -639,19 +644,27 @@ function MatchScreen({ mode, nav }: { mode: Mode; nav: (s: Screen) => void }) {
   const [matched, setMatched] = useState<number[]>([]);
   const [wrong, setWrong] = useState(false);
 
+  const matchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     if (selCE !== null && selRU !== null) {
       if (selCE === selRU) {
-        const nm = [...matched, selCE];
-        setMatched(nm);
+        setMatched((m) => {
+          const nm = [...m, selCE];
+          if (nm.length === MATCH_PAIRS.length) {
+            if (matchTimerRef.current) clearTimeout(matchTimerRef.current);
+            matchTimerRef.current = setTimeout(() => nav("reward"), 600);
+          }
+          return nm;
+        });
         setSelCE(null); setSelRU(null);
-        if (nm.length === MATCH_PAIRS.length) setTimeout(() => nav("reward"), 600);
       } else {
         setWrong(true);
-        setTimeout(() => { setSelCE(null); setSelRU(null); setWrong(false); }, 700);
+        if (matchTimerRef.current) clearTimeout(matchTimerRef.current);
+        matchTimerRef.current = setTimeout(() => { setSelCE(null); setSelRU(null); setWrong(false); }, 700);
       }
     }
-  }, [selCE, selRU]);
+  }, [selCE, selRU, nav]);
+  useEffect(() => () => { if (matchTimerRef.current) clearTimeout(matchTimerRef.current); }, []);
 
   const card = (label: string, idx: number, side: "ce"|"ru", sel: number|null, setSel: (i: number|null) => void) => {
     const isMatched = matched.includes(idx);
@@ -795,7 +808,7 @@ function CultureScreen({ nav }: { nav: (s: Screen) => void }) {
 
           {/* Illustration */}
           <div style={{ width:"100%", borderRadius:20, overflow:"hidden", marginBottom:24, background:"linear-gradient(135deg,#5C3D2E 0%,#8B5E3C 50%,#6B4423 100%)", height:180, display:"flex", alignItems:"center", justifyContent:"center", position:"relative" }}>
-            <div style={{ position:"absolute", inset:0, background:"url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 400 180\"><path d=\"M0 120 L80 60 L140 90 L200 40 L260 70 L320 30 L400 80 L400 180 L0 180Z\" fill=\"rgba(0,0,0,0.15)\"/></svg>')" }}/>
+            <div style={{ position:"absolute", inset:0, background:"url('data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 180'%3E%3Cpath d='M0 120 L80 60 L140 90 L200 40 L260 70 L320 30 L400 80 L400 180 L0 180Z' fill='rgba(0,0,0,0.15)'/%3E%3C/svg%3E')" }}/>
             <div style={{ fontSize:72, position:"relative", zIndex:1 }}>🏠</div>
           </div>
 
@@ -870,15 +883,22 @@ function WorldsScreen({ mode, nav }: { mode: Mode; nav: (s: Screen) => void }) {
 // ─── Dictionary ───────────────────────────────────────────────────────────────
 const DICT_ROW_H = 76;
 
-function DictionaryScreen({ nav }: { nav: (s: Screen) => void }) {
+function DictionaryScreen({ nav, loaded }: { nav: (s: Screen) => void; loaded: boolean }) {
   const [q, setQ] = useState("");
   const [verifiedOnly, setVerifiedOnly] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
   const [scrollTop, setScrollTop] = useState(0);
   const [viewportH, setViewportH] = useState(520);
-  const [dictLoaded, setDictLoaded] = useState(FULL_DICTIONARY.length > 0);
 
-  const source = verifiedOnly ? FULL_DICTIONARY.filter((w) => w.verified) : FULL_DICTIONARY;
+  const verifiedCount = useMemo(
+    () => FULL_DICTIONARY.filter((w) => w.verified).length,
+    []
+  );
+
+  const source = useMemo(
+    () => (verifiedOnly ? FULL_DICTIONARY.filter((w) => w.verified) : FULL_DICTIONARY),
+    [verifiedOnly]
+  );
 
   const filtered = useMemo(() => {
     const qq = q.trim().toLowerCase();
@@ -900,8 +920,13 @@ function DictionaryScreen({ nav }: { nav: (s: Screen) => void }) {
     return () => ro.disconnect();
   }, []);
 
+  const rafRef = useRef<number | null>(null);
   const onScroll = useCallback(() => {
-    if (listRef.current) setScrollTop(listRef.current.scrollTop);
+    if (rafRef.current != null) return;
+    rafRef.current = requestAnimationFrame(() => {
+      rafRef.current = null;
+      if (listRef.current) setScrollTop(listRef.current.scrollTop);
+    });
   }, []);
 
   const start = Math.max(0, Math.floor(scrollTop / DICT_ROW_H) - 3);
@@ -942,7 +967,7 @@ function DictionaryScreen({ nav }: { nav: (s: Screen) => void }) {
               fontFamily:"inherit",
             }}
           >
-            Проверено ({formatWordCount(FULL_DICTIONARY.filter(w => w.verified).length)})
+            Проверено ({formatWordCount(verifiedCount)})
           </button>
         </div>
         <div style={{ position:"relative", marginBottom:4 }}>
@@ -976,13 +1001,13 @@ function DictionaryScreen({ nav }: { nav: (s: Screen) => void }) {
         >
           {filtered.length === 0 ? (
             <div style={{ textAlign:"center", paddingTop:48, color:C.textTert, fontSize:15 }}>
-              {dictLoaded ? "Ничего не найдено" : "Загрузка словаря…"}
+              {loaded ? "Ничего не найдено" : "Загрузка словаря…"}
             </div>
           ) : (
             <div style={{ height: totalH, position:"relative", width:"100%" }}>
               <div style={{ position:"absolute", top: offsetY, left:0, right:0 }}>
                 {slice.map((w, i) => (
-                  <DictionaryRow key={`${w.ce}-${w.ru}-${start + i}`} w={w} />
+                  <DictionaryRow key={`${w.ce}|${w.ru}`} w={w} />
                 ))}
               </div>
             </div>
@@ -1177,7 +1202,7 @@ function RewardScreen({ mode, nav }: { mode: Mode; nav: (s: Screen) => void }) {
         <div style={{ fontSize:17, color:C.textSec, marginBottom:36 }}>Отличная работа, Аслан</div>
 
         <div style={{ display:"flex", gap:12, justifyContent:"center", marginBottom:36 }}>
-          {[["⭐","+25 XP",C.goldMuted,C.gold],[" 💰","+10",C.goldMuted,C.gold],["🔥","12 дней",C.terraMuted,C.terra]].map(([e,v,bg,col],i) => (
+          {[["⭐","+25 XP",C.goldMuted,C.gold],["💰","+10",C.goldMuted,C.gold],["🔥","12 дней",C.terraMuted,C.terra]].map(([e,v,bg,col],i) => (
             <div key={i} style={{ background:bg, borderRadius:18, padding:"16px 14px", textAlign:"center", minWidth:85 }}>
               <div style={{ fontSize:26, marginBottom:5 }}>{e}</div>
               <div style={{ fontSize:16, fontWeight:700, color:col }}>{v}</div>
@@ -1301,25 +1326,33 @@ export default function App() {
   const [screen, setScreen] = useState<Screen>("splash");
   const [mode, setMode] = useState<Mode>("adult");
   const [tab, setTab] = useState<Tab>("home");
-  const [prevScreen, setPrev] = useState<Screen | null>(null);
   const [transitioning, setTransitioning] = useState(false);
   const [, forceUpdate] = useState(0);
 
   useEffect(() => {
-    loadFullDictionary().then((words) => {
-      FULL_DICTIONARY = words;
-      forceUpdate((n) => n + 1);
-    });
+    loadFullDictionary()
+      .then((words) => {
+        FULL_DICTIONARY = words;
+        forceUpdate((n) => n + 1);
+      })
+      .catch((err) => {
+        console.error("loadFullDictionary failed:", err);
+        FULL_DICTIONARY = [];
+        forceUpdate((n) => n + 1);
+      });
   }, []);
 
-  const nav = (s: Screen) => {
-    if (s === screen) return;
+  const screenRef = useRef<Screen>(screen);
+  screenRef.current = screen;
+
+  const nav = useCallback((s: Screen) => {
+    if (s === screenRef.current) return;
     setTransitioning(true);
     setTimeout(() => { setScreen(s); setTransitioning(false); }, 120);
     if (s === "home") setTab("home");
     else if (s === "worlds") setTab("worlds");
     else if (s === "profile") setTab("profile");
-  };
+  }, []);
 
   const handleMode = (m: Mode) => { setMode(m); nav("home"); };
   const handleTab = (t: Tab) => {
@@ -1330,7 +1363,7 @@ export default function App() {
     else if (t === "profile") nav("profile");
   };
 
-  const noTab: Screen[] = ["splash","onboarding","age","culture","reward","paywall","design"];
+  const noTab: Screen[] = ["splash","onboarding","age","culture","reward","paywall","design","flashcard","quiz","match","path","dictionary"];
   const showTab = !noTab.includes(screen);
   const accent = mode === "kids" ? C.meadow : C.terra;
 
@@ -1346,7 +1379,7 @@ export default function App() {
       case "quiz": return <QuizScreen mode={mode} nav={nav} />;
       case "culture": return <CultureScreen nav={nav} />;
       case "worlds": return <WorldsScreen mode={mode} nav={nav} />;
-      case "dictionary": return <DictionaryScreen nav={nav} />;
+      case "dictionary": return <DictionaryScreen nav={nav} loaded={FULL_DICTIONARY.length > 0} />;
       case "profile": return <ProfileScreen mode={mode} nav={nav} />;
       case "paywall": return <PaywallScreen nav={nav} />;
       case "reward": return <RewardScreen mode={mode} nav={nav} />;

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
+import '../../core/router/app_router.dart';
 import '../../domain/entities/learning_entities.dart';
 
 /// Splash — terracotta экран из Figma Make.
@@ -37,6 +38,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     // Проверяем hasCompletedOnboarding, а не profile != null.
     // profile всегда non-null (default = kids), но hasCompletedOnboarding
     // false до выбора трека в onboarding. Аудит logic §9.
+    OnboardingGuard.completed = profile.hasCompletedOnboarding;
     context.go(profile.hasCompletedOnboarding ? '/' : '/onboarding');
   }
 

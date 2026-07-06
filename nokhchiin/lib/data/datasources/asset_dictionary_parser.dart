@@ -16,12 +16,14 @@ List<WordEntity> parseBundledDictionaryIsolate(Map<String, String> rawJsonByKey)
   final curated = jsonDecode(rawJsonByKey['curated']!) as Map<String, dynamic>;
   for (final item in curated['entries'] as List) {
     final w = _fromCurated(item as Map<String, dynamic>);
+    if (w.chechen.isEmpty || w.russian.isEmpty) continue;
     if (seen.add(w.id)) words.add(w);
   }
 
   final dict = jsonDecode(rawJsonByKey['dictionary']!) as Map<String, dynamic>;
   for (final item in dict['entries'] as List) {
     final w = _fromDictionary(item as Map<String, dynamic>);
+    if (w.chechen.isEmpty || w.russian.isEmpty) continue;
     if (seen.add(w.id)) words.add(w);
   }
 
@@ -29,8 +31,8 @@ List<WordEntity> parseBundledDictionaryIsolate(Map<String, String> rawJsonByKey)
 }
 
 WordEntity _fromCurated(Map<String, dynamic> j) {
-  final ce = (j['chechen'] as String).trim();
-  final ru = j['russian'] as String;
+  final ce = ((j['chechen'] as String?) ?? '').trim();
+  final ru = (j['russian'] as String?) ?? '';
   return WordEntity(
     id: _id(ce, ru),
     chechen: _capitalize(ce),
@@ -47,8 +49,8 @@ WordEntity _fromCurated(Map<String, dynamic> j) {
 }
 
 WordEntity _fromDictionary(Map<String, dynamic> j) {
-  final ce = (j['chechen'] as String).trim();
-  final ru = j['russian'] as String;
+  final ce = ((j['chechen'] as String?) ?? '').trim();
+  final ru = (j['russian'] as String?) ?? '';
   final sources = List<String>.from(j['sources'] ?? ['maciev']);
   return WordEntity(
     id: _id(ce, ru),

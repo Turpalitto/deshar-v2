@@ -22,6 +22,8 @@ class _StoryReaderScreenState extends ConsumerState<StoryReaderScreen> {
   int _panel = 0;
   bool _quizMode = false;
   int _quizIndex = 0;
+  bool _finished = false;
+  bool _quizLocked = false;
   StoryEntity? _story;
 
   @override
@@ -50,6 +52,8 @@ class _StoryReaderScreenState extends ConsumerState<StoryReaderScreen> {
   }
 
   Future<void> _finish() async {
+    if (_finished) return;
+    _finished = true;
     // Ждём запись награды перед диалогом — раньше addXp() не был
     // awaited, и прогресс мог тихо потеряться, если приложение убьют в
     // этом окне (аудит §2). Плюс единый фирменный RewardCelebration
@@ -159,9 +163,24 @@ class _StoryReaderScreenState extends ConsumerState<StoryReaderScreen> {
                   child: SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () {
-                        setState(() => _quizIndex++);
-                      },
+                      onPressed: _quizLocked
+                          ? null
+                          : () {
+                              if (o == q.answer) {
+                                setState(() => _quizIndex++);
+                              } else {
+                                setState(() => _quizLocked = true);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Неверно. Попробуйте ещё раз.'),
+                                    duration: Duration(seconds: 1),
+                                  ),
+                                );
+                                Future.delayed(const Duration(milliseconds: 800), () {
+                                  if (mounted) setState(() => _quizLocked = false);
+                                });
+                              }
+                            },
                       child: Padding(padding: const EdgeInsets.all(14), child: Text(o)),
                     ),
                   ),

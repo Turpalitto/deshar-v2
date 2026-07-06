@@ -18,14 +18,17 @@ class WeekXpChart extends StatelessWidget {
   final Color? accentMuted;
   final int? todayIndex;
 
-  static const _days = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+  // weeklyXp — скользящее окно: индекс 6 = сегодня, 0 = 6 дней назад.
+  // Подсветка и метки соответствуют этому порядку, а не календарной
+  // неделе (аудит week_xp_chart).
+  static const _days = ['6дн', '5дн', '4дн', '3дн', '2дн', 'Вчера', 'Сегодня'];
 
   @override
   Widget build(BuildContext context) {
     final tokens = context.iosTokens;
     final active = accent ?? tokens.accent;
     final muted = accentMuted ?? tokens.accentMuted;
-    final today = todayIndex ?? (DateTime.now().weekday - 1).clamp(0, 6);
+    final today = todayIndex ?? 6;
 
     final data = weeklyXp.length == 7 ? weeklyXp : List.filled(7, 0);
     final max = data.fold<int>(1, (a, b) => a > b ? a : b);

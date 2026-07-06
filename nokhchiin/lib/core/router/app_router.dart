@@ -35,11 +35,27 @@ final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 /// Первый урок после onboarding.
 const kFirstLessonUnitId = 'animals';
 
+/// Синхронный guard для redirect. Splash/onboarding устанавливают флаг
+/// после загрузки профиля, чтобы deep-link на холодном старте не обходил
+/// онбординг (аудит router).
+class OnboardingGuard {
+  static bool completed = false;
+}
+
 Page<void> _fadeScale(GoRouterState state, Widget child) => buildFadeScalePage(state: state, child: child);
 
 final appRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
   initialLocation: '/splash',
+  redirect: (context, state) {
+    final loc = state.matchedLocation;
+    if (!OnboardingGuard.completed &&
+        !loc.startsWith('/splash') &&
+        !loc.startsWith('/onboarding')) {
+      return '/splash';
+    }
+    return null;
+  },
   routes: [
     GoRoute(
       path: '/splash',

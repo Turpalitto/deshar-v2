@@ -32,8 +32,18 @@ class DailySyncCalculator {
         ..clear()
         ..addAll(List.filled(7, 0));
     } else {
-      weekly.removeAt(0);
-      weekly.add(0);
+      // Сдвигаем окно на число пропущенных дней (заполняем нулями),
+      // а не всегда на 1 — раньше пропуск >1 дня оставлял устаревшие
+      // значения в weeklyXp (аудит daily_sync).
+      final lastActive = profile.lastActiveDate != null
+          ? DateTime.parse('${profile.lastActiveDate}T00:00:00')
+          : now;
+      var days = now.difference(lastActive).inDays;
+      if (days < 1) days = 1;
+      if (days > 7) days = 7;      for (var i = 0; i < days; i++) {
+        weekly.removeAt(0);
+        weekly.add(0);
+      }
     }
 
     var achievements = List<String>.from(profile.achievements);

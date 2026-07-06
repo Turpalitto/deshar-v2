@@ -36,10 +36,12 @@ class WordProgressEntity extends Equatable {
   /// освоенные.
   final bool seededFromPlacement;
 
-  bool get needsReview {
+  bool needsReviewAt(DateTime now) {
     if (nextReviewAt == null) return mastery != MasteryLevel.unseen;
-    return DateTime.now().isAfter(nextReviewAt!);
+    return now.isAfter(nextReviewAt!);
   }
+
+  bool get needsReview => needsReviewAt(DateTime.now());
 
   WordProgressEntity copyWith({
     MasteryLevel? mastery,

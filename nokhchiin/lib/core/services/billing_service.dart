@@ -29,6 +29,7 @@ class BillingService implements BillingRepository {
   StreamSubscription<List<PurchaseDetails>>? _purchaseSub;
   bool _iapReady = false;
   bool _premiumConfirmedByStore = false;
+  Completer<bool>? _restoreCompleter;
 
   Future<void> _initIap() async {
     if (kIsWeb) return;
@@ -60,14 +61,21 @@ class BillingService implements BillingRepository {
     if (!profile.isPremium) return;
 
     try {
+      _restoreCompleter = Completer<bool>();
       await _iap.restorePurchases();
     } catch (e, st) {
       AppLogger.warn('restorePurchases on init failed', error: e, stackTrace: st);
+      _restoreCompleter = null;
       return;
     }
 
-    await Future.delayed(const Duration(seconds: 3));
-    if (!_premiumConfirmedByStore) {
+    // Ждём ответа purchaseStream, а не фиксированную задержку — магазин
+    // может отвечать дольше 3 секунд, и раньше premium сбрасывался
+    // преждевременно (аудит §5).
+    final confirmed = await _restoreCompleter!.future
+        .timeout(const Duration(seconds: 10), onTimeout: () => false);
+    _restoreCompleter = null;
+    if (!confirmed && !_premiumConfirmedByStore) {
       await _onPremiumChanged(false);
     }
   }
@@ -82,6 +90,7 @@ class BillingService implements BillingRepository {
       if (p.productID == SubscriptionLimits.premiumProductId &&
           (p.status == PurchaseStatus.purchased || p.status == PurchaseStatus.restored)) {
         _premiumConfirmedByStore = true;
+        _restoreCompleter?.complete(true);
         _emitPremium();
         if (p.pendingCompletePurchase) {
           _iap.completePurchase(p);
@@ -119,6 +128,13 @@ class BillingService implements BillingRepository {
 
   @override
   Future<SubscriptionEntity> startTrial() async {
+    // Триал — это реальная подписка через магазин. На web/desktop IAP
+    // недоступен — не выдаём premium бесплатно (аудит §2.1).
+    if (!_iapReady) {
+      throw const BillingUnavailableException(
+        'Магазин недоступен. Повторите запуск триала позже.',
+      );
+    }
     final ends = DateTime.now().add(
       const Duration(days: SubscriptionLimits.trialDays),
     );

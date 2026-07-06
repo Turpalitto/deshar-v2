@@ -12,9 +12,11 @@ class UserRepositoryImpl implements UserRepository {
   Future<UserProfileEntity> getProfile() async {
     final data = await _local.get();
     if (data == null) return const UserProfileEntity();
+    final modeIdx = (data['mode'] as int? ?? 0).clamp(0, AppMode.values.length - 1);
+    final ageIdx = (data['ageGroup'] as int? ?? 1).clamp(0, KidsAgeGroup.values.length - 1);
     return UserProfileEntity(
-      mode: AppMode.values[data['mode'] as int? ?? 0],
-      ageGroup: KidsAgeGroup.values[data['ageGroup'] as int? ?? 1],
+      mode: AppMode.values[modeIdx],
+      ageGroup: KidsAgeGroup.values[ageIdx],
       xp: data['xp'] as int? ?? 0,
       level: data['level'] as int? ?? 1,
       streakDays: data['streakDays'] as int? ?? 0,

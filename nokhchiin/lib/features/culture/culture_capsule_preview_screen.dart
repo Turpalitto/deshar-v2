@@ -82,7 +82,7 @@ class _PreviewTile extends StatelessWidget {
             ),
             const SizedBox(height: IosSpacing.x2),
             Text(
-              capsule.paragraphs.first,
+              capsule.paragraphs.isNotEmpty ? capsule.paragraphs.first : '',
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: textTheme.bodyMedium,

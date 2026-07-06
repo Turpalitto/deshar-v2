@@ -132,12 +132,15 @@ class DictionarySearchRepositoryImpl implements DictionarySearchRepository {
     if (q.isEmpty) {
       base = _entries!;
     } else {
-      base = index.search(q, limit: 500, typeFilter: null);
+      // typeFilter передаётся в индекс, а не пост-фильтруется: раньше
+      // top-500 по score могли быть все одного типа, и пост-фильтр по
+      // другому типу давал пустую страницу (аудит dictionary_search).
+      base = index.search(q, limit: 500, typeFilter: typeFilter);
     }
 
     // Фильтры post-search.
     var filtered = base;
-    if (typeFilter != null) {
+    if (q.isEmpty && typeFilter != null) {
       filtered = filtered.where((e) => e.type == typeFilter).toList();
     }
     if (favoritesOnly) {

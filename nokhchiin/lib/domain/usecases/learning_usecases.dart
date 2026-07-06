@@ -10,10 +10,10 @@ class ReviewWordUseCase {
   final ProgressRepository _progressRepo;
   final SpacedRepetitionEngine _srs;
 
-  Future<WordProgressEntity> call(String wordId, int quality) async {
+  Future<WordProgressEntity> call(String wordId, int quality, {DateTime? now}) async {
     final existing = await _progressRepo.getProgress(wordId) ??
         WordProgressEntity(wordId: wordId);
-    final updated = _srs.review(existing, quality);
+    final updated = _srs.review(existing, quality, now: now);
     await _progressRepo.saveProgress(updated);
     return updated;
   }

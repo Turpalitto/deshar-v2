@@ -13,13 +13,19 @@ class ProgressStatsService {
     final all = await _dictionary.getAllWords();
     if (all.isEmpty) return 0;
     final progress = await _progress.getAllProgress();
-    // Итерируем по (гораздо меньшему) прогрессу, а не по всем 134k словам
-    // словаря на каждый вызов — раньше это был лишний O(134k) скан вместо
-    // O(размер прогресса) (аудит §2).
+    // Знаменатель — проверенная/учебная лексика (curated), а не весь
+    // словарь на 134k: иначе реальный прогресс ~500 слов даёт 0%
+    // (аудит progress_stats).
+    final curatedTotal = all
+        .where((w) =>
+            w.sources.any((s) => s == 'curated' || s == 'verified' || s == 'lessons') ||
+            w.tags.contains('verified'))
+        .length;
+    if (curatedTotal == 0) return 0;
     final learned = progress.values
         .where((p) => p.mastery.value >= MasteryLevel.remembering.value)
         .length;
-    return ((learned / all.length) * 100).round().clamp(0, 100);
+    return ((learned / curatedTotal) * 100).round().clamp(0, 100);
   }
 
   Future<int> curatedMasteryPercent() async {

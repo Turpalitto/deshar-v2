@@ -16,16 +16,20 @@ class SubscriptionEntity extends Equatable {
   final DateTime? expiresAt;
   final String? productId;
 
-  bool get isPremium =>
+  bool isPremiumAt(DateTime now) =>
       tier == SubscriptionTier.premium ||
       (tier == SubscriptionTier.trial &&
           trialEndsAt != null &&
-          trialEndsAt!.isAfter(DateTime.now()));
+          trialEndsAt!.isAfter(now));
 
-  bool get isTrialActive =>
+  bool get isPremium => isPremiumAt(DateTime.now());
+
+  bool isTrialActiveAt(DateTime now) =>
       tier == SubscriptionTier.trial &&
       trialEndsAt != null &&
-      trialEndsAt!.isAfter(DateTime.now());
+      trialEndsAt!.isAfter(now);
+
+  bool get isTrialActive => isTrialActiveAt(DateTime.now());
 
   SubscriptionEntity copyWith({
     SubscriptionTier? tier,

@@ -20,17 +20,21 @@ class LocalProgressDataSource {
   Box<Map> get _box => Hive.box<Map>(boxName);
 
   Future<Map<String, WordProgressEntity>> getAll() async {
-    try {
-      final result = <String, WordProgressEntity>{};
-      for (final key in _box.keys) {
-        final map = _box.get(key);
-        if (map != null) result[key] = _fromMap(key, map);
+    final result = <String, WordProgressEntity>{};
+    for (final key in _box.keys) {
+      final map = _box.get(key);
+      if (map == null) continue;
+      try {
+        result[key] = _fromMap(key, map);
+      } catch (e, st) {
+        // Пропускаем одну битую запись, не роняя весь прогресс —
+        // раньше одна запись с плохим DateTime/типом очищала весь
+        // прогресс пользователя (аудит local_storage).
+        AppLogger.warn('Skipping corrupt progress entry $key',
+            error: e, stackTrace: st);
       }
-      return result;
-    } catch (e, st) {
-      AppLogger.error('Failed to read all progress', error: e, stackTrace: st);
-      return {};
     }
+    return result;
   }
 
   Future<WordProgressEntity?> get(String wordId) async {

@@ -24,7 +24,7 @@ class _FakeProgressRepo implements ProgressRepository {
 
   @override
   Future<List<WordProgressEntity>> getDueForReview() async =>
-      _data.values.where((p) => p.needsReview).toList();
+      _data.values.where((p) => p.repetitions > 0 && p.needsReview).toList();
 
   @override
   Future<List<String>> getFavorites() async =>
@@ -135,11 +135,13 @@ void main() {
           'w1': WordProgressEntity(
             wordId: 'w1',
             mastery: MasteryLevel.seen,
+            repetitions: 1,
             nextReviewAt: now.subtract(const Duration(hours: 2)),
           ),
           'w2': WordProgressEntity(
             wordId: 'w2',
             mastery: MasteryLevel.recognizing,
+            repetitions: 1,
             nextReviewAt: now.subtract(const Duration(hours: 5)),
           ),
           'w3': const WordProgressEntity(wordId: 'w3'), // unseen, no review
@@ -158,9 +160,9 @@ void main() {
       final now = DateTime.now();
       final useCase = GetDueWordsUseCase(
         _FakeProgressRepo({
-          'w1': WordProgressEntity(wordId: 'w1', mastery: MasteryLevel.seen, nextReviewAt: now.subtract(const Duration(hours: 1))),
-          'w2': WordProgressEntity(wordId: 'w2', mastery: MasteryLevel.seen, nextReviewAt: now.subtract(const Duration(hours: 2))),
-          'w3': WordProgressEntity(wordId: 'w3', mastery: MasteryLevel.seen, nextReviewAt: now.subtract(const Duration(hours: 3))),
+          'w1': WordProgressEntity(wordId: 'w1', mastery: MasteryLevel.seen, repetitions: 1, nextReviewAt: now.subtract(const Duration(hours: 1))),
+          'w2': WordProgressEntity(wordId: 'w2', mastery: MasteryLevel.seen, repetitions: 1, nextReviewAt: now.subtract(const Duration(hours: 2))),
+          'w3': WordProgressEntity(wordId: 'w3', mastery: MasteryLevel.seen, repetitions: 1, nextReviewAt: now.subtract(const Duration(hours: 3))),
         }),
         _FakeDictionaryRepo(_words),
       );

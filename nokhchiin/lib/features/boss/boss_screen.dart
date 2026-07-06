@@ -105,6 +105,7 @@ class _BossScreenState extends ConsumerState<BossScreen> {
   Future<void> _finish() async {
     if (_finished) return;
     _finished = true;
+    _timer?.cancel();
     final pass = _boss?.passScore ?? 8;
     final won = _score >= pass;
     var unlockedWorld = false;

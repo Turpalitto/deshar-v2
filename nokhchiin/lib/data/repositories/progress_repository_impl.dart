@@ -23,8 +23,9 @@ class ProgressRepositoryImpl implements ProgressRepository {
     // Фильтр: только слова, которые реально изучались (repetitions > 0).
     // Предотвращает попадание случайно увиденных слов в SRS-очередь.
     // Аудит logic §7.
+    final now = DateTime.now();
     return all.values
-        .where((p) => p.repetitions > 0 && p.needsReview)
+        .where((p) => p.repetitions > 0 && p.needsReviewAt(now))
         .toList();
   }
 

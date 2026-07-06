@@ -105,7 +105,6 @@ class OnboardingScreen extends ConsumerWidget {
               accentMuted: DesignTokens.meadowMuted,
               onTap: () async {
                 await ref.read(userProfileProvider.notifier).setMode(AppMode.kids);
-                await ref.read(userProfileProvider.notifier).completeOnboarding();
                 if (context.mounted) _showAgePicker(context, ref);
               },
             ).animate().fadeIn(delay: 220.ms).slideX(),
@@ -301,6 +300,7 @@ class _AgeRow extends ConsumerWidget {
           expand: true,
           onTap: () async {
             await ref.read(userProfileProvider.notifier).setAgeGroup(age);
+            await ref.read(userProfileProvider.notifier).completeOnboarding();
             if (context.mounted) {
               Navigator.pop(context);
               context.go('/');

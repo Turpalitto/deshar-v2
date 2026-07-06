@@ -7,6 +7,7 @@ const root = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   plugins: [react()],
+  publicDir: path.resolve(root, '../nokhchiin/assets'),
   server: {
     fs: { allow: [path.resolve(root, '..')] },
   },

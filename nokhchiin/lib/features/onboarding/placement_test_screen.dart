@@ -37,6 +37,7 @@ class PlacementTestScreen extends ConsumerStatefulWidget {
 }
 
 class _PlacementTestScreenState extends ConsumerState<PlacementTestScreen> {
+  bool _completing = false;
   List<_Question> _questions = [];
   final Map<String, int> _correctByUnit = {};
   int _index = 0;
@@ -116,6 +117,8 @@ class _PlacementTestScreenState extends ConsumerState<PlacementTestScreen> {
   }
 
   Future<void> _completeAndLeave() async {
+    if (_completing) return;
+    _completing = true;
     await ref.read(userProfileProvider.notifier).completeOnboarding();
     if (mounted) context.go('/');
   }
@@ -153,7 +156,9 @@ class _PlacementTestScreenState extends ConsumerState<PlacementTestScreen> {
     if (_questions.isEmpty) {
       // Словарь ещё не наполнен ни для одного стартового юнита — не блокируем
       // онбординг, просто идём дальше без сидинга.
-      WidgetsBinding.instance.addPostFrameCallback((_) => _completeAndLeave());
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _completeAndLeave();
+      });
       return AppScaffold(body: const LoadingState());
     }
 

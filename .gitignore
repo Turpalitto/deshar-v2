@@ -38,6 +38,10 @@ node_modules/
 # Local Cursor
 .cursor/
 
+# Local preview dev logs
+figma-preview/dev.log
+figma-preview/dev.err.log
+
 # Extracted Manus archive � reference only, not part of project
 deshar-premium/
 

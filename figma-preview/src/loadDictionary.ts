@@ -13,6 +13,7 @@ type RawEntry = {
   chechen?: string;
   russian?: string;
   pronunciation?: string;
+  hint?: string;
   category?: string | null;
   emoji?: string;
   sources?: string[];
@@ -30,11 +31,14 @@ const CATEGORY_LABELS: Record<string, string> = {
   body: "Тело",
   home: "Дом",
   verbs: "Глаголы",
+  school: "Школа",
+  adjectives: "Прилагательные",
+  stories: "Истории",
+  phrases: "Фразы",
+  dialogues: "Диалоги",
 };
 
 const LESSON_CATEGORIES = new Set(Object.keys(CATEGORY_LABELS));
-
-const PREVIEW_DICT_LIMIT = 5000;
 
 function capitalize(s: string) {
   const t = s.trim();
@@ -47,7 +51,12 @@ function normalizePalochka(s: string) {
 
 function categoryLabel(category: string | null | undefined, sources: string[] = []) {
   if (category && CATEGORY_LABELS[category]) return CATEGORY_LABELS[category];
-  if (sources.includes("verified") || sources.includes("lessons")) return "Проверено";
+  if (
+    sources.includes("verified") ||
+    sources.includes("lessons") ||
+    sources.includes("curated")
+  )
+    return "Проверено";
   return "Мациев";
 }
 
@@ -62,7 +71,12 @@ function transcription(chechen: string, pronunciation?: string | null) {
 function isVerified(entry: RawEntry) {
   const sources = entry.sources ?? [];
   const category = entry.category;
-  if (sources.includes("verified") || sources.includes("lessons")) return true;
+  if (
+    sources.includes("verified") ||
+    sources.includes("lessons") ||
+    sources.includes("curated")
+  )
+    return true;
   if (category && LESSON_CATEGORIES.has(category)) return true;
   return (entry.quality ?? 0) >= 95 && Boolean(category);
 }
@@ -75,7 +89,7 @@ function mapEntry(j: RawEntry, capitalizeCe: boolean): PreviewWord | null {
   const sources = j.sources ?? [];
   return {
     ce,
-    tr: transcription(ce, j.pronunciation ?? ceRaw),
+    tr: transcription(ce, j.hint ?? j.pronunciation ?? ceRaw),
     ru,
     emoji: j.emoji ?? "📖",
     cat: categoryLabel(j.category, sources),
@@ -94,8 +108,8 @@ export async function loadFullDictionary(): Promise<PreviewWord[]> {
   const seen = new Set<string>();
   const words: PreviewWord[] = [];
 
-  const curated = curatedJson as { entries: RawEntry[] };
-  for (const item of curated.entries) {
+  const curated = curatedJson as { entries?: RawEntry[] };
+  for (const item of curated.entries ?? []) {
     const w = mapEntry(item, true);
     if (!w) continue;
     const key = dedupeKey(w);
@@ -104,15 +118,20 @@ export async function loadFullDictionary(): Promise<PreviewWord[]> {
     words.push(w);
   }
 
-  const resp = await fetch("/assets/data/preview_dictionary.json");
-  const dict = await resp.json() as { entries: RawEntry[] };
-  for (const item of dict.entries) {
-    const w = mapEntry(item, false);
-    if (!w) continue;
-    const key = dedupeKey(w);
-    if (seen.has(key)) continue;
-    seen.add(key);
-    words.push(w);
+  try {
+    const resp = await fetch("/data/preview_dictionary.json");
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const dict = (await resp.json()) as { entries?: RawEntry[] };
+    for (const item of dict.entries ?? []) {
+      const w = mapEntry(item, false);
+      if (!w) continue;
+      const key = dedupeKey(w);
+      if (seen.has(key)) continue;
+      seen.add(key);
+      words.push(w);
+    }
+  } catch (err) {
+    console.error("preview_dictionary.json load failed:", err);
   }
 
   words.sort((a, b) => a.ce.localeCompare(b.ce, "ru"));

@@ -1,3 +1,5 @@
+import 'package:collection/collection.dart';
+
 import '../../core/utils/app_logger.dart';
 import '../../domain/entities/learning_entities.dart';
 import '../../domain/repositories/repositories.dart';
@@ -63,7 +65,8 @@ class LearningPathRepositoryImpl implements LearningPathRepository {
   @override
   Future<bool> isUnitUnlocked(String unitId) async {
     final units = await getUnits();
-    final unit = units.firstWhere((u) => u.id == unitId);
+    final unit = units.where((u) => u.id == unitId).firstOrNull;
+    if (unit == null) return false;
     if (unit.requiredMastery == 0) return true;
     return false; // computed in provider with use case
   }
