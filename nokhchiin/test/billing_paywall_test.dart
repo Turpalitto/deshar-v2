@@ -13,7 +13,6 @@ import 'package:nokhchiin/data/datasources/local_storage_datasource.dart';
 import 'package:nokhchiin/domain/entities/learning_entities.dart';
 import 'package:nokhchiin/domain/entities/subscription_entity.dart';
 import 'package:nokhchiin/domain/repositories/billing_repository.dart';
-import 'package:nokhchiin/domain/repositories/repositories.dart';
 import 'package:nokhchiin/features/paywall/paywall_screen.dart';
 import 'package:nokhchiin/l10n/app_localizations.dart';
 
@@ -54,20 +53,8 @@ class _FakeBilling implements BillingRepository {
   Stream<SubscriptionEntity> watchSubscription() => const Stream.empty();
 }
 
-class _FakeUserRepo implements UserRepository {
-  _FakeUserRepo(this.profile);
-  UserProfileEntity profile;
-
-  @override
-  Future<UserProfileEntity> getProfile() async => profile;
-
-  @override
-  Future<void> saveProfile(UserProfileEntity profile) async {}
-}
-
-
 void main() {
-  final hiveDir = Directory('test/.hive');
+  final hiveDir = Directory('test/.hive_billing_paywall');
 
   setUp(() async {
     TestWidgetsFlutterBinding.ensureInitialized();

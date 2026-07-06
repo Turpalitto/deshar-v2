@@ -7,7 +7,7 @@ import 'package:nokhchiin/features/onboarding/onboarding_screen.dart';
 import 'helpers/test_app.dart';
 
 void main() {
-  final hiveDir = Directory('test/.hive');
+  final hiveDir = Directory('test/.hive_onboarding');
 
   setUp(() async {
     TestWidgetsFlutterBinding.ensureInitialized();

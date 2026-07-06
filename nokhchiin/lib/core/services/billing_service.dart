@@ -28,6 +28,7 @@ class BillingService implements BillingRepository {
   SubscriptionEntity _current = const SubscriptionEntity();
   StreamSubscription<List<PurchaseDetails>>? _purchaseSub;
   bool _iapReady = false;
+  bool _premiumConfirmedByStore = false;
 
   Future<void> _initIap() async {
     if (kIsWeb) return;
@@ -48,11 +49,26 @@ class BillingService implements BillingRepository {
   /// Синхронизация локального premium-флага с реальным состоянием магазина.
   /// Восстанавливает покупки; если restore не подтвердил premium, а локальный
   /// флаг стоит — сбрасываем его (защита от подделки Hive-файла).
+  ///
+  /// Раньше это было только комментарием — restorePurchases() резолвится,
+  /// когда запрос отправлен в магазин, а не когда purchaseStream доставил
+  /// все PurchaseDetails, так что сброс нельзя делать сразу после await.
+  /// При сетевой ошибке не сбрасываем — оффлайн не означает "покупки нет"
+  /// (аудит §5).
   Future<void> _syncPremiumWithStore() async {
+    final profile = await _userRepo.getProfile();
+    if (!profile.isPremium) return;
+
     try {
       await _iap.restorePurchases();
     } catch (e, st) {
       AppLogger.warn('restorePurchases on init failed', error: e, stackTrace: st);
+      return;
+    }
+
+    await Future.delayed(const Duration(seconds: 3));
+    if (!_premiumConfirmedByStore) {
+      await _onPremiumChanged(false);
     }
   }
 
@@ -65,6 +81,7 @@ class BillingService implements BillingRepository {
     for (final p in purchases) {
       if (p.productID == SubscriptionLimits.premiumProductId &&
           (p.status == PurchaseStatus.purchased || p.status == PurchaseStatus.restored)) {
+        _premiumConfirmedByStore = true;
         _emitPremium();
         if (p.pendingCompletePurchase) {
           _iap.completePurchase(p);

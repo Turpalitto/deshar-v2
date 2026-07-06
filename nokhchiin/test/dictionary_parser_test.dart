@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nokhchiin/domain/entities/enums.dart';
-import 'package:nokhchiin/domain/entities/word_entity.dart';
 import 'package:nokhchiin/data/datasources/asset_dictionary_parser.dart';
 
 void main() {

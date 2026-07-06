@@ -9,6 +9,7 @@ import '../../core/design/widgets/loading_state.dart'; // intentional-mix: share
 import '../../core/design/widgets/week_xp_chart.dart'; // intentional-mix: chart widget not yet in design_system
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
+import '../../core/utils/number_format.dart';
 import '../../domain/entities/enums.dart';
 import '../../domain/entities/learning_entities.dart';
 
@@ -35,7 +36,10 @@ class ProgressScreen extends ConsumerWidget {
       body: FutureBuilder(
         future: progressRepo.getAllProgress(),
         builder: (context, snap) {
-          final wordsStudied = snap.data?.length ?? 0;
+          final wordsStudied =
+              snap.data?.values.where((p) => !p.seededFromPlacement).length ?? 0;
+          final alreadyKnown =
+              snap.data?.values.where((p) => p.seededFromPlacement).length ?? 0;
           if (snap.connectionState == ConnectionState.waiting) {
             return const LoadingState();
           }
@@ -102,6 +106,11 @@ class ProgressScreen extends ConsumerWidget {
                             'Слов сегодня: ${profile.wordsLearnedToday}/${profile.dailyGoalWords}',
                             style: TextStyle(fontSize: 13, color: tokens.textTertiary),
                           ),
+                          if (alreadyKnown > 0)
+                            Text(
+                              'Уже знал: ${wordsCount(alreadyKnown)}',
+                              style: TextStyle(fontSize: 13, color: tokens.textTertiary),
+                            ),
                         ],
                       ),
                     ),

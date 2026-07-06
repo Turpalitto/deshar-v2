@@ -75,5 +75,52 @@ void main() {
 
       expect(updated.mastery, MasteryLevel.mastered);
     });
+
+    // Аудит §low: раньше не проверялись ни рост интервала при
+    // repetitions>=3, ни граница quality=2/3 — важнейшая граница алгоритма.
+    test('interval grows via ease-factor multiplication once repetitions >= 3', () {
+      const progress = WordProgressEntity(
+        wordId: 'marshalla',
+        mastery: MasteryLevel.recognizing,
+        repetitions: 2,
+        intervalDays: 3,
+        easeFactor: 2.5,
+      );
+      final updated = engine.review(progress, 4);
+
+      expect(updated.repetitions, 3);
+      expect(updated.intervalDays, (3 * 2.5).round());
+    });
+
+    test('quality=2 is a fail — resets repetitions and demotes mastery', () {
+      const progress = WordProgressEntity(
+        wordId: 'marshalla',
+        mastery: MasteryLevel.remembering,
+        repetitions: 4,
+        intervalDays: 10,
+        correctStreak: 3,
+      );
+      final updated = engine.review(progress, 2);
+
+      expect(updated.repetitions, 0);
+      expect(updated.intervalDays, 1);
+      expect(updated.correctStreak, 0);
+      expect(updated.wrongCount, 1);
+      expect(updated.mastery, MasteryLevel.recognizing);
+    });
+
+    test('quality=3 is a pass — increments repetitions and promotes mastery', () {
+      const progress = WordProgressEntity(
+        wordId: 'marshalla',
+        mastery: MasteryLevel.seen,
+      );
+      final updated = engine.review(progress, 3);
+
+      expect(updated.repetitions, 1);
+      expect(updated.intervalDays, 1);
+      expect(updated.correctStreak, 1);
+      expect(updated.wrongCount, 0);
+      expect(updated.mastery, MasteryLevel.recognizing);
+    });
   });
 }

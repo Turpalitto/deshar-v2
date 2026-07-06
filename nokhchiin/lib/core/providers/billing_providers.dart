@@ -6,10 +6,14 @@ import 'repository_providers.dart';
 import 'user_profile_provider.dart';
 
 final billingServiceProvider = Provider<BillingRepository>((ref) {
-  return BillingService(
+  final service = BillingService(
     userRepo: ref.watch(userRepoProvider),
     onPremiumChanged: (v) => ref.read(userProfileProvider.notifier).setPremium(v),
   );
+  // Раньше dispose() был объявлен, но никогда не вызывался — подписка на
+  // поток покупок теоретически текла (аудит §2).
+  ref.onDispose(service.dispose);
+  return service;
 });
 
 final subscriptionProvider =

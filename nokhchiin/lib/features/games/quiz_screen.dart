@@ -55,7 +55,11 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
   Future<void> _load() async {
     var words = await ref.read(dictionaryRepoProvider).getWordsByCategory(widget.unitId);
     if (words.length < 4) {
-      words = (await ref.read(dictionaryRepoProvider).getAllWords()).take(10).toList();
+      // Раньше .take(10) без shuffle — всегда одни и те же (зачастую худшие
+      // по качеству) записи при каждом фолбэке (аудит §7). Копируем перед
+      // shuffle — getAllWords() отдаёт общий закэшированный список.
+      final all = [...await ref.read(dictionaryRepoProvider).getAllWords()]..shuffle(_rng);
+      words = all.take(10).toList();
     }
     if (mounted) {
       setState(() {
@@ -72,7 +76,18 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
     final target = _words[_index];
     final others = [..._words]..removeAt(_index);
     others.shuffle(_rng);
-    _options = [target, ...others.take(3)]..shuffle(_rng);
+    // Дедупликация по переводу — иначе при узкой/некачественной категории
+    // (напр. "Глаголы", где почти все слова переводятся как "бежать")
+    // на экране оказываются 3-4 одинаковые надписи, и вопрос физически
+    // неотвечаем (аудит §7).
+    final seen = <String>{target.russian.trim().toLowerCase()};
+    final distractors = <WordEntity>[];
+    for (final o in others) {
+      final key = o.russian.trim().toLowerCase();
+      if (seen.add(key)) distractors.add(o);
+      if (distractors.length == 3) break;
+    }
+    _options = [target, ...distractors]..shuffle(_rng);
   }
 
   void _speak() {

@@ -4,6 +4,8 @@ import '../../domain/entities/enums.dart';
 import '../../domain/repositories/repositories.dart';
 import '../../domain/constants/gameplay_constants.dart';
 import '../../domain/services/daily_sync_calculator.dart';
+import '../services/notification_service.dart';
+import 'notification_provider.dart';
 import 'repository_providers.dart';
 
 /// Провайдер профиля пользователя.
@@ -35,6 +37,10 @@ class UserProfileNotifier extends AsyncNotifier<UserProfileEntity> {
 
   UserProfileEntity get _current => state.value ?? const UserProfileEntity();
 
+  /// Уровень по общему XP — единственное место с этой формулой (аудит §1:
+  /// раньше была продублирована в addXp() и recordWordLearned()).
+  static int _levelForXp(int xp) => (xp / GameplayConstants.xpPerLevel).floor() + 1;
+
   Future<void> _update(UserProfileEntity updated) async {
     await _repo.saveProfile(updated);
     state = AsyncData(updated);
@@ -55,7 +61,7 @@ class UserProfileNotifier extends AsyncNotifier<UserProfileEntity> {
     if (weekly.length == GameplayConstants.weeklyXpDays) weekly[6] += xp;
     await _update(current.copyWith(
       xp: newXp,
-      level: (newXp / GameplayConstants.xpPerLevel).floor() + 1,
+      level: _levelForXp(newXp),
       stars: current.stars + stars,
       coins: current.coins + stars,
       weeklyXp: weekly,
@@ -72,7 +78,7 @@ class UserProfileNotifier extends AsyncNotifier<UserProfileEntity> {
     if (weekly.length == GameplayConstants.weeklyXpDays) weekly[6] += xp;
     await _update(current.copyWith(
       xp: newXp,
-      level: (newXp / GameplayConstants.xpPerLevel).floor() + 1,
+      level: _levelForXp(newXp),
       coins: current.coins + coins,
       stars: current.stars + coins,
       wordsLearnedToday: current.wordsLearnedToday + 1,
@@ -136,5 +142,37 @@ class UserProfileNotifier extends AsyncNotifier<UserProfileEntity> {
     if (_current.seenCultureCapsules.contains(capsuleId)) return;
     await _update(_current.copyWith(
         seenCultureCapsules: [..._current.seenCultureCapsules, capsuleId]));
+  }
+
+  /// Покупает заморозку стрика за монеты. Возвращает false без побочных
+  /// эффектов, если не хватает монет или уже достигнут максимум.
+  Future<bool> buyStreakFreeze() async {
+    final current = _current;
+    if (current.streakFreezeCount >= GameplayConstants.maxStreakFreezes) return false;
+    if (current.coins < GameplayConstants.streakFreezeCoinCost) return false;
+    await _update(current.copyWith(
+      coins: current.coins - GameplayConstants.streakFreezeCoinCost,
+      streakFreezeCount: current.streakFreezeCount + 1,
+    ));
+    return true;
+  }
+
+  /// Включает/выключает локальные уведомления. При включении сначала
+  /// запрашивает системное разрешение — если отказано, флаг не
+  /// сохраняется (возвращает false), чтобы состояние никогда не врало
+  /// про реально выданное разрешение ОС.
+  Future<bool> setNotificationsEnabled(bool value) async {
+    final notifSvc = ref.read(notificationServiceProvider);
+    if (value) {
+      final granted = await notifSvc.requestPermission();
+      if (!granted) return false;
+      await _update(_current.copyWith(notificationsEnabled: true));
+      await notifSvc.scheduleDailyStreakReminder(time: kStreakReminderNotificationTime);
+      await rescheduleWordOfDay(notifSvc, ref.read(dictionaryRepoProvider));
+    } else {
+      await notifSvc.cancelAll();
+      await _update(_current.copyWith(notificationsEnabled: false));
+    }
+    return true;
   }
 }

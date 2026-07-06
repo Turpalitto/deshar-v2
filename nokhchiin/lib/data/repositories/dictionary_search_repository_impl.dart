@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import '../../core/utils/app_logger.dart';
+import '../../domain/core/result.dart';
 import '../../domain/entities/dictionary_entry.dart';
 import '../../domain/entities/entry_type.dart';
+import '../../domain/entities/word_entity.dart';
 import '../../domain/repositories/dictionary_search_repository.dart';
 import '../../domain/repositories/repositories.dart';
 import '../datasources/dictionary_parser.dart';
@@ -27,19 +29,43 @@ class DictionarySearchRepositoryImpl implements DictionarySearchRepository {
   Map<String, DictionaryEntry>? _byId;
   Set<String>? _favoriteIds;
   Future<void>? _loadFuture;
+  Object? _loadError;
+  StackTrace? _loadStackTrace;
 
   Future<void> _ensureLoaded() async {
     if (_entries != null) return;
     _loadFuture ??= _load();
     await _loadFuture;
+    if (_loadError != null) {
+      // Не мемоизируем провал — следующий вызов должен реально повторить
+      // загрузку asset'ов, а не вечно возвращать ту же ошибку из кэша.
+      _loadFuture = null;
+      final error = _loadError!;
+      final stackTrace = _loadStackTrace;
+      if (stackTrace != null) {
+        Error.throwWithStackTrace(error, stackTrace);
+      }
+      throw error;
+    }
   }
 
   Future<void> _load() async {
     try {
       final result = await _assets.loadBundledDictionary();
+      final List<WordEntity> words;
+      switch (result) {
+        case Success(:final data):
+          words = data;
+          break;
+        case Failure(:final error, :final stackTrace):
+          _loadError = error;
+          _loadStackTrace = stackTrace;
+          AppLogger.error('DictionarySearchRepo load failed', error: error, stackTrace: stackTrace);
+          return;
+      }
+
       // datasource возвращает List<WordEntity> из legacy parser.
       // Здесь маппим в DictionaryEntry через DictionaryParser.
-      final words = result.getOr([]);
       final parser = const DictionaryParser();
       final entries = <DictionaryEntry>[];
 
@@ -47,13 +73,18 @@ class DictionarySearchRepositoryImpl implements DictionarySearchRepository {
       // WordEntity уже потерял часть инфо (hint, quality) — но для
       // classification достаточно ce/ru/category.
       for (final w in words) {
-        final entry = parser.parse({
-          'chechen': w.chechen,
-          'russian': w.russian,
-          'category': w.category,
-          'pronunciation': w.pronunciation,
-          'sources': w.sources,
-        });
+        final entry = parser.parse(
+          {
+            'chechen': w.chechen,
+            'russian': w.russian,
+            'category': w.category,
+            'pronunciation': w.pronunciation,
+            'sources': w.sources,
+          },
+          // Тот же id, что и в WordEntity — избранное/прогресс словаря
+          // должны совпадать с играми/SRS, которые ключуются по WordEntity.id.
+          idFactory: (ce, ru) => w.id,
+        );
         entries.add(entry);
       }
 
@@ -71,15 +102,14 @@ class DictionarySearchRepositoryImpl implements DictionarySearchRepository {
 
       _byId = {for (final e in _entries!) e.id: e};
       _index = DictionarySearchIndex(_entries!);
+      _loadError = null;
 
       debugPrint('DictionarySearchRepo loaded: ${_entries!.length} entries, '
           '${_index!.length} indexed');
     } catch (e, st) {
       AppLogger.error('DictionarySearchRepo load failed', error: e, stackTrace: st);
-      _entries = [];
-      _index = DictionarySearchIndex([]);
-      _byId = {};
-      _favoriteIds = {};
+      _loadError = e;
+      _loadStackTrace = st;
     }
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/usecases/learning_usecases.dart';
 import '../../domain/usecases/access_usecases.dart';
+import '../../domain/usecases/placement_test_usecase.dart';
 import 'repository_providers.dart';
 import 'billing_providers.dart';
 
@@ -42,5 +43,12 @@ final canStartReviewUseCaseProvider = Provider(
     ref.watch(billingServiceProvider),
     ref.watch(userRepoProvider),
     ref.watch(progressRepoProvider),
+  ),
+);
+
+final seedUnitMasteryUseCaseProvider = Provider(
+  (ref) => SeedUnitMasteryFromPlacementUseCase(
+    ref.watch(progressRepoProvider),
+    ref.watch(dictionaryRepoProvider),
   ),
 );

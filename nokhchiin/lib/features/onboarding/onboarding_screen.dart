@@ -9,8 +9,10 @@ import '../../core/design/tokens/app_spacing.dart'; // intentional-mix: spacing 
 import '../../core/design/widgets/app_scaffold.dart'; // intentional-mix: app shell scaffold
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
+import '../../core/utils/number_format.dart';
 import '../../core/widgets/kids_tap_target.dart';
 import '../../core/widgets/legal_links_row.dart';
+import '../../domain/constants/dictionary_constants.dart';
 import '../../domain/entities/enums.dart';
 
 class OnboardingScreen extends ConsumerWidget {
@@ -50,7 +52,10 @@ class OnboardingScreen extends ConsumerWidget {
                       ),
                     ),
                     Text(
-                      'Чеченский язык · 7800+ слов',
+                      // Реальное число вместо устаревшего "7800+" (аудит §7:
+                      // реально ≈134k слов после слияния с датасетом HF).
+                      'Чеченский язык · ${formatThousands(dictionaryWordCount)}+ '
+                      '${pluralize(dictionaryWordCount, one: 'слово', few: 'слова', many: 'слов')}',
                       style: TextStyle(fontSize: 12, color: tokens.textTertiary, fontWeight: FontWeight.w500),
                     ),
                   ],
@@ -87,8 +92,7 @@ class OnboardingScreen extends ConsumerWidget {
               accentMuted: tokens.accentMuted,
               onTap: () async {
                 await ref.read(userProfileProvider.notifier).setMode(AppMode.adult);
-                await ref.read(userProfileProvider.notifier).completeOnboarding();
-                if (context.mounted) context.go('/');
+                if (context.mounted) context.push('/onboarding/placement');
               },
             ).animate().fadeIn(delay: 160.ms).slideX(),
             const SizedBox(height: 12),

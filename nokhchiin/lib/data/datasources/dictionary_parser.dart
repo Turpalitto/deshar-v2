@@ -1,3 +1,4 @@
+import '../../core/utils/chechen_text_utils.dart';
 import '../../domain/entities/dictionary_entry.dart';
 import '../../domain/entities/entry_type.dart';
 
@@ -14,8 +15,8 @@ class DictionaryParser {
   DictionaryEntry parse(Map<String, dynamic> row, {String Function(String, String)? idFactory}) {
     final ceRaw = _read(row, const ['chechen', 'ce']);
     final ruRaw = _read(row, const ['russian', 'ru']);
-    final category = _read(row, const ['category'])?.trim();
-    final pronunciation = _read(row, const ['pronunciation'])?.trim();
+    final category = _read(row, const ['category']).trim();
+    final pronunciation = _read(row, const ['pronunciation']).trim();
     final sourcesRaw = row['sources'];
     final sources = sourcesRaw is List
         ? sourcesRaw.map((e) => e.toString()).toList()
@@ -36,8 +37,8 @@ class DictionaryParser {
       russian: ru,
       preview: preview,
       searchTokens: tokens,
-      category: (category?.isEmpty ?? true) ? null : category,
-      pronunciation: (pronunciation?.isEmpty ?? true) ? null : pronunciation,
+      category: category.isEmpty ? null : category,
+      pronunciation: pronunciation.isEmpty ? null : pronunciation,
       sources: sources,
     );
   }
@@ -54,9 +55,15 @@ class DictionaryParser {
     final hasPunct = _hasSentencePunct(ce) || _hasSentencePunct(ru);
     final maxWords = ceWords > ruWords ? ceWords : ruWords;
 
+    // Порядок важен: длина решает раньше пунктуации. Раньше пунктуация
+    // проверялась первой, поэтому короткое восклицание вроде "Декъала
+    // хуьлда!" (2 слова, "Поздравляю!") классифицировалось как "предложение"
+    // только из-за "!" на конце — 422+ таких записей искать под "Фразы"
+    // было бесполезно (аудит §7). Пунктуация остаётся значимым сигналом
+    // только на границе 5-6 слов (expression vs sentence).
     if (maxWords <= 1) return EntryType.word;
-    if (hasPunct || maxWords > 6) return EntryType.sentence;
     if (maxWords <= 4) return EntryType.phrase;
+    if (hasPunct || maxWords > 6) return EntryType.sentence;
     return EntryType.expression;
   }
 
@@ -119,7 +126,11 @@ class DictionaryParser {
     final tokens = <String>{};
     for (final word in ce.split(RegExp(r'\s+'))) {
       if (word.isEmpty) continue;
-      final lower = word.toLowerCase();
+      // Нормализуем ASCII-заменители палочки (1/I/l/|) в Ӏ — иначе поиск
+      // не найдёт слово, если пользователь набрал его без палочки.
+      // Слово уже одиночное (после split), поэтому схлопывание пробелов
+      // внутри normalizeForSearch безопасно.
+      final lower = ChechenTextUtils.normalizeForSearch(word);
       tokens.add(lower);
       // Префиксы для partial match (минимум 2 буквы).
       if (lower.length > 2) {

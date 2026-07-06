@@ -253,6 +253,39 @@ class ProfileScreen extends ConsumerWidget {
               },
             ),
           ),
+          // Кабинет родителя был реализован и заведён в роутер, но нигде не
+          // было кнопки на него — родитель, ищущий контроль за прогрессом
+          // ребёнка, не находил его вообще (аудит §6). Показываем только в
+          // детском треке, за родительским гейтом — тот же паттерн, что уже
+          // используют смена режима и возраст выше.
+          if (isKids)
+            NokhchiinSettingsRow(
+              iconAsset: AppIcons.navProfile,
+              label: 'Кабинет родителя',
+              onTap: () => _guarded(
+                context,
+                ref,
+                needsGate: true,
+                action: () async {
+                  if (context.mounted) context.push('/parent');
+                },
+              ),
+            ),
+          NokhchiinSettingsRow(
+            emoji: '🔔',
+            label: 'Уведомления',
+            trailing: Switch.adaptive(
+              value: profile.notificationsEnabled,
+              onChanged: (value) async {
+                final ok = await ref.read(userProfileProvider.notifier).setNotificationsEnabled(value);
+                if (value && !ok && context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text('Включите уведомления в настройках устройства, чтобы получать напоминания'),
+                  ));
+                }
+              },
+            ),
+          ),
           const SizedBox(height: AppSpacing.sm),
           Text('Правовая информация', style: Theme.of(context).textTheme.titleMedium),
           NokhchiinSettingsRow(

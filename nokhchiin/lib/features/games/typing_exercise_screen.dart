@@ -11,9 +11,12 @@ import '../../core/design/app_icons.dart';
 import '../../core/design/widgets/app_button.dart';
 import '../../core/design/widgets/app_card.dart';
 import '../../core/design/widgets/app_scaffold.dart';
+import '../../core/design/widgets/empty_state.dart';
+import '../../core/design/widgets/loading_state.dart';
 import '../../core/design/widgets/reward_celebration.dart';
 import '../../core/design/widgets/word_exercise_card.dart';
 import '../../core/providers/providers.dart';
+import '../../core/utils/chechen_text_utils.dart';
 import '../../domain/entities/word_entity.dart';
 
 final _rng = Random();
@@ -50,7 +53,11 @@ class _TypingExerciseScreenState extends ConsumerState<TypingExerciseScreen> {
   Future<void> _load() async {
     var words = await ref.read(dictionaryRepoProvider).getWordsByCategory(widget.unitId);
     if (words.length < 3) {
-      words = (await ref.read(dictionaryRepoProvider).getAllWords()).take(10).toList();
+      // Раньше .take(10) без shuffle пула — всегда один и тот же набор
+      // первых 10 слов словаря (аудит §7). Копируем перед shuffle —
+      // getAllWords() отдаёт общий закэшированный список.
+      final all = [...await ref.read(dictionaryRepoProvider).getAllWords()]..shuffle(_rng);
+      words = all.take(10).toList();
     }
     words.shuffle(_rng);
     if (mounted) {
@@ -61,23 +68,31 @@ class _TypingExerciseScreenState extends ConsumerState<TypingExerciseScreen> {
     }
   }
 
-  void _check() {
+  Future<void> _check() async {
     if (_words.isEmpty) return;
+    if (_lastCorrect != null) return; // блокируем повторный тап, пока идёт фидбек (аудит §2)
     final target = _words[_index];
-    final input = _controller.text.trim().toLowerCase();
-    final expected = target.chechen.trim().toLowerCase();
+    // Нормализуем палочку Ӏ и её ASCII-замены (1/I/i/l/|/!) тем же способом,
+    // что и поиск словаря — иначе ввод "kIant" вместо "кӀант" (обычная
+    // практика без чеченской раскладки) засчитывается как ошибка, хотя то
+    // же самое прекрасно находится в поиске (аудит §7).
+    final input = ChechenTextUtils.normalizeForSearch(_controller.text);
+    final expected = ChechenTextUtils.normalizeForSearch(target.chechen);
     final correct = input == expected;
 
     setState(() => _lastCorrect = correct);
     HapticFeedback.mediumImpact();
 
+    // Ждём запись в Hive перед переходом дальше — раньше это было
+    // "выстрелил и забыл" на пути начисления награды (аудит §2).
     if (correct) {
       _score++;
-      ref.read(reviewWordUseCaseProvider)(target.id, 5);
-      ref.read(userProfileProvider.notifier).recordWordLearned();
+      await ref.read(reviewWordUseCaseProvider)(target.id, 5);
+      await ref.read(userProfileProvider.notifier).recordWordLearned();
     } else {
-      ref.read(reviewWordUseCaseProvider)(target.id, 1);
+      await ref.read(reviewWordUseCaseProvider)(target.id, 1);
     }
+    if (!mounted) return;
 
     Future.delayed(AppDurations.normal, () async {
       if (!mounted) return;
@@ -107,11 +122,13 @@ class _TypingExerciseScreenState extends ConsumerState<TypingExerciseScreen> {
   @override
   Widget build(BuildContext context) {
     if (_loading) {
-      return const AppScaffold(body: Center(child: CircularProgressIndicator()));
+      return const AppScaffold(body: LoadingState());
     }
     if (_words.isEmpty) {
+      // Общий EmptyState вместо голого Text — тот же паттерн, что уже
+      // использует quiz_screen.dart (аудит §low).
       return const AppScaffold(
-        body: Center(child: Text('Недостаточно слов для упражнения')),
+        body: EmptyState(iconAsset: AppIcons.stateEmpty, title: 'Недостаточно слов для упражнения'),
       );
     }
 
@@ -137,9 +154,24 @@ class _TypingExerciseScreenState extends ConsumerState<TypingExerciseScreen> {
               child: AppCard(
                 child: Column(
                   children: [
-                    Text(
-                      'Как будет по-чеченски?',
-                      style: Theme.of(context).textTheme.labelLarge,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Как будет по-чеченски?',
+                          style: Theme.of(context).textTheme.labelLarge,
+                        ),
+                        // Иконка, а не только цвет фона — WCAG 1.4.1
+                        // (аудит §medium).
+                        if (_lastCorrect != null) ...[
+                          const SizedBox(width: 6),
+                          Icon(
+                            _lastCorrect! ? Icons.check_circle_rounded : Icons.cancel_rounded,
+                            size: 16,
+                            color: feedbackColor,
+                          ),
+                        ],
+                      ],
                     ),
                     const SizedBox(height: AppSpacing.lg),
                     Text(

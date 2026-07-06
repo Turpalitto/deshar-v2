@@ -1,9 +1,14 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/design/app_icons.dart';
 import '../../core/design/widgets/app_icon_image.dart';
+import '../../core/design/widgets/app_scaffold.dart';
+import '../../core/design/widgets/error_state.dart';
+import '../../core/design/widgets/loading_state.dart';
 import '../../core/providers/providers.dart';
+import '../../core/utils/number_format.dart';
 import '../../core/widgets/mastery_progress_bar.dart';
 import '../../core/widgets/word_illustration.dart';
 import '../../domain/entities/word_entity.dart';
@@ -17,10 +22,13 @@ class UnitDetailScreen extends ConsumerWidget {
     final units = ref.watch(learningUnitsProvider);
     return units.when(
       data: (list) {
-        final unit = list.firstWhere(
-          (u) => u.id == unitId,
-          orElse: () => list.first, // защита от disabled-юнитов
-        );
+        final unit = list.firstWhereOrNull((u) => u.id == unitId);
+        // Неизвестный/отключённый unitId (битая ссылка, deep link на
+        // отключённый юнит) — честный "не найдено" вместо молчаливой
+        // подстановки первого юнита в списке (аудит §3).
+        if (unit == null) {
+          return _UnitNotFoundScreen(onBack: () => context.go('/path'));
+        }
         // Проверка доступа независимо от точки входа (Path / Worlds / deep link).
         // Аудит logic §1: раньше UnitDetailScreen доверял, что его открыли
         // законно — Worlds обходили mastery-гейт за 1 тап.
@@ -30,12 +38,22 @@ class UnitDetailScreen extends ConsumerWidget {
             requiredMastery: unit.requiredMastery,
           );
         }
-        return Scaffold(
-          appBar: AppBar(title: Text(unit.titleRu)),
-          body: FutureBuilder<List<WordEntity>>(
-            future: ref.read(dictionaryRepoProvider).getWordsByCategory(unitId),
+        // Единый шелл AppScaffold вместо голого Scaffold+AppBar — раньше в
+        // приложении было 4 несовместимых системы шапки экрана (аудит §3/§8).
+        return AppScaffold(
+          title: unit.titleRu,
+          body: FutureBuilder<(List<WordEntity>, bool)>(
+            future: () async {
+              final words = await ref.read(dictionaryRepoProvider).getWordsByCategory(unitId);
+              // Не показываем кнопку "Босс", если для юнита нет boss-контента
+              // в bosses.json — иначе экран босса вешается навсегда без
+              // выхода (аудит logic §6).
+              final boss = await ref.read(contentSourceProvider).loadBossForUnit(unitId);
+              return (words, boss != null);
+            }(),
             builder: (context, snap) {
-              final words = snap.data ?? [];
+              final words = snap.data?.$1 ?? [];
+              final hasBoss = snap.data?.$2 ?? false;
               return ListView(
                 padding: const EdgeInsets.all(20),
                 children: [
@@ -43,7 +61,7 @@ class UnitDetailScreen extends ConsumerWidget {
                   const SizedBox(height: 12),
                   Text(unit.titleCe, style: Theme.of(context).textTheme.displayLarge, textAlign: TextAlign.center),
                   MasteryProgressBar(percent: unit.masteryPercent),
-                  Text('${unit.masteryPercent}% · ${words.length} слов', textAlign: TextAlign.center),
+                  Text('${unit.masteryPercent}% · ${wordsCount(words.length)}', textAlign: TextAlign.center),
                   const SizedBox(height: 20),
                   FilledButton.icon(
                     onPressed: () => context.push('/lesson/$unitId'),
@@ -54,7 +72,8 @@ class UnitDetailScreen extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  _GameButton(iconAsset: AppIcons.gameBoss, title: 'Босс мира', subtitle: 'Кульминация темы', onTap: () => context.push('/boss/$unitId')),
+                  if (hasBoss)
+                    _GameButton(iconAsset: AppIcons.gameBoss, title: 'Босс мира', subtitle: 'Кульминация темы', onTap: () => context.push('/boss/$unitId')),
                   _GameButton(iconAsset: AppIcons.gamePuzzle, title: 'Найди пару', onTap: () => context.push('/match/$unitId')),
                   _GameButton(iconAsset: AppIcons.navDictionary, title: 'Карточки', subtitle: 'Свайп и запоминай', onTap: () => context.push('/flashcards/$unitId')),
                   _GameButton(iconAsset: AppIcons.actionReview, title: 'Квиз', subtitle: 'Проверь себя', onTap: () => context.push('/quiz/$unitId')),
@@ -65,8 +84,13 @@ class UnitDetailScreen extends ConsumerWidget {
           ),
         );
       },
-      loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
-      error: (e, _) => Scaffold(body: Center(child: Text('$e'))),
+      loading: () => const AppScaffold(body: LoadingState()),
+      error: (_, __) => AppScaffold(
+        body: ErrorState(
+          message: 'Не удалось загрузить юнит',
+          onRetry: () => ref.invalidate(learningUnitsProvider),
+        ),
+      ),
     );
   }
 }
@@ -80,8 +104,8 @@ class _LockedUnitScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(titleRu)),
+    return AppScaffold(
+      title: titleRu,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(32),
@@ -100,6 +124,36 @@ class _LockedUnitScreen extends StatelessWidget {
               const SizedBox(height: 24),
               FilledButton(
                 onPressed: () => context.go('/path'),
+                child: const Text('К карте пути'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Юнит не найден в списке (неизвестный/отключённый unitId).
+class _UnitNotFoundScreen extends StatelessWidget {
+  const _UnitNotFoundScreen({required this.onBack});
+  final VoidCallback onBack;
+
+  @override
+  Widget build(BuildContext context) {
+    return AppScaffold(
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.search_off_rounded, size: 72, color: Theme.of(context).colorScheme.primary),
+              const SizedBox(height: 16),
+              Text('Юнит не найден', style: Theme.of(context).textTheme.headlineSmall),
+              const SizedBox(height: 24),
+              FilledButton(
+                onPressed: onBack,
                 child: const Text('К карте пути'),
               ),
             ],

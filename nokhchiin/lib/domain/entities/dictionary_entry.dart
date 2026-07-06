@@ -20,7 +20,6 @@ class DictionaryEntry extends Equatable {
     this.pronunciation,
     this.sources = const [],
     this.favorite = false,
-    this.learned = false,
   });
 
   final String id;
@@ -53,13 +52,10 @@ class DictionaryEntry extends Equatable {
   /// Избранное (синхронизируется с Hive через repository).
   final bool favorite;
 
-  /// Изучено (mastery >= learning в SRS).
-  final bool learned;
-
   bool get isWord => type == EntryType.word;
   bool get isSentence => type == EntryType.sentence;
 
-  DictionaryEntry copyWith({bool? favorite, bool? learned}) => DictionaryEntry(
+  DictionaryEntry copyWith({bool? favorite}) => DictionaryEntry(
         id: id,
         type: type,
         chechen: chechen,
@@ -71,11 +67,10 @@ class DictionaryEntry extends Equatable {
         pronunciation: pronunciation,
         sources: sources,
         favorite: favorite ?? this.favorite,
-        learned: learned ?? this.learned,
       );
 
   @override
-  List<Object?> get props => [id, favorite, learned];
+  List<Object?> get props => [id, favorite];
 }
 
 /// Пара пример ce/ru.

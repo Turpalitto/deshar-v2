@@ -3,23 +3,26 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/config/feature_flags.dart';
+import '../../domain/constants/gameplay_constants.dart';
 import '../../core/design/app_icons.dart';
 import '../../core/design/widgets/app_icon_image.dart';
 import '../../core/design/tokens/app_spacing.dart'; // intentional-mix: spacing tokens; Figma widgets from design_system
 // nokhchiin_theme.dart removed — unused (analyzer warning)
 
 import '../../core/design/widgets/app_scaffold.dart'; // intentional-mix: app shell scaffold
+import '../../core/design/widgets/error_state.dart'; // intentional-mix: shared error placeholder
 import '../../core/design/widgets/loading_state.dart'; // intentional-mix: shared loading placeholder
 import '../../core/design/widgets/reward_celebration.dart'; // intentional-mix: celebration overlay
 import '../../core/design/widgets/week_xp_chart.dart'; // intentional-mix: chart widget not yet in design_system
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
 
+import '../../core/utils/number_format.dart';
 import '../../core/utils/world_progress_util.dart';
-import '../../data/culture_capsule_samples.dart';
 import '../../domain/entities/enums.dart';
 import '../../domain/entities/learning_entities.dart';
 import '../culture/culture_capsule_modal.dart';
+import 'widgets/word_of_the_day_card.dart';
 
 /// Главный экран — визуал из Figma Make, логика без изменений.
 class HomeScreen extends ConsumerWidget {
@@ -35,6 +38,7 @@ class HomeScreen extends ConsumerWidget {
     final due = ref.watch(dueWordsProvider);
     final worlds = ref.watch(worldsProvider);
     final units = ref.watch(learningUnitsProvider);
+    final dictionaryCount = ref.watch(dictionaryProvider).valueOrNull?.length;
 
     return AppScaffold(
       showOrnament: true,
@@ -91,10 +95,14 @@ class HomeScreen extends ConsumerWidget {
                         colors: [Color(0xFF5C3D2E), Color(0xFF8B5E3C)],
                       ),
                       lightText: true,
-                      onTap: () => CultureCapsuleModal.show(
-                        context,
-                        CultureCapsuleSamples.hospitality,
-                      ),
+                      onTap: () async {
+                        final capsule = await ref
+                            .read(cultureCapsuleRepoProvider)
+                            .byId('capsule_hospitality');
+                        if (capsule != null && context.mounted) {
+                          CultureCapsuleModal.show(context, capsule);
+                        }
+                      },
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -123,7 +131,11 @@ class HomeScreen extends ConsumerWidget {
                     child: NokhchiinGiftTile(
                       iconAsset: AppIcons.navDictionary,
                       title: 'Словарь',
-                      subtitle: '7 800 слов',
+                      // Реальное число слов вместо устаревшего хардкода
+                      // "7 800" (реально ≈134k — аудит §7).
+                      subtitle: dictionaryCount == null
+                          ? '…'
+                          : '${formatThousands(dictionaryCount)} ${pluralize(dictionaryCount, one: 'слово', few: 'слова', many: 'слов')}',
                       onTap: () => context.push('/dictionary'),
                     ),
                   ),
@@ -151,7 +163,7 @@ class HomeScreen extends ConsumerWidget {
               sliver: SliverToBoxAdapter(
                 child: NokhchiinSurfaceCard(
                   onTap: () => context.go('/review'),
-                  semanticLabel: 'Повторить ${due.value!.length} слов, сеанс SRS',
+                  semanticLabel: 'Повторить ${wordsCount(due.value!.length)}, сеанс SRS',
                   child: Row(
                     children: [
                       AppIconImage(asset: AppIcons.actionReview, size: 28, color: accent),
@@ -161,7 +173,7 @@ class HomeScreen extends ConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Повторить ${due.value!.length} слов',
+                              'Повторить ${wordsCount(due.value!.length)}',
                               style: Theme.of(context).textTheme.titleMedium,
                             ),
                             Text(
@@ -179,6 +191,10 @@ class HomeScreen extends ConsumerWidget {
                 ),
               ),
             ),
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
+            sliver: const SliverToBoxAdapter(child: WordOfTheDayCard()),
+          ),
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(20, 18, 20, 10),
             sliver: SliverToBoxAdapter(
@@ -241,7 +257,12 @@ class HomeScreen extends ConsumerWidget {
                 );
               },
               loading: () => const SliverToBoxAdapter(child: LoadingState()),
-              error: (e, _) => SliverToBoxAdapter(child: Text('$e')),
+              error: (_, __) => SliverToBoxAdapter(
+                child: ErrorState(
+                  message: 'Не удалось загрузить миры',
+                  onRetry: () => ref.invalidate(worldsProvider),
+                ),
+              ),
             ),
           ),
           SliverPadding(
@@ -264,7 +285,7 @@ class HomeScreen extends ConsumerWidget {
   }
 }
 
-class _HomeHeader extends StatelessWidget {
+class _HomeHeader extends ConsumerWidget {
   const _HomeHeader({
     required this.profile,
     required this.isKids,
@@ -278,7 +299,7 @@ class _HomeHeader extends StatelessWidget {
   final Color accentMuted;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final tokens = context.iosTokens;
     final greeting = isKids ? 'Привет, ученик' : 'Доброе утро';
 
@@ -328,9 +349,71 @@ class _HomeHeader extends StatelessWidget {
               color: DesignTokens.gold,
               background: DesignTokens.goldMuted,
             ),
+            const SizedBox(width: 8),
+            NokhchiinStatPill(
+              emoji: '🧊',
+              value: '${profile.streakFreezeCount}',
+              color: tokens.textSecondary,
+              background: tokens.surfaceMuted,
+              onTap: () => _showStreakFreezeSheet(context, ref, profile),
+            ),
           ],
         ),
       ],
+    );
+  }
+
+  void _showStreakFreezeSheet(BuildContext context, WidgetRef ref, UserProfileEntity profile) {
+    final tokens = context.iosTokens;
+    final atMax = profile.streakFreezeCount >= GameplayConstants.maxStreakFreezes;
+    final canAfford = profile.coins >= GameplayConstants.streakFreezeCoinCost;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: tokens.background,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => Padding(
+        padding: const EdgeInsets.all(AppSpacing.xl),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Заморозка стрика',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: tokens.textPrimary),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Сохраняет твой стрик, если пропустишь один день. У тебя: ${profile.streakFreezeCount} из ${GameplayConstants.maxStreakFreezes}.',
+              style: TextStyle(color: tokens.textTertiary),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            ElevatedButton(
+              onPressed: atMax || !canAfford
+                  ? null
+                  : () async {
+                      final ok = await ref.read(userProfileProvider.notifier).buyStreakFreeze();
+                      if (ctx.mounted) Navigator.pop(ctx);
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(ok ? 'Заморозка куплена' : 'Не получилось купить'),
+                            duration: const Duration(seconds: 2),
+                          ),
+                        );
+                      }
+                    },
+              child: Text(
+                atMax
+                    ? 'Уже максимум'
+                    : 'Купить за ${GameplayConstants.streakFreezeCoinCost} монет',
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

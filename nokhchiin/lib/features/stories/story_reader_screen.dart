@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../core/design/app_icons.dart';
-import '../../core/design/widgets/app_icon_image.dart';
+import '../../core/design/widgets/app_scaffold.dart';
+import '../../core/design/widgets/loading_state.dart';
+import '../../core/design/widgets/reward_celebration.dart';
 import '../../core/providers/providers.dart';
 import '../../domain/entities/content_entities.dart';
 
@@ -46,31 +49,31 @@ class _StoryReaderScreenState extends ConsumerState<StoryReaderScreen> {
     }
   }
 
-  void _finish() {
-    ref.read(userProfileProvider.notifier).addXp(40, 10);
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AppIconImage(asset: AppIcons.rewardCelebration, size: 28),
-            SizedBox(width: 10),
-            Text('История прочитана!'),
-          ],
-        ),
-        content: const Text('Отличная работа! +40 XP'),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Ура!')),
-        ],
-      ),
+  Future<void> _finish() async {
+    // Ждём запись награды перед диалогом — раньше addXp() не был
+    // awaited, и прогресс мог тихо потеряться, если приложение убьют в
+    // этом окне (аудит §2). Плюс единый фирменный RewardCelebration
+    // вместо голого AlertDialog — раньше в приложении было три разных
+    // диалога "успех" (аудит §2/§3).
+    await ref.read(userProfileProvider.notifier).addXp(40, 10);
+    if (!mounted) return;
+    await RewardCelebration.show(
+      context,
+      iconAsset: AppIcons.rewardCelebration,
+      title: 'История прочитана!',
+      subtitle: 'Отличная работа! +40 XP',
+      dismissLabel: 'Ура!',
+      onDismiss: () {
+        Navigator.of(context).pop();
+        context.pop();
+      },
     );
   }
 
   @override
   Widget build(BuildContext context) {
     if (_story == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const AppScaffold(body: LoadingState());
     }
 
     if (_quizMode) {
@@ -80,14 +83,16 @@ class _StoryReaderScreenState extends ConsumerState<StoryReaderScreen> {
     final panel = _panels[_panel];
     final unitId = _story!.unitId;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(_story!.titleRu),
-        actions: [
-          Text('${_panel + 1}/${_panels.length}', style: const TextStyle(fontSize: 16)),
-          const SizedBox(width: 16),
-        ],
-      ),
+    // Единый шелл AppScaffold вместо голого Scaffold+AppBar — раньше в
+    // приложении было 4 несовместимых системы шапки экрана (аудит §3/§8).
+    return AppScaffold(
+      title: _story!.titleRu,
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(right: 16),
+          child: Text('${_panel + 1}/${_panels.length}', style: const TextStyle(fontSize: 16)),
+        ),
+      ],
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -134,14 +139,14 @@ class _StoryReaderScreenState extends ConsumerState<StoryReaderScreen> {
   Widget _buildQuiz(BuildContext context) {
     if (_quizIndex >= _quiz.length) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _finish());
-      return const Scaffold(body: Center(child: Text('Завершение...')));
+      return const AppScaffold(body: LoadingState());
     }
 
     final q = _quiz[_quizIndex];
     final options = q.options;
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Проверь себя')),
+    return AppScaffold(
+      title: 'Проверь себя',
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(

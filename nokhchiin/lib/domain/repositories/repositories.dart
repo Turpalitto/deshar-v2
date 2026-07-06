@@ -1,6 +1,7 @@
 import '../entities/word_entity.dart';
 import '../entities/word_progress_entity.dart';
 import '../entities/learning_entities.dart';
+import '../entities/culture_capsule.dart';
 import '../entities/enums.dart';
 
 abstract class DictionaryRepository {
@@ -44,4 +45,13 @@ abstract class PdfImportRepository {
 abstract class AudioRepository {
   Future<void> speakChechen(String text, {VoiceProfile profile = VoiceProfile.childNormal});
   Future<void> speakRussian(String text, {VoiceProfile profile = VoiceProfile.adultNormal});
+}
+
+/// UI-слой раньше импортировал data/culture_capsule_samples.dart напрямую,
+/// в обход domain — три файла фич пришлось бы трогать при переходе на
+/// динамический контент вместо одной реализации репозитория (аудит §1).
+abstract class CultureCapsuleRepository {
+  Future<List<CultureCapsule>> getAll();
+  Future<CultureCapsule?> forUnit(String unitId);
+  Future<CultureCapsule?> byId(String id);
 }

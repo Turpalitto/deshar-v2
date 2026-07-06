@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../data/repositories/culture_capsule_repository_impl.dart';
 import '../../data/repositories/repository_impl.dart';
 import '../../domain/repositories/repositories.dart';
 import 'datasource_providers.dart';
@@ -20,4 +21,8 @@ final learningPathRepoProvider = Provider<LearningPathRepository>(
 
 final userRepoProvider = Provider<UserRepository>(
   (ref) => UserRepositoryImpl(ref.watch(userLocalProvider)),
+);
+
+final cultureCapsuleRepoProvider = Provider<CultureCapsuleRepository>(
+  (_) => CultureCapsuleRepositoryImpl(),
 );

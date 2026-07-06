@@ -10,8 +10,11 @@ import 'widgets/culture_capsule_card.dart';
 /// CultureCapsuleModal.show(context, CultureCapsuleSamples.adatAfterFamily);
 /// ```
 abstract final class CultureCapsuleModal {
-  static Future<void> show(BuildContext context, CultureCapsule capsule) {
-    return showCupertinoModalPopup<void>(
+  /// Возвращает true, если пользователь нажал "Продолжить" (капсулу можно
+  /// отмечать увиденной навсегда), false — если просто закрыл (аудит §3:
+  /// раньше обе кнопки вели себя одинаково).
+  static Future<bool> show(BuildContext context, CultureCapsule capsule) async {
+    final continued = await showCupertinoModalPopup<bool>(
       context: context,
       barrierDismissible: false,
       barrierColor: Colors.black54,
@@ -25,12 +28,14 @@ abstract final class CultureCapsuleModal {
               width: MediaQuery.sizeOf(ctx).width,
               child: CultureCapsuleCard(
                 capsule: capsule,
-                onContinue: () => Navigator.of(ctx).pop(),
+                onContinue: () => Navigator.of(ctx).pop(true),
+                onClose: () => Navigator.of(ctx).pop(false),
               ),
             ),
           ),
         );
       },
     );
+    return continued ?? false;
   }
 }

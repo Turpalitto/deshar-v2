@@ -1,7 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/design/widgets/app_scaffold.dart';
+import '../../core/design/widgets/error_state.dart'; // intentional-mix: shared error placeholder
 import '../../core/design/widgets/loading_state.dart'; // intentional-mix: shared loading placeholder; tiles from design_system
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
@@ -17,35 +18,33 @@ class AdultInsightsDashboardScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final insights = ref.watch(learnerInsightsProvider);
     final tokens = context.iosTokens;
-    final textTheme = IosTypography.of(context, tokens);
 
-    return CupertinoPageScaffold(
-      backgroundColor: tokens.background,
-      navigationBar: CupertinoNavigationBar(
-        backgroundColor: tokens.surface.withValues(alpha: 0.92),
-        border: Border(bottom: BorderSide(color: tokens.separator)),
-        middle: Text('Инсайты', style: textTheme.headlineSmall),
-        trailing: CupertinoButton(
-          padding: EdgeInsets.zero,
+    // Единый шелл AppScaffold вместо CupertinoPageScaffold — раньше в
+    // приложении было 4 несовместимых системы шапки экрана (аудит §3/§8).
+    return AppScaffold(
+      title: 'Инсайты',
+      actions: [
+        TextButton(
           onPressed: () => context.push('/progress'),
           child: Text('SRS', style: TextStyle(color: tokens.accent, fontSize: 15)),
         ),
-      ),
-      child: SafeArea(
-        child: insights.when(
-          loading: () => const LoadingState(message: 'Считаем прогресс…'),
-          error: (e, _) => Center(child: Text('$e')),
-          data: (data) => ListView(
-            padding: const EdgeInsets.all(IosSpacing.screenHorizontal),
-            children: [
-              const SizedBox(height: IosSpacing.x4),
-              _OverviewRow(insights: data),
-              const SizedBox(height: IosSpacing.x6),
-              _WeakSpotCard(insights: data),
-              const SizedBox(height: IosSpacing.x4),
-              _StatsStrip(insights: data),
-            ],
-          ),
+      ],
+      body: insights.when(
+        loading: () => const LoadingState(message: 'Считаем прогресс…'),
+        error: (_, __) => ErrorState(
+          message: 'Не удалось посчитать инсайты',
+          onRetry: () => ref.invalidate(learnerInsightsProvider),
+        ),
+        data: (data) => ListView(
+          padding: const EdgeInsets.all(IosSpacing.screenHorizontal),
+          children: [
+            const SizedBox(height: IosSpacing.x4),
+            _OverviewRow(insights: data),
+            const SizedBox(height: IosSpacing.x6),
+            _WeakSpotCard(insights: data),
+            const SizedBox(height: IosSpacing.x4),
+            _StatsStrip(insights: data),
+          ],
         ),
       ),
     );

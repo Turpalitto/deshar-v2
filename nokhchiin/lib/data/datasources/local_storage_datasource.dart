@@ -62,6 +62,7 @@ class LocalProgressDataSource {
         'correctStreak': p.correctStreak,
         'wrongCount': p.wrongCount,
         'isFavorite': p.isFavorite,
+        'seededFromPlacement': p.seededFromPlacement,
       };
 
   WordProgressEntity _fromMap(String id, Map map) => WordProgressEntity(
@@ -79,6 +80,7 @@ class LocalProgressDataSource {
         correctStreak: map['correctStreak'] as int? ?? 0,
         wrongCount: map['wrongCount'] as int? ?? 0,
         isFavorite: map['isFavorite'] as bool? ?? false,
+        seededFromPlacement: map['seededFromPlacement'] as bool? ?? false,
       );
 }
 

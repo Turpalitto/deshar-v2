@@ -104,10 +104,10 @@ class DictionaryCard extends StatelessWidget {
                     color: entry.favorite ? Colors.redAccent : tokens.textTertiary,
                   ),
                   onPressed: onFavorite,
-                  visualDensity: VisualDensity.compact,
                   tooltip: 'Избранное',
                   padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                  // HIG-минимум 44×44 (аудит §3) — карточка тапается тысячи раз.
+                  constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
                 ),
               ],
             ),

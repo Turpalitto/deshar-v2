@@ -12,7 +12,19 @@ class DailySyncCalculator {
     if (profile.lastActiveDate == today) return profile;
 
     final yesterday = dateKey(now.subtract(const Duration(days: 1)));
-    final streak = profile.lastActiveDate == yesterday ? profile.streakDays + 1 : 1;
+    final twoDaysAgo = dateKey(now.subtract(const Duration(days: 2)));
+
+    int streak;
+    var freezeCount = profile.streakFreezeCount;
+    if (profile.lastActiveDate == yesterday) {
+      streak = profile.streakDays + 1;
+    } else if (profile.lastActiveDate == twoDaysAgo && profile.streakFreezeCount > 0) {
+      // Пропущен ровно один день, есть заморозка — тратим её, стрик не рвётся.
+      streak = profile.streakDays + 1;
+      freezeCount = profile.streakFreezeCount - 1;
+    } else {
+      streak = 1;
+    }
 
     final weekly = List<int>.from(profile.weeklyXp);
     if (weekly.length != 7) {
@@ -37,6 +49,7 @@ class DailySyncCalculator {
       reviewsDoneToday: 0,
       weeklyXp: weekly,
       achievements: achievements,
+      streakFreezeCount: freezeCount,
     );
   }
 }

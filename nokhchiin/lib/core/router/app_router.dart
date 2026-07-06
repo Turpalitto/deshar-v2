@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/splash/splash_screen.dart';
 import '../../features/onboarding/onboarding_screen.dart';
+import '../../features/onboarding/placement_test_screen.dart';
 import '../../features/home/home_screen.dart';
 import '../../features/learning_path/learning_path_screen.dart';
 import '../../features/learning_path/lesson_flow_screen.dart';
@@ -46,6 +48,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/onboarding',
       builder: (_, __) => const OnboardingScreen(),
+    ),
+    GoRoute(
+      path: '/onboarding/placement',
+      builder: (_, __) => const PlacementTestScreen(),
     ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) => AppShell(navigationShell: navigationShell),
@@ -185,11 +191,14 @@ final appRouter = GoRouter(
       pageBuilder: (context, state) =>
           _fadeScale(state, PaywallScreen(returnPath: state.uri.queryParameters['return'])),
     ),
-    GoRoute(
-      parentNavigatorKey: _rootNavigatorKey,
-      path: '/dev/culture-capsules',
-      pageBuilder: (context, state) => _fadeScale(state, const CultureCapsulePreviewScreen()),
-    ),
+    // Dev-only превью, никогда не должен быть достижим в прод-сборке
+    // (аудит §3: раньше был доступен по прямой ссылке в релизе).
+    if (kDebugMode)
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        path: '/dev/culture-capsules',
+        pageBuilder: (context, state) => _fadeScale(state, const CultureCapsulePreviewScreen()),
+      ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
       path: '/typing/:unitId',
