@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -18,10 +19,13 @@ class UnitDetailScreen extends ConsumerWidget {
     final units = ref.watch(learningUnitsProvider);
     return units.when(
       data: (list) {
-        final unit = list.firstWhere(
-          (u) => u.id == unitId,
-          orElse: () => list.first, // защита от disabled-юнитов
-        );
+        final unit = list.firstWhereOrNull((u) => u.id == unitId);
+        // Неизвестный/отключённый unitId (битая ссылка, deep link на
+        // отключённый юнит) — честный "не найдено" вместо молчаливой
+        // подстановки первого юнита в списке (аудит §3).
+        if (unit == null) {
+          return _UnitNotFoundScreen(onBack: () => context.go('/path'));
+        }
         // Проверка доступа независимо от точки входа (Path / Worlds / deep link).
         // Аудит logic §1: раньше UnitDetailScreen доверял, что его открыли
         // законно — Worlds обходили mastery-гейт за 1 тап.
@@ -115,6 +119,36 @@ class _LockedUnitScreen extends StatelessWidget {
               const SizedBox(height: 24),
               FilledButton(
                 onPressed: () => context.go('/path'),
+                child: const Text('К карте пути'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Юнит не найден в списке (неизвестный/отключённый unitId).
+class _UnitNotFoundScreen extends StatelessWidget {
+  const _UnitNotFoundScreen({required this.onBack});
+  final VoidCallback onBack;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.search_off_rounded, size: 72, color: Theme.of(context).colorScheme.primary),
+              const SizedBox(height: 16),
+              Text('Юнит не найден', style: Theme.of(context).textTheme.headlineSmall),
+              const SizedBox(height: 24),
+              FilledButton(
+                onPressed: onBack,
                 child: const Text('К карте пути'),
               ),
             ],

@@ -55,9 +55,15 @@ class DictionaryParser {
     final hasPunct = _hasSentencePunct(ce) || _hasSentencePunct(ru);
     final maxWords = ceWords > ruWords ? ceWords : ruWords;
 
+    // Порядок важен: длина решает раньше пунктуации. Раньше пунктуация
+    // проверялась первой, поэтому короткое восклицание вроде "Декъала
+    // хуьлда!" (2 слова, "Поздравляю!") классифицировалось как "предложение"
+    // только из-за "!" на конце — 422+ таких записей искать под "Фразы"
+    // было бесполезно (аудит §7). Пунктуация остаётся значимым сигналом
+    // только на границе 5-6 слов (expression vs sentence).
     if (maxWords <= 1) return EntryType.word;
-    if (hasPunct || maxWords > 6) return EntryType.sentence;
     if (maxWords <= 4) return EntryType.phrase;
+    if (hasPunct || maxWords > 6) return EntryType.sentence;
     return EntryType.expression;
   }
 

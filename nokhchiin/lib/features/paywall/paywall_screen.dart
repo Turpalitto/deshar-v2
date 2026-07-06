@@ -12,8 +12,10 @@ import '../../core/design/widgets/app_scaffold.dart';
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/analytics_service.dart';
+import '../../core/utils/number_format.dart';
 import '../../core/widgets/legal_links_row.dart';
 import 'package:nokhchiin/l10n/app_localizations.dart';
+import '../../domain/constants/dictionary_constants.dart';
 import '../../domain/constants/subscription_limits.dart';
 import '../../domain/entities/analytics_event.dart';
 import '../../domain/repositories/billing_repository.dart';
@@ -142,7 +144,8 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                       (AppIcons.stateOffline, l10n.compareRowOffline),
                       (AppIcons.actionReview, l10n.compareRowSrs),
                       (AppIcons.cultureHeritage, 'Все культурные капсулы'),
-                      (AppIcons.navDictionary, 'Словарь 7 800+ слов'),
+                      // Реальное число вместо устаревшего "7 800" (аудит §7).
+                      (AppIcons.navDictionary, 'Словарь ${formatThousands(dictionaryWordCount)}+ слов'),
                     ])
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 9),

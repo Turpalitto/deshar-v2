@@ -17,6 +17,7 @@ import '../../core/design/widgets/week_xp_chart.dart'; // intentional-mix: chart
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
 
+import '../../core/utils/number_format.dart';
 import '../../core/utils/world_progress_util.dart';
 import '../../data/culture_capsule_samples.dart';
 import '../../domain/entities/enums.dart';
@@ -38,6 +39,7 @@ class HomeScreen extends ConsumerWidget {
     final due = ref.watch(dueWordsProvider);
     final worlds = ref.watch(worldsProvider);
     final units = ref.watch(learningUnitsProvider);
+    final dictionaryCount = ref.watch(dictionaryProvider).valueOrNull?.length;
 
     return AppScaffold(
       showOrnament: true,
@@ -126,7 +128,11 @@ class HomeScreen extends ConsumerWidget {
                     child: NokhchiinGiftTile(
                       iconAsset: AppIcons.navDictionary,
                       title: 'Словарь',
-                      subtitle: '7 800 слов',
+                      // Реальное число слов вместо устаревшего хардкода
+                      // "7 800" (реально ≈134k — аудит §7).
+                      subtitle: dictionaryCount == null
+                          ? '…'
+                          : '${formatThousands(dictionaryCount)} слов',
                       onTap: () => context.push('/dictionary'),
                     ),
                   ),

@@ -86,6 +86,7 @@ class _BossScreenState extends ConsumerState<BossScreen> {
 
   Future<void> _unlockNextWorld() async {
     final worlds = await ref.read(worldsProvider.future);
+    if (!mounted) return; // аудит §2: экран может быть закрыт до завершения await
     final idx = worlds.indexWhere((w) => w.units.contains(widget.unitId));
     if (idx >= 0 && idx < worlds.length - 1) {
       final nextId = worlds[idx + 1].id;

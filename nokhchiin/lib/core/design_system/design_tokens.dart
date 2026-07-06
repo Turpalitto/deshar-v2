@@ -74,7 +74,9 @@ class DesignTokens {
       separator: const Color(0xFFE8ECF0),
       textPrimary: const Color(0xFF1A1A2E),
       textSecondary: const Color(0xFF6B7280),
-      textTertiary: const Color(0xFF9CA3AF),
+      // Было #9CA3AF на #FAFBFC — ≈2.45:1, провал WCAG AA (нужно 4.5:1).
+      // #6B7280 на этом фоне даёт ≈4.66:1 (аудит §3).
+      textTertiary: const Color(0xFF6B7280),
       accent: a.$1,
       accentMuted: a.$2,
       accentOn: const Color(0xFFFFFFFF),
@@ -95,7 +97,9 @@ class DesignTokens {
       separator: const Color(0xFF2F3B4A),
       textPrimary: const Color(0xFFF0F4F8),
       textSecondary: const Color(0xFF8899A6),
-      textTertiary: const Color(0xFF6B7280),
+      // Было #6B7280 на #0F1419 — ≈3.83:1, тоже провал. #7C8794 даёт
+      // ≈5.07:1 и остаётся визуально отличимым от textSecondary (аудит §3).
+      textTertiary: const Color(0xFF7C8794),
       accent: a.$1,
       accentMuted: a.$2,
       accentOn: const Color(0xFF0F1419),

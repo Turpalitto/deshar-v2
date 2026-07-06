@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/design_system/design_system.dart';
 import '../../core/l10n/l10n_extensions.dart';
 import '../../core/providers/dictionary_search_providers.dart';
+import '../../core/utils/number_format.dart';
 import 'dictionary_card.dart';
 
 /// Переработанный экран словаря — Apple Dictionary style.
@@ -99,7 +100,7 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
                       const Spacer(),
                       if (totalCount > 0)
                         Text(
-                          _formatCount(totalCount),
+                          '${formatThousands(totalCount)} слов',
                           style: TextStyle(
                             fontSize: 13,
                             color: tokens.textTertiary,
@@ -238,14 +239,4 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
       DictionaryFilter.favorites => Colors.redAccent,
     };
   }
-}
-
-String _formatCount(int n) {
-  final s = n.toString();
-  final buf = StringBuffer();
-  for (var i = 0; i < s.length; i++) {
-    if (i > 0 && (s.length - i) % 3 == 0) buf.write(' ');
-    buf.write(s[i]);
-  }
-  return '${buf} слов';
 }

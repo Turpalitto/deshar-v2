@@ -13,6 +13,27 @@ abstract final class DictionaryLabels {
     'verbs': 'Глаголы',
   };
 
+  /// Человекочитаемые названия источников — по манифесту `sources` в самом
+  /// dictionary.json (`assets/data/dictionary.json` → `sources[].title`).
+  /// Раньше здесь была метка только для `maciev` — 9 остальных источников
+  /// (~32% словаря, ~43k записей из other/bersanov/gatitos/computer/
+  /// num2words/daymohk/radio/literature/baltoslav) не получали никакой
+  /// подписи происхождения (аудит §7).
+  static const _sourceLabels = <String, String>{
+    'maciev': 'Мациев',
+    'aliroev': 'Алироев',
+    'bersanov': 'Берсанов',
+    'computer': 'Компьютерная лексика',
+    'num2words': 'Числительные',
+    'baltoslav': 'Baltoslav.eu',
+    'daymohk': 'Даймохк',
+    'gatitos': 'Gatitos',
+    'radio': 'Radio Marsho',
+    'literature': 'Художественная литература',
+    'other': 'Общий словарь',
+    'curated': 'Проверено',
+  };
+
   static String? categoryLabel(String? category, {List<String> sources = const []}) {
     if (category != null && category.isNotEmpty) {
       final mapped = _labels[category];
@@ -22,7 +43,11 @@ abstract final class DictionaryLabels {
     if (sources.contains('verified') || sources.contains('lessons')) {
       return 'Проверено';
     }
-    return sources.contains('maciev') || sources.isEmpty ? 'Мациев' : null;
+    for (final s in sources) {
+      final label = _sourceLabels[s];
+      if (label != null) return label;
+    }
+    return sources.isEmpty ? 'Мациев' : null;
   }
 
   static String? displayTranscription(String chechen, String? pronunciation) {

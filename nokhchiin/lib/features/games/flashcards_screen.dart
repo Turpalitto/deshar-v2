@@ -64,6 +64,7 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
     final w = _words[_index];
     await ref.read(reviewWordUseCaseProvider)(w.id, yes ? 5 : 2);
     if (yes) await ref.read(userProfileProvider.notifier).recordWordLearned();
+    if (!mounted) return; // аудит §2: раньше проверялось только в ветке "последняя карточка"
 
     if (_index < _words.length - 1) {
       setState(() {

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
+import '../../domain/entities/learning_entities.dart';
 
 /// Splash — terracotta экран из Figma Make.
 class SplashScreen extends ConsumerStatefulWidget {
@@ -17,15 +18,26 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future<void>.delayed(const Duration(milliseconds: 2200), () {
-      if (!mounted) return;
-      final profile = ref.read(userProfileProvider).value;
-      // Проверяем hasCompletedOnboarding, а не profile != null.
-      // profile всегда non-null (default = kids), но hasCompletedOnboarding
-      // false до выбора трека в onboarding. Аудит logic §9.
-      final hasOnboarded = profile?.hasCompletedOnboarding ?? false;
-      context.go(hasOnboarded ? '/' : '/onboarding');
-    });
+    _navigate();
+  }
+
+  Future<void> _navigate() async {
+    // Таймер и загрузка профиля идут параллельно — Future.delayed уже
+    // тикает, пока мы ждём профиль, так что общее время — max(загрузка,
+    // 2200мс), а не их сумма. Раньше профиль читался синхронно (`.value`)
+    // сразу после таймера без ожидания future — на медленном/холодном
+    // старте это могло быть null, и уже прошедший онбординг пользователь
+    // снова попадал на онбординг (аудит §6).
+    final minDelay = Future<void>.delayed(const Duration(milliseconds: 2200));
+    final profile = await ref.read(userProfileProvider.future).catchError(
+          (_) => const UserProfileEntity(),
+        );
+    await minDelay;
+    if (!mounted) return;
+    // Проверяем hasCompletedOnboarding, а не profile != null.
+    // profile всегда non-null (default = kids), но hasCompletedOnboarding
+    // false до выбора трека в onboarding. Аудит logic §9.
+    context.go(profile.hasCompletedOnboarding ? '/' : '/onboarding');
   }
 
   @override
