@@ -9,17 +9,14 @@ import 'repository_providers.dart';
 /// от [wordOfTheDayProvider], чтобы можно было заранее посчитать слово на
 /// завтра (для уведомления), не дожидаясь наступления следующего дня.
 ///
-/// Намеренно берёт слово из [DictionaryRepository] (WordEntity, парсится в
-/// compute()-изоляте), а не из [DictionarySearchRepository] — последний
-/// строит полный инвертированный индекс (~134k слов, префиксы для каждого
-/// слова ≥3 символов) на UI-исолейте без единого compute()/Isolate.run().
-/// Раньше эта карточка на Home безусловно триггерила ту сборку на первом же
-/// кадре — риск фриза/OOM (аудит §4). id совпадают между двумя
-/// представлениями по построению (см. dictionary_search_repository_impl.dart:
-/// idFactory переиспользует WordEntity.id), поэтому переход на
-/// DictionaryRepository не ломает навигацию в карточке словаря по клику.
+/// Берёт слово из curated-набора (~330 проверенных записей), а не из полного
+/// словаря: во-первых, полный словарь — это 134k сырых записей из датасета,
+/// и «словом дня» оказывались случайные технические термины вроде
+/// «Подошвенные плюсневые артерии»; во-вторых, его парсинг (23 МБ JSON) на
+/// web выполняется в главном потоке (compute() без изолята) и замораживал UI
+/// на первом кадре Home.
 Future<WordEntity?> wordForDate(DictionaryRepository repo, DateTime date) async {
-  final all = await repo.getAllWords();
+  final all = await repo.getCuratedWords();
   if (all.isEmpty) return null;
 
   final seed = date.year * 372 + date.month * 31 + date.day;

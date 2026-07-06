@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'nokhchiin_colors.dart';
 
-/// Noto Sans — полная кириллица + Ӏ, къ, гӏ, хь, аь.
+/// Manrope — единая семья с design_system/typography.dart (Noto Sans был
+/// вторым, рассинхронным шрифтом в Material-теме). Кириллица + cyrillic-ext
+/// (Ӏ, къ, гӏ, хь, аь) покрыты.
 abstract final class AppTypography {
-  static String get _fontFamily => GoogleFonts.notoSans().fontFamily!;
+  static String get _fontFamily => GoogleFonts.manrope().fontFamily!;
 
   static TextTheme textTheme({
     required bool isDark,

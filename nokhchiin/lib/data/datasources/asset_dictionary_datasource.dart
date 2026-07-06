@@ -10,6 +10,22 @@ import 'asset_dictionary_parser.dart';
 
 class AssetDictionaryDataSource {
   Result<List<WordEntity>>? _cached;
+  Result<List<WordEntity>>? _curatedCached;
+
+  /// Быстрая загрузка только curated-словаря (~330 записей). Синхронный
+  /// парсинг без compute() — данных мало, а compute() на web всё равно
+  /// выполняется в главном потоке.
+  Future<Result<List<WordEntity>>> loadCuratedWords() async {
+    if (_curatedCached != null) return _curatedCached!;
+    try {
+      final raw = await rootBundle.loadString('assets/data/curated_vocabulary.json');
+      _curatedCached = Success(parseCuratedWords(raw));
+      return _curatedCached!;
+    } catch (e, st) {
+      AppLogger.error('Failed to load curated vocabulary', error: e, stackTrace: st);
+      return Failure(e, st);
+    }
+  }
 
   /// Загрузка словаря с error handling и кэшированием (один парсинг на всё приложение).
   /// Возвращает Result — Success(List<WordEntity>) или Failure.

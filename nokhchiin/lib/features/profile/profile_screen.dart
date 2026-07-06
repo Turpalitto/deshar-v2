@@ -119,7 +119,17 @@ class ProfileScreen extends ConsumerWidget {
                     children: [
                       Text('Недельная цель', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
                       Text('$weekDone из 7 дней с XP', style: Theme.of(context).textTheme.bodySmall),
-                      Text('Отличный прогресс!', style: TextStyle(color: accent, fontWeight: FontWeight.w600)),
+                      // Текст по реальному прогрессу: «Отличный прогресс!»
+                      // при 0% выглядел насмешкой.
+                      Text(
+                        switch (weekGoalPct) {
+                          0 => 'Начни сегодня — один урок!',
+                          < 50 => 'Хорошее начало!',
+                          < 100 => 'Почти у цели!',
+                          _ => 'Цель выполнена!',
+                        },
+                        style: TextStyle(color: accent, fontWeight: FontWeight.w600),
+                      ),
                     ],
                   ),
                 ),

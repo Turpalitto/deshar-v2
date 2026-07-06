@@ -9,6 +9,8 @@ class DictionaryRepositoryImpl implements DictionaryRepository {
   final AssetDictionaryDataSource _assets;
   List<WordEntity>? _cache;
   Map<String, WordEntity>? _indexById;
+  List<WordEntity>? _curatedCache;
+  Map<String, WordEntity>? _curatedIndexById;
 
   Future<List<WordEntity>> _load() async {
     if (_cache == null) {
@@ -20,11 +22,34 @@ class DictionaryRepositoryImpl implements DictionaryRepository {
     return _cache!;
   }
 
+  /// Лёгкая загрузка только curated-слов (~330 записей вместо 134k).
+  /// Категории существуют только у curated-записей, поэтому для уроков,
+  /// квизов и «слова дня» полный словарь не нужен — его парсинг на web
+  /// блокирует UI (compute() без изолята).
+  Future<List<WordEntity>> _loadCurated() async {
+    if (_curatedCache == null) {
+      final result = await _assets.loadCuratedWords();
+      final words = result.getOr([]);
+      _curatedCache = words;
+      _curatedIndexById = {for (final w in words) w.id: w};
+    }
+    return _curatedCache!;
+  }
+
   @override
   Future<List<WordEntity>> getAllWords() => _load();
 
   @override
+  Future<List<WordEntity>> getCuratedWords() => _loadCurated();
+
+  @override
   Future<WordEntity?> getWordById(String id) async {
+    // Сначала дешёвый curated-индекс: слова уроков/SRS почти всегда оттуда.
+    // Полный словарь грузим только при реальном промахе (id из экрана
+    // «Словарь»).
+    await _loadCurated();
+    final curatedHit = _curatedIndexById?[id];
+    if (curatedHit != null) return curatedHit;
     await _load();
     return _indexById?[id];
   }
@@ -45,17 +70,40 @@ class DictionaryRepositoryImpl implements DictionaryRepository {
 
   @override
   Future<List<WordEntity>> getWordsByCategory(String category) async {
-    final all = await _load();
-    return all.where((w) => w.category == category).toList();
+    // Категории есть только у curated-записей (в полном словаре category ==
+    // null у всех 134k) — фильтрация полного списка возвращала тот же
+    // результат, но требовала парсинга 23 МБ JSON.
+    final curated = await _loadCurated();
+    return curated.where((w) => w.category == category).toList();
   }
 
   @override
   Future<List<WordEntity>> getWordsByIds(List<String> ids) async {
+    await _loadCurated();
+    final curatedIndex = _curatedIndexById!;
+    final result = <WordEntity>[];
+    var missing = false;
+    for (final id in ids) {
+      final w = curatedIndex[id];
+      if (w != null) {
+        result.add(w);
+      } else {
+        missing = true;
+        break;
+      }
+    }
+    if (!missing) return result;
+
+    // Часть id не из curated (слова, добавленные из полного словаря) —
+    // догружаем полный индекс.
     await _load();
     final index = _indexById!;
     return [
       for (final id in ids)
-        if (index.containsKey(id)) index[id]!,
+        if (curatedIndex.containsKey(id))
+          curatedIndex[id]!
+        else if (index.containsKey(id))
+          index[id]!,
     ];
   }
 }

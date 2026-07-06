@@ -13,11 +13,14 @@ import 'design_tokens.dart';
 /// [textScaler] сохранён ради обратной совместимости вызывающего кода, но
 /// намеренно не участвует в расчёте fontSize.
 abstract final class IosTypography {
-  /// Базовая семья — Inter (пропорции близки к SF Pro Text).
-  static String get fontFamily => GoogleFonts.inter().fontFamily!;
+  /// Базовая семья — Manrope: премиальный гротеск с характером (Inter —
+  /// самый заезженный «ИИ-шрифт»). Кириллица + cyrillic-ext (палочка Ӏ
+  /// U+04C0) покрыты.
+  static String get fontFamily => GoogleFonts.manrope().fontFamily!;
 
-  /// SF Pro Display–like для крупных заголовков.
-  static String get displayFamily => GoogleFonts.inter().fontFamily!;
+  /// Дисплейная семья для крупных заголовков — тот же Manrope, контраст
+  /// достигается весом (w800) и плотным трекингом.
+  static String get displayFamily => GoogleFonts.manrope().fontFamily!;
 
   static TextTheme textTheme({
     required DesignTokens tokens,
@@ -42,21 +45,23 @@ abstract final class IosTypography {
     }
 
     return TextTheme(
+      // w800 + плотный трекинг: заголовки должны ощущаться тяжёлыми и
+      // намеренными, а не «жирным body-текстом».
       displayLarge: style(
         size: 34,
-        weight: FontWeight.w700,
-        height: 1.12,
-        letterSpacing: -0.4,
+        weight: FontWeight.w800,
+        height: 1.1,
+        letterSpacing: -0.8,
         family: displayFamily,
       ),
       displayMedium: style(
         size: 28,
-        weight: FontWeight.w700,
-        height: 1.16,
-        letterSpacing: -0.3,
+        weight: FontWeight.w800,
+        height: 1.14,
+        letterSpacing: -0.6,
         family: displayFamily,
       ),
-      headlineLarge: style(size: 22, weight: FontWeight.w600, height: 1.2, letterSpacing: -0.2),
+      headlineLarge: style(size: 22, weight: FontWeight.w700, height: 1.2, letterSpacing: -0.3),
       headlineMedium: style(size: 20, weight: FontWeight.w600, height: 1.22),
       headlineSmall: style(size: 17, weight: FontWeight.w600, height: 1.24),
       titleLarge: style(size: 17, weight: FontWeight.w600, height: 1.24),

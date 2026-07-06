@@ -47,13 +47,26 @@ class NokhchiinTabBar extends StatelessWidget {
                 child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  AppTabIcon(index: i, color: iconColor),
-                  const SizedBox(height: 2),
+                  // Активная вкладка — иконка в тонированной пилюле:
+                  // индикатор текущего экрана, а не только цвет.
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 250),
+                    curve: const Cubic(0.32, 0.72, 0, 1),
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: isActive
+                          ? active.withValues(alpha: tokens.isDark ? 0.22 : 0.12)
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                    child: AppTabIcon(index: i, color: iconColor),
+                  ),
+                  const SizedBox(height: 3),
                   Text(
                     _labels[i],
                     style: TextStyle(
                       fontSize: 11,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: isActive ? FontWeight.w700 : FontWeight.w600,
                       letterSpacing: 0.2,
                       color: iconColor,
                     ),

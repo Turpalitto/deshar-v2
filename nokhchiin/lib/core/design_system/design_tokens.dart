@@ -66,43 +66,48 @@ class DesignTokens {
   /// цвета. Kids-трек использует [NokhchiinColors] (тёплая кремовая палитра).
   static DesignTokens light({IosAccentVariant accent = IosAccentVariant.meadow}) {
     final a = _accentPair(accent, isDark: false);
+    // Editorial-luxury палитра: тёплый крем (#F7F4EF — токен Figma Make)
+    // вместо холодного серо-белого, эспрессо-нейтрали вместо сине-серых.
+    // Раньше фон был холодный (#FAFBFC), а орнамент/культура — тёплые:
+    // смешение тёплых и холодных серых — типовой маркер шаблонного дизайна.
     return DesignTokens(
-      background: const Color(0xFFFAFBFC),
+      background: const Color(0xFFF7F4EF),
       backgroundElevated: const Color(0xFFFFFFFF),
       surface: const Color(0xFFFFFFFF),
-      surfaceMuted: const Color(0xFFF0F2F5),
-      separator: const Color(0xFFE8ECF0),
-      textPrimary: const Color(0xFF1A1A2E),
-      textSecondary: const Color(0xFF6B7280),
-      // Было #9CA3AF на #FAFBFC — ≈2.45:1, провал WCAG AA (нужно 4.5:1).
-      // #6B7280 на этом фоне даёт ≈4.66:1 (аудит §3).
-      textTertiary: const Color(0xFF6B7280),
+      surfaceMuted: const Color(0xFFF0EBE2),
+      separator: const Color(0xFFE9E2D6),
+      textPrimary: const Color(0xFF26201A),
+      // Тёплые серые той же (эспрессо) температуры. Контраст на #F7F4EF:
+      // #5C5347 ≈ 6.2:1, #6E6558 ≈ 4.7:1 — WCAG AA соблюдён.
+      textSecondary: const Color(0xFF5C5347),
+      textTertiary: const Color(0xFF6E6558),
       accent: a.$1,
       accentMuted: a.$2,
       accentOn: const Color(0xFFFFFFFF),
       success: const Color(0xFF10B981),
       warning: const Color(0xFFF59E0B),
-      error: const Color(0xFFEF4444),
+      error: const Color(0xFFE05252),
       isDark: false,
     );
   }
 
   static DesignTokens dark({IosAccentVariant accent = IosAccentVariant.meadow}) {
     final a = _accentPair(accent, isDark: true);
+    // Тёмная тема — та же тёплая (эспрессо) температура, что и светлая:
+    // раньше light была тёплой кремовой, а dark — холодной сине-серой,
+    // и переключение темы меняло характер бренда.
     return DesignTokens(
-      background: const Color(0xFF0F1419),
-      backgroundElevated: const Color(0xFF131A22),
-      surface: const Color(0xFF1A2332),
-      surfaceMuted: const Color(0xFF2F3B4A),
-      separator: const Color(0xFF2F3B4A),
-      textPrimary: const Color(0xFFF0F4F8),
-      textSecondary: const Color(0xFF8899A6),
-      // Было #6B7280 на #0F1419 — ≈3.83:1, тоже провал. #7C8794 даёт
-      // ≈5.07:1 и остаётся визуально отличимым от textSecondary (аудит §3).
-      textTertiary: const Color(0xFF7C8794),
+      background: const Color(0xFF16110C),
+      backgroundElevated: const Color(0xFF1C1610),
+      surface: const Color(0xFF231C15),
+      surfaceMuted: const Color(0xFF322A21),
+      separator: const Color(0xFF362D23),
+      textPrimary: const Color(0xFFF3EDE4),
+      textSecondary: const Color(0xFFB3A789),
+      textTertiary: const Color(0xFF8F8474),
       accent: a.$1,
       accentMuted: a.$2,
-      accentOn: const Color(0xFF0F1419),
+      accentOn: const Color(0xFF16110C),
       success: const Color(0xFF34D399),
       warning: const Color(0xFFFBBF24),
       error: const Color(0xFFF87171),

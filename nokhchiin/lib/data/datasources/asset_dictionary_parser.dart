@@ -8,6 +8,23 @@ import '../../core/utils/dictionary_labels.dart';
 
 const _uuid = Uuid();
 
+/// Лёгкий парсинг ТОЛЬКО curated-словаря (~330 записей, ~77 КБ) — без
+/// полного dictionary.json (23 МБ, 134k записей). Используется везде, где
+/// нужны слова уроков/категорий: на web `compute()` выполняется в главном
+/// потоке, и полный парсинг замораживал UI на секунды при первом уроке,
+/// квизе, placement-тесте и «слове дня».
+List<WordEntity> parseCuratedWords(String curatedRaw) {
+  final words = <WordEntity>[];
+  final seen = <String>{};
+  final curated = jsonDecode(curatedRaw) as Map<String, dynamic>;
+  for (final item in curated['entries'] as List) {
+    final w = _fromCurated(item as Map<String, dynamic>);
+    if (w.chechen.isEmpty || w.russian.isEmpty) continue;
+    if (seen.add(w.id)) words.add(w);
+  }
+  return words;
+}
+
 /// Top-level для [compute]: парсинг JSON словаря вне UI isolate.
 List<WordEntity> parseBundledDictionaryIsolate(Map<String, String> rawJsonByKey) {
   final words = <WordEntity>[];

@@ -70,7 +70,7 @@ class _AiTutorScreenState extends ConsumerState<AiTutorScreen> {
 
     final lower = text.toLowerCase();
     if (lower.contains('ошиб') || lower.contains('неправильно')) {
-      final words = await dict.getAllWords();
+      final words = await dict.getCuratedWords();
       related = words.isNotEmpty ? words[text.hashCode.abs() % words.length] : null;
       if (related != null) {
         reply = await tutor.explainMistake(word: related, userAnswer: text);
@@ -78,7 +78,7 @@ class _AiTutorScreenState extends ConsumerState<AiTutorScreen> {
         reply = 'Расскажи, какое слово вызвало трудность — разберём вместе.';
       }
     } else if (lower.contains('практик') || lower.contains('фраз') || lower.contains('предложен')) {
-      final words = (await dict.getAllWords()).take(5).toList();
+      final words = (await dict.getCuratedWords()).take(5).toList();
       final sentences = await tutor.generatePracticeSentences(words: words);
       reply = 'Вот фразы для тренировки:\n\n${sentences.map((s) => '• $s').join('\n')}';
     } else {

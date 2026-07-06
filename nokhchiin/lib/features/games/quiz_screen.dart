@@ -57,8 +57,10 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
     if (words.length < 4) {
       // Раньше .take(10) без shuffle — всегда одни и те же (зачастую худшие
       // по качеству) записи при каждом фолбэке (аудит §7). Копируем перед
-      // shuffle — getAllWords() отдаёт общий закэшированный список.
-      final all = [...await ref.read(dictionaryRepoProvider).getAllWords()]..shuffle(_rng);
+      // shuffle — репозиторий отдаёт общий закэшированный список. Curated
+      // вместо getAllWords(): фолбэк из полного словаря подсовывал сырые
+      // записи датасета и парсил 23 МБ JSON в главном потоке (web).
+      final all = [...await ref.read(dictionaryRepoProvider).getCuratedWords()]..shuffle(_rng);
       words = all.take(10).toList();
     }
     if (mounted) {

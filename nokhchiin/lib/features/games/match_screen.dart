@@ -52,9 +52,10 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
     if (words.length < 4) {
       // Раньше .take(5) без shuffle — всегда одни и те же (первые в
       // порядке следования словаря, зачастую худшие по качеству) записи
-      // при каждом фолбэке (аудит §7). Копируем перед shuffle — getAllWords()
+      // при каждом фолбэке (аудит §7). Копируем перед shuffle — репозиторий
       // отдаёт общий закэшированный список, мутировать его на месте нельзя.
-      final all = [...await ref.read(dictionaryRepoProvider).getAllWords()]..shuffle(_rng);
+      // Curated вместо полного словаря: проверенные слова, без 23 МБ JSON.
+      final all = [...await ref.read(dictionaryRepoProvider).getCuratedWords()]..shuffle(_rng);
       words = all.take(5).toList();
     }
     if (mounted) {

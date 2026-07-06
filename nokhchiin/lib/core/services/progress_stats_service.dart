@@ -10,17 +10,13 @@ class ProgressStatsService {
   final DictionaryRepository _dictionary;
 
   Future<int> languageMasteryPercent() async {
-    final all = await _dictionary.getAllWords();
-    if (all.isEmpty) return 0;
-    final progress = await _progress.getAllProgress();
     // Знаменатель — проверенная/учебная лексика (curated), а не весь
     // словарь на 134k: иначе реальный прогресс ~500 слов даёт 0%
-    // (аудит progress_stats).
-    final curatedTotal = all
-        .where((w) =>
-            w.sources.any((s) => s == 'curated' || s == 'verified' || s == 'lessons') ||
-            w.tags.contains('verified'))
-        .length;
+    // (аудит progress_stats). getCuratedWords() и есть этот набор — без
+    // загрузки полного словаря (23 МБ JSON парсился ради подсчёта length).
+    final curated = await _dictionary.getCuratedWords();
+    final progress = await _progress.getAllProgress();
+    final curatedTotal = curated.length;
     if (curatedTotal == 0) return 0;
     final learned = progress.values
         .where((p) => p.mastery.value >= MasteryLevel.remembering.value)

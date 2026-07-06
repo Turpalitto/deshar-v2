@@ -71,16 +71,37 @@ class WeekXpChart extends StatelessWidget {
                         width: double.infinity,
                         height: barH,
                         decoration: BoxDecoration(
-                          color: isToday ? active : muted,
-                          borderRadius: BorderRadius.circular(5),
+                          gradient: isToday
+                              ? LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [active, active.withValues(alpha: 0.7)],
+                                )
+                              : null,
+                          color: isToday ? null : muted,
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(6),
+                            bottom: Radius.circular(2),
+                          ),
+                          // Мягкое свечение акцентного бара — глубина без
+                          // жёсткой чёрной тени.
+                          boxShadow: isToday
+                              ? [
+                                  BoxShadow(
+                                    color: active.withValues(alpha: 0.3),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 3),
+                                  ),
+                                ]
+                              : null,
                         ),
                       ),
-                      const SizedBox(height: 5),
+                      const SizedBox(height: 6),
                       Text(
                         _days[i],
                         style: TextStyle(
                           fontSize: 10,
-                          fontWeight: isToday ? FontWeight.w700 : FontWeight.w400,
+                          fontWeight: isToday ? FontWeight.w700 : FontWeight.w500,
                           color: isToday ? active : tokens.textTertiary,
                         ),
                       ),

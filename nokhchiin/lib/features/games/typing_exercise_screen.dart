@@ -55,8 +55,9 @@ class _TypingExerciseScreenState extends ConsumerState<TypingExerciseScreen> {
     if (words.length < 3) {
       // Раньше .take(10) без shuffle пула — всегда один и тот же набор
       // первых 10 слов словаря (аудит §7). Копируем перед shuffle —
-      // getAllWords() отдаёт общий закэшированный список.
-      final all = [...await ref.read(dictionaryRepoProvider).getAllWords()]..shuffle(_rng);
+      // репозиторий отдаёт общий закэшированный список. Curated вместо
+      // полного словаря: проверенные слова, без парсинга 23 МБ.
+      final all = [...await ref.read(dictionaryRepoProvider).getCuratedWords()]..shuffle(_rng);
       words = all.take(10).toList();
     }
     words.shuffle(_rng);

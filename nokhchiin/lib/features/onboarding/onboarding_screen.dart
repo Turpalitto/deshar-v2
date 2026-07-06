@@ -9,6 +9,7 @@ import '../../core/design/tokens/app_spacing.dart'; // intentional-mix: spacing 
 import '../../core/design/widgets/app_scaffold.dart'; // intentional-mix: app shell scaffold
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
+import '../../core/router/app_router.dart';
 import '../../core/utils/number_format.dart';
 import '../../core/widgets/kids_tap_target.dart';
 import '../../core/widgets/legal_links_row.dart';
@@ -301,6 +302,10 @@ class _AgeRow extends ConsumerWidget {
           onTap: () async {
             await ref.read(userProfileProvider.notifier).setAgeGroup(age);
             await ref.read(userProfileProvider.notifier).completeOnboarding();
+            // Держим синхронный guard в согласии с профилем: иначе
+            // context.go('/') отскочит redirect'ом обратно на /splash сразу
+            // после выбора возраста.
+            OnboardingGuard.completed = true;
             if (context.mounted) {
               Navigator.pop(context);
               context.go('/');

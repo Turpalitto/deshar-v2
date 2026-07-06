@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../design/app_icons.dart';
 import '../../design/widgets/app_icon_image.dart';
+import '../../utils/number_format.dart';
 import '../design_system.dart';
 
 /// Карточка мира — список на экране «Миры» (Figma Make).
@@ -105,9 +106,11 @@ class NokhchiinWorldCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
+                    // pluralize вместо жёсткого «уроков»: «1 уроков» резало
+                    // глаз на карте миров.
                     unlocked
-                        ? '$progressPercent% · $lessonCount уроков'
-                        : 'Заблокировано · $lessonCount уроков',
+                        ? '$progressPercent% · $lessonCount ${pluralize(lessonCount, one: 'урок', few: 'урока', many: 'уроков')}'
+                        : 'Заблокировано · $lessonCount ${pluralize(lessonCount, one: 'урок', few: 'урока', many: 'уроков')}',
                     style: TextStyle(fontSize: 13, color: tokens.textSecondary),
                   ),
                 ),
@@ -157,55 +160,110 @@ class NokhchiinWorldRow extends StatelessWidget {
     return NokhchiinSurfaceCard(
       onTap: onTap,
       semanticLabel: semanticLabel ?? title,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      radius: 18,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
       child: Row(
         children: [
+          // Сквиркл с деликатным градиентом цвета мира — глубина вместо
+          // плоской заливки.
           Container(
-            width: 44,
-            height: 44,
+            width: 46,
+            height: 46,
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.13),
-              borderRadius: BorderRadius.circular(12),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  color.withValues(alpha: 0.2),
+                  color.withValues(alpha: 0.08),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: color.withValues(alpha: 0.15)),
             ),
             alignment: Alignment.center,
             child: iconAsset != null
                 ? AppIconImage(asset: iconAsset!, size: 22, color: color)
                 : Text(emoji!, style: const TextStyle(fontSize: 22)),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: tokens.textPrimary,
-                  ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: -0.2,
+                          color: tokens.textPrimary,
+                        ),
+                      ),
+                    ),
+                    if (unlocked)
+                      Text(
+                        '$progressPercent%',
+                        style: TextStyle(
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w700,
+                          fontFeatures: const [FontFeature.tabularFigures()],
+                          color: progressPercent > 0 ? color : tokens.textTertiary,
+                        ),
+                      )
+                    else
+                      AppIconImage(asset: AppIcons.stateLocked, size: 16, color: tokens.textTertiary),
+                  ],
                 ),
-                const SizedBox(height: 5),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(2),
-                  child: LinearProgressIndicator(
-                    value: progressPercent / 100,
-                    minHeight: 4,
-                    backgroundColor: tokens.surfaceMuted,
-                    color: color,
-                  ),
+                const SizedBox(height: 8),
+                // Свой прогресс-бар: 6px, скруглённый, с градиентом цвета
+                // мира — вместо волосяного LinearProgressIndicator.
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final w = constraints.maxWidth;
+                    return Stack(
+                      children: [
+                        Container(
+                          height: 6,
+                          width: w,
+                          decoration: BoxDecoration(
+                            color: tokens.surfaceMuted,
+                            borderRadius: BorderRadius.circular(3),
+                          ),
+                        ),
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 600),
+                          curve: const Cubic(0.32, 0.72, 0, 1),
+                          height: 6,
+                          width: w * (progressPercent / 100).clamp(0.0, 1.0),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [color, color.withValues(alpha: 0.75)],
+                            ),
+                            borderRadius: BorderRadius.circular(3),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ],
             ),
           ),
-          const SizedBox(width: 8),
-          if (unlocked)
-            Text(
-              '$progressPercent%',
-              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: color),
-            )
-          else
-            AppIconImage(asset: AppIcons.stateLocked, size: 16, color: tokens.textTertiary),
+          const SizedBox(width: 12),
+          // Шеврон во вложенном круге — паттерн «кнопка-в-кнопке».
+          Container(
+            width: 28,
+            height: 28,
+            decoration: BoxDecoration(
+              color: tokens.surfaceMuted,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(Icons.chevron_right_rounded, size: 18, color: tokens.textSecondary),
+          ),
         ],
       ),
     );

@@ -19,6 +19,7 @@ import '../../core/providers/providers.dart';
 
 import '../../core/utils/number_format.dart';
 import '../../core/utils/world_progress_util.dart';
+import '../../domain/constants/dictionary_constants.dart';
 import '../../domain/entities/enums.dart';
 import '../../domain/entities/learning_entities.dart';
 import '../culture/culture_capsule_modal.dart';
@@ -38,7 +39,11 @@ class HomeScreen extends ConsumerWidget {
     final due = ref.watch(dueWordsProvider);
     final worlds = ref.watch(worldsProvider);
     final units = ref.watch(learningUnitsProvider);
-    final dictionaryCount = ref.watch(dictionaryProvider).valueOrNull?.length;
+    // Константа вместо ref.watch(dictionaryProvider).length: подписка
+    // триггерила загрузку и парсинг полного словаря (23 МБ JSON) на первом
+    // кадре Home — на web это фриз UI, т.к. compute() там выполняется в
+    // главном потоке. Число обновляется пайплайном tools/build_dictionary.py.
+    const dictionaryCount = dictionaryWordCount;
 
     return AppScaffold(
       showOrnament: true,
@@ -133,9 +138,8 @@ class HomeScreen extends ConsumerWidget {
                       title: 'Словарь',
                       // Реальное число слов вместо устаревшего хардкода
                       // "7 800" (реально ≈134k — аудит §7).
-                      subtitle: dictionaryCount == null
-                          ? '…'
-                          : '${formatThousands(dictionaryCount)} ${pluralize(dictionaryCount, one: 'слово', few: 'слова', many: 'слов')}',
+                      subtitle:
+                          '${formatThousands(dictionaryCount)} ${pluralize(dictionaryCount, one: 'слово', few: 'слова', many: 'слов')}',
                       onTap: () => context.push('/dictionary'),
                     ),
                   ),
@@ -203,13 +207,24 @@ class HomeScreen extends ConsumerWidget {
                 children: [
                   Text(
                     'Миры',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
+                    style: TextStyle(
+                      fontSize: 19,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -0.4,
+                      color: context.iosTokens.textPrimary,
+                    ),
                   ),
                   TextButton(
                     onPressed: () => context.go('/worlds'),
-                    child: Text('Все →', style: TextStyle(color: accent, fontWeight: FontWeight.w600)),
+                    style: TextButton.styleFrom(
+                      backgroundColor: accentMuted.withValues(alpha: 0.5),
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                    ),
+                    child: Text(
+                      'Все →',
+                      style: TextStyle(fontSize: 13, color: accent, fontWeight: FontWeight.w700),
+                    ),
                   ),
                 ],
               ),
@@ -298,10 +313,20 @@ class _HomeHeader extends ConsumerWidget {
   final Color accent;
   final Color accentMuted;
 
+  /// Приветствие по времени суток вместо захардкоженного «Доброе утро»,
+  /// которое показывалось и ночью.
+  String _timeGreeting() {
+    final h = DateTime.now().hour;
+    if (h < 6) return 'Доброй ночи';
+    if (h < 12) return 'Доброе утро';
+    if (h < 18) return 'Добрый день';
+    return 'Добрый вечер';
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final tokens = context.iosTokens;
-    final greeting = isKids ? 'Привет, ученик' : 'Доброе утро';
+    final greeting = isKids ? 'Привет, ученик' : _timeGreeting();
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -325,10 +350,11 @@ class _HomeHeader extends ConsumerWidget {
               Text(
                 'Уровень ${profile.level}',
                 style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.w700,
+                  fontSize: 27,
+                  fontWeight: FontWeight.w800,
                   color: tokens.textPrimary,
-                  letterSpacing: -0.3,
+                  letterSpacing: -0.6,
+                  height: 1.1,
                 ),
               ),
             ],
@@ -418,7 +444,7 @@ class _HomeHeader extends ConsumerWidget {
   }
 }
 
-class _ContinueHero extends StatelessWidget {
+class _ContinueHero extends StatefulWidget {
   const _ContinueHero({
     required this.unit,
     required this.accent,
@@ -430,87 +456,154 @@ class _ContinueHero extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
+  State<_ContinueHero> createState() => _ContinueHeroState();
+}
+
+class _ContinueHeroState extends State<_ContinueHero> {
+  bool _pressed = false;
+
+  @override
   Widget build(BuildContext context) {
-    final title = unit?.titleRu ?? 'Начать путь';
-    final pct = unit?.masteryPercent ?? 0;
+    final title = widget.unit?.titleRu ?? 'Начать путь';
+    final pct = widget.unit?.masteryPercent ?? 0;
     final step = ((pct / 100) * 5).ceil().clamp(1, 5);
+    final accent = widget.accent;
+    // Глубокий градиент вместо плоской заливки + тонированная тень цвета
+    // акцента — «дорогая» карточка с одним источником света.
+    final deep = Color.lerp(accent, const Color(0xFF10241A), 0.35)!;
 
     return Semantics(
       button: true,
       label: 'Продолжить урок: $title, шаг $step из 5',
       child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-        padding: const EdgeInsets.all(22),
-        decoration: BoxDecoration(
-          color: accent,
-          borderRadius: BorderRadius.circular(22),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: Stack(
-          children: [
-            Positioned(
-              right: -30,
-              top: -30,
-              child: Container(
-                width: 140,
-                height: 140,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white.withValues(alpha: 0.1),
-                ),
+        onTapDown: (_) => setState(() => _pressed = true),
+        onTapUp: (_) => setState(() => _pressed = false),
+        onTapCancel: () => setState(() => _pressed = false),
+        onTap: widget.onTap,
+        child: AnimatedScale(
+          scale: _pressed ? 0.98 : 1,
+          duration: const Duration(milliseconds: 220),
+          curve: const Cubic(0.32, 0.72, 0, 1),
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [accent, deep],
               ),
-            ),
-            Positioned(
-              right: 20,
-              bottom: -20,
-              child: Container(
-                width: 90,
-                height: 90,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white.withValues(alpha: 0.07),
-                ),
-              ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'ПРОДОЛЖИТЬ УРОК',
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: Colors.white.withValues(alpha: 0.7),
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 1,
-                  ),
-                ),
-                const SizedBox(height: 5),
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                    letterSpacing: -0.2,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                NokhchiinSegmentProgress(
-                  step: step,
-                  color: Colors.white.withValues(alpha: 0.9),
-                  trackColor: Colors.white.withValues(alpha: 0.25),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  unit != null ? 'Урок · $step из 5 шагов' : 'Открой путь обучения',
-                  style: TextStyle(fontSize: 12, color: Colors.white.withValues(alpha: 0.65)),
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: accent.withValues(alpha: 0.35),
+                  blurRadius: 28,
+                  offset: const Offset(0, 10),
                 ),
               ],
             ),
-          ],
+            clipBehavior: Clip.antiAlias,
+            child: Stack(
+              children: [
+                // Национальный орнамент вместо декоративных кругов.
+                const Positioned.fill(
+                  child: NokhchiinOrnament(opacity: 0.07, light: true),
+                ),
+                Positioned(
+                  right: -36,
+                  top: -36,
+                  child: Container(
+                    width: 150,
+                    height: 150,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white.withValues(alpha: 0.08),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(22),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Eyebrow-метка в пилюле, а не голый текст.
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.14),
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                        child: Text(
+                          'ПРОДОЛЖИТЬ УРОК',
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: Colors.white.withValues(alpha: 0.9),
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 1.5,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                          letterSpacing: -0.5,
+                          height: 1.1,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                NokhchiinSegmentProgress(
+                                  step: step,
+                                  color: Colors.white.withValues(alpha: 0.95),
+                                  trackColor: Colors.white.withValues(alpha: 0.22),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  widget.unit != null
+                                      ? 'Урок · $step из 5 шагов'
+                                      : 'Открой путь обучения',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.white.withValues(alpha: 0.7),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          // Стрелка во вложенном круге — кинетический CTA.
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.16),
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+                            ),
+                            child: const Icon(
+                              Icons.arrow_forward_rounded,
+                              size: 20,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
-      ),
       ),
     );
   }

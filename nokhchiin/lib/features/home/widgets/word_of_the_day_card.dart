@@ -23,42 +23,76 @@ class WordOfTheDayCard extends ConsumerWidget {
         return NokhchiinSurfaceCard(
           onTap: () => context.push('/dictionary/${e.id}'),
           semanticLabel: 'Слово дня: ${e.chechen} — ${e.russian}',
+          radius: 18,
+          padding: const EdgeInsets.all(18),
           child: Row(
             children: [
-              AppIconImage(asset: AppIcons.progressStar, size: 28, color: DesignTokens.gold),
+              // Звезда в золотом сквиркле — единый паттерн иконок-в-контейнере.
+              Container(
+                width: 46,
+                height: 46,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      DesignTokens.goldMuted,
+                      DesignTokens.goldMuted.withValues(alpha: 0.5),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: DesignTokens.gold.withValues(alpha: 0.25)),
+                ),
+                alignment: Alignment.center,
+                child: AppIconImage(asset: AppIcons.progressStar, size: 22, color: DesignTokens.gold),
+              ),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Слово дня',
+                      'СЛОВО ДНЯ',
                       style: TextStyle(
-                        fontSize: 11,
+                        fontSize: 10,
                         fontWeight: FontWeight.w700,
-                        color: tokens.textTertiary,
-                        letterSpacing: 0.6,
+                        color: DesignTokens.gold,
+                        letterSpacing: 1.4,
                       ),
                     ),
-                    const SizedBox(height: 3),
+                    const SizedBox(height: 4),
                     Text(
                       e.chechen,
                       style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w700,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: -0.2,
                         color: tokens.textPrimary,
                       ),
                     ),
+                    const SizedBox(height: 1),
                     Text(
                       e.russian,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontSize: 13, color: tokens.textSecondary),
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: tokens.textSecondary,
+                      ),
                     ),
                   ],
                 ),
               ),
-              Icon(Icons.chevron_right_rounded, color: tokens.textTertiary),
+              Container(
+                width: 28,
+                height: 28,
+                decoration: BoxDecoration(
+                  color: tokens.surfaceMuted,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.chevron_right_rounded, size: 18, color: tokens.textSecondary),
+              ),
             ],
           ),
         );

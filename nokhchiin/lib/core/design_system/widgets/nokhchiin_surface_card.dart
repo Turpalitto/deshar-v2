@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import '../design_system.dart';
 
-/// Плоская карточка с border из Figma.
-class NokhchiinSurfaceCard extends StatelessWidget {
+/// Базовая карточка дизайн-системы: волосяная тёплая обводка + мягкая
+/// диффузная тень, тонированная эспрессо (не чёрным — скилл-аудит: generic
+/// black box-shadow один из маркеров шаблонного дизайна). Тап — физика
+/// нажатия (scale 0.98), а не только ink-склянка.
+class NokhchiinSurfaceCard extends StatefulWidget {
   const NokhchiinSurfaceCard({
     super.key,
     required this.child,
@@ -12,7 +15,7 @@ class NokhchiinSurfaceCard extends StatelessWidget {
     this.radius = 16,
     this.background,
     this.border,
-    this.shadow = false,
+    this.shadow = true,
   });
 
   final Widget child;
@@ -25,38 +28,59 @@ class NokhchiinSurfaceCard extends StatelessWidget {
   final bool shadow;
 
   @override
+  State<NokhchiinSurfaceCard> createState() => _NokhchiinSurfaceCardState();
+}
+
+class _NokhchiinSurfaceCardState extends State<NokhchiinSurfaceCard> {
+  bool _pressed = false;
+
+  // Кривая «физической массы» — cubic-bezier(0.32, 0.72, 0, 1).
+  static const _spring = Cubic(0.32, 0.72, 0, 1);
+
+  @override
   Widget build(BuildContext context) {
     final tokens = context.iosTokens;
 
     final content = Container(
-      padding: padding,
+      padding: widget.padding,
       decoration: BoxDecoration(
-        color: background ?? tokens.surface,
-        borderRadius: BorderRadius.circular(radius),
-        border: Border.all(color: border ?? tokens.separator),
-        boxShadow: shadow
+        color: widget.background ?? tokens.surface,
+        borderRadius: BorderRadius.circular(widget.radius),
+        border: Border.all(color: widget.border ?? tokens.separator),
+        boxShadow: widget.shadow
             ? [
+                // Тень тёплого оттенка фона, широкая и мягкая — «парящая»
+                // карточка вместо жёсткого чёрного контура.
                 BoxShadow(
-                  color: tokens.textPrimary.withValues(alpha: 0.08),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
+                  color: const Color(0xFF3D3225).withValues(alpha: tokens.isDark ? 0.35 : 0.06),
+                  blurRadius: 24,
+                  offset: const Offset(0, 8),
+                ),
+                BoxShadow(
+                  color: const Color(0xFF3D3225).withValues(alpha: tokens.isDark ? 0.2 : 0.03),
+                  blurRadius: 4,
+                  offset: const Offset(0, 1),
                 ),
               ]
             : null,
       ),
-      child: child,
+      child: widget.child,
     );
 
-    if (onTap == null) return content;
+    if (widget.onTap == null) return content;
 
     return Semantics(
       button: true,
-      label: semanticLabel,
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(radius),
+      label: widget.semanticLabel,
+      child: GestureDetector(
+        onTapDown: (_) => setState(() => _pressed = true),
+        onTapUp: (_) => setState(() => _pressed = false),
+        onTapCancel: () => setState(() => _pressed = false),
+        onTap: widget.onTap,
+        child: AnimatedScale(
+          scale: _pressed ? 0.98 : 1,
+          duration: const Duration(milliseconds: 220),
+          curve: _spring,
           child: content,
         ),
       ),

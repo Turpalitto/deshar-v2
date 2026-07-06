@@ -188,19 +188,40 @@ class _CapsuleIllustration extends StatelessWidget {
         height: 180,
         width: double.infinity,
         child: imagePath != null
-            ? Image.asset(imagePath!, fit: BoxFit.cover, cacheHeight: cacheHeight)
-            : Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [Color(0xFF5C3D2E), Color(0xFF8B5E3C), Color(0xFF6B4423)],
-                  ),
-                ),
-                alignment: Alignment.center,
-                child: const AppIconImage(asset: AppIcons.cultureHeritage, size: 72),
-              ),
+            ? Image.asset(
+                imagePath!,
+                fit: BoxFit.cover,
+                cacheHeight: cacheHeight,
+                // Пока 2560×2160 декодируется (заметно на web) и при любой
+                // ошибке загрузки — градиент вместо пустой тёмной дыры на
+                // пол-экрана.
+                errorBuilder: (_, __, ___) => const _IllustrationFallback(),
+                frameBuilder: (context, child, frame, wasSyncLoaded) {
+                  if (wasSyncLoaded || frame != null) return child;
+                  return const _IllustrationFallback();
+                },
+              )
+            : const _IllustrationFallback(),
       ),
+    );
+  }
+}
+
+class _IllustrationFallback extends StatelessWidget {
+  const _IllustrationFallback();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF5C3D2E), Color(0xFF8B5E3C), Color(0xFF6B4423)],
+        ),
+      ),
+      alignment: Alignment.center,
+      child: const AppIconImage(asset: AppIcons.cultureHeritage, size: 72),
     );
   }
 }

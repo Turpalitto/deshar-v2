@@ -6,6 +6,10 @@ import '../entities/enums.dart';
 
 abstract class DictionaryRepository {
   Future<List<WordEntity>> getAllWords();
+
+  /// Только проверенные (curated) слова уроков — лёгкий путь без загрузки
+  /// полного словаря. Для «слова дня», уроков, квизов и placement-теста.
+  Future<List<WordEntity>> getCuratedWords();
   Future<WordEntity?> getWordById(String id);
   Future<List<WordEntity>> search(String query, {String? category, PartOfSpeech? pos});
   Future<List<WordEntity>> getWordsByCategory(String category);

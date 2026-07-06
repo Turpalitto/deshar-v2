@@ -10,6 +10,7 @@ import '../../core/design/widgets/app_scaffold.dart';
 import '../../core/design/widgets/loading_state.dart';
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
+import '../../core/router/app_router.dart';
 import '../../domain/entities/word_entity.dart';
 
 final _rng = Random();
@@ -52,7 +53,9 @@ class _PlacementTestScreenState extends ConsumerState<PlacementTestScreen> {
 
   Future<void> _load() async {
     final dictionaryRepo = ref.read(dictionaryRepoProvider);
-    final allWords = await dictionaryRepo.getAllWords();
+    // Curated вместо getAllWords(): дистракторы из полного словаря — это
+    // сырые записи датасета, а его парсинг (23 МБ) замораживал онбординг.
+    final allWords = await dictionaryRepo.getCuratedWords();
     final questions = <_Question>[];
 
     // Тестируем по реально включённым юнитам (enabled: true в
@@ -120,6 +123,10 @@ class _PlacementTestScreenState extends ConsumerState<PlacementTestScreen> {
     if (_completing) return;
     _completing = true;
     await ref.read(userProfileProvider.notifier).completeOnboarding();
+    // Держим синхронный guard в согласии с профилем: иначе context.go('/')
+    // отскочит redirect'ом обратно на /splash (ещё 2.2 с загрузки) сразу
+    // после завершения онбординга.
+    OnboardingGuard.completed = true;
     if (mounted) context.go('/');
   }
 

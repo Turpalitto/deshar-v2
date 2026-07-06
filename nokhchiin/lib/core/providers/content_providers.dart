@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../domain/entities/content_entities.dart';
 import '../../domain/entities/learning_entities.dart';
 import '../../domain/entities/word_entity.dart';
 import '../../core/services/progress_stats_service.dart';
@@ -11,8 +12,34 @@ import '../../data/datasources/content_datasource.dart';
 // --- Worlds / Collections / Stories ---
 // autoDispose: экран-scope, лёгкая JSON-загрузка. Аудит §3.2.
 final contentSourceProvider = Provider((_) => ContentDataSource());
-final worldsProvider =
-    FutureProvider.autoDispose((ref) => ref.read(contentSourceProvider).loadWorlds());
+
+/// Миры с юнитами, отфильтрованными по реально включённым юнитам
+/// learning_path.json. Мир без единого включённого юнита скрывается:
+/// раньше тап по такому миру вёл на «Юнит не найден» — worlds.json
+/// ссылался на юниты, отключённые прошлым аудитом (enabled: false),
+/// и 6 из 8 миров были тупиками.
+final worldsProvider = FutureProvider.autoDispose((ref) async {
+  final worlds = await ref.read(contentSourceProvider).loadWorlds();
+  final units = await ref.watch(learningPathRepoProvider).getUnits();
+  final enabledIds = {
+    for (final u in units)
+      if (u.enabled) u.id,
+  };
+  return [
+    for (final w in worlds)
+      if (w.units.any(enabledIds.contains))
+        WorldEntity(
+          id: w.id,
+          titleRu: w.titleRu,
+          titleCe: w.titleCe,
+          emoji: w.emoji,
+          gradient: w.gradient,
+          unlockCoins: w.unlockCoins,
+          units: w.units.where(enabledIds.contains).toList(),
+          subtitleRu: w.subtitleRu,
+        ),
+  ];
+});
 final collectionsProvider =
     FutureProvider.autoDispose((ref) => ref.read(contentSourceProvider).loadCollections());
 final storiesProvider =

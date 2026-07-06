@@ -25,11 +25,13 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   Future<void> _navigate() async {
     // Таймер и загрузка профиля идут параллельно — Future.delayed уже
     // тикает, пока мы ждём профиль, так что общее время — max(загрузка,
-    // 2200мс), а не их сумма. Раньше профиль читался синхронно (`.value`)
+    // 1200мс), а не их сумма. Раньше профиль читался синхронно (`.value`)
     // сразу после таймера без ожидания future — на медленном/холодном
     // старте это могло быть null, и уже прошедший онбординг пользователь
-    // снова попадал на онбординг (аудит §6).
-    final minDelay = Future<void>.delayed(const Duration(milliseconds: 2200));
+    // снова попадал на онбординг (аудит §6). 1200мс вместо 2200мс: хватает
+    // на fade-in анимации (400мс + delay 160мс), но не держит пользователя
+    // лишнюю секунду на декоративном экране.
+    final minDelay = Future<void>.delayed(const Duration(milliseconds: 1200));
     final profile = await ref.read(userProfileProvider.future).catchError(
           (_) => const UserProfileEntity(),
         );

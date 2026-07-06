@@ -42,6 +42,9 @@ class _FakeDictionaryRepo implements DictionaryRepository {
   Future<List<WordEntity>> getAllWords() async => _words;
 
   @override
+  Future<List<WordEntity>> getCuratedWords() async => _words;
+
+  @override
   Future<WordEntity?> getWordById(String id) async {
     try {
       return _words.firstWhere((w) => w.id == id);
