@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -113,8 +115,9 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                       ? () => context.pop()
                       : () async {
                           final ok = await _canReview();
-                          if (!ok && mounted) {
-                            context.push('/paywall?return=/review');
+                          if (!context.mounted) return;
+                          if (!ok) {
+                            unawaited(context.push('/paywall?return=/review'));
                             return;
                           }
                           setState(() => _started = true);

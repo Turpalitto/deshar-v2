@@ -240,12 +240,28 @@ class ProfileScreen extends ConsumerWidget {
                   needsGate: true,
                   action: () async => ref.read(userProfileProvider.notifier).setAgeGroup(age),
                 ),
-                child: RadioListTile<KidsAgeGroup>(
-                  title: Text(label),
-                  value: age,
-                  groupValue: profile.ageGroup,
-                  onChanged: null,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Semantics(
+                  inMutuallyExclusiveGroup: true,
+                  checked: profile.ageGroup == age,
+                  label: label,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 14),
+                    child: Row(
+                      children: [
+                        Icon(
+                          profile.ageGroup == age
+                              ? Icons.radio_button_checked_rounded
+                              : Icons.radio_button_off_rounded,
+                          size: 22,
+                          color: profile.ageGroup == age
+                              ? accent
+                              : context.iosTokens.textTertiary,
+                        ),
+                        const SizedBox(width: 12),
+                        Text(label, style: Theme.of(context).textTheme.bodyLarge),
+                      ],
+                    ),
+                  ),
                 ),
               );
             }),

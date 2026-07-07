@@ -1,4 +1,4 @@
-import 'dart:async';
+import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -14,7 +14,8 @@ abstract final class CrashReporter {
   static Future<void> bootstrap(Future<void> Function() initApp) async {
     if (!isEnabled) {
       AppLogger.configure(sentryEnabled: false);
-      await _runWithZoneGuards(initApp);
+      _installErrorHandlers();
+      await initApp();
       return;
     }
 
@@ -32,7 +33,7 @@ abstract final class CrashReporter {
     );
   }
 
-  static Future<void> _runWithZoneGuards(Future<void> Function() initApp) async {
+  static void _installErrorHandlers() {
     FlutterError.onError = (details) {
       FlutterError.presentError(details);
       AppLogger.error(
@@ -41,12 +42,10 @@ abstract final class CrashReporter {
         stackTrace: details.stack,
       );
     };
-
-    await runZonedGuarded(() async {
-      await initApp();
-    }, (error, stackTrace) {
-      AppLogger.error('Uncaught zone error', error: error, stackTrace: stackTrace);
-    });
+    PlatformDispatcher.instance.onError = (error, stackTrace) {
+      AppLogger.error('Uncaught platform error', error: error, stackTrace: stackTrace);
+      return true;
+    };
   }
 
   static Future<void> capture(
