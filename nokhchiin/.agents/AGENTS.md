@@ -3,7 +3,7 @@
 > **Монорепозиторий (корень workspace):** [`../../AGENTS.md`](../../AGENTS.md)
 
 Проект: **Nokhchiin** — Flutter-приложение для изучения чеченского языка.  
-Путь: `C:\АББА\nokhchiin\`
+Путь: `C:\dev\deshar-v2\nokhchiin\`
 
 ---
 

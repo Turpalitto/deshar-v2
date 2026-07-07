@@ -3,7 +3,7 @@
 > **Полное руководство по монорепозиторию:** [`../AGENTS.md`](../AGENTS.md)  
 > **Углублённые правила Flutter:** [`.agents/AGENTS.md`](.agents/AGENTS.md)
 
-Эта папка — **только Flutter-приложение**. Корень workspace — `C:\АББА\` (там же `figma-preview/`, `tools/`, данные словаря).
+Эта папка — **только Flutter-приложение**. Корень workspace — `C:\dev\deshar-v2\` (там же `figma-preview/`, `tools/`, данные словаря).
 
 ```bash
 cd nokhchiin

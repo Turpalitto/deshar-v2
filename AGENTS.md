@@ -1,10 +1,10 @@
 # AGENTS.md — Нохчийн (workspace root)
 
-**Корень workspace:** `C:\АББА\`  
+**Корень workspace:** `C:\dev\deshar-v2\`  
 **GitHub:** [Turpalitto/deshar-v2](https://github.com/Turpalitto/deshar-v2) — **последняя версия** (канонический репозиторий)  
 Старый [deshar](https://github.com/Turpalitto/deshar) — архив, не использовать для новой работы.
 
-Этот файл — **главная точка входа** для любой IDE, открытой на `C:\АББА\`.  
+Этот файл — **главная точка входа** для любой IDE, открытой на `C:\dev\deshar-v2\`.  
 Дополнительно: `nokhchiin/.agents/AGENTS.md` — углублённые правила Flutter (провайдеры, entities, CI).
 
 ---
@@ -29,7 +29,7 @@
 ## Структура монорепозитория
 
 ```
-C:\АББА\                         ← workspace root (открывать IDE здесь)
+C:\dev\deshar-v2\                         ← workspace root (открывать IDE здесь)
 ├── AGENTS.md                     ← этот файл
 ├── nokhchiin/                    ← Flutter-приложение (production)
 │   ├── lib/                      ← весь код приложения
@@ -249,7 +249,7 @@ cd nokhchiin && flutter test
 
 | Проблема | Решение |
 |----------|---------|
-| IDE не видит preview/tools | Открыть workspace на `C:\АББА\`, не только `nokhchiin/` |
+| IDE не видит preview/tools | Открыть workspace на `C:\dev\deshar-v2\`, не только `nokhchiin/` |
 | Белый экран на web | Onboarding через `builder`, не opacity 0 на initial route |
 | Словарь не обновлён | `python tools/build_dictionary.py --curate-only --copy-assets` |
 | Preview не скроллит словарь | `flex:1; minHeight:0` + `position:absolute; inset:0` на scroll |
