@@ -1,0 +1,5 @@
+app_name: Нохчийн
+android:
+  package_name: gg.nokhchiin.academy.nokhchiin
+ios:
+  bundle_id: gg.nokhchiin.academy.nokhchiin

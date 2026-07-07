@@ -32,8 +32,17 @@ jobs:
         run: flutter analyze --no-fatal-infos
 
       - name: Test
-        run: flutter test
+        run: flutter test --coverage
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        with:
+          files: nokhchiin/coverage/lcov.info
+          fail_ci_if_error: false
 
       - name: Build web (verify compilation)
         run: flutter build web --no-tree-shake-icons
+
+      - name: Report web build size
+        run: du -sh build/web
 
