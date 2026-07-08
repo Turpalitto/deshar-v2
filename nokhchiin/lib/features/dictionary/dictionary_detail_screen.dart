@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/design/widgets/app_scaffold.dart';
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/dictionary_search_providers.dart';
+import '../../core/providers/providers.dart';
 import '../../core/utils/dictionary_labels.dart';
 import '../../domain/entities/dictionary_entry.dart';
 import '../../domain/entities/entry_type.dart';
@@ -143,7 +144,6 @@ class _DetailContent extends StatelessWidget {
             const SizedBox(height: 12),
             _Row(label: 'Источник', value: entry.sources.join(', ')),
           ],
-          // Примеры (пока пусто — TODO из датасета)
           // Связанные
           if (related.isNotEmpty) ...[
             const SizedBox(height: 32),

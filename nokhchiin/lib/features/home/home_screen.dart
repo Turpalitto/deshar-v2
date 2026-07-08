@@ -19,6 +19,7 @@ import '../../core/providers/providers.dart';
 
 import '../../core/utils/number_format.dart';
 import '../../core/utils/world_progress_util.dart';
+import '../../core/router/app_router.dart' show kFirstLessonUnitId;
 import '../../domain/constants/dictionary_constants.dart';
 import '../../domain/entities/enums.dart';
 import '../../domain/entities/learning_entities.dart';
@@ -289,7 +290,7 @@ class HomeScreen extends ConsumerWidget {
                   const SizedBox(width: 8),
                   Expanded(child: _QuickLink(iconAsset: AppIcons.rewardCelebration, label: 'Истории', onTap: () => context.push('/stories'))),
                   const SizedBox(width: 8),
-                  Expanded(child: _QuickLink(iconAsset: AppIcons.actionTyping, label: 'Ввод', onTap: () => context.push('/typing/animals'))),
+                  Expanded(child: _QuickLink(iconAsset: AppIcons.actionTyping, label: 'Ввод', onTap: () => context.push('/typing/$kFirstLessonUnitId'))),
                 ],
               ),
             ),
