@@ -65,7 +65,7 @@ class OnboardingScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 36),
             Text(
-              'Сайн дог ду хьуна',
+              l10n.onboardingGreetingChechen,
               style: TextStyle(
                 fontSize: 34,
                 fontWeight: FontWeight.w700,
@@ -75,12 +75,12 @@ class OnboardingScreen extends ConsumerWidget {
               ),
             ).animate().fadeIn().slideY(begin: 0.08),
             const SizedBox(height: 10),
-            Text('Рады тебя видеть!', style: TextStyle(fontSize: 17, color: tokens.textSecondary))
+            Text(l10n.onboardingWelcome, style: TextStyle(fontSize: 17, color: tokens.textSecondary))
                 .animate()
                 .fadeIn(delay: 60.ms),
             const SizedBox(height: 4),
             Text(
-              'Выбери трек — мы подберём уроки и темп специально для тебя.',
+              l10n.onboardingTrackPrompt,
               style: TextStyle(fontSize: 15, color: tokens.textTertiary, height: 1.5),
             ).animate().fadeIn(delay: 100.ms),
             const SizedBox(height: 36),
@@ -114,9 +114,9 @@ class OnboardingScreen extends ConsumerWidget {
               children: [
                 _FeatureTile(iconAsset: AppIcons.actionReview, label: 'SM-2 SRS'),
                 const SizedBox(width: 8),
-                _FeatureTile(iconAsset: AppIcons.stateOffline, label: 'Офлайн'),
+                _FeatureTile(iconAsset: AppIcons.stateOffline, label: l10n.featureOffline),
                 const SizedBox(width: 8),
-                _FeatureTile(iconAsset: AppIcons.cultureMountains, label: 'Культура'),
+                _FeatureTile(iconAsset: AppIcons.cultureMountains, label: l10n.featureCulture),
               ],
             ).animate().fadeIn(delay: 280.ms),
                   ],
@@ -151,7 +151,7 @@ class OnboardingScreen extends ConsumerWidget {
               style: TextStyle(fontSize: 28, fontWeight: FontWeight.w700, color: tokens.textPrimary),
             ),
             const SizedBox(height: 8),
-            Text('Подберём темп и контент', style: TextStyle(color: tokens.textTertiary)),
+            Text(l10n.agePickerSubtitle, style: TextStyle(color: tokens.textTertiary)),
             const SizedBox(height: AppSpacing.lg),
             _AgeRow(label: l10n.age3to6, iconAsset: AppIcons.ageHatchling, age: KidsAgeGroup.age3to6),
             _AgeRow(label: l10n.age6to9, iconAsset: AppIcons.ageSprout, age: KidsAgeGroup.age6to9),

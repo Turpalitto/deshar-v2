@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/design/widgets/app_scaffold.dart';
 import '../../core/design_system/design_system.dart';
+import '../../core/l10n/l10n_extensions.dart';
 import '../../core/providers/dictionary_search_providers.dart';
 import '../../core/providers/providers.dart';
 import '../../core/utils/dictionary_labels.dart';
@@ -22,6 +23,7 @@ class DictionaryDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
     final entry = ref.watch(dictionaryEntryProvider(id));
     final related = ref.watch(dictionaryRelatedProvider(id));
     final e = entry.valueOrNull;
@@ -38,11 +40,11 @@ class DictionaryDetailScreen extends ConsumerWidget {
                   color: e.favorite ? Colors.redAccent : null,
                 ),
                 onPressed: () => ref.read(dictionarySearchRepoProvider).toggleFavorite(e.id),
-                tooltip: 'Избранное',
+                tooltip: l10n.favoriteTooltip,
               ),
               IconButton(
                 icon: const Icon(Icons.copy_rounded),
-                tooltip: 'Копировать',
+                tooltip: l10n.copyTooltip,
                 onPressed: () => _onCopy(context, e),
               ),
             ],
@@ -59,7 +61,7 @@ class DictionaryDetailScreen extends ConsumerWidget {
   void _onCopy(BuildContext context, DictionaryEntry entry) {
     Clipboard.setData(ClipboardData(text: '${entry.chechen} — ${entry.russian}'));
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Скопировано'), duration: Duration(seconds: 1)),
+      SnackBar(content: Text(context.l10n.copiedSnackbar), duration: const Duration(seconds: 1)),
     );
   }
 }
@@ -72,6 +74,7 @@ class _DetailContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final tokens = context.iosTokens;
     final categoryLabel = DictionaryLabels.categoryLabel(entry.category, sources: entry.sources);
 
@@ -114,7 +117,7 @@ class _DetailContent extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Перевод',
+                  l10n.translationLabel,
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
@@ -137,18 +140,18 @@ class _DetailContent extends StatelessWidget {
           // Категория
           if (categoryLabel != null) ...[
             const SizedBox(height: 20),
-            _Row(label: 'Категория', value: categoryLabel),
+            _Row(label: l10n.categoryFieldLabel, value: categoryLabel),
           ],
           // Источники
           if (entry.sources.isNotEmpty) ...[
             const SizedBox(height: 12),
-            _Row(label: 'Источник', value: entry.sources.join(', ')),
+            _Row(label: l10n.sourceLabel, value: entry.sources.join(', ')),
           ],
           // Связанные
           if (related.isNotEmpty) ...[
             const SizedBox(height: 32),
             Text(
-              'Связанные',
+              l10n.relatedLabel,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
@@ -254,13 +257,14 @@ class _NotFound extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text('Запись не найдена', style: TextStyle(fontSize: 16)),
+          Text(l10n.entryNotFound, style: const TextStyle(fontSize: 16)),
           const SizedBox(height: 16),
-          TextButton(onPressed: onBack, child: const Text('Назад')),
+          TextButton(onPressed: onBack, child: Text(l10n.back)),
         ],
       ),
     );

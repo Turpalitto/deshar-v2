@@ -157,7 +157,7 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
                         Icon(Icons.search_off_rounded, size: 48, color: tokens.textTertiary),
                         const SizedBox(height: 12),
                         Text(
-                          'Ничего не найдено',
+                          l10n.dictionaryEmptyResults,
                           style: TextStyle(fontSize: 15, color: tokens.textTertiary),
                         ),
                       ],
@@ -190,14 +190,14 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text('Ошибка загрузки'),
+                    Text(l10n.dictionaryLoadError),
                     const SizedBox(height: 12),
                     TextButton(
                       onPressed: () {
                         ref.invalidate(dictionarySearchProvider);
                         ref.invalidate(dictionaryTotalCountProvider);
                       },
-                      child: const Text('Повторить'),
+                      child: Text(l10n.retry),
                     ),
                   ],
                 ),

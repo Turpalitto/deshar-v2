@@ -120,7 +120,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                   .scale(begin: const Offset(0.8, 0.8)),
               const SizedBox(height: AppSpacing.lg),
               Text(
-                'Нохчийн Premium',
+                l10n.paywallTitle,
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.w700,
                       letterSpacing: -0.3,
@@ -143,7 +143,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                       (AppIcons.iconInfinity, l10n.compareRowPath),
                       (AppIcons.stateOffline, l10n.compareRowOffline),
                       (AppIcons.actionReview, l10n.compareRowSrs),
-                      (AppIcons.cultureHeritage, 'Все культурные капсулы'),
+                      (AppIcons.cultureHeritage, l10n.compareRowCulture),
                       // Реальное число вместо устаревшего "7 800" (аудит §7).
                       (
                         AppIcons.navDictionary,

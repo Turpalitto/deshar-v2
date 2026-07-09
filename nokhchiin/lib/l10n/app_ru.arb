@@ -49,5 +49,82 @@
   "compareRowParent": "Статистика родителя",
   "compareRowOffline": "Офлайн-паки",
   "loading": "Загрузка…",
-  "retry": "Повторить"
+  "retry": "Повторить",
+  "onboardingGreetingChechen": "Сайн дог ду хьуна",
+  "onboardingWelcome": "Рады тебя видеть!",
+  "onboardingTrackPrompt": "Выбери трек — мы подберём уроки и темп специально для тебя.",
+  "featureOffline": "Офлайн",
+  "featureCulture": "Культура",
+  "agePickerSubtitle": "Подберём темп и контент",
+  "premiumTooltip": "Premium",
+  "giftCapsuleTitle": "Капсула",
+  "giftCapsuleSubtitle": "Гостеприимство",
+  "giftTitle": "Подарок",
+  "giftClaimed": "Забран",
+  "giftToday": "Сегодня",
+  "dailyGiftRewardTitle": "Подарок дня!",
+  "dailyGiftRewardSubtitle": "+15 монет · +20 XP",
+  "srsStartSession": "SRS · начать сеанс",
+  "worldsSectionTitle": "Миры",
+  "seeAllArrow": "Все →",
+  "worldsLoadError": "Не удалось загрузить миры",
+  "quickLinkCollections": "Коллекции",
+  "quickLinkStories": "Истории",
+  "quickLinkTyping": "Ввод",
+  "greetingNight": "Доброй ночи",
+  "greetingMorning": "Доброе утро",
+  "greetingDay": "Добрый день",
+  "greetingEvening": "Добрый вечер",
+  "greetingKids": "Привет, ученик",
+  "levelLabel": "Уровень {level}",
+  "@levelLabel": {
+    "placeholders": {
+      "level": {"type": "int"}
+    }
+  },
+  "streakFreezeTitle": "Заморозка стрика",
+  "streakFreezeDescription": "Сохраняет твой стрик, если пропустишь один день. У тебя: {count} из {max}.",
+  "@streakFreezeDescription": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "max": {"type": "int"}
+    }
+  },
+  "streakFreezeBought": "Заморозка куплена",
+  "streakFreezeBuyFailed": "Не получилось купить",
+  "streakFreezeMax": "Уже максимум",
+  "streakFreezeBuyButton": "Купить за {cost} монет",
+  "@streakFreezeBuyButton": {
+    "placeholders": {
+      "cost": {"type": "int"}
+    }
+  },
+  "continueHeroStartTitle": "Начать путь",
+  "continueHeroEyebrow": "ПРОДОЛЖИТЬ УРОК",
+  "continueHeroStep": "Урок · {step} из 5 шагов",
+  "@continueHeroStep": {
+    "placeholders": {
+      "step": {"type": "int"}
+    }
+  },
+  "continueHeroOpenPath": "Открой путь обучения",
+  "continueHeroSemanticLabel": "Продолжить урок: {title}, шаг {step} из 5",
+  "@continueHeroSemanticLabel": {
+    "placeholders": {
+      "title": {"type": "String"},
+      "step": {"type": "int"}
+    }
+  },
+  "dictionaryEmptyResults": "Ничего не найдено",
+  "dictionaryLoadError": "Ошибка загрузки",
+  "favoriteTooltip": "Избранное",
+  "copyTooltip": "Копировать",
+  "copiedSnackbar": "Скопировано",
+  "translationLabel": "Перевод",
+  "categoryFieldLabel": "Категория",
+  "sourceLabel": "Источник",
+  "relatedLabel": "Связанные",
+  "entryNotFound": "Запись не найдена",
+  "back": "Назад",
+  "compareRowCulture": "Все культурные капсулы"
 }

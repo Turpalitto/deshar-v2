@@ -303,6 +303,306 @@ abstract class AppLocalizations {
   /// In ru, this message translates to:
   /// **'Повторить'**
   String get retry;
+
+  /// No description provided for @onboardingGreetingChechen.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сайн дог ду хьуна'**
+  String get onboardingGreetingChechen;
+
+  /// No description provided for @onboardingWelcome.
+  ///
+  /// In ru, this message translates to:
+  /// **'Рады тебя видеть!'**
+  String get onboardingWelcome;
+
+  /// No description provided for @onboardingTrackPrompt.
+  ///
+  /// In ru, this message translates to:
+  /// **'Выбери трек — мы подберём уроки и темп специально для тебя.'**
+  String get onboardingTrackPrompt;
+
+  /// No description provided for @featureOffline.
+  ///
+  /// In ru, this message translates to:
+  /// **'Офлайн'**
+  String get featureOffline;
+
+  /// No description provided for @featureCulture.
+  ///
+  /// In ru, this message translates to:
+  /// **'Культура'**
+  String get featureCulture;
+
+  /// No description provided for @agePickerSubtitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Подберём темп и контент'**
+  String get agePickerSubtitle;
+
+  /// No description provided for @premiumTooltip.
+  ///
+  /// In ru, this message translates to:
+  /// **'Premium'**
+  String get premiumTooltip;
+
+  /// No description provided for @giftCapsuleTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Капсула'**
+  String get giftCapsuleTitle;
+
+  /// No description provided for @giftCapsuleSubtitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Гостеприимство'**
+  String get giftCapsuleSubtitle;
+
+  /// No description provided for @giftTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Подарок'**
+  String get giftTitle;
+
+  /// No description provided for @giftClaimed.
+  ///
+  /// In ru, this message translates to:
+  /// **'Забран'**
+  String get giftClaimed;
+
+  /// No description provided for @giftToday.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сегодня'**
+  String get giftToday;
+
+  /// No description provided for @dailyGiftRewardTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Подарок дня!'**
+  String get dailyGiftRewardTitle;
+
+  /// No description provided for @dailyGiftRewardSubtitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'+15 монет · +20 XP'**
+  String get dailyGiftRewardSubtitle;
+
+  /// No description provided for @srsStartSession.
+  ///
+  /// In ru, this message translates to:
+  /// **'SRS · начать сеанс'**
+  String get srsStartSession;
+
+  /// No description provided for @worldsSectionTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Миры'**
+  String get worldsSectionTitle;
+
+  /// No description provided for @seeAllArrow.
+  ///
+  /// In ru, this message translates to:
+  /// **'Все →'**
+  String get seeAllArrow;
+
+  /// No description provided for @worldsLoadError.
+  ///
+  /// In ru, this message translates to:
+  /// **'Не удалось загрузить миры'**
+  String get worldsLoadError;
+
+  /// No description provided for @quickLinkCollections.
+  ///
+  /// In ru, this message translates to:
+  /// **'Коллекции'**
+  String get quickLinkCollections;
+
+  /// No description provided for @quickLinkStories.
+  ///
+  /// In ru, this message translates to:
+  /// **'Истории'**
+  String get quickLinkStories;
+
+  /// No description provided for @quickLinkTyping.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ввод'**
+  String get quickLinkTyping;
+
+  /// No description provided for @greetingNight.
+  ///
+  /// In ru, this message translates to:
+  /// **'Доброй ночи'**
+  String get greetingNight;
+
+  /// No description provided for @greetingMorning.
+  ///
+  /// In ru, this message translates to:
+  /// **'Доброе утро'**
+  String get greetingMorning;
+
+  /// No description provided for @greetingDay.
+  ///
+  /// In ru, this message translates to:
+  /// **'Добрый день'**
+  String get greetingDay;
+
+  /// No description provided for @greetingEvening.
+  ///
+  /// In ru, this message translates to:
+  /// **'Добрый вечер'**
+  String get greetingEvening;
+
+  /// No description provided for @greetingKids.
+  ///
+  /// In ru, this message translates to:
+  /// **'Привет, ученик'**
+  String get greetingKids;
+
+  /// No description provided for @levelLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Уровень {level}'**
+  String levelLabel(int level);
+
+  /// No description provided for @streakFreezeTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Заморозка стрика'**
+  String get streakFreezeTitle;
+
+  /// No description provided for @streakFreezeDescription.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сохраняет твой стрик, если пропустишь один день. У тебя: {count} из {max}.'**
+  String streakFreezeDescription(int count, int max);
+
+  /// No description provided for @streakFreezeBought.
+  ///
+  /// In ru, this message translates to:
+  /// **'Заморозка куплена'**
+  String get streakFreezeBought;
+
+  /// No description provided for @streakFreezeBuyFailed.
+  ///
+  /// In ru, this message translates to:
+  /// **'Не получилось купить'**
+  String get streakFreezeBuyFailed;
+
+  /// No description provided for @streakFreezeMax.
+  ///
+  /// In ru, this message translates to:
+  /// **'Уже максимум'**
+  String get streakFreezeMax;
+
+  /// No description provided for @streakFreezeBuyButton.
+  ///
+  /// In ru, this message translates to:
+  /// **'Купить за {cost} монет'**
+  String streakFreezeBuyButton(int cost);
+
+  /// No description provided for @continueHeroStartTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Начать путь'**
+  String get continueHeroStartTitle;
+
+  /// No description provided for @continueHeroEyebrow.
+  ///
+  /// In ru, this message translates to:
+  /// **'ПРОДОЛЖИТЬ УРОК'**
+  String get continueHeroEyebrow;
+
+  /// No description provided for @continueHeroStep.
+  ///
+  /// In ru, this message translates to:
+  /// **'Урок · {step} из 5 шагов'**
+  String continueHeroStep(int step);
+
+  /// No description provided for @continueHeroOpenPath.
+  ///
+  /// In ru, this message translates to:
+  /// **'Открой путь обучения'**
+  String get continueHeroOpenPath;
+
+  /// No description provided for @continueHeroSemanticLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Продолжить урок: {title}, шаг {step} из 5'**
+  String continueHeroSemanticLabel(String title, int step);
+
+  /// No description provided for @dictionaryEmptyResults.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ничего не найдено'**
+  String get dictionaryEmptyResults;
+
+  /// No description provided for @dictionaryLoadError.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ошибка загрузки'**
+  String get dictionaryLoadError;
+
+  /// No description provided for @favoriteTooltip.
+  ///
+  /// In ru, this message translates to:
+  /// **'Избранное'**
+  String get favoriteTooltip;
+
+  /// No description provided for @copyTooltip.
+  ///
+  /// In ru, this message translates to:
+  /// **'Копировать'**
+  String get copyTooltip;
+
+  /// No description provided for @copiedSnackbar.
+  ///
+  /// In ru, this message translates to:
+  /// **'Скопировано'**
+  String get copiedSnackbar;
+
+  /// No description provided for @translationLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Перевод'**
+  String get translationLabel;
+
+  /// No description provided for @categoryFieldLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Категория'**
+  String get categoryFieldLabel;
+
+  /// No description provided for @sourceLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Источник'**
+  String get sourceLabel;
+
+  /// No description provided for @relatedLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Связанные'**
+  String get relatedLabel;
+
+  /// No description provided for @entryNotFound.
+  ///
+  /// In ru, this message translates to:
+  /// **'Запись не найдена'**
+  String get entryNotFound;
+
+  /// No description provided for @back.
+  ///
+  /// In ru, this message translates to:
+  /// **'Назад'**
+  String get back;
+
+  /// No description provided for @compareRowCulture.
+  ///
+  /// In ru, this message translates to:
+  /// **'Все культурные капсулы'**
+  String get compareRowCulture;
 }
 
 class _AppLocalizationsDelegate

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import '../../core/l10n/l10n_extensions.dart';
+import 'package:nokhchiin/l10n/app_localizations.dart';
 import '../../core/config/feature_flags.dart';
 import '../../domain/constants/gameplay_constants.dart';
 import '../../core/design/app_icons.dart';
@@ -32,6 +34,7 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
     final profile = ref.watch(userProfileProvider).value ?? const UserProfileEntity();
     final isKids = profile.mode == AppMode.kids;
     final accent = isKids ? DesignTokens.meadow : context.iosTokens.accent;
@@ -53,7 +56,7 @@ class HomeScreen extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.workspace_premium_outlined),
             onPressed: () => context.push('/paywall'),
-            tooltip: 'Premium',
+            tooltip: l10n.premiumTooltip,
           ),
       ],
       body: CustomScrollView(
@@ -93,8 +96,8 @@ class HomeScreen extends ConsumerWidget {
                   Expanded(
                     child: NokhchiinGiftTile(
                       iconAsset: AppIcons.cultureHeritage,
-                      title: 'Капсула',
-                      subtitle: 'Гостеприимство',
+                      title: l10n.giftCapsuleTitle,
+                      subtitle: l10n.giftCapsuleSubtitle,
                       gradient: const LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
@@ -115,8 +118,8 @@ class HomeScreen extends ConsumerWidget {
                   Expanded(
                     child: NokhchiinGiftTile(
                       iconAsset: profile.dailyGiftClaimed ? AppIcons.stateSuccess : AppIcons.rewardGift,
-                      title: 'Подарок',
-                      subtitle: profile.dailyGiftClaimed ? 'Забран' : 'Сегодня',
+                      title: l10n.giftTitle,
+                      subtitle: profile.dailyGiftClaimed ? l10n.giftClaimed : l10n.giftToday,
                       onTap: profile.dailyGiftClaimed
                           ? null
                           : () async {
@@ -125,8 +128,8 @@ class HomeScreen extends ConsumerWidget {
                                 await RewardCelebration.show(
                                   context,
                                   iconAsset: AppIcons.rewardGift,
-                                  title: 'Подарок дня!',
-                                  subtitle: '+15 монет · +20 XP',
+                                  title: l10n.dailyGiftRewardTitle,
+                                  subtitle: l10n.dailyGiftRewardSubtitle,
                                 );
                               }
                             },
@@ -136,7 +139,7 @@ class HomeScreen extends ConsumerWidget {
                   Expanded(
                     child: NokhchiinGiftTile(
                       iconAsset: AppIcons.navDictionary,
-                      title: 'Словарь',
+                      title: l10n.dictionaryTitle,
                       // Реальное число слов вместо устаревшего хардкода
                       // "7 800" (реально ≈134k — аудит §7).
                       subtitle:
@@ -182,7 +185,7 @@ class HomeScreen extends ConsumerWidget {
                               style: Theme.of(context).textTheme.titleMedium,
                             ),
                             Text(
-                              'SRS · начать сеанс',
+                              l10n.srsStartSession,
                               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                     color: context.iosTokens.textTertiary,
                                   ),
@@ -207,7 +210,7 @@ class HomeScreen extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Миры',
+                    l10n.worldsSectionTitle,
                     style: TextStyle(
                       fontSize: 19,
                       fontWeight: FontWeight.w800,
@@ -223,7 +226,7 @@ class HomeScreen extends ConsumerWidget {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
                     ),
                     child: Text(
-                      'Все →',
+                      l10n.seeAllArrow,
                       style: TextStyle(fontSize: 13, color: accent, fontWeight: FontWeight.w700),
                     ),
                   ),
@@ -275,7 +278,7 @@ class HomeScreen extends ConsumerWidget {
               loading: () => const SliverToBoxAdapter(child: LoadingState()),
               error: (_, __) => SliverToBoxAdapter(
                 child: ErrorState(
-                  message: 'Не удалось загрузить миры',
+                  message: l10n.worldsLoadError,
                   onRetry: () => ref.invalidate(worldsProvider),
                 ),
               ),
@@ -286,11 +289,11 @@ class HomeScreen extends ConsumerWidget {
             sliver: SliverToBoxAdapter(
               child: Row(
                 children: [
-                  Expanded(child: _QuickLink(iconAsset: AppIcons.actionCollections, label: 'Коллекции', onTap: () => context.push('/collections'))),
+                  Expanded(child: _QuickLink(iconAsset: AppIcons.actionCollections, label: l10n.quickLinkCollections, onTap: () => context.push('/collections'))),
                   const SizedBox(width: 8),
-                  Expanded(child: _QuickLink(iconAsset: AppIcons.rewardCelebration, label: 'Истории', onTap: () => context.push('/stories'))),
+                  Expanded(child: _QuickLink(iconAsset: AppIcons.rewardCelebration, label: l10n.quickLinkStories, onTap: () => context.push('/stories'))),
                   const SizedBox(width: 8),
-                  Expanded(child: _QuickLink(iconAsset: AppIcons.actionTyping, label: 'Ввод', onTap: () => context.push('/typing/$kFirstLessonUnitId'))),
+                  Expanded(child: _QuickLink(iconAsset: AppIcons.actionTyping, label: l10n.quickLinkTyping, onTap: () => context.push('/typing/$kFirstLessonUnitId'))),
                 ],
               ),
             ),
@@ -316,18 +319,19 @@ class _HomeHeader extends ConsumerWidget {
 
   /// Приветствие по времени суток вместо захардкоженного «Доброе утро»,
   /// которое показывалось и ночью.
-  String _timeGreeting() {
+  String _timeGreeting(AppLocalizations l10n) {
     final h = DateTime.now().hour;
-    if (h < 6) return 'Доброй ночи';
-    if (h < 12) return 'Доброе утро';
-    if (h < 18) return 'Добрый день';
-    return 'Добрый вечер';
+    if (h < 6) return l10n.greetingNight;
+    if (h < 12) return l10n.greetingMorning;
+    if (h < 18) return l10n.greetingDay;
+    return l10n.greetingEvening;
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
     final tokens = context.iosTokens;
-    final greeting = isKids ? 'Привет, ученик' : _timeGreeting();
+    final greeting = isKids ? l10n.greetingKids : _timeGreeting(l10n);
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -349,7 +353,7 @@ class _HomeHeader extends ConsumerWidget {
                 ],
               ),
               Text(
-                'Уровень ${profile.level}',
+                l10n.levelLabel(profile.level),
                 style: TextStyle(
                   fontSize: 27,
                   fontWeight: FontWeight.w800,
@@ -391,6 +395,7 @@ class _HomeHeader extends ConsumerWidget {
   }
 
   void _showStreakFreezeSheet(BuildContext context, WidgetRef ref, UserProfileEntity profile) {
+    final l10n = context.l10n;
     final tokens = context.iosTokens;
     final atMax = profile.streakFreezeCount >= GameplayConstants.maxStreakFreezes;
     final canAfford = profile.coins >= GameplayConstants.streakFreezeCoinCost;
@@ -408,12 +413,15 @@ class _HomeHeader extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Заморозка стрика',
+              l10n.streakFreezeTitle,
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: tokens.textPrimary),
             ),
             const SizedBox(height: 8),
             Text(
-              'Сохраняет твой стрик, если пропустишь один день. У тебя: ${profile.streakFreezeCount} из ${GameplayConstants.maxStreakFreezes}.',
+              l10n.streakFreezeDescription(
+                profile.streakFreezeCount,
+                GameplayConstants.maxStreakFreezes,
+              ),
               style: TextStyle(color: tokens.textTertiary),
             ),
             const SizedBox(height: AppSpacing.lg),
@@ -426,7 +434,7 @@ class _HomeHeader extends ConsumerWidget {
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text(ok ? 'Заморозка куплена' : 'Не получилось купить'),
+                            content: Text(ok ? l10n.streakFreezeBought : l10n.streakFreezeBuyFailed),
                             duration: const Duration(seconds: 2),
                           ),
                         );
@@ -434,8 +442,8 @@ class _HomeHeader extends ConsumerWidget {
                     },
               child: Text(
                 atMax
-                    ? 'Уже максимум'
-                    : 'Купить за ${GameplayConstants.streakFreezeCoinCost} монет',
+                    ? l10n.streakFreezeMax
+                    : l10n.streakFreezeBuyButton(GameplayConstants.streakFreezeCoinCost),
               ),
             ),
           ],
@@ -465,7 +473,8 @@ class _ContinueHeroState extends State<_ContinueHero> {
 
   @override
   Widget build(BuildContext context) {
-    final title = widget.unit?.titleRu ?? 'Начать путь';
+    final l10n = context.l10n;
+    final title = widget.unit?.titleRu ?? l10n.continueHeroStartTitle;
     final pct = widget.unit?.masteryPercent ?? 0;
     final step = ((pct / 100) * 5).ceil().clamp(1, 5);
     final accent = widget.accent;
@@ -475,7 +484,7 @@ class _ContinueHeroState extends State<_ContinueHero> {
 
     return Semantics(
       button: true,
-      label: 'Продолжить урок: $title, шаг $step из 5',
+      label: l10n.continueHeroSemanticLabel(title, step),
       child: GestureDetector(
         onTapDown: (_) => setState(() => _pressed = true),
         onTapUp: (_) => setState(() => _pressed = false),
@@ -533,7 +542,7 @@ class _ContinueHeroState extends State<_ContinueHero> {
                           borderRadius: BorderRadius.circular(100),
                         ),
                         child: Text(
-                          'ПРОДОЛЖИТЬ УРОК',
+                          l10n.continueHeroEyebrow,
                           style: TextStyle(
                             fontSize: 10,
                             color: Colors.white.withValues(alpha: 0.9),
@@ -569,8 +578,8 @@ class _ContinueHeroState extends State<_ContinueHero> {
                                 const SizedBox(height: 8),
                                 Text(
                                   widget.unit != null
-                                      ? 'Урок · $step из 5 шагов'
-                                      : 'Открой путь обучения',
+                                      ? l10n.continueHeroStep(step)
+                                      : l10n.continueHeroOpenPath,
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w500,
