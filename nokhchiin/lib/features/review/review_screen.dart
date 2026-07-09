@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 import '../../core/config/feature_flags.dart';
 import '../../core/design/app_icons.dart';
 import '../../core/design/widgets/app_icon_image.dart';
-import '../../core/design/widgets/app_scaffold.dart'; // intentional-mix: app shell scaffold
 import '../../core/design/widgets/error_state.dart'; // intentional-mix: shared error placeholder
 import '../../core/design/widgets/loading_state.dart'; // intentional-mix: shared loading placeholder
 import '../../core/utils/number_format.dart';
@@ -127,7 +126,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
             ),
           ),
           loading: () => const LoadingState(),
-          error: (_, __) => ErrorState(
+          error: (_, _) => ErrorState(
             message: 'Не удалось загрузить слова для повторения',
             onRetry: () => ref.invalidate(dueWordsProvider),
           ),
@@ -175,9 +174,11 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
               WidgetsBinding.instance.addPostFrameCallback((_) async {
                 if (!mounted) return;
                 await ref.read(userProfileProvider.notifier).addXp(_correct * 5, _correct);
-                if (!mounted) return;
-                await RewardCelebration.show(
-                  context,
+                if (mounted) {
+                  // ignore: use_build_context_synchronously
+                  await RewardCelebration.show(
+                    context, // ignore: use_build_context_synchronously
+                 
                   iconAsset: AppIcons.rewardCelebration,
                   title: 'Отлично!',
                   subtitle: 'Правильно: $_correct · +${_correct * 5} XP',
@@ -193,6 +194,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                     }
                   },
                 );
+                }
               });
             }
             return const LoadingState();
@@ -264,7 +266,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
           );
         },
         loading: () => const LoadingState(),
-        error: (_, __) => ErrorState(
+        error: (_, _) => ErrorState(
           message: 'Не удалось загрузить слова для повторения',
           onRetry: () => ref.invalidate(dueWordsProvider),
         ),

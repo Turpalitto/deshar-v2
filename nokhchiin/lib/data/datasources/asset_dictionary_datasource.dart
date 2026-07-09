@@ -28,16 +28,18 @@ class AssetDictionaryDataSource {
   }
 
   /// Загрузка словаря с error handling и кэшированием (один парсинг на всё приложение).
-  /// Возвращает Result — Success(List<WordEntity>) или Failure.
+  /// Возвращает Result — `Success(List<WordEntity>)` или Failure.
   Future<Result<List<WordEntity>>> loadBundledDictionary() async {
     if (_cached != null) return _cached!;
     try {
       final curatedRaw = await rootBundle.loadString('assets/data/curated_vocabulary.json');
       final dictRaw = await rootBundle.loadString('assets/data/dictionary.json');
+      final lessonsRaw = await rootBundle.loadString('assets/data/lessons.json');
 
       final words = await compute(parseBundledDictionaryIsolate, {
         'curated': curatedRaw,
         'dictionary': dictRaw,
+        'lessons': lessonsRaw,
       });
       _cached = Success(words);
       return _cached!;

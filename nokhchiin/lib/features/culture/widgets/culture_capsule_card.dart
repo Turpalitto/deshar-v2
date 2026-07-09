@@ -195,7 +195,7 @@ class _CapsuleIllustration extends StatelessWidget {
                 // Пока 2560×2160 декодируется (заметно на web) и при любой
                 // ошибке загрузки — градиент вместо пустой тёмной дыры на
                 // пол-экрана.
-                errorBuilder: (_, __, ___) => const _IllustrationFallback(),
+                errorBuilder: (_, _, _) => const _IllustrationFallback(),
                 frameBuilder: (context, child, frame, wasSyncLoaded) {
                   if (wasSyncLoaded || frame != null) return child;
                   return const _IllustrationFallback();

@@ -46,7 +46,7 @@ class DailySyncCalculator {
       }
     }
 
-    var achievements = List<String>.from(profile.achievements);
+    final achievements = List<String>.from(profile.achievements);
     if (streak >= 3 && !achievements.contains('streak_3')) achievements.add('streak_3');
     if (streak >= 7 && !achievements.contains('streak_7')) achievements.add('streak_7');
 

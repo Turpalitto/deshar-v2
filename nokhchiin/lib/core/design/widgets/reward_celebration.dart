@@ -31,8 +31,8 @@ class RewardCelebration {
       barrierDismissible: false,
       barrierColor: tokens.background.withValues(alpha: 0.92),
       transitionDuration: const Duration(milliseconds: 420),
-      pageBuilder: (ctx, _, __) => const SizedBox.shrink(),
-      transitionBuilder: (ctx, anim, _, __) {
+      pageBuilder: (ctx, _, _) => const SizedBox.shrink(),
+      transitionBuilder: (ctx, anim, _, _) {
         return Opacity(
           opacity: anim.value,
           child: Stack(

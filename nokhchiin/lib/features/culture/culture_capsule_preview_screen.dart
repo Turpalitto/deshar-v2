@@ -1,7 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/design/widgets/app_scaffold.dart';
 import '../../core/design/widgets/loading_state.dart';
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
@@ -26,7 +24,7 @@ class CultureCapsulePreviewScreen extends ConsumerWidget {
         data: (list) => ListView.separated(
           padding: const EdgeInsets.all(IosSpacing.screenHorizontal),
           itemCount: list.length,
-          separatorBuilder: (_, __) => const SizedBox(height: IosSpacing.x3),
+          separatorBuilder: (_, _) => const SizedBox(height: IosSpacing.x3),
           itemBuilder: (context, index) {
             final capsule = list[index];
             return _PreviewTile(
@@ -36,7 +34,7 @@ class CultureCapsulePreviewScreen extends ConsumerWidget {
           },
         ),
         loading: () => const LoadingState(),
-        error: (_, __) => const Center(child: Text('Не удалось загрузить капсулы')),
+        error: (_, _) => const Center(child: Text('Не удалось загрузить капсулы')),
       ),
     );
   }

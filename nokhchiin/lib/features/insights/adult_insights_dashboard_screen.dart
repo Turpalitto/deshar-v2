@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../core/design/widgets/app_scaffold.dart';
 import '../../core/design/widgets/error_state.dart'; // intentional-mix: shared error placeholder
 import '../../core/design/widgets/loading_state.dart'; // intentional-mix: shared loading placeholder; tiles from design_system
 import '../../core/design_system/design_system.dart';
@@ -31,7 +30,7 @@ class AdultInsightsDashboardScreen extends ConsumerWidget {
       ],
       body: insights.when(
         loading: () => const LoadingState(message: 'Считаем прогресс…'),
-        error: (_, __) => ErrorState(
+        error: (_, _) => ErrorState(
           message: 'Не удалось посчитать инсайты',
           onRetry: () => ref.invalidate(learnerInsightsProvider),
         ),

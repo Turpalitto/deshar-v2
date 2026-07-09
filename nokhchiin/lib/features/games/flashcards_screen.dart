@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
@@ -7,12 +8,15 @@ import '../../core/design_system/design_system.dart';
 import '../../core/design/tokens/app_spacing.dart'; // intentional-mix: spacing tokens; Figma widgets from design_system
 import '../../core/design/app_icons.dart';
 import '../../core/design/widgets/app_icon_image.dart'; // intentional-mix: reward dialog actions
-import '../../core/design/widgets/app_scaffold.dart'; // intentional-mix: app shell scaffold
+import '../../core/design/widgets/empty_state.dart'; // intentional-mix: empty list fallback
 import '../../core/design/widgets/loading_state.dart'; // intentional-mix: shared loading placeholder
 import '../../core/design/widgets/reward_celebration.dart';
 import '../../core/providers/providers.dart';
 import '../../domain/entities/enums.dart';
+import '../../core/utils/exercise_word_pool.dart';
+import '../../core/utils/gameplay_difficulty.dart';
 import '../../domain/entities/word_entity.dart';
+import 'widgets/game_session_widgets.dart';
 import 'widgets/spring_swipe_card.dart';
 
 final _rng = Random();
@@ -34,11 +38,13 @@ class FlashcardsScreen extends ConsumerStatefulWidget {
 
 class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
   final _swipeController = SpringSwipeCardController();
+  final _combo = GameComboTracker();
 
   List<WordEntity> _words = [];
   int _index = 0;
   bool _showTranslation = false;
   bool _loading = true;
+  bool _showFlipNudge = false;
 
   @override
   void initState() {
@@ -47,36 +53,61 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
   }
 
   Future<void> _load() async {
-    final words = await ref.read(dictionaryRepoProvider).getWordsByCategory(widget.unitId);
-    // Раньше: если категория пуста → 10 случайных слов из всего словаря.
-    // Аудит logic §3 следствие 2: показывал нерелевантный контент под
-    // правильным заголовком. Теперь — пустой список = empty state в UI.
-    words.shuffle(_rng);
+    final profile = ref.read(userProfileProvider).value;
+    final limit = GameplayDifficulty.flashcardCount(
+      mode: profile?.mode ?? AppMode.kids,
+      age: profile?.ageGroup ?? KidsAgeGroup.age6to9,
+    );
+    final words = await ExerciseWordPool.loadForUnit(
+      ref.read(dictionaryRepoProvider),
+      widget.unitId,
+      minCount: 1,
+      take: limit,
+      rng: _rng,
+    );
     if (mounted) {
       setState(() {
-        _words = words.take(8).toList();
+        _words = words;
         _loading = false;
       });
     }
   }
 
+  bool _needsFlipFirst(WidgetRef ref) {
+    final profile = ref.read(userProfileProvider).value;
+    return profile?.mode == AppMode.kids &&
+        profile?.ageGroup == KidsAgeGroup.age3to6;
+  }
+
   Future<void> _known(bool yes) async {
+    if (yes && _needsFlipFirst(ref) && !_showTranslation) {
+      unawaited(HapticFeedback.mediumImpact());
+      setState(() => _showFlipNudge = true);
+      return;
+    }
+
     final w = _words[_index];
     await ref.read(reviewWordUseCaseProvider)(w.id, yes ? 5 : 2);
-    if (yes) await ref.read(userProfileProvider.notifier).recordWordLearned();
+    if (yes) {
+      _combo.recordCorrect();
+      await ref.read(userProfileProvider.notifier).recordWordLearned();
+    } else {
+      _combo.reset();
+    }
     if (!mounted) return; // аудит §2: раньше проверялось только в ветке "последняя карточка"
 
     if (_index < _words.length - 1) {
       setState(() {
         _index++;
         _showTranslation = false;
+        _showFlipNudge = false;
       });
     } else {
       if (widget.embedded) {
         widget.onComplete?.call();
       } else {
         await ref.read(userProfileProvider.notifier).addXp(25, 5);
-        if (mounted) _showReward();
+        if (mounted) unawaited(_showReward());
       }
     }
   }
@@ -108,30 +139,39 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
       return const AppScaffold(body: LoadingState(message: 'Готовим карточки…'));
     }
     if (_words.isEmpty) {
-      if (widget.embedded) return const Center(child: Text('Нет слов для урока'));
-      return const AppScaffold(body: Center(child: Text('Нет слов для урока')));
+      const empty = EmptyState(
+        iconAsset: AppIcons.stateEmpty,
+        title: 'Недостаточно слов',
+        subtitle: 'Вернись позже — мы добавим слова для этого урока',
+      );
+      if (widget.embedded) return empty;
+      return const AppScaffold(body: empty);
     }
 
     final w = _words[_index];
     final isKids = ref.watch(userProfileProvider).value?.mode == AppMode.kids;
+    final flipFirst = _needsFlipFirst(ref);
+    final canMarkKnown = !flipFirst || _showTranslation;
 
     final body = Padding(
       padding: const EdgeInsets.all(AppSpacing.lg),
       child: Column(
         children: [
-          NokhchiinSegmentProgress(
+          ExerciseProgressHeader(
             step: _index + 1,
-            total: _words.length.clamp(1, 8),
+            total: _words.length,
+            combo: _combo.streak,
+            label: 'Слова · ${_index + 1} / ${_words.length}',
           ),
           const SizedBox(height: AppSpacing.md),
-          Text(
-            'Слова · ${_index + 1} / ${_words.length}',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: context.iosTokens.textTertiary,
-                  fontWeight: FontWeight.w500,
-                ),
-          ),
-          const SizedBox(height: AppSpacing.md),
+          if (_showFlipNudge && flipFirst && !_showTranslation) ...[
+            NokhchiinChip(
+              label: 'Сначала переверните карточку',
+              color: context.iosTokens.accent,
+              background: context.iosTokens.accentMuted,
+            ),
+            const SizedBox(height: AppSpacing.sm),
+          ],
           Expanded(
             child: SpringSwipeCard(
               key: ValueKey(w.id),
@@ -141,12 +181,20 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
                 _known(false);
               },
               onSwipeRight: () {
+                if (!canMarkKnown) {
+                  HapticFeedback.mediumImpact();
+                  setState(() => _showFlipNudge = true);
+                  return;
+                }
                 HapticFeedback.lightImpact();
                 _known(true);
               },
               child: NokhchiinFlipCard(
                 flipped: _showTranslation,
-                onTap: () => setState(() => _showTranslation = !_showTranslation),
+                onTap: () => setState(() {
+                  _showTranslation = !_showTranslation;
+                  if (_showTranslation) _showFlipNudge = false;
+                }),
                 front: NokhchiinFlashcardFace(
                   child: _FlashcardContent(word: w, showRussian: false, unitId: widget.unitId),
                 ),
@@ -178,7 +226,12 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
               Expanded(
                 child: NokhchiinButton(
                   label: 'Знаю',
-                  onPressed: () => _swipeController.swipeRight(),
+                  onPressed: canMarkKnown
+                      ? () => _swipeController.swipeRight()
+                      : () {
+                          HapticFeedback.mediumImpact();
+                          setState(() => _showFlipNudge = true);
+                        },
                   // Иконка вместо сырого юникод-символа "✓" (аудит §low).
                   child: _ButtonLabel(
                     iconAsset: AppIcons.stateSuccess,
@@ -258,6 +311,14 @@ class _FlashcardContent extends StatelessWidget {
                 const SizedBox(height: 4),
                 if (word.pronunciation != null && word.pronunciation!.isNotEmpty)
                   Text('[${word.pronunciation}]', style: TextStyle(fontSize: 14, color: fgMuted, letterSpacing: 0.5)),
+                if (word.hint != null && showRussian) ...[
+                  const SizedBox(height: 12),
+                  Text(
+                    word.hint!,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 14, color: fgMuted, height: 1.4),
+                  ),
+                ],
                 if (!showRussian) ...[
                   const SizedBox(height: 16),
                   NokhchiinChip(

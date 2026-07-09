@@ -14,10 +14,9 @@ import '../../domain/repositories/repositories.dart';
 /// без реальной покупки (регрессия _stubPurchase — аудит 2.1).
 class BillingService implements BillingRepository {
   BillingService({
-    required UserRepository userRepo,
-    required Future<void> Function(bool) onPremiumChanged,
-  })  : _userRepo = userRepo,
-        _onPremiumChanged = onPremiumChanged {
+    required this._userRepo,
+    required this._onPremiumChanged,
+  }) {
     _initIap();
   }
 

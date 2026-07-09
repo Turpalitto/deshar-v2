@@ -5,17 +5,21 @@ import 'package:go_router/go_router.dart';
 import 'package:nokhchiin/core/l10n/l10n_extensions.dart';
 import '../../core/config/feature_flags.dart';
 import '../../core/design/app_icons.dart';
-import '../../core/design/tokens/app_durations.dart'; // intentional-mix: motion tokens; Figma widgets from design_system
-import '../../core/design/tokens/app_spacing.dart'; // intentional-mix: spacing tokens
+import '../../core/design/tokens/app_durations.dart';
+import '../../core/design/tokens/app_spacing.dart';
 import '../../core/design_system/design_system.dart';
-import '../../core/design/widgets/app_scaffold.dart'; // intentional-mix: app shell scaffold
-import '../../core/design/widgets/empty_state.dart'; // intentional-mix: empty list fallback
-import '../../core/design/widgets/loading_state.dart'; // intentional-mix: shared loading placeholder
-import '../../core/design/widgets/word_exercise_card.dart'; // intentional-mix: exercise card layout
+import '../../core/design/widgets/empty_state.dart';
+import '../../core/design/widgets/loading_state.dart';
+import '../../core/design/widgets/reward_celebration.dart';
+import '../../core/design/widgets/word_exercise_card.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/audio_service.dart';
+import '../../core/utils/exercise_word_pool.dart';
+import '../../core/utils/gameplay_difficulty.dart';
+import '../../domain/entities/enums.dart';
 import '../../domain/entities/word_entity.dart';
 import 'widgets/exercise_presentation.dart';
+import 'widgets/game_session_widgets.dart';
 
 final _audio = Provider((_) => AudioService());
 final _rng = Random();
@@ -38,6 +42,7 @@ class QuizScreen extends ConsumerStatefulWidget {
 }
 
 class _QuizScreenState extends ConsumerState<QuizScreen> {
+  final _combo = GameComboTracker();
   List<WordEntity> _words = [];
   List<WordEntity> _options = [];
   int _index = 0;
@@ -45,6 +50,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
   bool _loading = true;
   bool? _lastCorrect;
   int? _selectedOption;
+  bool _revealing = false;
 
   @override
   void initState() {
@@ -53,16 +59,18 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
   }
 
   Future<void> _load() async {
-    var words = await ref.read(dictionaryRepoProvider).getWordsByCategory(widget.unitId);
-    if (words.length < 4) {
-      // Раньше .take(10) без shuffle — всегда одни и те же (зачастую худшие
-      // по качеству) записи при каждом фолбэке (аудит §7). Копируем перед
-      // shuffle — репозиторий отдаёт общий закэшированный список. Curated
-      // вместо getAllWords(): фолбэк из полного словаря подсовывал сырые
-      // записи датасета и парсил 23 МБ JSON в главном потоке (web).
-      final all = [...await ref.read(dictionaryRepoProvider).getCuratedWords()]..shuffle(_rng);
-      words = all.take(10).toList();
-    }
+    final profile = ref.read(userProfileProvider).value;
+    final optionCount = GameplayDifficulty.quizOptionCount(
+      mode: profile?.mode ?? AppMode.kids,
+      age: profile?.ageGroup ?? KidsAgeGroup.age6to9,
+    );
+    final words = await ExerciseWordPool.loadForUnit(
+      ref.read(dictionaryRepoProvider),
+      widget.unitId,
+      minCount: optionCount,
+      take: 20,
+      rng: _rng,
+    );
     if (mounted) {
       setState(() {
         _words = words;
@@ -73,23 +81,22 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
     }
   }
 
+  int _optionCount() {
+    final profile = ref.read(userProfileProvider).value;
+    return GameplayDifficulty.quizOptionCount(
+      mode: profile?.mode ?? AppMode.kids,
+      age: profile?.ageGroup ?? KidsAgeGroup.age6to9,
+    );
+  }
+
   void _buildOptions() {
-    if (_words.length < 4) return;
     final target = _words[_index];
-    final others = [..._words]..removeAt(_index);
-    others.shuffle(_rng);
-    // Дедупликация по переводу — иначе при узкой/некачественной категории
-    // (напр. "Глаголы", где почти все слова переводятся как "бежать")
-    // на экране оказываются 3-4 одинаковые надписи, и вопрос физически
-    // неотвечаем (аудит §7).
-    final seen = <String>{target.russian.trim().toLowerCase()};
-    final distractors = <WordEntity>[];
-    for (final o in others) {
-      final key = o.russian.trim().toLowerCase();
-      if (seen.add(key)) distractors.add(o);
-      if (distractors.length == 3) break;
-    }
-    _options = [target, ...distractors]..shuffle(_rng);
+    _options = ExerciseWordPool.buildQuizOptions(
+      pool: _words,
+      target: target,
+      optionCount: _optionCount(),
+      rng: _rng,
+    );
   }
 
   void _speak() {
@@ -105,29 +112,28 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
       if (widget.embedded) return Center(child: LoadingState(message: l10n.loading));
       return AppScaffold(body: LoadingState(message: l10n.loading));
     }
-    if (_words.length < 4) {
-      if (widget.embedded) return EmptyState(iconAsset: AppIcons.stateEmpty, title: l10n.notEnoughWords);
+    if (_words.length < _optionCount()) {
+      if (widget.embedded) {
+        return EmptyState(iconAsset: AppIcons.stateEmpty, title: l10n.notEnoughWords);
+      }
       return AppScaffold(body: EmptyState(iconAsset: AppIcons.stateEmpty, title: l10n.notEnoughWords));
     }
 
     final questionLimit = widget.maxQuestions ?? _words.length;
     final totalQ = questionLimit.clamp(1, _words.length);
-
     final target = _words[_index];
-    final options = _options;
 
     final body = Padding(
       padding: const EdgeInsets.all(AppSpacing.lg),
       child: Column(
         children: [
-          if (widget.embedded)
-            Padding(
-              padding: const EdgeInsets.only(bottom: AppSpacing.md),
-              child: Text(
-                'Вопрос ${_index + 1} / $totalQ',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-            ),
+          ExerciseProgressHeader(
+            step: _index + 1,
+            total: totalQ,
+            combo: _combo.streak,
+            label: widget.embedded ? 'Вопрос ${_index + 1} / $totalQ' : null,
+          ),
+          const SizedBox(height: AppSpacing.md),
           AnswerFeedbackAnimator(
             feedback: _lastCorrect,
             child: Padding(
@@ -141,15 +147,6 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
           ),
           const SizedBox(height: AppSpacing.md),
           Text(
-            'ВОПРОС',
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 1,
-                  color: context.iosTokens.textTertiary,
-                ),
-          ),
-          const SizedBox(height: 8),
-          Text(
             l10n.quizTapHint,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
           ),
@@ -157,18 +154,28 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
             const SizedBox(height: AppSpacing.sm),
             IconButton(onPressed: _speak, icon: const Icon(Icons.volume_up_rounded, size: 32)),
           ],
+          if (_revealing && !(_lastCorrect ?? true) && target.hint != null) ...[
+            const SizedBox(height: AppSpacing.sm),
+            NokhchiinChip(
+              label: target.hint!,
+              color: context.iosTokens.textSecondary,
+              background: context.iosTokens.surfaceMuted,
+            ),
+          ],
           const Spacer(),
-          ...options.asMap().entries.map((entry) {
+          ..._options.asMap().entries.map((entry) {
             final i = entry.key;
             final o = entry.value;
-            final isTarget = o == target;
+            final isTarget = o.id == target.id;
+            final wasSelected = _selectedOption == i;
             return Padding(
               padding: const EdgeInsets.only(bottom: AppSpacing.md),
               child: NokhchiinQuizOption(
                 label: o.emoji != null ? '${o.emoji}  ${o.russian}' : o.russian,
                 letter: String.fromCharCode(65 + i),
-                selected: _selectedOption == i ? true : null,
-                correct: _selectedOption == i ? isTarget : null,
+                selected: wasSelected ? true : null,
+                correct: wasSelected ? isTarget : null,
+                revealAsCorrect: _revealing && isTarget && !wasSelected,
                 enabled: _selectedOption == null,
                 onTap: () => _answer(isTarget, target, totalQ, i),
               ),
@@ -187,16 +194,24 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
     setState(() {
       _lastCorrect = correct;
       _selectedOption = optionIndex;
+      _revealing = true;
     });
-    if (correct) _score++;
+    if (correct) {
+      _score++;
+      _combo.recordCorrect();
+    } else {
+      _combo.reset();
+    }
 
     await ref.read(reviewWordUseCaseProvider)(target.id, correct ? 4 : 1);
-    await Future.delayed(AppDurations.normal);
+    final delay = correct ? AppDurations.normal : AppDurations.slow;
+    await Future.delayed(delay);
     if (!mounted) return;
 
     setState(() {
       _lastCorrect = null;
       _selectedOption = null;
+      _revealing = false;
     });
 
     if (_index < totalQ - 1) {
@@ -207,7 +222,17 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
       widget.onComplete?.call();
     } else {
       await ref.read(userProfileProvider.notifier).addXp(50, 5);
-      if (mounted) context.pop();
+      if (!mounted) return;
+      await RewardCelebration.show(
+        context,
+        iconAsset: AppIcons.rewardCelebration,
+        title: 'Викторина пройдена!',
+        subtitle: 'Правильно: $_score / $totalQ · +50 XP',
+        onDismiss: () {
+          Navigator.of(context).pop();
+          context.pop();
+        },
+      );
     }
   }
 }

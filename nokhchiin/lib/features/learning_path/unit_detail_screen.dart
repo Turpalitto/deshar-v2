@@ -4,14 +4,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/design/app_icons.dart';
 import '../../core/design/widgets/app_icon_image.dart';
-import '../../core/design/widgets/app_scaffold.dart';
 import '../../core/design/widgets/error_state.dart';
 import '../../core/design/widgets/loading_state.dart';
+import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
 import '../../core/utils/number_format.dart';
 import '../../core/widgets/mastery_progress_bar.dart';
 import '../../core/widgets/word_illustration.dart';
+import '../../domain/entities/enums.dart';
 import '../../domain/entities/word_entity.dart';
+import '../../core/utils/gameplay_difficulty.dart';
 
 class UnitDetailScreen extends ConsumerWidget {
   const UnitDetailScreen({super.key, required this.unitId});
@@ -40,6 +42,12 @@ class UnitDetailScreen extends ConsumerWidget {
         }
         // Единый шелл AppScaffold вместо голого Scaffold+AppBar — раньше в
         // приложении было 4 несовместимых системы шапки экрана (аудит §3/§8).
+        final profile = ref.watch(userProfileProvider).value;
+        final showTyping = GameplayDifficulty.showTyping(
+          mode: profile?.mode ?? AppMode.kids,
+          age: profile?.ageGroup ?? KidsAgeGroup.age6to9,
+        );
+
         return AppScaffold(
           title: unit.titleRu,
           body: FutureBuilder<(List<WordEntity>, bool)>(
@@ -77,7 +85,8 @@ class UnitDetailScreen extends ConsumerWidget {
                   _GameButton(iconAsset: AppIcons.gamePuzzle, title: 'Найди пару', onTap: () => context.push('/match/$unitId')),
                   _GameButton(iconAsset: AppIcons.navDictionary, title: 'Карточки', subtitle: 'Свайп и запоминай', onTap: () => context.push('/flashcards/$unitId')),
                   _GameButton(iconAsset: AppIcons.actionReview, title: 'Квиз', subtitle: 'Проверь себя', onTap: () => context.push('/quiz/$unitId')),
-                  _GameButton(iconAsset: AppIcons.actionTyping, title: 'Ввод', subtitle: 'Напиши по-чеченски', onTap: () => context.push('/typing/$unitId')),
+                  if (showTyping)
+                    _GameButton(iconAsset: AppIcons.actionTyping, title: 'Ввод', subtitle: 'Напиши по-чеченски', onTap: () => context.push('/typing/$unitId')),
                 ],
               );
             },
@@ -85,7 +94,7 @@ class UnitDetailScreen extends ConsumerWidget {
         );
       },
       loading: () => const AppScaffold(body: LoadingState()),
-      error: (_, __) => AppScaffold(
+      error: (_, _) => AppScaffold(
         body: ErrorState(
           message: 'Не удалось загрузить юнит',
           onRetry: () => ref.invalidate(learningUnitsProvider),

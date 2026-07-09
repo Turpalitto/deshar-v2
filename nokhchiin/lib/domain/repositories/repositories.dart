@@ -13,6 +13,7 @@ abstract class DictionaryRepository {
   Future<WordEntity?> getWordById(String id);
   Future<List<WordEntity>> search(String query, {String? category, PartOfSpeech? pos});
   Future<List<WordEntity>> getWordsByCategory(String category);
+  Future<List<WordEntity>> getLessonWords();
   Future<List<WordEntity>> getWordsByIds(List<String> ids);
 }
 

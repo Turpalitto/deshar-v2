@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -9,7 +11,6 @@ import '../../core/design/widgets/app_icon_image.dart';
 import '../../core/design/tokens/app_spacing.dart'; // intentional-mix: spacing tokens; Figma widgets from design_system
 // nokhchiin_theme.dart removed — unused (analyzer warning)
 
-import '../../core/design/widgets/app_scaffold.dart'; // intentional-mix: app shell scaffold
 import '../../core/design/widgets/error_state.dart'; // intentional-mix: shared error placeholder
 import '../../core/design/widgets/loading_state.dart'; // intentional-mix: shared loading placeholder
 import '../../core/design/widgets/reward_celebration.dart'; // intentional-mix: celebration overlay
@@ -20,6 +21,7 @@ import '../../core/providers/providers.dart';
 import '../../core/utils/number_format.dart';
 import '../../core/utils/world_progress_util.dart';
 import '../../core/router/app_router.dart' show kFirstLessonUnitId;
+import '../../core/utils/gameplay_difficulty.dart';
 import '../../domain/constants/dictionary_constants.dart';
 import '../../domain/entities/enums.dart';
 import '../../domain/entities/learning_entities.dart';
@@ -81,7 +83,7 @@ class HomeScreen extends ConsumerWidget {
                       : () => context.push('/path'),
                 ).animate().fadeIn(delay: 80.ms).slideY(begin: 0.08),
                 loading: () => const SizedBox(height: 120, child: LoadingState()),
-                error: (_, __) => const SizedBox.shrink(),
+                error: (_, _) => const SizedBox.shrink(),
               ),
             ),
           ),
@@ -106,7 +108,7 @@ class HomeScreen extends ConsumerWidget {
                             .read(cultureCapsuleRepoProvider)
                             .byId('capsule_hospitality');
                         if (capsule != null && context.mounted) {
-                          CultureCapsuleModal.show(context, capsule);
+                          unawaited(CultureCapsuleModal.show(context, capsule));
                         }
                       },
                     ),
@@ -239,7 +241,7 @@ class HomeScreen extends ConsumerWidget {
                 final slice = list.take(3).toList();
                 return SliverList.separated(
                   itemCount: slice.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 10),
+                  separatorBuilder: (_, _) => const SizedBox(height: 10),
                   itemBuilder: (context, i) {
                     final w = slice[i];
                     final pct = worldProgressPercent(w, unitList);
@@ -273,7 +275,7 @@ class HomeScreen extends ConsumerWidget {
                 );
               },
               loading: () => const SliverToBoxAdapter(child: LoadingState()),
-              error: (_, __) => SliverToBoxAdapter(
+              error: (_, _) => SliverToBoxAdapter(
                 child: ErrorState(
                   message: 'Не удалось загрузить миры',
                   onRetry: () => ref.invalidate(worldsProvider),
@@ -286,11 +288,24 @@ class HomeScreen extends ConsumerWidget {
             sliver: SliverToBoxAdapter(
               child: Row(
                 children: [
+                  if (isKids)
+                    Expanded(
+                      child: _QuickLink(
+                        iconAsset: AppIcons.mascotFox,
+                        label: 'Цхьогал',
+                        onTap: () => context.push('/ai-tutor'),
+                      ),
+                    ),
+                  if (isKids) const SizedBox(width: 8),
                   Expanded(child: _QuickLink(iconAsset: AppIcons.actionCollections, label: 'Коллекции', onTap: () => context.push('/collections'))),
                   const SizedBox(width: 8),
                   Expanded(child: _QuickLink(iconAsset: AppIcons.rewardCelebration, label: 'Истории', onTap: () => context.push('/stories'))),
                   const SizedBox(width: 8),
-                  Expanded(child: _QuickLink(iconAsset: AppIcons.actionTyping, label: 'Ввод', onTap: () => context.push('/typing/$kFirstLessonUnitId'))),
+                  if (GameplayDifficulty.showTyping(
+                    mode: profile.mode,
+                    age: profile.ageGroup,
+                  ))
+                    Expanded(child: _QuickLink(iconAsset: AppIcons.actionTyping, label: 'Ввод', onTap: () => context.push('/typing/$kFirstLessonUnitId'))),
                 ],
               ),
             ),

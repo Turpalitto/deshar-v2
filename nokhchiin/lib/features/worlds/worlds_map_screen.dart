@@ -29,7 +29,7 @@ class WorldsMapScreen extends ConsumerWidget {
           data: (unitList) => ListView.separated(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
             itemCount: list.length + 1,
-            separatorBuilder: (_, __) => const SizedBox(height: 14),
+            separatorBuilder: (_, _) => const SizedBox(height: 14),
             itemBuilder: (context, i) {
               if (i == 0) {
                 return Text(
@@ -75,13 +75,13 @@ class WorldsMapScreen extends ConsumerWidget {
             },
           ),
           loading: () => const NokhchiinLoadingState(),
-          error: (_, __) => ErrorState(
+          error: (_, _) => ErrorState(
             message: 'Не удалось загрузить юниты',
             onRetry: () => ref.invalidate(learningUnitsProvider),
           ),
         ),
         loading: () => const NokhchiinLoadingState(),
-        error: (_, __) => ErrorState(
+        error: (_, _) => ErrorState(
           message: 'Не удалось загрузить миры',
           onRetry: () => ref.invalidate(worldsProvider),
         ),

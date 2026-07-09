@@ -48,9 +48,11 @@ class SpacedRepetitionEngine {
 
   MasteryLevel _masteryFromQuality(int quality, MasteryLevel current) {
     if (quality >= 5) return MasteryLevel.mastered;
-    if (quality >= 4) return current.value < MasteryLevel.using.value
-        ? MasteryLevel.using
-        : current;
+    if (quality >= 4) {
+      return current.value < MasteryLevel.using.value
+          ? MasteryLevel.using
+          : current;
+    }
     if (quality >= 3) {
       if (current == MasteryLevel.unseen) return MasteryLevel.seen;
       if (current == MasteryLevel.seen) return MasteryLevel.recognizing;

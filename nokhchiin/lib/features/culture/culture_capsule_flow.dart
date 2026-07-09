@@ -13,10 +13,12 @@ abstract final class CultureCapsuleFlow {
   ) async {
     final capsule = await ref.read(cultureCapsuleRepoProvider).forUnit(unitId);
     if (capsule == null) return;
+    if (!context.mounted) return;
 
     final profile = ref.read(userProfileProvider).value;
     if (profile?.seenCultureCapsules.contains(capsule.id) ?? false) return;
 
+    if (!context.mounted) return;
     final continued = await CultureCapsuleModal.show(context, capsule);
     if (!context.mounted || !continued) return;
 

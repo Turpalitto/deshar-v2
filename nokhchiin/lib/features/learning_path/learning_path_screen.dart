@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/design/widgets/app_scaffold.dart';
 import '../../core/design/widgets/error_state.dart';
 import '../../core/design/widgets/loading_state.dart';
+import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
 import 'widgets/learning_path_trail.dart';
 
@@ -18,7 +18,7 @@ class LearningPathScreen extends ConsumerWidget {
       body: units.when(
         data: (list) => LearningPathTrail(units: list),
         loading: () => const LoadingState(message: 'Строим путь…'),
-        error: (_, __) => ErrorState(
+        error: (_, _) => ErrorState(
           message: 'Не удалось загрузить путь обучения',
           onRetry: () => ref.invalidate(learningUnitsProvider),
         ),

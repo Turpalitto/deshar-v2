@@ -54,6 +54,9 @@ class UserProfileNotifier extends AsyncNotifier<UserProfileEntity> {
   Future<void> setAgeGroup(KidsAgeGroup age) =>
       _update(_current.copyWith(ageGroup: age));
 
+  Future<void> setChechenUiEnabled(bool enabled) =>
+      _update(_current.copyWith(chechenUiEnabled: enabled));
+
   Future<void> addXp(int xp, int stars) async {
     final current = _current;
     final newXp = current.xp + xp;

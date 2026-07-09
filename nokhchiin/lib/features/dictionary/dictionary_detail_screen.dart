@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../core/design/widgets/app_scaffold.dart';
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/dictionary_search_providers.dart';
 import '../../core/providers/providers.dart';

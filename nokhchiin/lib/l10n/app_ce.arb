@@ -1,0 +1,53 @@
+{
+  "@@locale": "ce",
+  "appTitle": "Нохчийн",
+  "appTagline": "Чеченский меттиг лахара некъ",
+  "kidsModeTitle": "Беран режим",
+  "kidsModeSubtitle": "Ловзар, истореш, йоккха кнопкаш",
+  "adultModeTitle": "Хьалха режим",
+  "adultModeSubtitle": "Карточкаш, грамматика, статистика",
+  "agePickerTitle": "Маха ю?",
+  "age3to6": "3–6 шо",
+  "age6to9": "6–9 шо",
+  "age9to12": "9–12 шо",
+  "dictionaryTitle": "Дош",
+  "dictionarySearchHint": "Лахар: нохчийн йа русский",
+  "dictionaryMeta": "{count} деш · Мациев + Алироев + дешар",
+  "@dictionaryMeta": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "verifiedLabel": "✓ хьаьжина",
+  "quizTitle": "Викторина · ★ {score}",
+  "@quizTitle": {
+    "placeholders": {
+      "score": {"type": "int"}
+    }
+  },
+  "notEnoughWords": "Дешаш йоцуш",
+  "quizTapHint": "Кхетаме берг тайп",
+  "paywallTitle": "Нохчийн Premium",
+  "paywallHeadline": "Маьрша некъ",
+  "paywallSubtitle": "ЧкъоьгӀа дешарш, повторенеш, дедаш статистика",
+  "paywallTrialTitle": "{days} де пробный",
+  "@paywallTrialTitle": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "paywallTrialSubtitle": "тӀаьхьа подписка · хӀан-хӀа а дӀаделахьа",
+  "paywallStartTrial": "Пробный дӀадолу",
+  "paywallBuyPremium": "Premium схьаэцар",
+  "paywallRestore": "Схьаэца покупкаш",
+  "paywallLegal": "Кхин дӀа а, шарт а политика а йо",
+  "compareFree": "Free",
+  "comparePremium": "Premium",
+  "compareRowUnits": "Хьалхара 3 юнит",
+  "compareRowPath": "Маьрша некъ",
+  "compareRowSrs": "SRS чӀогӀа лимит",
+  "compareRowParent": "Дедаш статистика",
+  "compareRowOffline": "Офлайн пакаш",
+  "loading": "Чуйолуш…",
+  "retry": "Юха лаха"
+}

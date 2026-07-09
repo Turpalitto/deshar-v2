@@ -61,9 +61,9 @@ final learningUnitsProvider =
     FutureProvider<List<LearningUnitEntity>>((ref) async {
   final all = await ref.watch(learningPathRepoProvider).getUnits();
   // Скрываем юниты без контента (enabled: false в learning_path.json).
-  // Аудит logic §3: school/adjectives/phrases/dialogues/stories не имеют
-  // ни категории в dictionary.json, ни уроков в lessons.json — показ
-  // случайных слов под правильным заголовком = баг.
+  // Юниты без lessons.json (school/adjectives/phrases/dialogues/stories)
+  // отключены в learning_path.json — getWordsByCategory берёт lessons
+  // первым, curated только как fallback.
   final units = all.where((u) => u.enabled).toList();
   final mastery = ref.watch(unitMasteryUseCaseProvider);
   final canAccess = ref.watch(canAccessUnitUseCaseProvider);

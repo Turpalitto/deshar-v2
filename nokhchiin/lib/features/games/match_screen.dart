@@ -1,19 +1,23 @@
+import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/design/app_icons.dart';
-import '../../core/design/tokens/app_durations.dart'; // intentional-mix: motion tokens; Figma widgets from design_system
-import '../../core/design/tokens/app_spacing.dart'; // intentional-mix: spacing tokens
-import '../../core/design/widgets/app_button.dart'; // intentional-mix: legacy button in dialogs
-import '../../core/design/widgets/app_card.dart'; // intentional-mix: legacy card container
-import '../../core/design/widgets/app_scaffold.dart'; // intentional-mix: app shell scaffold
-import '../../core/design/widgets/empty_state.dart'; // intentional-mix: shared empty placeholder
-import '../../core/design/widgets/loading_state.dart'; // intentional-mix: shared loading placeholder
+import '../../core/design/tokens/app_durations.dart';
+import '../../core/design/tokens/app_spacing.dart';
+import '../../core/design/widgets/empty_state.dart';
+import '../../core/design/widgets/loading_state.dart';
+import '../../core/design/widgets/reward_celebration.dart';
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
+import '../../core/utils/exercise_word_pool.dart';
+import '../../core/utils/gameplay_difficulty.dart';
+import '../../domain/entities/enums.dart';
 import '../../domain/entities/word_entity.dart';
 import 'widgets/exercise_presentation.dart';
+import 'widgets/game_session_widgets.dart';
 
 final _rng = Random();
 
@@ -33,6 +37,7 @@ class MatchScreen extends ConsumerStatefulWidget {
 }
 
 class _MatchScreenState extends ConsumerState<MatchScreen> {
+  final _combo = GameComboTracker();
   List<WordEntity> _words = [];
   List<WordEntity> _shuffledRu = [];
   String? _selCe;
@@ -48,29 +53,45 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
   }
 
   Future<void> _load() async {
-    var words = await ref.read(dictionaryRepoProvider).getWordsByCategory(widget.unitId);
-    if (words.length < 4) {
-      // Раньше .take(5) без shuffle — всегда одни и те же (первые в
-      // порядке следования словаря, зачастую худшие по качеству) записи
-      // при каждом фолбэке (аудит §7). Копируем перед shuffle — репозиторий
-      // отдаёт общий закэшированный список, мутировать его на месте нельзя.
-      // Curated вместо полного словаря: проверенные слова, без 23 МБ JSON.
-      final all = [...await ref.read(dictionaryRepoProvider).getCuratedWords()]..shuffle(_rng);
-      words = all.take(5).toList();
-    }
+    final profile = ref.read(userProfileProvider).value;
+    final pairCount = GameplayDifficulty.matchPairCount(
+      mode: profile?.mode ?? AppMode.kids,
+      age: profile?.ageGroup ?? KidsAgeGroup.age6to9,
+    );
+    final words = await ExerciseWordPool.loadForUnit(
+      ref.read(dictionaryRepoProvider),
+      widget.unitId,
+      minCount: pairCount,
+      take: pairCount,
+      rng: _rng,
+    );
     if (mounted) {
-      final taken = words.take(5).toList();
-      final ru = [...taken]..shuffle(_rng);
+      final ru = [...words]..shuffle(_rng);
       setState(() {
-        _words = taken;
+        _words = words;
         _shuffledRu = ru;
         _loading = false;
       });
     }
   }
 
-  void _tapCe(String id) => setState(() => _selCe = id);
-  void _tapRu(String id) => setState(() => _selRu = id);
+  void _tapCe(String id) {
+    if (_matched.contains(id)) return;
+    setState(() => _selCe = id);
+    _tryAutoCheck();
+  }
+
+  void _tapRu(String id) {
+    if (_matched.contains(id)) return;
+    setState(() => _selRu = id);
+    _tryAutoCheck();
+  }
+
+  void _tryAutoCheck() {
+    if (_selCe != null && _selRu != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => unawaited(_check()));
+    }
+  }
 
   Future<void> _check() async {
     if (_selCe == null || _selRu == null) return;
@@ -79,10 +100,16 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
 
     if (isMatch) {
       _matched.add(_selCe!);
+      _combo.recordCorrect();
       await ref.read(reviewWordUseCaseProvider)(_selCe!, 4);
+      unawaited(HapticFeedback.lightImpact());
+    } else {
+      _combo.reset();
+      await ref.read(reviewWordUseCaseProvider)(_selCe!, 1);
+      unawaited(HapticFeedback.heavyImpact());
     }
 
-    await Future.delayed(AppDurations.normal);
+    await Future.delayed(isMatch ? AppDurations.fast : AppDurations.normal);
     if (!mounted) return;
 
     setState(() {
@@ -96,7 +123,17 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
         widget.onComplete?.call();
       } else {
         await ref.read(userProfileProvider.notifier).addXp(60, 6);
-        if (mounted) context.pop();
+        if (!mounted) return;
+        await RewardCelebration.show(
+          context,
+          iconAsset: AppIcons.rewardCelebration,
+          title: 'Все пары собраны!',
+          subtitle: 'Комбо ×${_combo.streak} · +60 XP',
+          onDismiss: () {
+            Navigator.of(context).pop();
+            context.pop();
+          },
+        );
       }
     }
   }
@@ -109,8 +146,6 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
           : const AppScaffold(body: LoadingState());
     }
     if (_words.isEmpty) {
-      // Общий EmptyState вместо голого Text — тот же паттерн, что уже
-      // использует quiz_screen.dart (аудит §low).
       final empty = EmptyState(iconAsset: AppIcons.stateEmpty, title: 'Недостаточно слов');
       return widget.embedded ? empty : AppScaffold(body: empty);
     }
@@ -120,9 +155,11 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
       padding: const EdgeInsets.all(AppSpacing.lg),
       child: Column(
         children: [
-          Text(
-            'Собери пары ${_matched.length}/${_words.length}',
-            style: Theme.of(context).textTheme.titleMedium,
+          ExerciseProgressHeader(
+            step: _matched.length + 1,
+            total: _words.length,
+            combo: _combo.streak,
+            label: 'Собери пары · ${_matched.length}/${_words.length}',
           ),
           const SizedBox(height: AppSpacing.md),
           Expanded(
@@ -133,13 +170,12 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
                   Expanded(
                     child: ListView(
                       children: _words
-                          .map((w) => _MatchBtn(
+                          .map((w) => _MatchTile(
                                 label: w.chechen,
                                 emoji: w.emoji,
                                 selected: _selCe == w.id,
                                 matched: _matched.contains(w.id),
                                 accent: tokens.accent,
-                                accentMuted: tokens.accentMuted,
                                 onTap: () => _tapCe(w.id),
                               ))
                           .toList(),
@@ -149,13 +185,11 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
                   Expanded(
                     child: ListView(
                       children: _shuffledRu
-                          .map((w) => _MatchBtn(
+                          .map((w) => _MatchTile(
                                 label: w.russian,
-                                emoji: null,
                                 selected: _selRu == w.id,
                                 matched: _matched.contains(w.id),
                                 accent: tokens.accent,
-                                accentMuted: tokens.accentMuted,
                                 onTap: () => _tapRu(w.id),
                               ))
                           .toList(),
@@ -165,7 +199,6 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
               ),
             ),
           ),
-          AppButton(label: 'Проверить', onPressed: _check),
         ],
       ),
     );
@@ -175,52 +208,55 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
   }
 }
 
-class _MatchBtn extends StatelessWidget {
-  const _MatchBtn({
+class _MatchTile extends StatelessWidget {
+  const _MatchTile({
     required this.label,
     required this.selected,
     required this.matched,
     required this.onTap,
     required this.accent,
-    required this.accentMuted,
     this.emoji,
   });
 
   final String label;
   final String? emoji;
-  final bool selected, matched;
+  final bool selected;
+  final bool matched;
   final Color accent;
-  final Color accentMuted;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.iosTokens;
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-      child: AppCard(
-        onTap: matched ? null : onTap,
-        child: Container(
-          width: double.infinity,
+      child: AnimatedOpacity(
+        opacity: matched ? 0.45 : 1,
+        duration: AppDurations.fast,
+        child: NokhchiinSurfaceCard(
+          onTap: matched ? null : onTap,
           padding: const EdgeInsets.symmetric(vertical: AppSpacing.md, horizontal: AppSpacing.sm),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            border: selected ? Border.all(color: accent, width: 2) : null,
-            color: matched ? accentMuted.withValues(alpha: 0.55) : null,
-          ),
-          child: Row(
-            children: [
-              if (emoji != null) Text(emoji!, style: const TextStyle(fontSize: 20)),
-              if (emoji != null) const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: Text(
-                  label,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    decoration: matched ? TextDecoration.lineThrough : null,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              border: selected ? Border.all(color: accent, width: 2) : null,
+            ),
+            child: Row(
+              children: [
+                if (emoji != null) Text(emoji!, style: const TextStyle(fontSize: 20)),
+                if (emoji != null) const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Text(
+                    label,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      color: matched ? tokens.textTertiary : tokens.textPrimary,
+                      decoration: matched ? TextDecoration.lineThrough : null,
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,7 +8,6 @@ import '../../core/config/feature_flags.dart';
 import '../../core/design/app_icons.dart';
 import '../../core/design/widgets/app_icon_image.dart';
 import '../../core/design/tokens/app_spacing.dart'; // intentional-mix: spacing tokens; Figma widgets from design_system
-import '../../core/design/widgets/app_scaffold.dart'; // intentional-mix: app shell scaffold
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
 import '../../core/widgets/kids_tap_target.dart';
@@ -266,6 +267,24 @@ class ProfileScreen extends ConsumerWidget {
               );
             }),
           ],
+          const SizedBox(height: AppSpacing.lg),
+          Text('Интерфейс', style: Theme.of(context).textTheme.titleLarge),
+          const SizedBox(height: AppSpacing.sm),
+          SwitchListTile(
+            value: profile.chechenUiEnabled,
+            onChanged: (v) =>
+                ref.read(userProfileProvider.notifier).setChechenUiEnabled(v),
+            title: const Text('Интерфейс на чеченском'),
+            subtitle: const Text('Immersion mode — кнопки и подписи на нохчийн мотт'),
+            secondary: const AppIconImage(asset: AppIcons.cultureHeritage, size: 24),
+          ),
+          ListTile(
+            leading: const AppIconImage(asset: AppIcons.mascotFox, size: 28),
+            title: const Text('Цхьогал — AI-помощник'),
+            subtitle: const Text('Спроси о слове или потренируй фразы'),
+            trailing: const Icon(Icons.chevron_right_rounded),
+            onTap: () => context.push('/ai-tutor'),
+          ),
           const SizedBox(height: AppSpacing.md),
           NokhchiinSettingsRow(
             iconAsset: AppIcons.actionReview,
@@ -293,7 +312,7 @@ class ProfileScreen extends ConsumerWidget {
                 ref,
                 needsGate: true,
                 action: () async {
-                  if (context.mounted) context.push('/parent');
+                  if (context.mounted) unawaited(context.push('/parent'));
                 },
               ),
             ),

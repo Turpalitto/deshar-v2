@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -6,10 +8,8 @@ import 'package:nokhchiin/core/l10n/l10n_extensions.dart';
 import '../../core/design/app_icons.dart';
 import '../../core/design/widgets/app_icon_image.dart';
 import '../../core/design/tokens/app_spacing.dart'; // intentional-mix: spacing tokens; Figma widgets from design_system
-import '../../core/design/widgets/app_scaffold.dart'; // intentional-mix: app shell scaffold
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
-import '../../core/router/app_router.dart';
 import '../../core/utils/number_format.dart';
 import '../../core/widgets/kids_tap_target.dart';
 import '../../core/widgets/legal_links_row.dart';
@@ -93,7 +93,7 @@ class OnboardingScreen extends ConsumerWidget {
               accentMuted: tokens.accentMuted,
               onTap: () async {
                 await ref.read(userProfileProvider.notifier).setMode(AppMode.adult);
-                if (context.mounted) context.push('/onboarding/placement');
+                if (context.mounted) unawaited(context.push('/onboarding/placement'));
               },
             ).animate().fadeIn(delay: 160.ms).slideX(),
             const SizedBox(height: 12),
@@ -301,14 +301,11 @@ class _AgeRow extends ConsumerWidget {
           expand: true,
           onTap: () async {
             await ref.read(userProfileProvider.notifier).setAgeGroup(age);
-            await ref.read(userProfileProvider.notifier).completeOnboarding();
-            // Держим синхронный guard в согласии с профилем: иначе
-            // context.go('/') отскочит redirect'ом обратно на /splash сразу
-            // после выбора возраста.
-            OnboardingGuard.completed = true;
             if (context.mounted) {
               Navigator.pop(context);
-              context.go('/');
+              // Лёгкий placement (3 вопроса, можно пропустить) — дети
+              // диаспоры часто знают язык частично.
+              unawaited(context.push('/onboarding/placement'));
             }
           },
           child: Ink(

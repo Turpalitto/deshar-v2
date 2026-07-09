@@ -44,6 +44,7 @@ class UserRepositoryImpl implements UserRepository {
       hasCompletedOnboarding: data['hasCompletedOnboarding'] as bool? ?? false,
       streakFreezeCount: data['streakFreezeCount'] as int? ?? 0,
       notificationsEnabled: data['notificationsEnabled'] as bool? ?? false,
+      chechenUiEnabled: data['chechenUiEnabled'] as bool? ?? false,
     );
   }
 
@@ -75,6 +76,7 @@ class UserRepositoryImpl implements UserRepository {
       'hasCompletedOnboarding': profile.hasCompletedOnboarding,
       'streakFreezeCount': profile.streakFreezeCount,
       'notificationsEnabled': profile.notificationsEnabled,
+      'chechenUiEnabled': profile.chechenUiEnabled,
     });
   }
 }

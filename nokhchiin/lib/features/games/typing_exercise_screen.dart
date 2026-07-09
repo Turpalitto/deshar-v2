@@ -1,9 +1,12 @@
+import 'dart:async';
 import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../core/design/tokens/app_durations.dart';
 import '../../core/design/tokens/app_spacing.dart';
 import '../../core/design/tokens/nokhchiin_colors.dart';
@@ -17,21 +20,30 @@ import '../../core/design/widgets/reward_celebration.dart';
 import '../../core/design/widgets/word_exercise_card.dart';
 import '../../core/providers/providers.dart';
 import '../../core/utils/chechen_text_utils.dart';
+import '../../core/utils/exercise_word_pool.dart';
+import '../../core/utils/gameplay_difficulty.dart';
+import '../../domain/entities/enums.dart';
 import '../../domain/entities/word_entity.dart';
+import 'widgets/exercise_presentation.dart';
+import 'widgets/game_session_widgets.dart';
 
 final _rng = Random();
 
 /// Упражнение CE→RU: показ русского, ввод чеченского с кастомной клавиатурой.
 class TypingExerciseScreen extends ConsumerStatefulWidget {
   const TypingExerciseScreen({super.key, required this.unitId});
+
   final String unitId;
 
   @override
-  ConsumerState<TypingExerciseScreen> createState() => _TypingExerciseScreenState();
+  ConsumerState<TypingExerciseScreen> createState() =>
+      _TypingExerciseScreenState();
 }
 
 class _TypingExerciseScreenState extends ConsumerState<TypingExerciseScreen> {
   final _controller = TextEditingController();
+  final _combo = GameComboTracker();
+
   List<WordEntity> _words = [];
   int _index = 0;
   int _score = 0;
@@ -51,19 +63,21 @@ class _TypingExerciseScreenState extends ConsumerState<TypingExerciseScreen> {
   }
 
   Future<void> _load() async {
-    var words = await ref.read(dictionaryRepoProvider).getWordsByCategory(widget.unitId);
-    if (words.length < 3) {
-      // Раньше .take(10) без shuffle пула — всегда один и тот же набор
-      // первых 10 слов словаря (аудит §7). Копируем перед shuffle —
-      // репозиторий отдаёт общий закэшированный список. Curated вместо
-      // полного словаря: проверенные слова, без парсинга 23 МБ.
-      final all = [...await ref.read(dictionaryRepoProvider).getCuratedWords()]..shuffle(_rng);
-      words = all.take(10).toList();
-    }
-    words.shuffle(_rng);
+    final profile = ref.read(userProfileProvider).value;
+    final count = GameplayDifficulty.typingWordCount(
+      mode: profile?.mode ?? AppMode.kids,
+      age: profile?.ageGroup ?? KidsAgeGroup.age6to9,
+    );
+    final words = await ExerciseWordPool.loadForUnit(
+      ref.read(dictionaryRepoProvider),
+      widget.unitId,
+      minCount: 1,
+      take: count,
+      rng: _rng,
+    );
     if (mounted) {
       setState(() {
-        _words = words.take(6).toList();
+        _words = words;
         _loading = false;
       });
     }
@@ -71,31 +85,28 @@ class _TypingExerciseScreenState extends ConsumerState<TypingExerciseScreen> {
 
   Future<void> _check() async {
     if (_words.isEmpty) return;
-    if (_lastCorrect != null) return; // блокируем повторный тап, пока идёт фидбек (аудит §2)
+    if (_lastCorrect != null) return;
+
     final target = _words[_index];
-    // Нормализуем палочку Ӏ и её ASCII-замены (1/I/i/l/|/!) тем же способом,
-    // что и поиск словаря — иначе ввод "kIant" вместо "кӀант" (обычная
-    // практика без чеченской раскладки) засчитывается как ошибка, хотя то
-    // же самое прекрасно находится в поиске (аудит §7).
     final input = ChechenTextUtils.normalizeForSearch(_controller.text);
     final expected = ChechenTextUtils.normalizeForSearch(target.chechen);
     final correct = input == expected;
 
     setState(() => _lastCorrect = correct);
-    HapticFeedback.mediumImpact();
+    unawaited(HapticFeedback.mediumImpact());
 
-    // Ждём запись в Hive перед переходом дальше — раньше это было
-    // "выстрелил и забыл" на пути начисления награды (аудит §2).
     if (correct) {
       _score++;
+      _combo.recordCorrect();
       await ref.read(reviewWordUseCaseProvider)(target.id, 5);
       await ref.read(userProfileProvider.notifier).recordWordLearned();
     } else {
+      _combo.reset();
       await ref.read(reviewWordUseCaseProvider)(target.id, 1);
     }
     if (!mounted) return;
 
-    Future.delayed(AppDurations.normal, () async {
+    unawaited(Future.delayed(AppDurations.normal, () async {
       if (!mounted) return;
       if (_index < _words.length - 1) {
         setState(() {
@@ -110,14 +121,15 @@ class _TypingExerciseScreenState extends ConsumerState<TypingExerciseScreen> {
           context,
           iconAsset: AppIcons.rewardCelebration,
           title: 'Отлично!',
-          subtitle: 'Правильно: $_score / ${_words.length} · +30 XP',
+          subtitle:
+              'Правильно: $_score / ${_words.length} · комбо ×${_combo.streak} · +30 XP',
           onDismiss: () {
             Navigator.of(context).pop();
             context.pop();
           },
         );
       }
-    });
+    }));
   }
 
   @override
@@ -126,10 +138,11 @@ class _TypingExerciseScreenState extends ConsumerState<TypingExerciseScreen> {
       return const AppScaffold(body: LoadingState());
     }
     if (_words.isEmpty) {
-      // Общий EmptyState вместо голого Text — тот же паттерн, что уже
-      // использует quiz_screen.dart (аудит §low).
       return const AppScaffold(
-        body: EmptyState(iconAsset: AppIcons.stateEmpty, title: 'Недостаточно слов для упражнения'),
+        body: EmptyState(
+          iconAsset: AppIcons.stateEmpty,
+          title: 'Недостаточно слов для упражнения',
+        ),
       );
     }
 
@@ -146,48 +159,61 @@ class _TypingExerciseScreenState extends ConsumerState<TypingExerciseScreen> {
         padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
           children: [
-            AnimatedContainer(
-              duration: AppDurations.fast,
-              decoration: BoxDecoration(
-                color: feedbackColor?.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: AppCard(
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Как будет по-чеченски?',
-                          style: Theme.of(context).textTheme.labelLarge,
-                        ),
-                        // Иконка, а не только цвет фона — WCAG 1.4.1
-                        // (аудит §medium).
-                        if (_lastCorrect != null) ...[
-                          const SizedBox(width: 6),
-                          Icon(
-                            _lastCorrect! ? Icons.check_circle_rounded : Icons.cancel_rounded,
-                            size: 16,
-                            color: feedbackColor,
+            ExerciseProgressHeader(
+              step: _index + 1,
+              total: _words.length,
+              combo: _combo.streak,
+              label: 'Напиши по-чеченски',
+            ),
+            const SizedBox(height: AppSpacing.md),
+            AnswerFeedbackAnimator(
+              feedback: _lastCorrect,
+              child: AnimatedContainer(
+                duration: AppDurations.fast,
+                decoration: BoxDecoration(
+                  color: feedbackColor?.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: AppCard(
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Как будет по-чеченски?',
+                            style: Theme.of(context).textTheme.labelLarge,
                           ),
+                          if (_lastCorrect != null) ...[
+                            const SizedBox(width: 6),
+                            Icon(
+                              _lastCorrect!
+                                  ? Icons.check_circle_rounded
+                                  : Icons.cancel_rounded,
+                              size: 16,
+                              color: feedbackColor,
+                            ),
+                          ],
                         ],
+                      ),
+                      const SizedBox(height: AppSpacing.lg),
+                      Text(
+                        word.russian,
+                        style: Theme.of(context).textTheme.displaySmall,
+                        textAlign: TextAlign.center,
+                      ),
+                      if (word.hint != null) ...[
+                        const SizedBox(height: AppSpacing.sm),
+                        Text(
+                          word.hint!,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
                       ],
-                    ),
-                    const SizedBox(height: AppSpacing.lg),
-                    Text(
-                      word.russian,
-                      style: Theme.of(context).textTheme.displaySmall,
-                      textAlign: TextAlign.center,
-                    ),
-                    if (word.hint != null) ...[
-                      const SizedBox(height: AppSpacing.sm),
-                      Text(word.hint!, style: Theme.of(context).textTheme.bodySmall),
                     ],
-                  ],
+                  ),
                 ),
               ),
-            ).animate(key: ValueKey(_index)).fadeIn().slideY(begin: 0.05),
+            ).animate(key: ValueKey(word.id)).fadeIn().slideY(begin: 0.05),
             const SizedBox(height: AppSpacing.xl),
             ChechenKeyboard(
               controller: _controller,

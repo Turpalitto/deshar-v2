@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -5,7 +7,6 @@ import '../../core/design/app_icons.dart';
 import '../../core/design/widgets/app_icon_image.dart';
 import '../../core/design/tokens/app_spacing.dart';
 import '../../core/design/widgets/app_card.dart';
-import '../../core/design/widgets/app_scaffold.dart';
 import '../../core/design/widgets/error_state.dart';
 import '../../core/design/widgets/loading_state.dart';
 import '../../core/widgets/mastery_progress_bar.dart';
@@ -77,7 +78,7 @@ class CollectionsScreen extends ConsumerWidget {
           },
         ),
         loading: () => const LoadingState(),
-        error: (_, __) => ErrorState(
+        error: (_, _) => ErrorState(
           message: 'Не удалось загрузить коллекции',
           onRetry: () => ref.invalidate(collectionsProvider),
         ),
@@ -107,7 +108,7 @@ class CollectionsScreen extends ConsumerWidget {
     if (legendary) {
       final ok = await ref.read(canAccessFeatureUseCaseProvider)(PremiumFeature.fullCollections);
       if (!ok && context.mounted) {
-        context.push('/paywall?return=/collections');
+        unawaited(context.push('/paywall?return=/collections'));
         return;
       }
     }

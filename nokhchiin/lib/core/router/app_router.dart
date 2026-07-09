@@ -26,6 +26,7 @@ import '../../features/progress/progress_screen.dart';
 import '../../features/paywall/paywall_screen.dart';
 import '../../features/legal/legal_document_screen.dart';
 import '../../features/games/typing_exercise_screen.dart';
+import '../../features/ai_tutor/ai_tutor_screen.dart';
 import '../../features/culture/culture_capsule_preview_screen.dart';
 import '../design/widgets/app_shell.dart';
 import 'route_transitions.dart';
@@ -33,7 +34,7 @@ import 'route_transitions.dart';
 final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 
 /// Первый урок после onboarding.
-const kFirstLessonUnitId = 'animals';
+const kFirstLessonUnitId = 'greetings';
 
 /// Синхронный guard для redirect. Splash/onboarding устанавливают флаг
 /// после загрузки профиля, чтобы deep-link на холодном старте не обходил
@@ -59,15 +60,15 @@ final appRouter = GoRouter(
   routes: [
     GoRoute(
       path: '/splash',
-      builder: (_, __) => const SplashScreen(),
+      builder: (_, _) => const SplashScreen(),
     ),
     GoRoute(
       path: '/onboarding',
-      builder: (_, __) => const OnboardingScreen(),
+      builder: (_, _) => const OnboardingScreen(),
     ),
     GoRoute(
       path: '/onboarding/placement',
-      builder: (_, __) => const PlacementTestScreen(),
+      builder: (_, _) => const PlacementTestScreen(),
     ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) => AppShell(navigationShell: navigationShell),
@@ -76,7 +77,7 @@ final appRouter = GoRouter(
           routes: [
             GoRoute(
               path: '/',
-              builder: (_, __) => const HomeScreen(),
+              builder: (_, _) => const HomeScreen(),
             ),
           ],
         ),
@@ -84,7 +85,7 @@ final appRouter = GoRouter(
           routes: [
             GoRoute(
               path: '/worlds',
-              builder: (_, __) => const WorldsMapScreen(),
+              builder: (_, _) => const WorldsMapScreen(),
             ),
           ],
         ),
@@ -92,7 +93,7 @@ final appRouter = GoRouter(
           routes: [
             GoRoute(
               path: '/review',
-              builder: (_, __) => const ReviewScreen(),
+              builder: (_, _) => const ReviewScreen(),
             ),
           ],
         ),
@@ -100,7 +101,7 @@ final appRouter = GoRouter(
           routes: [
             GoRoute(
               path: '/profile',
-              builder: (_, __) => const ProfileScreen(),
+              builder: (_, _) => const ProfileScreen(),
             ),
           ],
         ),
@@ -215,6 +216,11 @@ final appRouter = GoRouter(
         path: '/dev/culture-capsules',
         pageBuilder: (context, state) => _fadeScale(state, const CultureCapsulePreviewScreen()),
       ),
+    GoRoute(
+      parentNavigatorKey: _rootNavigatorKey,
+      path: '/ai-tutor',
+      pageBuilder: (context, state) => _fadeScale(state, const AiTutorScreen()),
+    ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
       path: '/typing/:unitId',

@@ -11,6 +11,7 @@ class NokhchiinQuizOption extends StatelessWidget {
     required this.onTap,
     this.selected,
     this.correct,
+    this.revealAsCorrect = false,
     this.enabled = true,
   });
 
@@ -19,6 +20,8 @@ class NokhchiinQuizOption extends StatelessWidget {
   final VoidCallback? onTap;
   final bool? selected;
   final bool? correct;
+  /// Подсветить правильный ответ после ошибки (не выбранный пользователем).
+  final bool revealAsCorrect;
   final bool enabled;
 
   @override
@@ -47,6 +50,13 @@ class NokhchiinQuizOption extends StatelessWidget {
       badgeBg = tokens.error;
       badgeFg = Colors.white;
       badge = '✗';
+    } else if (revealAsCorrect) {
+      bg = tokens.success.withValues(alpha: 0.09);
+      border = tokens.success;
+      textColor = tokens.success;
+      badgeBg = tokens.success;
+      badgeFg = Colors.white;
+      badge = '✓';
     }
 
     return Material(

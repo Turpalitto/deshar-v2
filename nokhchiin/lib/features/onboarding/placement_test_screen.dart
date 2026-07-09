@@ -6,12 +6,13 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/design/tokens/app_durations.dart';
 import '../../core/design/tokens/app_spacing.dart';
-import '../../core/design/widgets/app_scaffold.dart';
 import '../../core/design/widgets/loading_state.dart';
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
 import '../../core/router/app_router.dart';
+import '../../domain/entities/enums.dart';
 import '../../domain/entities/word_entity.dart';
+import '../../core/utils/gameplay_difficulty.dart';
 
 final _rng = Random();
 
@@ -63,16 +64,28 @@ class _PlacementTestScreenState extends ConsumerState<PlacementTestScreen> {
     // расходится с контентом при каждой правке learning_path.json (см.
     // аудит §7: категории вроде colors/numbers/body были отключены после
     // проверки контента).
-    final units = await ref.read(learningPathRepoProvider).getUnits();
-    final starterUnitIds = units.where((u) => u.enabled).map((u) => u.id);
+    final profile = ref.read(userProfileProvider).value;
+    final mode = profile?.mode ?? AppMode.adult;
+    final unitLimit = GameplayDifficulty.placementUnitLimit(mode: mode);
+    final questionsPerUnit =
+        GameplayDifficulty.placementQuestionsPerUnit(mode: mode);
 
-    for (final unitId in starterUnitIds) {
-      var words = await dictionaryRepo.getWordsByCategory(unitId);
+    final units = await ref.read(learningPathRepoProvider).getUnits();
+    // Только стартовые юниты (requiredMastery == 0) — не все 10 enabled,
+    // иначе 20 вопросов блокируют онбординг.
+    final starterUnits = units
+        .where((u) => u.enabled && u.requiredMastery == 0)
+        .take(unitLimit)
+        .toList();
+
+    for (final unit in starterUnits) {
+      final unitId = unit.id;
+      final words = await dictionaryRepo.getWordsByCategory(unitId);
       if (words.isEmpty) continue;
       _correctByUnit[unitId] = 0;
 
       final shuffled = [...words]..shuffle(_rng);
-      final targets = shuffled.take(2).toList();
+      final targets = shuffled.take(questionsPerUnit).toList();
 
       for (final target in targets) {
         final pool = [...words]..removeWhere((w) => w.id == target.id);
@@ -82,23 +95,28 @@ class _PlacementTestScreenState extends ConsumerState<PlacementTestScreen> {
         // физически неотвечаем (тот же баг, что в quiz_screen.dart — аудит §7).
         final seen = <String>{target.russian.trim().toLowerCase()};
         final distractors = <WordEntity>[];
+        final age = profile?.ageGroup ?? KidsAgeGroup.age6to9;
+        final optionCount =
+            GameplayDifficulty.quizOptionCount(mode: mode, age: age);
+        final distractorNeed = optionCount - 1;
         for (final w in pool) {
           final key = w.russian.trim().toLowerCase();
           if (seen.add(key)) distractors.add(w);
-          if (distractors.length == 3) break;
+          if (distractors.length >= distractorNeed) break;
         }
-        if (distractors.length < 3) {
-          // Категория слишком маленькая/однообразная — добираем дистракторы
-          // из всего словаря, тоже с проверкой на уникальность перевода.
-          final extra = allWords.where((w) => !seen.contains(w.russian.trim().toLowerCase())).toList()
+        if (distractors.length < distractorNeed) {
+          final extra = allWords
+              .where((w) => !seen.contains(w.russian.trim().toLowerCase()))
+              .toList()
             ..shuffle(_rng);
           for (final w in extra) {
             final key = w.russian.trim().toLowerCase();
             if (seen.add(key)) distractors.add(w);
-            if (distractors.length == 3) break;
+            if (distractors.length >= distractorNeed) break;
           }
         }
-        final options = [target, ...distractors]..shuffle(_rng);
+        final options = [target, ...distractors.take(distractorNeed)]
+          ..shuffle(_rng);
         questions.add(_Question(unitId: unitId, target: target, options: options));
       }
     }
@@ -171,8 +189,11 @@ class _PlacementTestScreenState extends ConsumerState<PlacementTestScreen> {
 
     final q = _questions[_index];
 
+    final isKids =
+        ref.watch(userProfileProvider).value?.mode == AppMode.kids;
+
     return AppScaffold(
-      title: 'Проверим, что ты уже знаешь',
+      title: isKids ? 'Что ты уже знаешь?' : 'Проверим, что ты уже знаешь',
       actions: [
         TextButton(
           onPressed: _completeAndLeave,

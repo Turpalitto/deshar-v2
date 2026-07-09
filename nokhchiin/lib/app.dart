@@ -55,7 +55,9 @@ class _NokhchiinAppState extends ConsumerState<NokhchiinApp> with WidgetsBinding
       theme: NokhchiinTheme.light(mode: mode, age: age),
       darkTheme: NokhchiinTheme.dark(mode: mode, age: age),
       themeMode: themeMode,
-      locale: const Locale('ru'),
+      locale: profile?.chechenUiEnabled == true
+          ? const Locale('ce')
+          : const Locale('ru'),
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: const [
         AppLocalizations.delegate,
