@@ -30,8 +30,11 @@ class LocalProgressDataSource {
         // Пропускаем одну битую запись, не роняя весь прогресс —
         // раньше одна запись с плохим DateTime/типом очищала весь
         // прогресс пользователя (аудит local_storage).
-        AppLogger.warn('Skipping corrupt progress entry $key',
-            error: e, stackTrace: st);
+        AppLogger.warn(
+          'Skipping corrupt progress entry $key',
+          error: e,
+          stackTrace: st,
+        );
       }
     }
     return result;
@@ -43,7 +46,11 @@ class LocalProgressDataSource {
       if (map == null) return null;
       return _fromMap(wordId, map);
     } catch (e, st) {
-      AppLogger.error('Failed to read progress for $wordId', error: e, stackTrace: st);
+      AppLogger.error(
+        'Failed to read progress for $wordId',
+        error: e,
+        stackTrace: st,
+      );
       return null;
     }
   }
@@ -52,40 +59,44 @@ class LocalProgressDataSource {
     try {
       await _box.put(p.wordId, _toMap(p));
     } catch (e, st) {
-      AppLogger.error('Failed to save progress for ${p.wordId}', error: e, stackTrace: st);
+      AppLogger.error(
+        'Failed to save progress for ${p.wordId}',
+        error: e,
+        stackTrace: st,
+      );
     }
   }
 
   Map<String, dynamic> _toMap(WordProgressEntity p) => {
-        'mastery': p.mastery.value,
-        'easeFactor': p.easeFactor,
-        'intervalDays': p.intervalDays,
-        'repetitions': p.repetitions,
-        'nextReviewAt': p.nextReviewAt?.toIso8601String(),
-        'lastReviewedAt': p.lastReviewedAt?.toIso8601String(),
-        'correctStreak': p.correctStreak,
-        'wrongCount': p.wrongCount,
-        'isFavorite': p.isFavorite,
-        'seededFromPlacement': p.seededFromPlacement,
-      };
+    'mastery': p.mastery.value,
+    'easeFactor': p.easeFactor,
+    'intervalDays': p.intervalDays,
+    'repetitions': p.repetitions,
+    'nextReviewAt': p.nextReviewAt?.toIso8601String(),
+    'lastReviewedAt': p.lastReviewedAt?.toIso8601String(),
+    'correctStreak': p.correctStreak,
+    'wrongCount': p.wrongCount,
+    'isFavorite': p.isFavorite,
+    'seededFromPlacement': p.seededFromPlacement,
+  };
 
   WordProgressEntity _fromMap(String id, Map map) => WordProgressEntity(
-        wordId: id,
-        mastery: MasteryLevel.fromValue(map['mastery'] as int? ?? 0),
-        easeFactor: (map['easeFactor'] as num?)?.toDouble() ?? 2.5,
-        intervalDays: map['intervalDays'] as int? ?? 0,
-        repetitions: map['repetitions'] as int? ?? 0,
-        nextReviewAt: map['nextReviewAt'] != null
-            ? DateTime.parse(map['nextReviewAt'] as String)
-            : null,
-        lastReviewedAt: map['lastReviewedAt'] != null
-            ? DateTime.parse(map['lastReviewedAt'] as String)
-            : null,
-        correctStreak: map['correctStreak'] as int? ?? 0,
-        wrongCount: map['wrongCount'] as int? ?? 0,
-        isFavorite: map['isFavorite'] as bool? ?? false,
-        seededFromPlacement: map['seededFromPlacement'] as bool? ?? false,
-      );
+    wordId: id,
+    mastery: MasteryLevel.fromValue(map['mastery'] as int? ?? 0),
+    easeFactor: (map['easeFactor'] as num?)?.toDouble() ?? 2.5,
+    intervalDays: map['intervalDays'] as int? ?? 0,
+    repetitions: map['repetitions'] as int? ?? 0,
+    nextReviewAt: map['nextReviewAt'] != null
+        ? DateTime.parse(map['nextReviewAt'] as String)
+        : null,
+    lastReviewedAt: map['lastReviewedAt'] != null
+        ? DateTime.parse(map['lastReviewedAt'] as String)
+        : null,
+    correctStreak: map['correctStreak'] as int? ?? 0,
+    wrongCount: map['wrongCount'] as int? ?? 0,
+    isFavorite: map['isFavorite'] as bool? ?? false,
+    seededFromPlacement: map['seededFromPlacement'] as bool? ?? false,
+  );
 }
 
 class LocalUserDataSource {

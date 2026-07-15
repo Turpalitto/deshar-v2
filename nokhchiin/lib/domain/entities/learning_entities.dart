@@ -24,6 +24,7 @@ class LearningUnitEntity extends Equatable {
   final List<String> wordIds;
   final bool isUnlocked;
   final int masteryPercent;
+
   /// Юнит активен в Path. false = скрыт (нет контента/уроков).
   /// Скрывает school/adjectives/phrases/dialogues/stories пока контент
   /// не наполнен — аудит logic §3.
@@ -118,8 +119,9 @@ class UserProfileEntity extends Equatable {
   /// Интерфейс на чеченском (immersion mode).
   final bool chechenUiEnabled;
 
-  int get dailyGoalProgress =>
-      dailyGoalWords > 0 ? (wordsLearnedToday / dailyGoalWords * 100).round().clamp(0, 100) : 0;
+  int get dailyGoalProgress => dailyGoalWords > 0
+      ? (wordsLearnedToday / dailyGoalWords * 100).round().clamp(0, 100)
+      : 0;
 
   UserProfileEntity copyWith({
     AppMode? mode,
@@ -169,10 +171,12 @@ class UserProfileEntity extends Equatable {
       dailyGiftClaimed: dailyGiftClaimed ?? this.dailyGiftClaimed,
       weeklyXp: weeklyXp ?? this.weeklyXp,
       isPremium: isPremium ?? this.isPremium,
-      lessonsCompletedTotal: lessonsCompletedTotal ?? this.lessonsCompletedTotal,
+      lessonsCompletedTotal:
+          lessonsCompletedTotal ?? this.lessonsCompletedTotal,
       reviewsDoneToday: reviewsDoneToday ?? this.reviewsDoneToday,
       seenCultureCapsules: seenCultureCapsules ?? this.seenCultureCapsules,
-      hasCompletedOnboarding: hasCompletedOnboarding ?? this.hasCompletedOnboarding,
+      hasCompletedOnboarding:
+          hasCompletedOnboarding ?? this.hasCompletedOnboarding,
       streakFreezeCount: streakFreezeCount ?? this.streakFreezeCount,
       notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
       chechenUiEnabled: chechenUiEnabled ?? this.chechenUiEnabled,
@@ -181,31 +185,31 @@ class UserProfileEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        mode,
-        ageGroup,
-        xp,
-        level,
-        streakDays,
-        stars,
-        coins,
-        dailyGoalMinutes,
-        dailyGoalWords,
-        todayMinutes,
-        wordsLearnedToday,
-        avatarId,
-        currentWorldId,
-        unlockedWorlds,
-        achievements,
-        lastActiveDate,
-        dailyGiftClaimed,
-        weeklyXp,
-        isPremium,
-        lessonsCompletedTotal,
-        reviewsDoneToday,
-        seenCultureCapsules,
-        hasCompletedOnboarding,
-        streakFreezeCount,
-        notificationsEnabled,
-        chechenUiEnabled,
-      ];
+    mode,
+    ageGroup,
+    xp,
+    level,
+    streakDays,
+    stars,
+    coins,
+    dailyGoalMinutes,
+    dailyGoalWords,
+    todayMinutes,
+    wordsLearnedToday,
+    avatarId,
+    currentWorldId,
+    unlockedWorlds,
+    achievements,
+    lastActiveDate,
+    dailyGiftClaimed,
+    weeklyXp,
+    isPremium,
+    lessonsCompletedTotal,
+    reviewsDoneToday,
+    seenCultureCapsules,
+    hasCompletedOnboarding,
+    streakFreezeCount,
+    notificationsEnabled,
+    chechenUiEnabled,
+  ];
 }

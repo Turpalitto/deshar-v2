@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/design/app_icons.dart';
-import '../../core/design/widgets/app_icon_image.dart';
 import '../../core/design/widgets/error_state.dart';
 import '../../core/design/widgets/loading_state.dart';
 import '../../core/design_system/design_system.dart';
@@ -52,11 +51,15 @@ class UnitDetailScreen extends ConsumerWidget {
           title: unit.titleRu,
           body: FutureBuilder<(List<WordEntity>, bool)>(
             future: () async {
-              final words = await ref.read(dictionaryRepoProvider).getWordsByCategory(unitId);
+              final words = await ref
+                  .read(dictionaryRepoProvider)
+                  .getWordsByCategory(unitId);
               // Не показываем кнопку "Босс", если для юнита нет boss-контента
               // в bosses.json — иначе экран босса вешается навсегда без
               // выхода (аудит logic §6).
-              final boss = await ref.read(contentSourceProvider).loadBossForUnit(unitId);
+              final boss = await ref
+                  .read(contentSourceProvider)
+                  .loadBossForUnit(unitId);
               return (words, boss != null);
             }(),
             builder: (context, snap) {
@@ -65,28 +68,71 @@ class UnitDetailScreen extends ConsumerWidget {
               return ListView(
                 padding: const EdgeInsets.all(20),
                 children: [
-                  Center(child: WordIllustration(category: unitId, emoji: null, size: 100)),
+                  Center(
+                    child: WordIllustration(
+                      category: unitId,
+                      emoji: null,
+                      size: 100,
+                    ),
+                  ),
                   const SizedBox(height: 12),
-                  Text(unit.titleCe, style: Theme.of(context).textTheme.displayLarge, textAlign: TextAlign.center),
+                  Text(
+                    unit.titleCe,
+                    style: Theme.of(context).textTheme.displayLarge,
+                    textAlign: TextAlign.center,
+                  ),
                   MasteryProgressBar(percent: unit.masteryPercent),
-                  Text('${unit.masteryPercent}% · ${wordsCount(words.length)}', textAlign: TextAlign.center),
+                  Text(
+                    '${unit.masteryPercent}% · ${wordsCount(words.length)}',
+                    textAlign: TextAlign.center,
+                  ),
                   const SizedBox(height: 20),
                   FilledButton.icon(
                     onPressed: () => context.push('/lesson/$unitId'),
                     icon: const Icon(Icons.play_arrow_rounded),
                     label: const Padding(
                       padding: EdgeInsets.symmetric(vertical: 14),
-                      child: Text('Начать урок', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                      child: Text(
+                        'Начать урок',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 16),
                   if (hasBoss)
-                    _GameButton(iconAsset: AppIcons.gameBoss, title: 'Босс мира', subtitle: 'Кульминация темы', onTap: () => context.push('/boss/$unitId')),
-                  _GameButton(iconAsset: AppIcons.gamePuzzle, title: 'Найди пару', onTap: () => context.push('/match/$unitId')),
-                  _GameButton(iconAsset: AppIcons.navDictionary, title: 'Карточки', subtitle: 'Свайп и запоминай', onTap: () => context.push('/flashcards/$unitId')),
-                  _GameButton(iconAsset: AppIcons.actionReview, title: 'Квиз', subtitle: 'Проверь себя', onTap: () => context.push('/quiz/$unitId')),
+                    _GameButton(
+                      iconAsset: AppIcons.gameBoss,
+                      title: 'Босс мира',
+                      subtitle: 'Кульминация темы',
+                      onTap: () => context.push('/boss/$unitId'),
+                    ),
+                  _GameButton(
+                    iconAsset: AppIcons.gamePuzzle,
+                    title: 'Найди пару',
+                    onTap: () => context.push('/match/$unitId'),
+                  ),
+                  _GameButton(
+                    iconAsset: AppIcons.navDictionary,
+                    title: 'Карточки',
+                    subtitle: 'Свайп и запоминай',
+                    onTap: () => context.push('/flashcards/$unitId'),
+                  ),
+                  _GameButton(
+                    iconAsset: AppIcons.actionReview,
+                    title: 'Квиз',
+                    subtitle: 'Проверь себя',
+                    onTap: () => context.push('/quiz/$unitId'),
+                  ),
                   if (showTyping)
-                    _GameButton(iconAsset: AppIcons.actionTyping, title: 'Ввод', subtitle: 'Напиши по-чеченски', onTap: () => context.push('/typing/$unitId')),
+                    _GameButton(
+                      iconAsset: AppIcons.actionTyping,
+                      title: 'Ввод',
+                      subtitle: 'Напиши по-чеченски',
+                      onTap: () => context.push('/typing/$unitId'),
+                    ),
                 ],
               );
             },
@@ -107,7 +153,10 @@ class UnitDetailScreen extends ConsumerWidget {
 /// Экран заблокированного юнита — показывается когда юнит открыт в обход
 /// mastery-гейта (через Worlds, deep link, patched state).
 class _LockedUnitScreen extends StatelessWidget {
-  const _LockedUnitScreen({required this.titleRu, required this.requiredMastery});
+  const _LockedUnitScreen({
+    required this.titleRu,
+    required this.requiredMastery,
+  });
   final String titleRu;
   final int requiredMastery;
 
@@ -121,9 +170,16 @@ class _LockedUnitScreen extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.lock_outline_rounded, size: 72, color: Theme.of(context).colorScheme.primary),
+              Icon(
+                Icons.lock_outline_rounded,
+                size: 72,
+                color: Theme.of(context).colorScheme.primary,
+              ),
               const SizedBox(height: 16),
-              Text('Юнит заблокирован', style: Theme.of(context).textTheme.headlineSmall),
+              Text(
+                'Юнит заблокирован',
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
               const SizedBox(height: 8),
               Text(
                 'Пройдите предыдущий юнит на $requiredMastery%, чтобы открыть «$titleRu».',
@@ -157,9 +213,16 @@ class _UnitNotFoundScreen extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.search_off_rounded, size: 72, color: Theme.of(context).colorScheme.primary),
+              Icon(
+                Icons.search_off_rounded,
+                size: 72,
+                color: Theme.of(context).colorScheme.primary,
+              ),
               const SizedBox(height: 16),
-              Text('Юнит не найден', style: Theme.of(context).textTheme.headlineSmall),
+              Text(
+                'Юнит не найден',
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
               const SizedBox(height: 24),
               FilledButton(
                 onPressed: onBack,
@@ -197,7 +260,10 @@ class _GameButton extends StatelessWidget {
           leading: iconAsset != null
               ? AppIconImage(asset: iconAsset!, size: 28)
               : Text(emoji!, style: const TextStyle(fontSize: 28)),
-          title: Text(title, style: const TextStyle(fontWeight: FontWeight.w800)),
+          title: Text(
+            title,
+            style: const TextStyle(fontWeight: FontWeight.w800),
+          ),
           subtitle: subtitle != null ? Text(subtitle!) : null,
           trailing: const Icon(Icons.chevron_right_rounded),
           onTap: onTap,

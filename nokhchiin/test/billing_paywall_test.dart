@@ -6,7 +6,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive/hive.dart';
-import 'package:nokhchiin/core/providers/billing_providers.dart';
 import 'package:nokhchiin/core/providers/providers.dart';
 import 'package:nokhchiin/core/widgets/legal_links_row.dart';
 import 'package:nokhchiin/data/datasources/local_storage_datasource.dart';
@@ -15,7 +14,6 @@ import 'package:nokhchiin/domain/entities/subscription_entity.dart';
 import 'package:nokhchiin/domain/repositories/billing_repository.dart';
 import 'package:nokhchiin/features/paywall/paywall_screen.dart';
 import 'package:nokhchiin/l10n/app_localizations.dart';
-
 
 class _FakeBilling implements BillingRepository {
   _FakeBilling({this.throwOnPurchase = false, this.throwOnTrial = false});
@@ -119,9 +117,7 @@ void main() {
   group('PaywallScreen widget', () {
     testWidgets('shows LegalLinksRow', (tester) async {
       final router = GoRouter(
-        routes: [
-          GoRoute(path: '/', builder: (_, __) => const PaywallScreen()),
-        ],
+        routes: [GoRoute(path: '/', builder: (_, _) => const PaywallScreen())],
       );
       await tester.pumpWidget(
         ProviderScope(
@@ -148,9 +144,7 @@ void main() {
 
     testWidgets('renders trial and buy buttons', (tester) async {
       final router = GoRouter(
-        routes: [
-          GoRoute(path: '/', builder: (_, __) => const PaywallScreen()),
-        ],
+        routes: [GoRoute(path: '/', builder: (_, _) => const PaywallScreen())],
       );
       await tester.pumpWidget(
         ProviderScope(

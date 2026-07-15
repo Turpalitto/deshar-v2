@@ -19,7 +19,8 @@ class NokhchiinApp extends ConsumerStatefulWidget {
   ConsumerState<NokhchiinApp> createState() => _NokhchiinAppState();
 }
 
-class _NokhchiinAppState extends ConsumerState<NokhchiinApp> with WidgetsBindingObserver {
+class _NokhchiinAppState extends ConsumerState<NokhchiinApp>
+    with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
@@ -68,7 +69,10 @@ class _NokhchiinAppState extends ConsumerState<NokhchiinApp> with WidgetsBinding
       routerConfig: appRouter,
       // iOS design system (ThemeExtension) + Dynamic Type — не трогает экраны.
       builder: (context, child) {
-        final theme = DesignSystemIntegration.enhanceWithContext(context, Theme.of(context));
+        final theme = DesignSystemIntegration.enhanceWithContext(
+          context,
+          Theme.of(context),
+        );
         final ios = theme.extension<IosDesignSystem>();
         final content = child ?? const SizedBox.shrink();
         return Theme(

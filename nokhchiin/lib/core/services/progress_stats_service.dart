@@ -41,6 +41,5 @@ class ProgressStatsService {
     return Future.value(unlocked.isNotEmpty ? unlocked.last : units.first);
   }
 
-  int weekTotalXp(List<int> weeklyXp) =>
-      weeklyXp.fold<int>(0, (a, b) => a + b);
+  int weekTotalXp(List<int> weeklyXp) => weeklyXp.fold<int>(0, (a, b) => a + b);
 }

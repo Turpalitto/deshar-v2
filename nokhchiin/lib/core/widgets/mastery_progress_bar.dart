@@ -18,8 +18,8 @@ class MasteryProgressBar extends StatelessWidget {
           percent >= 80
               ? NokhchiinColors.masteryHigh
               : percent >= 40
-                  ? NokhchiinColors.masteryMid
-                  : NokhchiinColors.meadow,
+              ? NokhchiinColors.masteryMid
+              : NokhchiinColors.meadow,
         ),
       ),
     );

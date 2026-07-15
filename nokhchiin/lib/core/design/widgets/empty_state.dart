@@ -34,14 +34,26 @@ class EmptyState extends StatelessWidget {
             else
               Text(emoji!, style: const TextStyle(fontSize: 56)),
             const SizedBox(height: AppSpacing.lg),
-            Text(title, style: Theme.of(context).textTheme.headlineSmall, textAlign: TextAlign.center),
+            Text(
+              title,
+              style: Theme.of(context).textTheme.headlineSmall,
+              textAlign: TextAlign.center,
+            ),
             if (subtitle != null) ...[
               const SizedBox(height: AppSpacing.sm),
-              Text(subtitle!, style: Theme.of(context).textTheme.bodyMedium, textAlign: TextAlign.center),
+              Text(
+                subtitle!,
+                style: Theme.of(context).textTheme.bodyMedium,
+                textAlign: TextAlign.center,
+              ),
             ],
             if (actionLabel != null && onAction != null) ...[
               const SizedBox(height: AppSpacing.xl),
-              AppButton(label: actionLabel!, onPressed: onAction, expanded: false),
+              AppButton(
+                label: actionLabel!,
+                onPressed: onAction,
+                expanded: false,
+              ),
             ],
           ],
         ),

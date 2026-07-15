@@ -4,7 +4,11 @@ import '../learning_path_visual_state.dart';
 
 /// Сегмент тропы между двумя узлами.
 class TrailSegmentVisual {
-  const TrailSegmentVisual({required this.from, required this.to, required this.state});
+  const TrailSegmentVisual({
+    required this.from,
+    required this.to,
+    required this.state,
+  });
 
   final Offset from;
   final Offset to;
@@ -34,7 +38,9 @@ class LearningPathTrailPainter extends CustomPainter {
         ..strokeWidth = strokeWidth
         ..strokeCap = StrokeCap.round
         ..strokeJoin = StrokeJoin.round
-        ..color = completed ? tokens.accent.withValues(alpha: 0.55) : tokens.separator;
+        ..color = completed
+            ? tokens.accent.withValues(alpha: 0.55)
+            : tokens.separator;
 
       if (!completed) {
         paint.shader = null;
@@ -50,16 +56,32 @@ class LearningPathTrailPainter extends CustomPainter {
     final midY = (from.dy + to.dy) / 2;
     final control1 = Offset(from.dx, midY);
     final control2 = Offset(to.dx, midY);
-    path.cubicTo(control1.dx, control1.dy, control2.dx, control2.dy, to.dx, to.dy);
+    path.cubicTo(
+      control1.dx,
+      control1.dy,
+      control2.dx,
+      control2.dy,
+      to.dx,
+      to.dy,
+    );
     return path;
   }
 
-  void _drawDashedPath(Canvas canvas, Path path, Paint paint, {required double dashLength, required double gapLength}) {
+  void _drawDashedPath(
+    Canvas canvas,
+    Path path,
+    Paint paint, {
+    required double dashLength,
+    required double gapLength,
+  }) {
     for (final metric in path.computeMetrics()) {
       var distance = 0.0;
       while (distance < metric.length) {
         final next = distance + dashLength;
-        final extract = metric.extractPath(distance, next.clamp(0, metric.length));
+        final extract = metric.extractPath(
+          distance,
+          next.clamp(0, metric.length),
+        );
         canvas.drawPath(extract, paint);
         distance = next + gapLength;
       }

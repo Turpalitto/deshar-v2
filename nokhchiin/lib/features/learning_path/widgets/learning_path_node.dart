@@ -34,7 +34,8 @@ class LearningPathNode extends StatefulWidget {
   State<LearningPathNode> createState() => _LearningPathNodeState();
 }
 
-class _LearningPathNodeState extends State<LearningPathNode> with SingleTickerProviderStateMixin {
+class _LearningPathNodeState extends State<LearningPathNode>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _pulseController;
   late final Animation<double> _pulseScale;
 
@@ -126,20 +127,30 @@ class _LearningPathNodeState extends State<LearningPathNode> with SingleTickerPr
       crossAxisAlignment: CrossAxisAlignment.start,
       children: labelOnRight
           ? [
-              GestureDetector(onTap: widget.onTap == null ? null : _handleTap, child: circle),
+              GestureDetector(
+                onTap: widget.onTap == null ? null : _handleTap,
+                child: circle,
+              ),
               const SizedBox(width: IosSpacing.x2),
               label,
             ]
           : [
               label,
               const SizedBox(width: IosSpacing.x2),
-              GestureDetector(onTap: widget.onTap == null ? null : _handleTap, child: circle),
+              GestureDetector(
+                onTap: widget.onTap == null ? null : _handleTap,
+                child: circle,
+              ),
             ],
     );
 
-  final rowWidth = LearningPathNode.nodeSize + IosSpacing.x2 + LearningPathNode.labelWidth;
-    final left = (labelOnRight ? widget.position.dx - LearningPathNode.nodeSize / 2 : widget.position.dx + LearningPathNode.nodeSize / 2 - rowWidth)
-        .clamp(0.0, widget.screenWidth - rowWidth);
+    final rowWidth =
+        LearningPathNode.nodeSize + IosSpacing.x2 + LearningPathNode.labelWidth;
+    final left =
+        (labelOnRight
+                ? widget.position.dx - LearningPathNode.nodeSize / 2
+                : widget.position.dx + LearningPathNode.nodeSize / 2 - rowWidth)
+            .clamp(0.0, widget.screenWidth - rowWidth);
 
     return Positioned(
       left: left,
@@ -195,11 +206,11 @@ class _NodeCircle extends StatelessWidget {
       child: isLocked
           ? Icon(Icons.lock_rounded, size: 20, color: tokens.textTertiary)
           : visualState == PathNodeVisualState.completed
-              ? Icon(Icons.check_rounded, size: 24, color: tokens.accent)
-              : Text(
-                  unit.icon.isNotEmpty ? unit.icon : '${unit.order}',
-                  style: const TextStyle(fontSize: 22, height: 1),
-                ),
+          ? Icon(Icons.check_rounded, size: 24, color: tokens.accent)
+          : Text(
+              unit.icon.isNotEmpty ? unit.icon : '${unit.order}',
+              style: const TextStyle(fontSize: 22, height: 1),
+            ),
     );
   }
 }
@@ -226,7 +237,9 @@ class _NodeLabel extends StatelessWidget {
     final muted = visualState == PathNodeVisualState.locked;
 
     return Column(
-      crossAxisAlignment: alignLeft ? CrossAxisAlignment.start : CrossAxisAlignment.end,
+      crossAxisAlignment: alignLeft
+          ? CrossAxisAlignment.start
+          : CrossAxisAlignment.end,
       children: [
         Text(
           unit.titleCe,
@@ -246,7 +259,10 @@ class _NodeLabel extends StatelessWidget {
         const SizedBox(height: IosSpacing.x1),
         Text(
           subtitle,
-          style: theme.bodySmall?.copyWith(color: tokens.textTertiary, fontSize: 11),
+          style: theme.bodySmall?.copyWith(
+            color: tokens.textTertiary,
+            fontSize: 11,
+          ),
           textAlign: alignLeft ? TextAlign.left : TextAlign.right,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,

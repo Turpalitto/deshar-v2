@@ -69,4 +69,6 @@ class AnalyticsService {
   }
 }
 
-final analyticsServiceProvider = Provider<AnalyticsService>((_) => AnalyticsService());
+final analyticsServiceProvider = Provider<AnalyticsService>(
+  (_) => AnalyticsService(),
+);

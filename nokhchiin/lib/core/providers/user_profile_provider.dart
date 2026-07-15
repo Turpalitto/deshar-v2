@@ -14,8 +14,8 @@ import 'repository_providers.dart';
 
 final userProfileProvider =
     AsyncNotifierProvider<UserProfileNotifier, UserProfileEntity>(
-  UserProfileNotifier.new,
-);
+      UserProfileNotifier.new,
+    );
 
 class UserProfileNotifier extends AsyncNotifier<UserProfileEntity> {
   static const _dailySync = DailySyncCalculator();
@@ -39,7 +39,8 @@ class UserProfileNotifier extends AsyncNotifier<UserProfileEntity> {
 
   /// Уровень по общему XP — единственное место с этой формулой (аудит §1:
   /// раньше была продублирована в addXp() и recordWordLearned()).
-  static int _levelForXp(int xp) => (xp / GameplayConstants.xpPerLevel).floor() + 1;
+  static int _levelForXp(int xp) =>
+      (xp / GameplayConstants.xpPerLevel).floor() + 1;
 
   Future<void> _update(UserProfileEntity updated) async {
     await _repo.saveProfile(updated);
@@ -48,8 +49,7 @@ class UserProfileNotifier extends AsyncNotifier<UserProfileEntity> {
 
   // --- Публичные методы (совместимы с предыдущим API) ---
 
-  Future<void> setMode(AppMode mode) =>
-      _update(_current.copyWith(mode: mode));
+  Future<void> setMode(AppMode mode) => _update(_current.copyWith(mode: mode));
 
   Future<void> setAgeGroup(KidsAgeGroup age) =>
       _update(_current.copyWith(ageGroup: age));
@@ -62,13 +62,15 @@ class UserProfileNotifier extends AsyncNotifier<UserProfileEntity> {
     final newXp = current.xp + xp;
     final weekly = List<int>.from(current.weeklyXp);
     if (weekly.length == GameplayConstants.weeklyXpDays) weekly[6] += xp;
-    await _update(current.copyWith(
-      xp: newXp,
-      level: _levelForXp(newXp),
-      stars: current.stars + stars,
-      coins: current.coins + stars,
-      weeklyXp: weekly,
-    ));
+    await _update(
+      current.copyWith(
+        xp: newXp,
+        level: _levelForXp(newXp),
+        stars: current.stars + stars,
+        coins: current.coins + stars,
+        weeklyXp: weekly,
+      ),
+    );
   }
 
   Future<void> recordWordLearned({
@@ -79,24 +81,28 @@ class UserProfileNotifier extends AsyncNotifier<UserProfileEntity> {
     final newXp = current.xp + xp;
     final weekly = List<int>.from(current.weeklyXp);
     if (weekly.length == GameplayConstants.weeklyXpDays) weekly[6] += xp;
-    await _update(current.copyWith(
-      xp: newXp,
-      level: _levelForXp(newXp),
-      coins: current.coins + coins,
-      stars: current.stars + coins,
-      wordsLearnedToday: current.wordsLearnedToday + 1,
-      weeklyXp: weekly,
-      lastActiveDate: _todayKey(),
-    ));
+    await _update(
+      current.copyWith(
+        xp: newXp,
+        level: _levelForXp(newXp),
+        coins: current.coins + coins,
+        stars: current.stars + coins,
+        wordsLearnedToday: current.wordsLearnedToday + 1,
+        weeklyXp: weekly,
+        lastActiveDate: _todayKey(),
+      ),
+    );
   }
 
   Future<void> claimDailyGift() async {
     if (_current.dailyGiftClaimed) return;
-    await _update(_current.copyWith(
-      dailyGiftClaimed: true,
-      coins: _current.coins + GameplayConstants.dailyGiftCoins,
-      xp: _current.xp + GameplayConstants.dailyGiftXp,
-    ));
+    await _update(
+      _current.copyWith(
+        dailyGiftClaimed: true,
+        coins: _current.coins + GameplayConstants.dailyGiftCoins,
+        xp: _current.xp + GameplayConstants.dailyGiftXp,
+      ),
+    );
   }
 
   Future<void> setCurrentWorld(String worldId) =>
@@ -107,7 +113,8 @@ class UserProfileNotifier extends AsyncNotifier<UserProfileEntity> {
   Future<void> unlockAchievement(String id) async {
     if (_current.achievements.contains(id)) return;
     await _update(
-        _current.copyWith(achievements: [..._current.achievements, id]));
+      _current.copyWith(achievements: [..._current.achievements, id]),
+    );
   }
 
   Future<void> unlockWorld(String worldId) async {
@@ -115,14 +122,17 @@ class UserProfileNotifier extends AsyncNotifier<UserProfileEntity> {
       await setCurrentWorld(worldId);
       return;
     }
-    await _update(_current.copyWith(
-      unlockedWorlds: [..._current.unlockedWorlds, worldId],
-      currentWorldId: worldId,
-    ));
+    await _update(
+      _current.copyWith(
+        unlockedWorlds: [..._current.unlockedWorlds, worldId],
+        currentWorldId: worldId,
+      ),
+    );
   }
 
   Future<void> recordReview() => _update(
-      _current.copyWith(reviewsDoneToday: _current.reviewsDoneToday + 1));
+    _current.copyWith(reviewsDoneToday: _current.reviewsDoneToday + 1),
+  );
 
   Future<int> completeLessonWithReward() async {
     final total = _current.lessonsCompletedTotal + 1;
@@ -130,10 +140,12 @@ class UserProfileNotifier extends AsyncNotifier<UserProfileEntity> {
     return total;
   }
 
-  Future<void> openLessonChest() => _update(_current.copyWith(
-        coins: _current.coins + GameplayConstants.chestCoins,
-        xp: _current.xp + GameplayConstants.chestXp,
-      ));
+  Future<void> openLessonChest() => _update(
+    _current.copyWith(
+      coins: _current.coins + GameplayConstants.chestCoins,
+      xp: _current.xp + GameplayConstants.chestXp,
+    ),
+  );
 
   Future<void> setPremium(bool value) =>
       _update(_current.copyWith(isPremium: value));
@@ -143,20 +155,29 @@ class UserProfileNotifier extends AsyncNotifier<UserProfileEntity> {
 
   Future<void> markCultureCapsuleSeen(String capsuleId) async {
     if (_current.seenCultureCapsules.contains(capsuleId)) return;
-    await _update(_current.copyWith(
-        seenCultureCapsules: [..._current.seenCultureCapsules, capsuleId]));
+    await _update(
+      _current.copyWith(
+        seenCultureCapsules: [..._current.seenCultureCapsules, capsuleId],
+      ),
+    );
   }
 
   /// Покупает заморозку стрика за монеты. Возвращает false без побочных
   /// эффектов, если не хватает монет или уже достигнут максимум.
   Future<bool> buyStreakFreeze() async {
     final current = _current;
-    if (current.streakFreezeCount >= GameplayConstants.maxStreakFreezes) return false;
-    if (current.coins < GameplayConstants.streakFreezeCoinCost) return false;
-    await _update(current.copyWith(
-      coins: current.coins - GameplayConstants.streakFreezeCoinCost,
-      streakFreezeCount: current.streakFreezeCount + 1,
-    ));
+    if (current.streakFreezeCount >= GameplayConstants.maxStreakFreezes) {
+      return false;
+    }
+    if (current.coins < GameplayConstants.streakFreezeCoinCost) {
+      return false;
+    }
+    await _update(
+      current.copyWith(
+        coins: current.coins - GameplayConstants.streakFreezeCoinCost,
+        streakFreezeCount: current.streakFreezeCount + 1,
+      ),
+    );
     return true;
   }
 
@@ -170,7 +191,9 @@ class UserProfileNotifier extends AsyncNotifier<UserProfileEntity> {
       final granted = await notifSvc.requestPermission();
       if (!granted) return false;
       await _update(_current.copyWith(notificationsEnabled: true));
-      await notifSvc.scheduleDailyStreakReminder(time: kStreakReminderNotificationTime);
+      await notifSvc.scheduleDailyStreakReminder(
+        time: kStreakReminderNotificationTime,
+      );
       await rescheduleWordOfDay(notifSvc, ref.read(dictionaryRepoProvider));
     } else {
       await notifSvc.cancelAll();

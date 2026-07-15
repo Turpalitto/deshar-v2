@@ -81,7 +81,10 @@ void main() {
 
       // Each field change should produce a non-equal entity
       expect(base, isNot(equals(base.copyWith(mode: AppMode.adult))));
-      expect(base, isNot(equals(base.copyWith(ageGroup: KidsAgeGroup.age3to6))));
+      expect(
+        base,
+        isNot(equals(base.copyWith(ageGroup: KidsAgeGroup.age3to6))),
+      );
       expect(base, isNot(equals(base.copyWith(xp: 1))));
       expect(base, isNot(equals(base.copyWith(level: 2))));
       expect(base, isNot(equals(base.copyWith(streakDays: 1))));

@@ -17,6 +17,7 @@ class WorldEntity extends Equatable {
   final String titleCe;
   final String? emoji;
   final List<String> gradient;
+
   /// Стоимость открытия мира в монетах. Раньше `unlockStars`, но фактически
   /// сравнивается с `coins` (аудит logic §6). Переименовано для честности.
   final int unlockCoins;

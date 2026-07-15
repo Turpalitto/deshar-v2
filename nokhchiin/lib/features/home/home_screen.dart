@@ -7,14 +7,9 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/config/feature_flags.dart';
 import '../../domain/constants/gameplay_constants.dart';
 import '../../core/design/app_icons.dart';
-import '../../core/design/widgets/app_icon_image.dart';
-import '../../core/design/tokens/app_spacing.dart'; // intentional-mix: spacing tokens; Figma widgets from design_system
-// nokhchiin_theme.dart removed — unused (analyzer warning)
-
-import '../../core/design/widgets/error_state.dart'; // intentional-mix: shared error placeholder
-import '../../core/design/widgets/loading_state.dart'; // intentional-mix: shared loading placeholder
-import '../../core/design/widgets/reward_celebration.dart'; // intentional-mix: celebration overlay
-import '../../core/design/widgets/week_xp_chart.dart'; // intentional-mix: chart widget not yet in design_system
+import '../../core/design/widgets/reward_celebration.dart';
+import '../../core/design/tokens/app_spacing.dart';
+import '../../core/design/widgets/week_xp_chart.dart'; // TODO: port to design_system
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
 
@@ -34,10 +29,13 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profile = ref.watch(userProfileProvider).value ?? const UserProfileEntity();
+    final profile =
+        ref.watch(userProfileProvider).value ?? const UserProfileEntity();
     final isKids = profile.mode == AppMode.kids;
     final accent = isKids ? DesignTokens.meadow : context.iosTokens.accent;
-    final accentMuted = isKids ? DesignTokens.meadowMuted : context.iosTokens.accentMuted;
+    final accentMuted = isKids
+        ? DesignTokens.meadowMuted
+        : context.iosTokens.accentMuted;
     final continueUnit = ref.watch(continueUnitProvider);
     final due = ref.watch(dueWordsProvider);
     final worlds = ref.watch(worldsProvider);
@@ -82,7 +80,8 @@ class HomeScreen extends ConsumerWidget {
                       ? () => context.push('/lesson/${unit.id}')
                       : () => context.push('/path'),
                 ).animate().fadeIn(delay: 80.ms).slideY(begin: 0.08),
-                loading: () => const SizedBox(height: 120, child: LoadingState()),
+                loading: () =>
+                    const SizedBox(height: 120, child: NokhchiinLoadingState()),
                 error: (_, _) => const SizedBox.shrink(),
               ),
             ),
@@ -106,7 +105,7 @@ class HomeScreen extends ConsumerWidget {
                       onTap: () async {
                         final capsule = await ref
                             .read(cultureCapsuleRepoProvider)
-                            .byId('capsule_hospitality');
+                            .byId('home_hospitality');
                         if (capsule != null && context.mounted) {
                           unawaited(CultureCapsuleModal.show(context, capsule));
                         }
@@ -116,13 +115,17 @@ class HomeScreen extends ConsumerWidget {
                   const SizedBox(width: 10),
                   Expanded(
                     child: NokhchiinGiftTile(
-                      iconAsset: profile.dailyGiftClaimed ? AppIcons.stateSuccess : AppIcons.rewardGift,
+                      iconAsset: profile.dailyGiftClaimed
+                          ? AppIcons.stateSuccess
+                          : AppIcons.rewardGift,
                       title: 'Подарок',
                       subtitle: profile.dailyGiftClaimed ? 'Забран' : 'Сегодня',
                       onTap: profile.dailyGiftClaimed
                           ? null
                           : () async {
-                              await ref.read(userProfileProvider.notifier).claimDailyGift();
+                              await ref
+                                  .read(userProfileProvider.notifier)
+                                  .claimDailyGift();
                               if (context.mounted) {
                                 await RewardCelebration.show(
                                   context,
@@ -170,10 +173,15 @@ class HomeScreen extends ConsumerWidget {
               sliver: SliverToBoxAdapter(
                 child: NokhchiinSurfaceCard(
                   onTap: () => context.go('/review'),
-                  semanticLabel: 'Повторить ${wordsCount(due.value!.length)}, сеанс SRS',
+                  semanticLabel:
+                      'Повторить ${wordsCount(due.value!.length)}, сеанс SRS',
                   child: Row(
                     children: [
-                      AppIconImage(asset: AppIcons.actionReview, size: 28, color: accent),
+                      AppIconImage(
+                        asset: AppIcons.actionReview,
+                        size: 28,
+                        color: accent,
+                      ),
                       const SizedBox(width: AppSpacing.md),
                       Expanded(
                         child: Column(
@@ -185,7 +193,8 @@ class HomeScreen extends ConsumerWidget {
                             ),
                             Text(
                               'SRS · начать сеанс',
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(
                                     color: context.iosTokens.textTertiary,
                                   ),
                             ),
@@ -221,12 +230,21 @@ class HomeScreen extends ConsumerWidget {
                     onPressed: () => context.go('/worlds'),
                     style: TextButton.styleFrom(
                       backgroundColor: accentMuted.withValues(alpha: 0.5),
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 6,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100),
+                      ),
                     ),
                     child: Text(
                       'Все →',
-                      style: TextStyle(fontSize: 13, color: accent, fontWeight: FontWeight.w700),
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: accent,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                 ],
@@ -252,7 +270,9 @@ class HomeScreen extends ConsumerWidget {
                       coins: profile.coins,
                     );
                     final gradient = w.gradient;
-                    final color = Color(int.parse(gradient.first.replaceFirst('#', '0xFF')));
+                    final color = Color(
+                      int.parse(gradient.first.replaceFirst('#', '0xFF')),
+                    );
                     final worldEmoji = w.emoji;
                     return NokhchiinWorldRow(
                       emoji: worldEmoji,
@@ -264,19 +284,24 @@ class HomeScreen extends ConsumerWidget {
                       semanticLabel: '${w.titleRu}, прогресс $pct%',
                       onTap: unlocked
                           ? () {
-                              ref.read(userProfileProvider.notifier).setCurrentWorld(w.id);
-                              if (w.units.isNotEmpty) context.push('/unit/${w.units.first}');
+                              ref
+                                  .read(userProfileProvider.notifier)
+                                  .setCurrentWorld(w.id);
+                              if (w.units.isNotEmpty) {
+                                context.push('/unit/${w.units.first}');
+                              }
                             }
                           : FeatureFlags.premiumEnabled
-                              ? () => context.push('/paywall')
-                              : null,
+                          ? () => context.push('/paywall')
+                          : null,
                     );
                   },
                 );
               },
-              loading: () => const SliverToBoxAdapter(child: LoadingState()),
+              loading: () =>
+                  const SliverToBoxAdapter(child: NokhchiinLoadingState()),
               error: (_, _) => SliverToBoxAdapter(
-                child: ErrorState(
+                child: NokhchiinErrorState(
                   message: 'Не удалось загрузить миры',
                   onRetry: () => ref.invalidate(worldsProvider),
                 ),
@@ -288,24 +313,34 @@ class HomeScreen extends ConsumerWidget {
             sliver: SliverToBoxAdapter(
               child: Row(
                 children: [
-                  if (isKids)
-                    Expanded(
-                      child: _QuickLink(
-                        iconAsset: AppIcons.mascotFox,
-                        label: 'Цхьогал',
-                        onTap: () => context.push('/ai-tutor'),
-                      ),
+                  Expanded(
+                    child: _QuickLink(
+                      iconAsset: AppIcons.actionCollections,
+                      label: 'Коллекции',
+                      onTap: () => context.push('/collections'),
                     ),
-                  if (isKids) const SizedBox(width: 8),
-                  Expanded(child: _QuickLink(iconAsset: AppIcons.actionCollections, label: 'Коллекции', onTap: () => context.push('/collections'))),
+                  ),
                   const SizedBox(width: 8),
-                  Expanded(child: _QuickLink(iconAsset: AppIcons.rewardCelebration, label: 'Истории', onTap: () => context.push('/stories'))),
+                  Expanded(
+                    child: _QuickLink(
+                      iconAsset: AppIcons.rewardCelebration,
+                      label: 'Истории',
+                      onTap: () => context.push('/stories'),
+                    ),
+                  ),
                   const SizedBox(width: 8),
                   if (GameplayDifficulty.showTyping(
                     mode: profile.mode,
                     age: profile.ageGroup,
                   ))
-                    Expanded(child: _QuickLink(iconAsset: AppIcons.actionTyping, label: 'Ввод', onTap: () => context.push('/typing/$kFirstLessonUnitId'))),
+                    Expanded(
+                      child: _QuickLink(
+                        iconAsset: AppIcons.actionTyping,
+                        label: 'Ввод',
+                        onTap: () =>
+                            context.push('/typing/$kFirstLessonUnitId'),
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -355,7 +390,11 @@ class _HomeHeader extends ConsumerWidget {
                 children: [
                   Text(
                     greeting,
-                    style: TextStyle(fontSize: 13, color: tokens.textTertiary, fontWeight: FontWeight.w500),
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: tokens.textTertiary,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                   if (isKids) ...[
                     const SizedBox(width: 6),
@@ -405,9 +444,14 @@ class _HomeHeader extends ConsumerWidget {
     );
   }
 
-  void _showStreakFreezeSheet(BuildContext context, WidgetRef ref, UserProfileEntity profile) {
+  void _showStreakFreezeSheet(
+    BuildContext context,
+    WidgetRef ref,
+    UserProfileEntity profile,
+  ) {
     final tokens = context.iosTokens;
-    final atMax = profile.streakFreezeCount >= GameplayConstants.maxStreakFreezes;
+    final atMax =
+        profile.streakFreezeCount >= GameplayConstants.maxStreakFreezes;
     final canAfford = profile.coins >= GameplayConstants.streakFreezeCoinCost;
 
     showModalBottomSheet(
@@ -424,7 +468,11 @@ class _HomeHeader extends ConsumerWidget {
           children: [
             Text(
               'Заморозка стрика',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: tokens.textPrimary),
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
+                color: tokens.textPrimary,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
@@ -436,12 +484,16 @@ class _HomeHeader extends ConsumerWidget {
               onPressed: atMax || !canAfford
                   ? null
                   : () async {
-                      final ok = await ref.read(userProfileProvider.notifier).buyStreakFreeze();
+                      final ok = await ref
+                          .read(userProfileProvider.notifier)
+                          .buyStreakFreeze();
                       if (ctx.mounted) Navigator.pop(ctx);
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text(ok ? 'Заморозка куплена' : 'Не получилось купить'),
+                            content: Text(
+                              ok ? 'Заморозка куплена' : 'Не получилось купить',
+                            ),
                             duration: const Duration(seconds: 2),
                           ),
                         );
@@ -542,7 +594,10 @@ class _ContinueHeroState extends State<_ContinueHero> {
                     children: [
                       // Eyebrow-метка в пилюле, а не голый текст.
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.white.withValues(alpha: 0.14),
                           borderRadius: BorderRadius.circular(100),
@@ -579,7 +634,9 @@ class _ContinueHeroState extends State<_ContinueHero> {
                                 NokhchiinSegmentProgress(
                                   step: step,
                                   color: Colors.white.withValues(alpha: 0.95),
-                                  trackColor: Colors.white.withValues(alpha: 0.22),
+                                  trackColor: Colors.white.withValues(
+                                    alpha: 0.22,
+                                  ),
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
@@ -603,7 +660,9 @@ class _ContinueHeroState extends State<_ContinueHero> {
                             decoration: BoxDecoration(
                               color: Colors.white.withValues(alpha: 0.16),
                               shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+                              border: Border.all(
+                                color: Colors.white.withValues(alpha: 0.2),
+                              ),
                             ),
                             child: const Icon(
                               Icons.arrow_forward_rounded,
@@ -650,7 +709,11 @@ class _QuickLink extends StatelessWidget {
         child: Column(
           children: [
             if (iconAsset != null)
-              AppIconImage(asset: iconAsset!, size: 20, color: context.iosTokens.accent)
+              AppIconImage(
+                asset: iconAsset!,
+                size: 20,
+                color: context.iosTokens.accent,
+              )
             else
               Text(emoji!, style: const TextStyle(fontSize: 20)),
             const SizedBox(height: 4),
@@ -659,7 +722,9 @@ class _QuickLink extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600),
+              style: Theme.of(
+                context,
+              ).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600),
             ),
           ],
         ),

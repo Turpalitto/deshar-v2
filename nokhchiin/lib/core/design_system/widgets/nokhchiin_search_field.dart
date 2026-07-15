@@ -27,8 +27,15 @@ class NokhchiinSearchField extends StatelessWidget {
         hintStyle: TextStyle(color: tokens.textTertiary, fontSize: 15),
         filled: true,
         fillColor: tokens.surface,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
-        prefixIcon: Icon(Icons.search_rounded, color: tokens.textTertiary, size: 20),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 13,
+        ),
+        prefixIcon: Icon(
+          Icons.search_rounded,
+          color: tokens.textTertiary,
+          size: 20,
+        ),
         prefixIconConstraints: const BoxConstraints(minWidth: 44),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),

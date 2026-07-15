@@ -64,7 +64,9 @@ class DesignTokens {
   /// Палитра adult-трека перенесена из визуального языка Deshar (Manus):
   /// чистый светлый фон, национальный зелёный primary, мягкие семантические
   /// цвета. Kids-трек использует [NokhchiinColors] (тёплая кремовая палитра).
-  static DesignTokens light({IosAccentVariant accent = IosAccentVariant.meadow}) {
+  static DesignTokens light({
+    IosAccentVariant accent = IosAccentVariant.meadow,
+  }) {
     final a = _accentPair(accent, isDark: false);
     // Editorial-luxury палитра: тёплый крем (#F7F4EF — токен Figma Make)
     // вместо холодного серо-белого, эспрессо-нейтрали вместо сине-серых.
@@ -91,7 +93,9 @@ class DesignTokens {
     );
   }
 
-  static DesignTokens dark({IosAccentVariant accent = IosAccentVariant.meadow}) {
+  static DesignTokens dark({
+    IosAccentVariant accent = IosAccentVariant.meadow,
+  }) {
     final a = _accentPair(accent, isDark: true);
     // Тёмная тема — та же тёплая (эспрессо) температура, что и светлая:
     // раньше light была тёплой кремовой, а dark — холодной сине-серой,
@@ -116,19 +120,25 @@ class DesignTokens {
   }
 
   /// accent, accentMuted
-  static (Color, Color) _accentPair(IosAccentVariant variant, {required bool isDark}) {
+  static (Color, Color) _accentPair(
+    IosAccentVariant variant, {
+    required bool isDark,
+  }) {
     return switch (variant) {
       // Чеченский национальный зелёный (Deshar primary).
-      IosAccentVariant.meadow => isDark
-          ? (const Color(0xFF2ECC71), const Color(0xFF1A3A28))
-          : (const Color(0xFF1B6B4A), const Color(0xFFD4F0E0)),
+      IosAccentVariant.meadow =>
+        isDark
+            ? (const Color(0xFF2ECC71), const Color(0xFF1A3A28))
+            : (const Color(0xFF1B6B4A), const Color(0xFFD4F0E0)),
       // Терракота — культурный акцент (орнамент, heritage).
-      IosAccentVariant.terracotta => isDark
-          ? (const Color(0xFFE8A87C), const Color(0xFF5C3D2E))
-          : (const Color(0xFFC4724E), const Color(0xFFF5E0D4)),
-      IosAccentVariant.sunGold => isDark
-          ? (const Color(0xFFF0D78C), const Color(0xFF5C4A20))
-          : (const Color(0xFFD4A84B), const Color(0xFFF8ECD0)),
+      IosAccentVariant.terracotta =>
+        isDark
+            ? (const Color(0xFFE8A87C), const Color(0xFF5C3D2E))
+            : (const Color(0xFFC4724E), const Color(0xFFF5E0D4)),
+      IosAccentVariant.sunGold =>
+        isDark
+            ? (const Color(0xFFF0D78C), const Color(0xFF5C4A20))
+            : (const Color(0xFFD4A84B), const Color(0xFFF8ECD0)),
     };
   }
 

@@ -24,7 +24,11 @@ class NokhchiinPageHeader extends StatelessWidget {
         if (canPop)
           IconButton(
             onPressed: onBack ?? () => Navigator.maybePop(context),
-            icon: Icon(Icons.arrow_back_ios_new_rounded, color: tokens.textTertiary, size: 20),
+            icon: Icon(
+              Icons.arrow_back_ios_new_rounded,
+              color: tokens.textTertiary,
+              size: 20,
+            ),
             padding: EdgeInsets.zero,
             // HIG-минимум 44×44 (аудит §3) — тот же порог, что уже объявлен
             // как IosSpacing.minTouchTarget.

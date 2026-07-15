@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../design/widgets/app_icon_image.dart';
 import '../design_system.dart';
 
 /// Статистическая плитка профиля (Figma Make).
@@ -80,7 +79,10 @@ class NokhchiinStatPill extends StatelessWidget {
   Widget build(BuildContext context) {
     final child = Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-      decoration: BoxDecoration(color: background, borderRadius: BorderRadius.circular(20)),
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(20),
+      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -89,7 +91,14 @@ class NokhchiinStatPill extends StatelessWidget {
           else
             Text(emoji!, style: const TextStyle(fontSize: 15)),
           const SizedBox(width: 5),
-          Text(value, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: color)),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              color: color,
+            ),
+          ),
         ],
       ),
     );

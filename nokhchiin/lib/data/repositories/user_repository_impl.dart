@@ -12,8 +12,14 @@ class UserRepositoryImpl implements UserRepository {
   Future<UserProfileEntity> getProfile() async {
     final data = await _local.get();
     if (data == null) return const UserProfileEntity();
-    final modeIdx = (data['mode'] as int? ?? 0).clamp(0, AppMode.values.length - 1);
-    final ageIdx = (data['ageGroup'] as int? ?? 1).clamp(0, KidsAgeGroup.values.length - 1);
+    final modeIdx = (data['mode'] as int? ?? 0).clamp(
+      0,
+      AppMode.values.length - 1,
+    );
+    final ageIdx = (data['ageGroup'] as int? ?? 1).clamp(
+      0,
+      KidsAgeGroup.values.length - 1,
+    );
     return UserProfileEntity(
       mode: AppMode.values[modeIdx],
       ageGroup: KidsAgeGroup.values[ageIdx],
@@ -30,11 +36,11 @@ class UserRepositoryImpl implements UserRepository {
       currentWorldId: data['currentWorldId'] as String? ?? 'meadow',
       unlockedWorlds:
           (data['unlockedWorlds'] as List?)?.cast<String>() ?? const ['meadow'],
-      achievements:
-          (data['achievements'] as List?)?.cast<String>() ?? const [],
+      achievements: (data['achievements'] as List?)?.cast<String>() ?? const [],
       lastActiveDate: data['lastActiveDate'] as String?,
       dailyGiftClaimed: data['dailyGiftClaimed'] as bool? ?? false,
-      weeklyXp: (data['weeklyXp'] as List?)?.cast<int>() ??
+      weeklyXp:
+          (data['weeklyXp'] as List?)?.cast<int>() ??
           const [0, 0, 0, 0, 0, 0, 0],
       isPremium: data['isPremium'] as bool? ?? false,
       lessonsCompletedTotal: data['lessonsCompletedTotal'] as int? ?? 0,

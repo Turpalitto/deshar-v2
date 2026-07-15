@@ -7,8 +7,6 @@ import 'package:go_router/go_router.dart';
 import '../../core/design/app_icons.dart';
 import '../../core/design/tokens/app_durations.dart';
 import '../../core/design/tokens/app_spacing.dart';
-import '../../core/design/widgets/empty_state.dart';
-import '../../core/design/widgets/loading_state.dart';
 import '../../core/design/widgets/reward_celebration.dart';
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
@@ -142,11 +140,14 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
   Widget build(BuildContext context) {
     if (_loading) {
       return widget.embedded
-          ? const Center(child: LoadingState())
-          : const AppScaffold(body: LoadingState());
+          ? const Center(child: NokhchiinLoadingState())
+          : const AppScaffold(body: NokhchiinLoadingState());
     }
     if (_words.isEmpty) {
-      final empty = EmptyState(iconAsset: AppIcons.stateEmpty, title: 'Недостаточно слов');
+      final empty = NokhchiinEmptyState(
+        iconAsset: AppIcons.stateEmpty,
+        title: 'Недостаточно слов',
+      );
       return widget.embedded ? empty : AppScaffold(body: empty);
     }
 
@@ -170,14 +171,16 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
                   Expanded(
                     child: ListView(
                       children: _words
-                          .map((w) => _MatchTile(
-                                label: w.chechen,
-                                emoji: w.emoji,
-                                selected: _selCe == w.id,
-                                matched: _matched.contains(w.id),
-                                accent: tokens.accent,
-                                onTap: () => _tapCe(w.id),
-                              ))
+                          .map(
+                            (w) => _MatchTile(
+                              label: w.chechen,
+                              emoji: w.emoji,
+                              selected: _selCe == w.id,
+                              matched: _matched.contains(w.id),
+                              accent: tokens.accent,
+                              onTap: () => _tapCe(w.id),
+                            ),
+                          )
                           .toList(),
                     ),
                   ),
@@ -185,13 +188,15 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
                   Expanded(
                     child: ListView(
                       children: _shuffledRu
-                          .map((w) => _MatchTile(
-                                label: w.russian,
-                                selected: _selRu == w.id,
-                                matched: _matched.contains(w.id),
-                                accent: tokens.accent,
-                                onTap: () => _tapRu(w.id),
-                              ))
+                          .map(
+                            (w) => _MatchTile(
+                              label: w.russian,
+                              selected: _selRu == w.id,
+                              matched: _matched.contains(w.id),
+                              accent: tokens.accent,
+                              onTap: () => _tapRu(w.id),
+                            ),
+                          )
                           .toList(),
                     ),
                   ),
@@ -235,7 +240,10 @@ class _MatchTile extends StatelessWidget {
         duration: AppDurations.fast,
         child: NokhchiinSurfaceCard(
           onTap: matched ? null : onTap,
-          padding: const EdgeInsets.symmetric(vertical: AppSpacing.md, horizontal: AppSpacing.sm),
+          padding: const EdgeInsets.symmetric(
+            vertical: AppSpacing.md,
+            horizontal: AppSpacing.sm,
+          ),
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
@@ -243,7 +251,8 @@ class _MatchTile extends StatelessWidget {
             ),
             child: Row(
               children: [
-                if (emoji != null) Text(emoji!, style: const TextStyle(fontSize: 20)),
+                if (emoji != null)
+                  Text(emoji!, style: const TextStyle(fontSize: 20)),
                 if (emoji != null) const SizedBox(width: AppSpacing.sm),
                 Expanded(
                   child: Text(

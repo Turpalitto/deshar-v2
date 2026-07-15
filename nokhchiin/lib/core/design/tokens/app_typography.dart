@@ -8,13 +8,13 @@ import 'nokhchiin_colors.dart';
 abstract final class AppTypography {
   static String get _fontFamily => GoogleFonts.manrope().fontFamily!;
 
-  static TextTheme textTheme({
-    required bool isDark,
-    required double scale,
-  }) {
-    final primary = isDark ? NokhchiinColors.textPrimaryDark : NokhchiinColors.textPrimaryLight;
-    final secondary =
-        isDark ? NokhchiinColors.textSecondaryDark : NokhchiinColors.textSecondaryLight;
+  static TextTheme textTheme({required bool isDark, required double scale}) {
+    final primary = isDark
+        ? NokhchiinColors.textPrimaryDark
+        : NokhchiinColors.textPrimaryLight;
+    final secondary = isDark
+        ? NokhchiinColors.textSecondaryDark
+        : NokhchiinColors.textSecondaryLight;
 
     TextStyle base({
       required double size,
@@ -22,15 +22,14 @@ abstract final class AppTypography {
       Color? color,
       double? height,
       FontStyle? style,
-    }) =>
-        TextStyle(
-          fontFamily: _fontFamily,
-          fontSize: size * scale,
-          fontWeight: weight,
-          color: color ?? primary,
-          height: height,
-          fontStyle: style,
-        );
+    }) => TextStyle(
+      fontFamily: _fontFamily,
+      fontSize: size * scale,
+      fontWeight: weight,
+      color: color ?? primary,
+      height: height,
+      fontStyle: style,
+    );
 
     return TextTheme(
       displayLarge: base(size: 36, weight: FontWeight.w800, height: 1.15),
@@ -61,8 +60,8 @@ abstract final class AppTypography {
 
   static TextStyle pronunciation(BuildContext context) {
     return Theme.of(context).textTheme.titleMedium!.copyWith(
-          fontStyle: FontStyle.italic,
-          color: Theme.of(context).colorScheme.primary,
-        );
+      fontStyle: FontStyle.italic,
+      color: Theme.of(context).colorScheme.primary,
+    );
   }
 }

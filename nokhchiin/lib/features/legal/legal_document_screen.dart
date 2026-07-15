@@ -10,14 +10,14 @@ class LegalDocumentScreen extends StatelessWidget {
   final LegalDocumentType type;
 
   String get _title => switch (type) {
-        LegalDocumentType.privacy => LegalDocuments.privacyPolicyTitle,
-        LegalDocumentType.terms => LegalDocuments.termsTitle,
-      };
+    LegalDocumentType.privacy => LegalDocuments.privacyPolicyTitle,
+    LegalDocumentType.terms => LegalDocuments.termsTitle,
+  };
 
   String get _body => switch (type) {
-        LegalDocumentType.privacy => LegalDocuments.privacyPolicyBody,
-        LegalDocumentType.terms => LegalDocuments.termsBody,
-      };
+    LegalDocumentType.privacy => LegalDocuments.privacyPolicyBody,
+    LegalDocumentType.terms => LegalDocuments.termsBody,
+  };
 
   @override
   Widget build(BuildContext context) {

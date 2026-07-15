@@ -5,7 +5,6 @@ import '../../domain/usecases/placement_test_usecase.dart';
 import 'repository_providers.dart';
 import 'billing_providers.dart';
 
-
 final reviewWordUseCaseProvider = Provider(
   (ref) => ReviewWordUseCase(ref.watch(progressRepoProvider)),
 );

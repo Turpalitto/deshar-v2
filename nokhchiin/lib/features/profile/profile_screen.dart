@@ -6,8 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/config/feature_flags.dart';
 import '../../core/design/app_icons.dart';
-import '../../core/design/widgets/app_icon_image.dart';
-import '../../core/design/tokens/app_spacing.dart'; // intentional-mix: spacing tokens; Figma widgets from design_system
+import '../../core/design/tokens/app_spacing.dart';
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
 import '../../core/widgets/kids_tap_target.dart';
@@ -33,10 +32,13 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profile = ref.watch(userProfileProvider).value ?? const UserProfileEntity();
+    final profile =
+        ref.watch(userProfileProvider).value ?? const UserProfileEntity();
     final isKids = profile.mode == AppMode.kids;
     final accent = isKids ? DesignTokens.meadow : context.iosTokens.accent;
-    final accentMuted = isKids ? DesignTokens.meadowMuted : context.iosTokens.accentMuted;
+    final accentMuted = isKids
+        ? DesignTokens.meadowMuted
+        : context.iosTokens.accentMuted;
     final weekDone = profile.weeklyXp.where((x) => x > 0).length;
     final weekGoalPct = (weekDone / 7 * 100).round();
 
@@ -49,11 +51,22 @@ class ProfileScreen extends ConsumerWidget {
               Container(
                 width: 68,
                 height: 68,
-                decoration: BoxDecoration(color: accent, borderRadius: BorderRadius.circular(22)),
+                decoration: BoxDecoration(
+                  color: accent,
+                  borderRadius: BorderRadius.circular(22),
+                ),
                 alignment: Alignment.center,
                 child: isKids
-                    ? const AppIconImage(asset: AppIcons.mascotFox, size: 36, color: Colors.white)
-                    : const AppIconImage(asset: AppIcons.navProfile, size: 36, color: Colors.white),
+                    ? const AppIconImage(
+                        asset: AppIcons.mascotFox,
+                        size: 36,
+                        color: Colors.white,
+                      )
+                    : const AppIconImage(
+                        asset: AppIcons.navProfile,
+                        size: 36,
+                        color: Colors.white,
+                      ),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -62,7 +75,8 @@ class ProfileScreen extends ConsumerWidget {
                   children: [
                     Text(
                       'Уровень ${profile.level}',
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
+                      style: Theme.of(context).textTheme.headlineSmall
+                          ?.copyWith(fontWeight: FontWeight.w700),
                     ),
                     const SizedBox(height: 3),
                     NokhchiinChip(
@@ -83,7 +97,10 @@ class ProfileScreen extends ConsumerWidget {
                       color: DesignTokens.goldMuted,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const AppIconImage(asset: AppIcons.rewardCrown, size: 18),
+                    child: const AppIconImage(
+                      asset: AppIcons.rewardCrown,
+                      size: 18,
+                    ),
                   ),
                 ),
             ],
@@ -91,11 +108,29 @@ class ProfileScreen extends ConsumerWidget {
           const SizedBox(height: 24),
           Row(
             children: [
-              Expanded(child: NokhchiinStatTile(iconAsset: AppIcons.progressStreak, value: '${profile.streakDays}', label: 'Стрик')),
+              Expanded(
+                child: NokhchiinStatTile(
+                  iconAsset: AppIcons.progressStreak,
+                  value: '${profile.streakDays}',
+                  label: 'Стрик',
+                ),
+              ),
               const SizedBox(width: 10),
-              Expanded(child: NokhchiinStatTile(iconAsset: AppIcons.progressStar, value: '${profile.xp}', label: 'XP')),
+              Expanded(
+                child: NokhchiinStatTile(
+                  iconAsset: AppIcons.progressStar,
+                  value: '${profile.xp}',
+                  label: 'XP',
+                ),
+              ),
               const SizedBox(width: 10),
-              Expanded(child: NokhchiinStatTile(iconAsset: AppIcons.navDictionary, value: '${profile.lessonsCompletedTotal}', label: 'Уроков')),
+              Expanded(
+                child: NokhchiinStatTile(
+                  iconAsset: AppIcons.navDictionary,
+                  value: '${profile.lessonsCompletedTotal}',
+                  label: 'Уроков',
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 14),
@@ -110,7 +145,11 @@ class ProfileScreen extends ConsumerWidget {
                   strokeWidth: 7,
                   center: Text(
                     '$weekGoalPct%',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: accent),
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: accent,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 18),
@@ -118,8 +157,15 @@ class ProfileScreen extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Недельная цель', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
-                      Text('$weekDone из 7 дней с XP', style: Theme.of(context).textTheme.bodySmall),
+                      Text(
+                        'Недельная цель',
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w700),
+                      ),
+                      Text(
+                        '$weekDone из 7 дней с XP',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
                       // Текст по реальному прогрессу: «Отличный прогресс!»
                       // при 0% выглядел насмешкой.
                       Text(
@@ -129,7 +175,10 @@ class ProfileScreen extends ConsumerWidget {
                           < 100 => 'Почти у цели!',
                           _ => 'Цель выполнена!',
                         },
-                        style: TextStyle(color: accent, fontWeight: FontWeight.w600),
+                        style: TextStyle(
+                          color: accent,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ],
                   ),
@@ -146,10 +195,10 @@ class ProfileScreen extends ConsumerWidget {
                 Text(
                   'СЛАБОЕ МЕСТО',
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.5,
-                        color: context.iosTokens.textTertiary,
-                      ),
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.5,
+                    color: context.iosTokens.textTertiary,
+                  ),
                 ),
                 const SizedBox(height: 10),
                 Row(
@@ -159,7 +208,9 @@ class ProfileScreen extends ConsumerWidget {
                     Expanded(
                       child: Text(
                         isKids ? 'Повтори слова' : 'Инсайты и практика',
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                     Icon(Icons.chevron_right_rounded, color: accent),
@@ -190,24 +241,39 @@ class ProfileScreen extends ConsumerWidget {
               groupValue: profile.mode,
               children: {
                 AppMode.kids: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: isKids ? 12 : 8),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: isKids ? 12 : 8,
+                  ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const AppIconImage(asset: AppIcons.mascotFox, size: 16),
                       const SizedBox(width: 6),
-                      Text('Дети', style: TextStyle(fontSize: isKids ? 15 : 13)),
+                      Text(
+                        'Дети',
+                        style: TextStyle(fontSize: isKids ? 15 : 13),
+                      ),
                     ],
                   ),
                 ),
                 AppMode.adult: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: isKids ? 12 : 8),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: isKids ? 12 : 8,
+                  ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const AppIconImage(asset: AppIcons.navDictionary, size: 16),
+                      const AppIconImage(
+                        asset: AppIcons.navDictionary,
+                        size: 16,
+                      ),
                       const SizedBox(width: 6),
-                      Text('Взрослые', style: TextStyle(fontSize: isKids ? 15 : 13)),
+                      Text(
+                        'Взрослые',
+                        style: TextStyle(fontSize: isKids ? 15 : 13),
+                      ),
                     ],
                   ),
                 ),
@@ -218,7 +284,8 @@ class ProfileScreen extends ConsumerWidget {
                   context,
                   ref,
                   needsGate: isKids || mode == AppMode.adult,
-                  action: () async => ref.read(userProfileProvider.notifier).setMode(mode),
+                  action: () async =>
+                      ref.read(userProfileProvider.notifier).setMode(mode),
                 );
               },
             ),
@@ -239,14 +306,18 @@ class ProfileScreen extends ConsumerWidget {
                   context,
                   ref,
                   needsGate: true,
-                  action: () async => ref.read(userProfileProvider.notifier).setAgeGroup(age),
+                  action: () async =>
+                      ref.read(userProfileProvider.notifier).setAgeGroup(age),
                 ),
                 child: Semantics(
                   inMutuallyExclusiveGroup: true,
                   checked: profile.ageGroup == age,
                   label: label,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 14),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 14,
+                    ),
                     child: Row(
                       children: [
                         Icon(
@@ -259,7 +330,10 @@ class ProfileScreen extends ConsumerWidget {
                               : context.iosTokens.textTertiary,
                         ),
                         const SizedBox(width: 12),
-                        Text(label, style: Theme.of(context).textTheme.bodyLarge),
+                        Text(
+                          label,
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
                       ],
                     ),
                   ),
@@ -275,17 +349,14 @@ class ProfileScreen extends ConsumerWidget {
             onChanged: (v) =>
                 ref.read(userProfileProvider.notifier).setChechenUiEnabled(v),
             title: const Text('Интерфейс на чеченском'),
-            subtitle: const Text('Immersion mode — кнопки и подписи на нохчийн мотт'),
-            secondary: const AppIconImage(asset: AppIcons.cultureHeritage, size: 24),
+            subtitle: const Text(
+              'Immersion mode — кнопки и подписи на нохчийн мотт',
+            ),
+            secondary: const AppIconImage(
+              asset: AppIcons.cultureHeritage,
+              size: 24,
+            ),
           ),
-          ListTile(
-            leading: const AppIconImage(asset: AppIcons.mascotFox, size: 28),
-            title: const Text('Цхьогал — AI-помощник'),
-            subtitle: const Text('Спроси о слове или потренируй фразы'),
-            trailing: const Icon(Icons.chevron_right_rounded),
-            onTap: () => context.push('/ai-tutor'),
-          ),
-          const SizedBox(height: AppSpacing.md),
           NokhchiinSettingsRow(
             iconAsset: AppIcons.actionReview,
             label: 'Сменить режим при входе',
@@ -322,17 +393,26 @@ class ProfileScreen extends ConsumerWidget {
             trailing: Switch.adaptive(
               value: profile.notificationsEnabled,
               onChanged: (value) async {
-                final ok = await ref.read(userProfileProvider.notifier).setNotificationsEnabled(value);
+                final ok = await ref
+                    .read(userProfileProvider.notifier)
+                    .setNotificationsEnabled(value);
                 if (value && !ok && context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text('Включите уведомления в настройках устройства, чтобы получать напоминания'),
-                  ));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'Включите уведомления в настройках устройства, чтобы получать напоминания',
+                      ),
+                    ),
+                  );
                 }
               },
             ),
           ),
           const SizedBox(height: AppSpacing.sm),
-          Text('Правовая информация', style: Theme.of(context).textTheme.titleMedium),
+          Text(
+            'Правовая информация',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
           NokhchiinSettingsRow(
             iconAsset: AppIcons.navDictionary,
             label: 'Политика конфиденциальности',

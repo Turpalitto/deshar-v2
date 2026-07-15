@@ -25,6 +25,10 @@ linter:
     avoid_dynamic_calls: true
     prefer_final_locals: true
     cancel_subscriptions: true
+    avoid_print: true
+    prefer_final_in_for_each: true
+    always_declare_return_types: true
+    sort_child_properties_last: true
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options

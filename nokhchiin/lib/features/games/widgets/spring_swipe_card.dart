@@ -36,7 +36,8 @@ class SpringSwipeCardController {
   void swipeRight() => _state?._dismiss(toRight: true);
 }
 
-class _SpringSwipeCardState extends State<SpringSwipeCard> with SingleTickerProviderStateMixin {
+class _SpringSwipeCardState extends State<SpringSwipeCard>
+    with SingleTickerProviderStateMixin {
   static const double _dismissThreshold = 96;
 
   late AnimationController _controller;
@@ -69,7 +70,12 @@ class _SpringSwipeCardState extends State<SpringSwipeCard> with SingleTickerProv
 
   void _springTo(double target, {double velocity = 0, VoidCallback? onEnd}) {
     _controller.stop();
-    final simulation = SpringSimulation(IosMotion.snappy, _offsetX, target, velocity);
+    final simulation = SpringSimulation(
+      IosMotion.snappy,
+      _offsetX,
+      target,
+      velocity,
+    );
     _controller.animateWith(simulation).whenComplete(() => onEnd?.call());
   }
 
@@ -77,17 +83,21 @@ class _SpringSwipeCardState extends State<SpringSwipeCard> with SingleTickerProv
     if (!widget.enabled) return;
     final width = MediaQuery.sizeOf(context).width;
     final target = toRight ? width * 1.2 : -width * 1.2;
-    _springTo(target, velocity: toRight ? 800 : -800, onEnd: () {
-      if (!mounted) return;
-      _controller.value = 0;
-      _offsetX = 0;
-      _offsetY = 0;
-      if (toRight) {
-        widget.onSwipeRight();
-      } else {
-        widget.onSwipeLeft();
-      }
-    });
+    _springTo(
+      target,
+      velocity: toRight ? 800 : -800,
+      onEnd: () {
+        if (!mounted) return;
+        _controller.value = 0;
+        _offsetX = 0;
+        _offsetY = 0;
+        if (toRight) {
+          widget.onSwipeRight();
+        } else {
+          widget.onSwipeLeft();
+        }
+      },
+    );
   }
 
   void _onPanUpdate(DragUpdateDetails details) {
@@ -121,10 +131,7 @@ class _SpringSwipeCardState extends State<SpringSwipeCard> with SingleTickerProv
       onPanEnd: _onPanEnd,
       child: Transform.translate(
         offset: Offset(_offsetX, _offsetY),
-        child: Transform.rotate(
-          angle: rotation,
-          child: widget.child,
-        ),
+        child: Transform.rotate(angle: rotation, child: widget.child),
       ),
     );
   }

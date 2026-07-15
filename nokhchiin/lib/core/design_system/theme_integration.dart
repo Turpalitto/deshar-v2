@@ -5,7 +5,10 @@ import 'ios_design_system.dart';
 /// Подключение design system к приложению без переписывания экранов.
 abstract final class DesignSystemIntegration {
   /// Вызовите из [MaterialApp.builder] для Dynamic Type (textScaler из MediaQuery).
-  static ThemeData enhanceWithContext(BuildContext context, ThemeData baseTheme) {
+  static ThemeData enhanceWithContext(
+    BuildContext context,
+    ThemeData baseTheme,
+  ) {
     return IosDesignSystem.enhance(
       baseTheme,
       accent: defaultAccent,

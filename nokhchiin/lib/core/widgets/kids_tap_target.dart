@@ -20,7 +20,10 @@ class KidsTapTarget extends StatelessWidget {
     final content = ConstrainedBox(
       constraints: BoxConstraints(minWidth: minSize, minHeight: minSize),
       child: expand
-          ? SizedBox(width: double.infinity, child: Center(child: child))
+          ? SizedBox(
+              width: double.infinity,
+              child: Center(child: child),
+            )
           : Center(child: child),
     );
 

@@ -20,7 +20,9 @@ class AppIconImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final filter = color != null ? ColorFilter.mode(color!, BlendMode.srcIn) : null;
+    final filter = color != null
+        ? ColorFilter.mode(color!, BlendMode.srcIn)
+        : null;
 
     if (asset.endsWith('.svg')) {
       return Semantics(
@@ -65,6 +67,10 @@ class AppTabIcon extends StatelessWidget {
     if (index < 0 || index >= AppIcons.tabBar.length) {
       return SizedBox(width: size, height: size);
     }
-    return AppIconImage(asset: AppIcons.tabBar[index], size: size, color: color);
+    return AppIconImage(
+      asset: AppIcons.tabBar[index],
+      size: size,
+      color: color,
+    );
   }
 }

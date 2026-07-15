@@ -2,7 +2,10 @@ import '../../domain/entities/enums.dart';
 
 /// Параметры упражнений по режиму и возрасту — дети 3–6 проще, 9–12 ближе к взрослым.
 abstract final class GameplayDifficulty {
-  static int flashcardCount({required AppMode mode, required KidsAgeGroup age}) {
+  static int flashcardCount({
+    required AppMode mode,
+    required KidsAgeGroup age,
+  }) {
     if (mode == AppMode.adult) return 8;
     return switch (age) {
       KidsAgeGroup.age3to6 => 4,
@@ -11,7 +14,10 @@ abstract final class GameplayDifficulty {
     };
   }
 
-  static int matchPairCount({required AppMode mode, required KidsAgeGroup age}) {
+  static int matchPairCount({
+    required AppMode mode,
+    required KidsAgeGroup age,
+  }) {
     if (mode == AppMode.adult) return 5;
     return switch (age) {
       KidsAgeGroup.age3to6 => 3,
@@ -21,7 +27,10 @@ abstract final class GameplayDifficulty {
   }
 
   /// Сколько вариантов ответа в квизе (включая правильный).
-  static int quizOptionCount({required AppMode mode, required KidsAgeGroup age}) {
+  static int quizOptionCount({
+    required AppMode mode,
+    required KidsAgeGroup age,
+  }) {
     if (mode == AppMode.adult) return 4;
     return switch (age) {
       KidsAgeGroup.age3to6 => 2,
@@ -30,7 +39,10 @@ abstract final class GameplayDifficulty {
     };
   }
 
-  static int lessonQuizQuestions({required AppMode mode, required KidsAgeGroup age}) {
+  static int lessonQuizQuestions({
+    required AppMode mode,
+    required KidsAgeGroup age,
+  }) {
     if (mode == AppMode.adult) return 5;
     return switch (age) {
       KidsAgeGroup.age3to6 => 3,
@@ -51,7 +63,10 @@ abstract final class GameplayDifficulty {
   static int placementQuestionsPerUnit({required AppMode mode}) =>
       mode == AppMode.kids ? 1 : 2;
 
-  static int typingWordCount({required AppMode mode, required KidsAgeGroup age}) {
+  static int typingWordCount({
+    required AppMode mode,
+    required KidsAgeGroup age,
+  }) {
     if (mode == AppMode.adult) return 6;
     return switch (age) {
       KidsAgeGroup.age3to6 => 3,

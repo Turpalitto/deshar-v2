@@ -6,8 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:nokhchiin/core/l10n/l10n_extensions.dart';
 import '../../core/design/app_icons.dart';
-import '../../core/design/widgets/app_icon_image.dart';
-import '../../core/design/tokens/app_spacing.dart'; // intentional-mix: spacing tokens; Figma widgets from design_system
+import '../../core/design/tokens/app_spacing.dart';
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
 import '../../core/utils/number_format.dart';
@@ -36,89 +35,116 @@ class OnboardingScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-            Row(
-              children: [
-                const NokhchiinAppIcon(size: 44),
-                const SizedBox(width: 10),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                    Row(
+                      children: [
+                        const NokhchiinAppIcon(size: 44),
+                        const SizedBox(width: 10),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              l10n.appTitle,
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                                color: tokens.textPrimary,
+                                letterSpacing: -0.2,
+                              ),
+                            ),
+                            Text(
+                              // Реальное число вместо устаревшего "7800+" (аудит §7:
+                              // реально ≈134k слов после слияния с датасетом HF).
+                              'Чеченский язык · ${formatThousands(dictionaryWordCount)}+ '
+                              '${pluralize(dictionaryWordCount, one: 'слово', few: 'слова', many: 'слов')}',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: tokens.textTertiary,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 36),
                     Text(
-                      l10n.appTitle,
+                      'Сайн дог ду хьуна',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 34,
                         fontWeight: FontWeight.w700,
                         color: tokens.textPrimary,
-                        letterSpacing: -0.2,
+                        letterSpacing: -0.4,
+                        height: 1.15,
                       ),
-                    ),
+                    ).animate().fadeIn().slideY(begin: 0.08),
+                    const SizedBox(height: 10),
                     Text(
-                      // Реальное число вместо устаревшего "7800+" (аудит §7:
-                      // реально ≈134k слов после слияния с датасетом HF).
-                      'Чеченский язык · ${formatThousands(dictionaryWordCount)}+ '
-                      '${pluralize(dictionaryWordCount, one: 'слово', few: 'слова', many: 'слов')}',
-                      style: TextStyle(fontSize: 12, color: tokens.textTertiary, fontWeight: FontWeight.w500),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 36),
-            Text(
-              'Сайн дог ду хьуна',
-              style: TextStyle(
-                fontSize: 34,
-                fontWeight: FontWeight.w700,
-                color: tokens.textPrimary,
-                letterSpacing: -0.4,
-                height: 1.15,
-              ),
-            ).animate().fadeIn().slideY(begin: 0.08),
-            const SizedBox(height: 10),
-            Text('Рады тебя видеть!', style: TextStyle(fontSize: 17, color: tokens.textSecondary))
-                .animate()
-                .fadeIn(delay: 60.ms),
-            const SizedBox(height: 4),
-            Text(
-              'Выбери трек — мы подберём уроки и темп специально для тебя.',
-              style: TextStyle(fontSize: 15, color: tokens.textTertiary, height: 1.5),
-            ).animate().fadeIn(delay: 100.ms),
-            const SizedBox(height: 36),
-            _TrackCard(
-              iconAsset: AppIcons.navDictionary,
-              title: l10n.adultModeTitle,
-              subtitle: l10n.adultModeSubtitle,
-              badge: '17+',
-              accent: tokens.accent,
-              accentMuted: tokens.accentMuted,
-              onTap: () async {
-                await ref.read(userProfileProvider.notifier).setMode(AppMode.adult);
-                if (context.mounted) unawaited(context.push('/onboarding/placement'));
-              },
-            ).animate().fadeIn(delay: 160.ms).slideX(),
-            const SizedBox(height: 12),
-            _TrackCard(
-              iconAsset: AppIcons.gamePlay,
-              title: l10n.kidsModeTitle,
-              subtitle: l10n.kidsModeSubtitle,
-              badge: '3–12',
-              accent: DesignTokens.meadow,
-              accentMuted: DesignTokens.meadowMuted,
-              onTap: () async {
-                await ref.read(userProfileProvider.notifier).setMode(AppMode.kids);
-                if (context.mounted) _showAgePicker(context, ref);
-              },
-            ).animate().fadeIn(delay: 220.ms).slideX(),
-            const SizedBox(height: 24),
-            Row(
-              children: [
-                _FeatureTile(iconAsset: AppIcons.actionReview, label: 'SM-2 SRS'),
-                const SizedBox(width: 8),
-                _FeatureTile(iconAsset: AppIcons.stateOffline, label: 'Офлайн'),
-                const SizedBox(width: 8),
-                _FeatureTile(iconAsset: AppIcons.cultureMountains, label: 'Культура'),
-              ],
-            ).animate().fadeIn(delay: 280.ms),
+                      'Рады тебя видеть!',
+                      style: TextStyle(
+                        fontSize: 17,
+                        color: tokens.textSecondary,
+                      ),
+                    ).animate().fadeIn(delay: 60.ms),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Выбери трек — мы подберём уроки и темп специально для тебя.',
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: tokens.textTertiary,
+                        height: 1.5,
+                      ),
+                    ).animate().fadeIn(delay: 100.ms),
+                    const SizedBox(height: 36),
+                    _TrackCard(
+                      iconAsset: AppIcons.navDictionary,
+                      title: l10n.adultModeTitle,
+                      subtitle: l10n.adultModeSubtitle,
+                      badge: '17+',
+                      accent: tokens.accent,
+                      accentMuted: tokens.accentMuted,
+                      onTap: () async {
+                        await ref
+                            .read(userProfileProvider.notifier)
+                            .setMode(AppMode.adult);
+                        if (context.mounted) {
+                          unawaited(context.push('/onboarding/placement'));
+                        }
+                      },
+                    ).animate().fadeIn(delay: 160.ms).slideX(),
+                    const SizedBox(height: 12),
+                    _TrackCard(
+                      iconAsset: AppIcons.gamePlay,
+                      title: l10n.kidsModeTitle,
+                      subtitle: l10n.kidsModeSubtitle,
+                      badge: '3–12',
+                      accent: DesignTokens.meadow,
+                      accentMuted: DesignTokens.meadowMuted,
+                      onTap: () async {
+                        await ref
+                            .read(userProfileProvider.notifier)
+                            .setMode(AppMode.kids);
+                        if (context.mounted) _showAgePicker(context, ref);
+                      },
+                    ).animate().fadeIn(delay: 220.ms).slideX(),
+                    const SizedBox(height: 24),
+                    Row(
+                      children: [
+                        _FeatureTile(
+                          iconAsset: AppIcons.actionReview,
+                          label: 'SM-2 SRS',
+                        ),
+                        const SizedBox(width: 8),
+                        _FeatureTile(
+                          iconAsset: AppIcons.stateOffline,
+                          label: 'Офлайн',
+                        ),
+                        const SizedBox(width: 8),
+                        _FeatureTile(
+                          iconAsset: AppIcons.cultureMountains,
+                          label: 'Культура',
+                        ),
+                      ],
+                    ).animate().fadeIn(delay: 280.ms),
                   ],
                 ),
               ),
@@ -148,14 +174,33 @@ class OnboardingScreen extends ConsumerWidget {
           children: [
             Text(
               l10n.agePickerTitle,
-              style: TextStyle(fontSize: 28, fontWeight: FontWeight.w700, color: tokens.textPrimary),
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.w700,
+                color: tokens.textPrimary,
+              ),
             ),
             const SizedBox(height: 8),
-            Text('Подберём темп и контент', style: TextStyle(color: tokens.textTertiary)),
+            Text(
+              'Подберём темп и контент',
+              style: TextStyle(color: tokens.textTertiary),
+            ),
             const SizedBox(height: AppSpacing.lg),
-            _AgeRow(label: l10n.age3to6, iconAsset: AppIcons.ageHatchling, age: KidsAgeGroup.age3to6),
-            _AgeRow(label: l10n.age6to9, iconAsset: AppIcons.ageSprout, age: KidsAgeGroup.age6to9),
-            _AgeRow(label: l10n.age9to12, iconAsset: AppIcons.ageLeaf, age: KidsAgeGroup.age9to12),
+            _AgeRow(
+              label: l10n.age3to6,
+              iconAsset: AppIcons.ageHatchling,
+              age: KidsAgeGroup.age3to6,
+            ),
+            _AgeRow(
+              label: l10n.age6to9,
+              iconAsset: AppIcons.ageSprout,
+              age: KidsAgeGroup.age6to9,
+            ),
+            _AgeRow(
+              label: l10n.age9to12,
+              iconAsset: AppIcons.ageLeaf,
+              age: KidsAgeGroup.age9to12,
+            ),
           ],
         ),
       ),
@@ -195,59 +240,80 @@ class _TrackCard extends StatelessWidget {
         button: true,
         label: '$title. $subtitle',
         child: KidsTapTarget(
-        minSize: 64,
-        expand: true,
-        onTap: onTap,
-        child: Ink(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: tokens.separator, width: 1.5),
-          ),
-          padding: const EdgeInsets.all(20),
-          child: Row(
-            children: [
-              Container(
-                width: 52,
-                height: 52,
-                decoration: BoxDecoration(color: accentMuted, borderRadius: BorderRadius.circular(15)),
-                alignment: Alignment.center,
-                child: iconAsset != null
-                    ? AppIconImage(asset: iconAsset!, size: 26, color: accent)
-                    : Text(emoji!, style: const TextStyle(fontSize: 26)),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(title, style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: tokens.textPrimary)),
-                        const SizedBox(width: 8),
-                        NokhchiinChip(label: badge, color: accent, background: accentMuted),
-                      ],
-                    ),
-                    const SizedBox(height: 3),
-                    Text(subtitle, style: TextStyle(fontSize: 13, color: tokens.textTertiary)),
-                  ],
+          minSize: 64,
+          expand: true,
+          onTap: onTap,
+          child: Ink(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: tokens.separator, width: 1.5),
+            ),
+            padding: const EdgeInsets.all(20),
+            child: Row(
+              children: [
+                Container(
+                  width: 52,
+                  height: 52,
+                  decoration: BoxDecoration(
+                    color: accentMuted,
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  alignment: Alignment.center,
+                  child: iconAsset != null
+                      ? AppIconImage(asset: iconAsset!, size: 26, color: accent)
+                      : Text(emoji!, style: const TextStyle(fontSize: 26)),
                 ),
-              ),
-              Icon(Icons.chevron_right_rounded, color: tokens.textTertiary, size: 18),
-            ],
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            title,
+                            style: TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w600,
+                              color: tokens.textPrimary,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          NokhchiinChip(
+                            label: badge,
+                            color: accent,
+                            background: accentMuted,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        subtitle,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: tokens.textTertiary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(
+                  Icons.chevron_right_rounded,
+                  color: tokens.textTertiary,
+                  size: 18,
+                ),
+              ],
+            ),
           ),
         ),
-      ),
       ),
     );
   }
 }
 
 class _FeatureTile extends StatelessWidget {
-  const _FeatureTile({
-    this.emoji,
-    this.iconAsset,
-    required this.label,
-  }) : assert(emoji != null || iconAsset != null);
+  const _FeatureTile({this.emoji, this.iconAsset, required this.label})
+    : assert(emoji != null || iconAsset != null);
 
   final String? emoji;
   final String? iconAsset;
@@ -259,7 +325,10 @@ class _FeatureTile extends StatelessWidget {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
-        decoration: BoxDecoration(color: tokens.surfaceMuted, borderRadius: BorderRadius.circular(12)),
+        decoration: BoxDecoration(
+          color: tokens.surfaceMuted,
+          borderRadius: BorderRadius.circular(12),
+        ),
         child: Column(
           children: [
             if (iconAsset != null)
@@ -270,7 +339,11 @@ class _FeatureTile extends StatelessWidget {
             Text(
               label,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 10, color: tokens.textTertiary, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                fontSize: 10,
+                color: tokens.textTertiary,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ],
         ),
@@ -280,8 +353,12 @@ class _FeatureTile extends StatelessWidget {
 }
 
 class _AgeRow extends ConsumerWidget {
-  const _AgeRow({required this.label, this.emoji, this.iconAsset, required this.age})
-      : assert(emoji != null || iconAsset != null);
+  const _AgeRow({
+    required this.label,
+    this.emoji,
+    this.iconAsset,
+    required this.age,
+  }) : assert(emoji != null || iconAsset != null);
 
   final String label;
   final String? emoji;
@@ -321,7 +398,14 @@ class _AgeRow extends ConsumerWidget {
                 else
                   Text(emoji!, style: const TextStyle(fontSize: 32)),
                 const SizedBox(width: 14),
-                Text(label, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: tokens.textPrimary)),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: tokens.textPrimary,
+                  ),
+                ),
               ],
             ),
           ),

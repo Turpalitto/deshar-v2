@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../core/design/widgets/error_state.dart'; // intentional-mix: shared error placeholder
-import '../../core/design/widgets/loading_state.dart'; // intentional-mix: shared loading placeholder; tiles from design_system
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
 import '../../core/services/learner_insights_service.dart';
@@ -25,12 +23,16 @@ class AdultInsightsDashboardScreen extends ConsumerWidget {
       actions: [
         TextButton(
           onPressed: () => context.push('/progress'),
-          child: Text('SRS', style: TextStyle(color: tokens.accent, fontSize: 15)),
+          child: Text(
+            'SRS',
+            style: TextStyle(color: tokens.accent, fontSize: 15),
+          ),
         ),
       ],
       body: insights.when(
-        loading: () => const LoadingState(message: 'Считаем прогресс…'),
-        error: (_, _) => ErrorState(
+        loading: () =>
+            const NokhchiinLoadingState(message: 'Считаем прогресс…'),
+        error: (_, _) => NokhchiinErrorState(
           message: 'Не удалось посчитать инсайты',
           onRetry: () => ref.invalidate(learnerInsightsProvider),
         ),
@@ -190,7 +192,10 @@ class _MiniStat extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: IosSpacing.x4, horizontal: IosSpacing.x3),
+      padding: const EdgeInsets.symmetric(
+        vertical: IosSpacing.x4,
+        horizontal: IosSpacing.x3,
+      ),
       decoration: BoxDecoration(
         color: tokens.surface,
         borderRadius: BorderRadius.circular(16),
@@ -200,7 +205,9 @@ class _MiniStat extends StatelessWidget {
         children: [
           Text(
             value,
-            style: textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w700),
+            style: textTheme.headlineMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
           ),
           const SizedBox(height: IosSpacing.x1),
           Text(

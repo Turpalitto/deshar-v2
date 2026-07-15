@@ -10,7 +10,8 @@ class ParentDashboardScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profile = ref.watch(userProfileProvider).value ?? const UserProfileEntity();
+    final profile =
+        ref.watch(userProfileProvider).value ?? const UserProfileEntity();
 
     // Единый шелл AppScaffold вместо голого Scaffold+AppBar — раньше в
     // приложении было 4 несовместимых системы шапки экрана (аудит §3/§8).
@@ -20,9 +21,12 @@ class ParentDashboardScreen extends ConsumerWidget {
         future: ref.read(progressRepoProvider).getAllProgress(),
         builder: (context, snap) {
           final all = snap.data ?? {};
-          final mastered =
-              all.values.where((p) => p.mastery.isMastered && !p.seededFromPlacement).length;
-          final learning = all.values.where((p) => p.mastery.isLearned && !p.mastery.isMastered).length;
+          final mastered = all.values
+              .where((p) => p.mastery.isMastered && !p.seededFromPlacement)
+              .length;
+          final learning = all.values
+              .where((p) => p.mastery.isLearned && !p.mastery.isMastered)
+              .length;
           final struggling = all.values.where((p) => p.wrongCount > 2).length;
 
           return ListView(
@@ -34,7 +38,10 @@ class ParentDashboardScreen extends ConsumerWidget {
               _StatCard('В процессе', '$learning'),
               _StatCard('Нужно повторить', '$struggling'),
               const SizedBox(height: 24),
-              Text('Отчёт за неделю', style: Theme.of(context).textTheme.headlineMedium),
+              Text(
+                'Отчёт за неделю',
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
               const SizedBox(height: 12),
               // Реальный график недельного XP вместо заглушки "в следующем
               // обновлении" — данные уже собираются (используются в
@@ -64,7 +71,10 @@ class _StatCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 10),
       child: ListTile(
         title: Text(label),
-        trailing: Text(value, style: Theme.of(context).textTheme.headlineMedium),
+        trailing: Text(
+          value,
+          style: Theme.of(context).textTheme.headlineMedium,
+        ),
       ),
     );
   }

@@ -32,9 +32,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     // на fade-in анимации (400мс + delay 160мс), но не держит пользователя
     // лишнюю секунду на декоративном экране.
     final minDelay = Future<void>.delayed(const Duration(milliseconds: 1200));
-    final profile = await ref.read(userProfileProvider.future).catchError(
-          (_) => const UserProfileEntity(),
-        );
+    final profile = await ref
+        .read(userProfileProvider.future)
+        .catchError((_) => const UserProfileEntity());
     await minDelay;
     if (!mounted) return;
     // Проверяем hasCompletedOnboarding, а не profile != null.
@@ -62,7 +62,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 const NokhchiinAppIcon(size: 96)
                     .animate()
                     .fadeIn(duration: 400.ms)
-                    .scale(begin: const Offset(0.94, 0.94), curve: Curves.easeOutBack),
+                    .scale(
+                      begin: const Offset(0.94, 0.94),
+                      curve: Curves.easeOutBack,
+                    ),
                 const SizedBox(height: 16),
                 const Text(
                   'Нохчийн',

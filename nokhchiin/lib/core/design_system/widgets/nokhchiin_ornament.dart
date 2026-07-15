@@ -2,11 +2,7 @@ import 'package:flutter/material.dart';
 
 /// Вайнахский ромбовый орнамент из Figma Make.
 class NokhchiinOrnament extends StatelessWidget {
-  const NokhchiinOrnament({
-    super.key,
-    this.opacity = 0.05,
-    this.light = false,
-  });
+  const NokhchiinOrnament({super.key, this.opacity = 0.05, this.light = false});
 
   final double opacity;
   final bool light;

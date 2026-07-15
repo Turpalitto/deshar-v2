@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:nokhchiin/core/l10n/l10n_extensions.dart';
 import '../../core/design/tokens/app_spacing.dart';
 import '../../core/design/app_icons.dart';
-import '../../core/design/widgets/app_icon_image.dart';
 import '../../core/design/widgets/app_button.dart';
 import '../../core/design/widgets/app_card.dart';
 import '../../core/design_system/design_system.dart';
@@ -35,12 +34,14 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(analyticsServiceProvider).track(
-        AnalyticsEventName.paywallViewed,
-        properties: {
-          if (widget.returnPath != null) 'return_path': widget.returnPath!,
-        },
-      );
+      ref
+          .read(analyticsServiceProvider)
+          .track(
+            AnalyticsEventName.paywallViewed,
+            properties: {
+              if (widget.returnPath != null) 'return_path': widget.returnPath!,
+            },
+          );
     });
   }
 
@@ -81,9 +82,9 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
         properties: {'error': e.toString()},
       );
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Ошибка: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Ошибка: $e')));
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -97,7 +98,9 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
     return PopScope(
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) {
-          ref.read(analyticsServiceProvider).track(AnalyticsEventName.paywallDismissed);
+          ref
+              .read(analyticsServiceProvider)
+              .track(AnalyticsEventName.paywallDismissed);
         }
       },
       child: AppScaffold(
@@ -113,23 +116,25 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                   icon: Icon(Icons.close_rounded, color: tokens.textTertiary),
                 ),
               ),
-              const AppIconImage(asset: AppIcons.rewardCrown, size: 52)
-                  .animate()
-                  .fadeIn()
-                  .scale(begin: const Offset(0.8, 0.8)),
+              const AppIconImage(
+                asset: AppIcons.rewardCrown,
+                size: 52,
+              ).animate().fadeIn().scale(begin: const Offset(0.8, 0.8)),
               const SizedBox(height: AppSpacing.lg),
               Text(
                 'Нохчийн Premium',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: -0.3,
-                    ),
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -0.3,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: AppSpacing.sm),
               Text(
                 l10n.paywallSubtitle,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: tokens.textSecondary),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(color: tokens.textSecondary),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: AppSpacing.xxl),
@@ -154,10 +159,18 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 9),
                         child: Row(
                           children: [
-                            AppIconImage(asset: row.$1, size: 20, color: tokens.accent),
+                            AppIconImage(
+                              asset: row.$1,
+                              size: 20,
+                              color: tokens.accent,
+                            ),
                             const SizedBox(width: 12),
                             Expanded(child: Text(row.$2)),
-                            Icon(Icons.check_rounded, color: tokens.success, size: 18),
+                            Icon(
+                              Icons.check_rounded,
+                              color: tokens.success,
+                              size: 18,
+                            ),
                           ],
                         ),
                       ),
@@ -174,7 +187,9 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                   children: [
                     Text(
                       l10n.paywallTrialTitle(SubscriptionLimits.trialDays),
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: AppSpacing.xs),
@@ -193,9 +208,9 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                 onPressed: _loading
                     ? null
                     : () => _run(
-                          AnalyticsEventName.trialStarted,
-                          () => ref.read(billingServiceProvider).startTrial(),
-                        ),
+                        AnalyticsEventName.trialStarted,
+                        () => ref.read(billingServiceProvider).startTrial(),
+                      ),
               ),
               const SizedBox(height: AppSpacing.md),
               NokhchiinButton(
@@ -206,9 +221,10 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                 onPressed: _loading
                     ? null
                     : () => _run(
-                          AnalyticsEventName.purchaseStarted,
-                          () => ref.read(billingServiceProvider).purchasePremium(),
-                        ),
+                        AnalyticsEventName.purchaseStarted,
+                        () =>
+                            ref.read(billingServiceProvider).purchasePremium(),
+                      ),
               ),
               const SizedBox(height: AppSpacing.md),
               AppButton(
@@ -217,15 +233,14 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                 expanded: false,
                 onPressed: _loading
                     ? null
-                    : () => _run(
-                          AnalyticsEventName.restoreTapped,
-                          () async {
-                            await ref.read(billingServiceProvider).restorePurchases();
-                            await ref.read(analyticsServiceProvider).track(
-                                  AnalyticsEventName.restoreCompleted,
-                                );
-                          },
-                        ),
+                    : () => _run(AnalyticsEventName.restoreTapped, () async {
+                        await ref
+                            .read(billingServiceProvider)
+                            .restorePurchases();
+                        await ref
+                            .read(analyticsServiceProvider)
+                            .track(AnalyticsEventName.restoreCompleted);
+                      }),
               ),
               const SizedBox(height: AppSpacing.lg),
               const LegalLinksRow(compact: true),
@@ -269,36 +284,44 @@ class _CompareTable extends StatelessWidget {
                 child: Text(
                   l10n.comparePremium,
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                   textAlign: TextAlign.center,
                 ),
               ),
             ],
           ),
           const Divider(height: AppSpacing.xl),
-          ...rows.map((r) => Padding(
-                padding: const EdgeInsets.only(bottom: AppSpacing.md),
-                child: Row(
-                  children: [
-                    Expanded(flex: 2, child: Text(r.$1, style: Theme.of(context).textTheme.bodyMedium)),
-                    Expanded(
-                      child: Icon(
-                        r.$2 ? Icons.check_rounded : Icons.remove_rounded,
-                        color: r.$2 ? Colors.green : Colors.grey,
-                        size: 20,
-                      ),
+          ...rows.map(
+            (r) => Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.md),
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: Text(
+                      r.$1,
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
-                    Expanded(
-                      child: Icon(
-                        r.$3 ? Icons.check_rounded : Icons.remove_rounded,
-                        color: Theme.of(context).colorScheme.primary,
-                        size: 20,
-                      ),
+                  ),
+                  Expanded(
+                    child: Icon(
+                      r.$2 ? Icons.check_rounded : Icons.remove_rounded,
+                      color: r.$2 ? Colors.green : Colors.grey,
+                      size: 20,
                     ),
-                  ],
-                ),
-              )),
+                  ),
+                  Expanded(
+                    child: Icon(
+                      r.$3 ? Icons.check_rounded : Icons.remove_rounded,
+                      color: Theme.of(context).colorScheme.primary,
+                      size: 20,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );

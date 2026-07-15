@@ -7,7 +7,11 @@ class SpacedRepetitionEngine {
 
   /// quality: 0–5 (0 = полный провал, 5 = идеально)
   /// [now] — текущее время; передаётся извне для тестируемости.
-  WordProgressEntity review(WordProgressEntity current, int quality, {DateTime? now}) {
+  WordProgressEntity review(
+    WordProgressEntity current,
+    int quality, {
+    DateTime? now,
+  }) {
     final timestamp = now ?? DateTime.now();
     var ease = current.easeFactor;
     var interval = current.intervalDays;
@@ -74,4 +78,3 @@ class SpacedRepetitionEngine {
     );
   }
 }
-

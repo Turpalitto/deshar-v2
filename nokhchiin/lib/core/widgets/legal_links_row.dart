@@ -5,11 +5,7 @@ import '../design_system/design_system.dart';
 
 /// Ссылки на политику конфиденциальности и условия использования.
 class LegalLinksRow extends StatelessWidget {
-  const LegalLinksRow({
-    super.key,
-    this.compact = false,
-    this.center = true,
-  });
+  const LegalLinksRow({super.key, this.compact = false, this.center = true});
 
   final bool compact;
   final bool center;

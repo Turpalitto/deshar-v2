@@ -4,11 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/design/app_icons.dart';
-import '../../core/design/widgets/app_icon_image.dart';
 import '../../core/design/tokens/app_spacing.dart';
 import '../../core/design/widgets/app_card.dart';
-import '../../core/design/widgets/error_state.dart';
-import '../../core/design/widgets/loading_state.dart';
 import '../../core/widgets/mastery_progress_bar.dart';
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
@@ -30,12 +27,15 @@ class CollectionsScreen extends ConsumerWidget {
         data: (list) => FutureBuilder(
           future: _loadAlbumStats(ref, list),
           builder: (context, snap) {
-            if (!snap.hasData) return const LoadingState();
+            if (!snap.hasData) return const NokhchiinLoadingState();
             final stats = snap.data!;
             return ListView(
               padding: const EdgeInsets.all(AppSpacing.lg),
               children: [
-                Text('Собери 100%', style: Theme.of(context).textTheme.headlineSmall),
+                Text(
+                  'Собери 100%',
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
                 const SizedBox(height: AppSpacing.lg),
                 ...List.generate(list.length, (i) {
                   final col = list[i];
@@ -49,25 +49,47 @@ class CollectionsScreen extends ConsumerWidget {
                       onTap: () => _openAlbum(context, ref, legendary),
                       child: Row(
                         children: [
-                          Text(col.icon ?? '📘', style: const TextStyle(fontSize: 40)),
+                          Text(
+                            col.icon ?? '📘',
+                            style: const TextStyle(fontSize: 40),
+                          ),
                           const SizedBox(width: AppSpacing.lg),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(col.titleRu, style: Theme.of(context).textTheme.titleLarge),
-                                Text('$owned / $total', style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18)),
+                                Text(
+                                  col.titleRu,
+                                  style: Theme.of(context).textTheme.titleLarge,
+                                ),
+                                Text(
+                                  '$owned / $total',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 18,
+                                  ),
+                                ),
                                 const SizedBox(height: AppSpacing.sm),
                                 MasteryProgressBar(percent: pct),
                               ],
                             ),
                           ),
                           if (pct >= 100)
-                            AppIconImage(asset: AppIcons.rewardCelebration, size: 24, color: DesignTokens.gold)
+                            AppIconImage(
+                              asset: AppIcons.rewardCelebration,
+                              size: 24,
+                              color: DesignTokens.gold,
+                            )
                           else if (legendary)
-                            const AppIconImage(asset: AppIcons.rewardCrown, size: 24)
+                            const AppIconImage(
+                              asset: AppIcons.rewardCrown,
+                              size: 24,
+                            )
                           else
-                            Text(col.icon ?? '📗', style: const TextStyle(fontSize: 24)),
+                            Text(
+                              col.icon ?? '📗',
+                              style: const TextStyle(fontSize: 24),
+                            ),
                         ],
                       ),
                     ),
@@ -77,8 +99,8 @@ class CollectionsScreen extends ConsumerWidget {
             );
           },
         ),
-        loading: () => const LoadingState(),
-        error: (_, _) => ErrorState(
+        loading: () => const NokhchiinLoadingState(),
+        error: (_, _) => NokhchiinErrorState(
           message: 'Не удалось загрузить коллекции',
           onRetry: () => ref.invalidate(collectionsProvider),
         ),
@@ -86,7 +108,10 @@ class CollectionsScreen extends ConsumerWidget {
     );
   }
 
-  Future<List<(int, int)>> _loadAlbumStats(WidgetRef ref, List<CollectionEntity> list) async {
+  Future<List<(int, int)>> _loadAlbumStats(
+    WidgetRef ref,
+    List<CollectionEntity> list,
+  ) async {
     final progress = await ref.read(progressRepoProvider).getAllProgress();
     final dict = ref.read(dictionaryRepoProvider);
     final result = <(int, int)>[];
@@ -97,16 +122,24 @@ class CollectionsScreen extends ConsumerWidget {
       var owned = 0;
       for (final w in words) {
         final p = progress[w.id];
-        if (p != null && p.mastery.value >= MasteryLevel.remembering.value) owned++;
+        if (p != null && p.mastery.value >= MasteryLevel.remembering.value) {
+          owned++;
+        }
       }
       result.add((owned.clamp(0, total), total));
     }
     return result;
   }
 
-  Future<void> _openAlbum(BuildContext context, WidgetRef ref, bool legendary) async {
+  Future<void> _openAlbum(
+    BuildContext context,
+    WidgetRef ref,
+    bool legendary,
+  ) async {
     if (legendary) {
-      final ok = await ref.read(canAccessFeatureUseCaseProvider)(PremiumFeature.fullCollections);
+      final ok = await ref.read(canAccessFeatureUseCaseProvider)(
+        PremiumFeature.fullCollections,
+      );
       if (!ok && context.mounted) {
         unawaited(context.push('/paywall?return=/collections'));
         return;

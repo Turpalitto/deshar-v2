@@ -5,13 +5,21 @@ import '../repositories/repositories.dart';
 import '../services/spaced_repetition_engine.dart';
 
 class ReviewWordUseCase {
-  ReviewWordUseCase(this._progressRepo, [this._srs = const SpacedRepetitionEngine()]);
+  ReviewWordUseCase(
+    this._progressRepo, [
+    this._srs = const SpacedRepetitionEngine(),
+  ]);
 
   final ProgressRepository _progressRepo;
   final SpacedRepetitionEngine _srs;
 
-  Future<WordProgressEntity> call(String wordId, int quality, {DateTime? now}) async {
-    final existing = await _progressRepo.getProgress(wordId) ??
+  Future<WordProgressEntity> call(
+    String wordId,
+    int quality, {
+    DateTime? now,
+  }) async {
+    final existing =
+        await _progressRepo.getProgress(wordId) ??
         WordProgressEntity(wordId: wordId);
     final updated = _srs.review(existing, quality, now: now);
     await _progressRepo.saveProgress(updated);
@@ -27,8 +35,11 @@ class GetDueWordsUseCase {
 
   Future<List<WordEntity>> call({int limit = 20}) async {
     final due = await _progressRepo.getDueForReview();
-    due.sort((a, b) =>
-        (a.nextReviewAt ?? DateTime(2000)).compareTo(b.nextReviewAt ?? DateTime(2000)));
+    due.sort(
+      (a, b) => (a.nextReviewAt ?? DateTime(2000)).compareTo(
+        b.nextReviewAt ?? DateTime(2000),
+      ),
+    );
     final ids = due.take(limit).map((e) => e.wordId).toList();
     return _dictionaryRepo.getWordsByIds(ids);
   }

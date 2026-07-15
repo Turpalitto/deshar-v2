@@ -65,11 +65,11 @@ abstract final class IosMotion {
   }) {
     final curve = SpringMotionCurve(spring);
     return (animate) => animate.scale(
-          begin: const Offset(0.92, 0.92),
-          end: const Offset(1, 1),
-          duration: duration ?? interact,
-          curve: curve,
-        );
+      begin: const Offset(0.92, 0.92),
+      end: const Offset(1, 1),
+      duration: duration ?? interact,
+      curve: curve,
+    );
   }
 }
 

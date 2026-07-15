@@ -94,7 +94,10 @@ class _StoryReaderScreenState extends ConsumerState<StoryReaderScreen> {
       actions: [
         Padding(
           padding: const EdgeInsets.only(right: 16),
-          child: Text('${_panel + 1}/${_panels.length}', style: const TextStyle(fontSize: 16)),
+          child: Text(
+            '${_panel + 1}/${_panels.length}',
+            style: const TextStyle(fontSize: 16),
+          ),
         ),
       ],
       body: SingleChildScrollView(
@@ -102,23 +105,23 @@ class _StoryReaderScreenState extends ConsumerState<StoryReaderScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            WordIllustration(
-              category: unitId,
-              emoji: _story!.emoji,
-              size: 200,
-            ),
+            WordIllustration(category: unitId, emoji: _story!.emoji, size: 200),
             const SizedBox(height: 16),
             Text(
               panel.narrationRu,
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontStyle: FontStyle.italic),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyLarge?.copyWith(fontStyle: FontStyle.italic),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
-            ...panel.dialogue.map((d) => _DialogueBubble(
-                  speaker: d.speaker,
-                  chechen: d.chechen,
-                  russian: d.russian,
-                )),
+            ...panel.dialogue.map(
+              (d) => _DialogueBubble(
+                speaker: d.speaker,
+                chechen: d.chechen,
+                russian: d.russian,
+              ),
+            ),
             const SizedBox(height: 24),
             Row(
               children: [
@@ -130,7 +133,11 @@ class _StoryReaderScreenState extends ConsumerState<StoryReaderScreen> {
                 const Spacer(),
                 ElevatedButton(
                   onPressed: _nextPanel,
-                  child: Text(_panel < _panels.length - 1 ? 'Далее' : (_quiz.isNotEmpty ? 'Квиз' : 'Готово')),
+                  child: Text(
+                    _panel < _panels.length - 1
+                        ? 'Далее'
+                        : (_quiz.isNotEmpty ? 'Квиз' : 'Готово'),
+                  ),
                 ),
               ],
             ),
@@ -156,35 +163,49 @@ class _StoryReaderScreenState extends ConsumerState<StoryReaderScreen> {
         child: Column(
           children: [
             const FoxMascot(size: 64, emotion: FoxEmotion.thinking),
-            Text(q.question, style: Theme.of(context).textTheme.headlineMedium, textAlign: TextAlign.center),
+            Text(
+              q.question,
+              style: Theme.of(context).textTheme.headlineMedium,
+              textAlign: TextAlign.center,
+            ),
             const Spacer(),
-            ...options.map((o) => Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: _quizLocked
-                          ? null
-                          : () {
-                              if (o == q.answer) {
-                                setState(() => _quizIndex++);
-                              } else {
-                                setState(() => _quizLocked = true);
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Неверно. Попробуйте ещё раз.'),
-                                    duration: Duration(seconds: 1),
-                                  ),
-                                );
-                                Future.delayed(const Duration(milliseconds: 800), () {
-                                  if (mounted) setState(() => _quizLocked = false);
-                                });
-                              }
-                            },
-                      child: Padding(padding: const EdgeInsets.all(14), child: Text(o)),
+            ...options.map(
+              (o) => Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _quizLocked
+                        ? null
+                        : () {
+                            if (o == q.answer) {
+                              setState(() => _quizIndex++);
+                            } else {
+                              setState(() => _quizLocked = true);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Неверно. Попробуйте ещё раз.'),
+                                  duration: Duration(seconds: 1),
+                                ),
+                              );
+                              Future.delayed(
+                                const Duration(milliseconds: 800),
+                                () {
+                                  if (mounted) {
+                                    setState(() => _quizLocked = false);
+                                  }
+                                },
+                              );
+                            }
+                          },
+                    child: Padding(
+                      padding: const EdgeInsets.all(14),
+                      child: Text(o),
                     ),
                   ),
-                )),
+                ),
+              ),
+            ),
             const Spacer(),
           ],
         ),
@@ -213,9 +234,17 @@ class _DialogueBubble extends StatelessWidget {
           children: [
             if (speaker.isNotEmpty)
               Text(speaker, style: Theme.of(context).textTheme.labelLarge),
-            Text(chechen, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 20)),
+            Text(
+              chechen,
+              style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 20),
+            ),
             const SizedBox(height: 4),
-            Text(russian, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey.shade700)),
+            Text(
+              russian,
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: Colors.grey.shade700),
+            ),
           ],
         ),
       ),

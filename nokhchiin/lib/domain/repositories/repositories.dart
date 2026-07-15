@@ -11,7 +11,11 @@ abstract class DictionaryRepository {
   /// полного словаря. Для «слова дня», уроков, квизов и placement-теста.
   Future<List<WordEntity>> getCuratedWords();
   Future<WordEntity?> getWordById(String id);
-  Future<List<WordEntity>> search(String query, {String? category, PartOfSpeech? pos});
+  Future<List<WordEntity>> search(
+    String query, {
+    String? category,
+    PartOfSpeech? pos,
+  });
   Future<List<WordEntity>> getWordsByCategory(String category);
   Future<List<WordEntity>> getLessonWords();
   Future<List<WordEntity>> getWordsByIds(List<String> ids);
@@ -37,19 +41,11 @@ abstract class UserRepository {
   Future<void> saveProfile(UserProfileEntity profile);
 }
 
-/// Будущая интеграция: AI-преподаватель, генерация упражнений.
-abstract class AiTutorRepository {
-  Future<String> explainMistake({required WordEntity word, required String userAnswer});
-  Future<List<String>> generatePracticeSentences({required List<WordEntity> words});
-}
-
 abstract class PdfImportRepository {
-  Future<List<WordEntity>> importFromPdfBytes(List<int> bytes, {required String sourceId});
-}
-
-abstract class AudioRepository {
-  Future<void> speakChechen(String text, {VoiceProfile profile = VoiceProfile.childNormal});
-  Future<void> speakRussian(String text, {VoiceProfile profile = VoiceProfile.adultNormal});
+  Future<List<WordEntity>> importFromPdfBytes(
+    List<int> bytes, {
+    required String sourceId,
+  });
 }
 
 /// UI-слой раньше импортировал data/culture_capsule_samples.dart напрямую,

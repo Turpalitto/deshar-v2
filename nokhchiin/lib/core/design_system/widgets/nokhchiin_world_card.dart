@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../design/app_icons.dart';
-import '../../design/widgets/app_icon_image.dart';
 import '../../utils/number_format.dart';
 import '../design_system.dart';
 
@@ -49,7 +48,10 @@ class NokhchiinWorldCard extends StatelessWidget {
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [color.withValues(alpha: 0.87), color.withValues(alpha: 0.6)],
+                colors: [
+                  color.withValues(alpha: 0.87),
+                  color.withValues(alpha: 0.6),
+                ],
               ),
             ),
             child: Row(
@@ -94,7 +96,11 @@ class NokhchiinWorldCard extends StatelessWidget {
                   color: Colors.white,
                   trackColor: Colors.white.withValues(alpha: 0.25),
                   center: iconAsset != null
-                      ? AppIconImage(asset: iconAsset!, size: 26, color: Colors.white)
+                      ? AppIconImage(
+                          asset: iconAsset!,
+                          size: 26,
+                          color: Colors.white,
+                        )
                       : Text(emoji!, style: const TextStyle(fontSize: 26)),
                 ),
               ],
@@ -117,10 +123,18 @@ class NokhchiinWorldCard extends StatelessWidget {
                 if (unlocked)
                   Text(
                     'Продолжить →',
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: accent),
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: accent,
+                    ),
                   )
                 else
-                  Icon(Icons.lock_outline_rounded, size: 16, color: tokens.textTertiary),
+                  Icon(
+                    Icons.lock_outline_rounded,
+                    size: 16,
+                    color: tokens.textTertiary,
+                  ),
               ],
             ),
           ),
@@ -211,11 +225,17 @@ class NokhchiinWorldRow extends StatelessWidget {
                           fontSize: 12.5,
                           fontWeight: FontWeight.w700,
                           fontFeatures: const [FontFeature.tabularFigures()],
-                          color: progressPercent > 0 ? color : tokens.textTertiary,
+                          color: progressPercent > 0
+                              ? color
+                              : tokens.textTertiary,
                         ),
                       )
                     else
-                      AppIconImage(asset: AppIcons.stateLocked, size: 16, color: tokens.textTertiary),
+                      AppIconImage(
+                        asset: AppIcons.stateLocked,
+                        size: 16,
+                        color: tokens.textTertiary,
+                      ),
                   ],
                 ),
                 const SizedBox(height: 8),
@@ -262,7 +282,11 @@ class NokhchiinWorldRow extends StatelessWidget {
               color: tokens.surfaceMuted,
               shape: BoxShape.circle,
             ),
-            child: Icon(Icons.chevron_right_rounded, size: 18, color: tokens.textSecondary),
+            child: Icon(
+              Icons.chevron_right_rounded,
+              size: 18,
+              color: tokens.textSecondary,
+            ),
           ),
         ],
       ),

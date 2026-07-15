@@ -14,23 +14,24 @@ sealed class Result<T> {
 
   /// Распаковка data или fallback.
   T getOr(T fallback) => switch (this) {
-        Success(:final data) => data,
-        Failure() => fallback,
-      };
+    Success(:final data) => data,
+    Failure() => fallback,
+  };
 
   /// Преобразование data.
   Result<R> map<R>(R Function(T) f) => switch (this) {
-        Success(:final data) => Success(f(data)),
-        Failure(:final error, :final stackTrace) =>
-          Failure(error, stackTrace),
-      };
+    Success(:final data) => Success(f(data)),
+    Failure(:final error, :final stackTrace) => Failure(error, stackTrace),
+  };
 
   /// Выполнить fn на Success, иначе вернуть fallback.
-  R fold<R>({required R Function(T data) onSuccess, required R Function() onFailure}) =>
-      switch (this) {
-        Success(:final data) => onSuccess(data),
-        Failure() => onFailure(),
-      };
+  R fold<R>({
+    required R Function(T data) onSuccess,
+    required R Function() onFailure,
+  }) => switch (this) {
+    Success(:final data) => onSuccess(data),
+    Failure() => onFailure(),
+  };
 }
 
 /// Успешный результат.

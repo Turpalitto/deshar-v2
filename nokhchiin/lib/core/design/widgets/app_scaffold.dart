@@ -52,7 +52,11 @@ class AppScaffold extends StatelessWidget {
                       children: [
                         if (Navigator.canPop(context))
                           IconButton(
-                            icon: Icon(Icons.arrow_back_ios_new_rounded, color: tokens.textTertiary, size: 20),
+                            icon: Icon(
+                              Icons.arrow_back_ios_new_rounded,
+                              color: tokens.textTertiary,
+                              size: 20,
+                            ),
                             onPressed: () => Navigator.maybePop(context),
                           ),
                         if (title != null)

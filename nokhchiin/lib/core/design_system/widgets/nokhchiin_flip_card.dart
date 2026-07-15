@@ -23,7 +23,8 @@ class NokhchiinFlipCard extends StatefulWidget {
   State<NokhchiinFlipCard> createState() => _NokhchiinFlipCardState();
 }
 
-class _NokhchiinFlipCardState extends State<NokhchiinFlipCard> with SingleTickerProviderStateMixin {
+class _NokhchiinFlipCardState extends State<NokhchiinFlipCard>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
 
@@ -34,7 +35,10 @@ class _NokhchiinFlipCardState extends State<NokhchiinFlipCard> with SingleTicker
       vsync: this,
       duration: const Duration(milliseconds: 450),
     );
-    _animation = CurvedAnimation(parent: _controller, curve: IosMotion.curveGentle);
+    _animation = CurvedAnimation(
+      parent: _controller,
+      curve: IosMotion.curveGentle,
+    );
     if (widget.flipped) _controller.value = 1;
   }
 
@@ -115,7 +119,9 @@ class NokhchiinFlashcardFace extends StatelessWidget {
         decoration: BoxDecoration(
           color: accent ? tokens.accent : tokens.surface,
           borderRadius: BorderRadius.circular(radius),
-          border: accent ? null : Border.all(color: tokens.separator, width: 1.5),
+          border: accent
+              ? null
+              : Border.all(color: tokens.separator, width: 1.5),
         ),
         child: child,
       ),

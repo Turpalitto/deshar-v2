@@ -5,11 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/design_system/design_system.dart';
-import '../../core/design/tokens/app_spacing.dart'; // intentional-mix: spacing tokens; Figma widgets from design_system
+import '../../core/design/tokens/app_spacing.dart';
 import '../../core/design/app_icons.dart';
-import '../../core/design/widgets/app_icon_image.dart'; // intentional-mix: reward dialog actions
-import '../../core/design/widgets/empty_state.dart'; // intentional-mix: empty list fallback
-import '../../core/design/widgets/loading_state.dart'; // intentional-mix: shared loading placeholder
 import '../../core/design/widgets/reward_celebration.dart';
 import '../../core/providers/providers.dart';
 import '../../domain/entities/enums.dart';
@@ -37,7 +34,6 @@ class FlashcardsScreen extends ConsumerStatefulWidget {
 }
 
 class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
-  final _swipeController = SpringSwipeCardController();
   final _combo = GameComboTracker();
 
   List<WordEntity> _words = [];
@@ -94,7 +90,9 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
     } else {
       _combo.reset();
     }
-    if (!mounted) return; // аудит §2: раньше проверялось только в ветке "последняя карточка"
+    if (!mounted) {
+      return; // аудит §2: раньше проверялось только в ветке "последняя карточка"
+    }
 
     if (_index < _words.length - 1) {
       setState(() {
@@ -135,11 +133,17 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
   @override
   Widget build(BuildContext context) {
     if (_loading) {
-      if (widget.embedded) return const Center(child: LoadingState(message: 'Готовим карточки…'));
-      return const AppScaffold(body: LoadingState(message: 'Готовим карточки…'));
+      if (widget.embedded) {
+        return const Center(
+          child: NokhchiinLoadingState(message: 'Готовим карточки…'),
+        );
+      }
+      return const AppScaffold(
+        body: NokhchiinLoadingState(message: 'Готовим карточки…'),
+      );
     }
     if (_words.isEmpty) {
-      const empty = EmptyState(
+      const empty = NokhchiinEmptyState(
         iconAsset: AppIcons.stateEmpty,
         title: 'Недостаточно слов',
         subtitle: 'Вернись позже — мы добавим слова для этого урока',
@@ -175,7 +179,6 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
           Expanded(
             child: SpringSwipeCard(
               key: ValueKey(w.id),
-              controller: _swipeController,
               onSwipeLeft: () {
                 HapticFeedback.heavyImpact();
                 _known(false);
@@ -196,11 +199,20 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
                   if (_showTranslation) _showFlipNudge = false;
                 }),
                 front: NokhchiinFlashcardFace(
-                  child: _FlashcardContent(word: w, showRussian: false, unitId: widget.unitId),
+                  child: _FlashcardContent(
+                    word: w,
+                    showRussian: false,
+                    unitId: widget.unitId,
+                  ),
                 ),
                 back: NokhchiinFlashcardFace(
                   accent: true,
-                  child: _FlashcardContent(word: w, showRussian: true, unitId: widget.unitId, onAccent: true),
+                  child: _FlashcardContent(
+                    word: w,
+                    showRussian: true,
+                    unitId: widget.unitId,
+                    onAccent: true,
+                  ),
                 ),
               ),
             ),
@@ -213,7 +225,7 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
                   label: 'Повторить',
                   color: context.iosTokens.accentMuted,
                   textColor: context.iosTokens.accent,
-                  onPressed: () => _swipeController.swipeLeft(),
+                  onPressed: () => _known(false),
                   // Иконка вместо сырого юникод-символа "↻" (аудит §low).
                   child: _ButtonLabel(
                     iconAsset: AppIcons.actionReview,
@@ -227,7 +239,7 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
                 child: NokhchiinButton(
                   label: 'Знаю',
                   onPressed: canMarkKnown
-                      ? () => _swipeController.swipeRight()
+                      ? () => _known(true)
                       : () {
                           HapticFeedback.mediumImpact();
                           setState(() => _showFlipNudge = true);
@@ -255,10 +267,7 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
 
     if (widget.embedded) return body;
 
-    return AppScaffold(
-      title: '${_index + 1} / ${_words.length}',
-      body: body,
-    );
+    return AppScaffold(title: '${_index + 1} / ${_words.length}', body: body);
   }
 }
 
@@ -279,7 +288,9 @@ class _FlashcardContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final tokens = context.iosTokens;
     final fg = onAccent ? Colors.white : tokens.textPrimary;
-    final fgMuted = onAccent ? Colors.white.withValues(alpha: 0.7) : tokens.textTertiary;
+    final fgMuted = onAccent
+        ? Colors.white.withValues(alpha: 0.7)
+        : tokens.textTertiary;
 
     return Semantics(
       label: showRussian
@@ -288,72 +299,95 @@ class _FlashcardContent extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Stack(
-        children: [
-          Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (word.emoji != null)
-                  Text(word.emoji!, style: const TextStyle(fontSize: 80))
-                else
-                  const AppIconImage(asset: AppIcons.navDictionary, size: 80),
-                const SizedBox(height: 16),
-                Text(
-                  showRussian ? word.russian : word.chechen,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: showRussian ? 34 : 30,
-                    fontWeight: FontWeight.w700,
-                    color: fg,
-                    letterSpacing: showRussian ? 0 : 0.3,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                if (word.pronunciation != null && word.pronunciation!.isNotEmpty)
-                  Text('[${word.pronunciation}]', style: TextStyle(fontSize: 14, color: fgMuted, letterSpacing: 0.5)),
-                if (word.hint != null && showRussian) ...[
-                  const SizedBox(height: 12),
-                  Text(
-                    word.hint!,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 14, color: fgMuted, height: 1.4),
-                  ),
-                ],
-                if (!showRussian) ...[
-                  const SizedBox(height: 16),
-                  NokhchiinChip(
-                    label: word.category ?? 'Слово',
-                    color: tokens.textTertiary,
-                    background: onAccent ? Colors.white.withValues(alpha: 0.15) : tokens.surfaceMuted,
-                  ),
-                ],
-              ],
-            ),
-          ),
-          if (!showRussian)
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 20,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Container(
-                    width: 20,
-                    height: 20,
-                    decoration: BoxDecoration(
-                      color: onAccent ? Colors.white.withValues(alpha: 0.15) : tokens.surfaceMuted,
-                      shape: BoxShape.circle,
+                  if (word.emoji != null)
+                    Text(word.emoji!, style: const TextStyle(fontSize: 80))
+                  else
+                    const AppIconImage(asset: AppIcons.navDictionary, size: 80),
+                  const SizedBox(height: 16),
+                  Text(
+                    showRussian ? word.russian : word.chechen,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: showRussian ? 34 : 30,
+                      fontWeight: FontWeight.w700,
+                      color: fg,
+                      letterSpacing: showRussian ? 0 : 0.3,
                     ),
-                    child: Icon(Icons.touch_app_outlined, size: 12, color: fgMuted),
                   ),
-                  const SizedBox(width: 6),
-                  Text('Нажми, чтобы перевернуть', style: TextStyle(fontSize: 11, color: fgMuted)),
+                  const SizedBox(height: 4),
+                  if (word.pronunciation != null &&
+                      word.pronunciation!.isNotEmpty)
+                    Text(
+                      '[${word.pronunciation}]',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: fgMuted,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  if (word.hint != null && showRussian) ...[
+                    const SizedBox(height: 12),
+                    Text(
+                      word.hint!,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: fgMuted,
+                        height: 1.4,
+                      ),
+                    ),
+                  ],
+                  if (!showRussian) ...[
+                    const SizedBox(height: 16),
+                    NokhchiinChip(
+                      label: word.category ?? 'Слово',
+                      color: tokens.textTertiary,
+                      background: onAccent
+                          ? Colors.white.withValues(alpha: 0.15)
+                          : tokens.surfaceMuted,
+                    ),
+                  ],
                 ],
               ),
             ),
-        ],
-      ),
+            if (!showRussian)
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 20,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 20,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        color: onAccent
+                            ? Colors.white.withValues(alpha: 0.15)
+                            : tokens.surfaceMuted,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.touch_app_outlined,
+                        size: 12,
+                        color: fgMuted,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Нажми, чтобы перевернуть',
+                      style: TextStyle(fontSize: 11, color: fgMuted),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

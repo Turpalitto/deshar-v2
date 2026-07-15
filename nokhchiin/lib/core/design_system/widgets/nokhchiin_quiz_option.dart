@@ -20,6 +20,7 @@ class NokhchiinQuizOption extends StatelessWidget {
   final VoidCallback? onTap;
   final bool? selected;
   final bool? correct;
+
   /// Подсветить правильный ответ после ошибки (не выбранный пользователем).
   final bool revealAsCorrect;
   final bool enabled;

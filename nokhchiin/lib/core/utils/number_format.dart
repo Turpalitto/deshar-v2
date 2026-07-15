@@ -12,7 +12,12 @@ String formatThousands(int n) {
 /// Правильная форма русского счётного существительного для числа [n]:
 /// 1 слово / 2 слова / 5 слов. Раньше "слов" использовалось для любого
 /// числа, включая "1 слов" (аудит §7).
-String pluralize(int n, {required String one, required String few, required String many}) {
+String pluralize(
+  int n, {
+  required String one,
+  required String few,
+  required String many,
+}) {
   final mod100 = n.abs() % 100;
   if (mod100 >= 11 && mod100 <= 14) return many;
   switch (n.abs() % 10) {
@@ -28,4 +33,5 @@ String pluralize(int n, {required String one, required String few, required Stri
 }
 
 /// Частный случай для "слово/слова/слов" — используется чаще всего.
-String wordsCount(int n) => '$n ${pluralize(n, one: 'слово', few: 'слова', many: 'слов')}';
+String wordsCount(int n) =>
+    '$n ${pluralize(n, one: 'слово', few: 'слова', many: 'слов')}';

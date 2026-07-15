@@ -54,11 +54,18 @@ class _FakeDictionaryRepo implements DictionaryRepository {
   }
 
   @override
-  Future<List<WordEntity>> search(String query, {String? category, PartOfSpeech? pos}) async => [];
+  Future<List<WordEntity>> search(
+    String query, {
+    String? category,
+    PartOfSpeech? pos,
+  }) async => [];
 
   @override
   Future<List<WordEntity>> getWordsByCategory(String category) async =>
       _words.where((w) => w.category == category).toList();
+
+  @override
+  Future<List<WordEntity>> getLessonWords() async => _words;
 
   @override
   Future<List<WordEntity>> getWordsByIds(List<String> ids) async {
@@ -78,7 +85,10 @@ void main() {
   group('SeedUnitMasteryFromPlacementUseCase', () {
     test('seeds all words in a unit as mastered with repetitions 0', () async {
       final progress = _FakeProgressRepo();
-      final useCase = SeedUnitMasteryFromPlacementUseCase(progress, _FakeDictionaryRepo(_words));
+      final useCase = SeedUnitMasteryFromPlacementUseCase(
+        progress,
+        _FakeDictionaryRepo(_words),
+      );
 
       await useCase('family');
 
@@ -93,14 +103,20 @@ void main() {
       expect(await progress.getProgress('w4'), isNull);
     });
 
-    test('seeded words are excluded from the SRS due-for-review queue', () async {
-      final progress = _FakeProgressRepo();
-      final useCase = SeedUnitMasteryFromPlacementUseCase(progress, _FakeDictionaryRepo(_words));
+    test(
+      'seeded words are excluded from the SRS due-for-review queue',
+      () async {
+        final progress = _FakeProgressRepo();
+        final useCase = SeedUnitMasteryFromPlacementUseCase(
+          progress,
+          _FakeDictionaryRepo(_words),
+        );
 
-      await useCase('family');
+        await useCase('family');
 
-      expect(await progress.getDueForReview(), isEmpty);
-    });
+        expect(await progress.getDueForReview(), isEmpty);
+      },
+    );
 
     test('unit mastery reads 100% after seeding', () async {
       final progress = _FakeProgressRepo();
@@ -109,13 +125,19 @@ void main() {
 
       await useCase('family');
 
-      final masteryPercent = await UnitMasteryPercentUseCase(progress, dictionary)('family');
+      final masteryPercent = await UnitMasteryPercentUseCase(
+        progress,
+        dictionary,
+      )('family');
       expect(masteryPercent, 100);
     });
 
     test('empty category seeds nothing and does not throw', () async {
       final progress = _FakeProgressRepo();
-      final useCase = SeedUnitMasteryFromPlacementUseCase(progress, _FakeDictionaryRepo(_words));
+      final useCase = SeedUnitMasteryFromPlacementUseCase(
+        progress,
+        _FakeDictionaryRepo(_words),
+      );
 
       await useCase('nonexistent');
 

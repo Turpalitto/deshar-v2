@@ -60,9 +60,9 @@ class WordExerciseCard extends StatelessWidget {
           Text(
             russianOverride ?? word.russian,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  color: Theme.of(context).colorScheme.secondary,
-                  fontWeight: FontWeight.w700,
-                ),
+              color: Theme.of(context).colorScheme.secondary,
+              fontWeight: FontWeight.w700,
+            ),
             textAlign: TextAlign.center,
           ),
         ],
@@ -117,7 +117,9 @@ class ChechenKeyboard extends StatelessWidget {
           alignment: WrapAlignment.center,
           children: ChechenInputChars.allSpecial.map((k) {
             return Material(
-              color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.5),
+              color: Theme.of(
+                context,
+              ).colorScheme.primaryContainer.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(AppRadii.md),
               child: InkWell(
                 onTap: () => _insert(k),
@@ -130,8 +132,8 @@ class ChechenKeyboard extends StatelessWidget {
                   child: Text(
                     k,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
               ),

@@ -6,7 +6,6 @@ import '../../core/design/tokens/app_spacing.dart';
 import '../../core/design/app_icons.dart';
 import '../../core/design/widgets/app_button.dart';
 import '../../core/design/widgets/loading_state.dart';
-import '../../core/design/widgets/app_icon_image.dart';
 import '../../core/design/widgets/reward_celebration.dart';
 import '../../core/design/widgets/progress_ring.dart';
 import '../../core/providers/providers.dart';
@@ -105,7 +104,9 @@ class _LessonFlowScreenState extends ConsumerState<LessonFlowScreen> {
       context,
       iconAsset: AppIcons.rewardTrophy,
       title: 'Урок завершён!',
-      subtitle: showChest ? '+40 XP · +10 монет · бонусы' : '+40 XP · +10 монет',
+      subtitle: showChest
+          ? '+40 XP · +10 монет · бонусы'
+          : '+40 XP · +10 монет',
       primaryAction: hasNext ? 'Дальше: ${next.titleRu}' : null,
       onPrimary: hasNext
           ? () {
@@ -142,7 +143,12 @@ class _LessonFlowScreenState extends ConsumerState<LessonFlowScreen> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.md),
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.lg,
+              0,
+              AppSpacing.lg,
+              AppSpacing.md,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -180,13 +186,13 @@ class _LessonFlowScreenState extends ConsumerState<LessonFlowScreen> {
                           color: active
                               ? tokens.accentOn
                               : done
-                                  ? tokens.success
-                                  : tokens.textTertiary,
+                              ? tokens.success
+                              : tokens.textTertiary,
                           background: active
                               ? tokens.accent
                               : done
-                                  ? tokens.success.withValues(alpha: 0.12)
-                                  : tokens.surfaceMuted,
+                              ? tokens.success.withValues(alpha: 0.12)
+                              : tokens.surfaceMuted,
                         ),
                       ),
                     );
@@ -198,21 +204,21 @@ class _LessonFlowScreenState extends ConsumerState<LessonFlowScreen> {
           Expanded(
             child: switch (_step) {
               0 => FlashcardsScreen(
-                  unitId: widget.unitId,
-                  embedded: true,
-                  onComplete: () => setState(() => _step = 1),
-                ),
+                unitId: widget.unitId,
+                embedded: true,
+                onComplete: () => setState(() => _step = 1),
+              ),
               1 => MatchScreen(
-                  unitId: widget.unitId,
-                  embedded: true,
-                  onComplete: () => setState(() => _step = 2),
-                ),
+                unitId: widget.unitId,
+                embedded: true,
+                onComplete: () => setState(() => _step = 2),
+              ),
               2 => QuizScreen(
-                  unitId: widget.unitId,
-                  embedded: true,
-                  maxQuestions: quizQuestions,
-                  onComplete: () => setState(() => _step = 3),
-                ),
+                unitId: widget.unitId,
+                embedded: true,
+                maxQuestions: quizQuestions,
+                onComplete: () => setState(() => _step = 3),
+              ),
               _ => _RewardStep(onClaim: _finishLesson),
             },
           ),
@@ -238,7 +244,10 @@ class _RewardStep extends StatelessWidget {
             const SizedBox(height: AppSpacing.lg),
             Text('Отлично!', style: Theme.of(context).textTheme.headlineMedium),
             const SizedBox(height: AppSpacing.sm),
-            Text('Забери награду за урок', style: Theme.of(context).textTheme.bodyLarge),
+            Text(
+              'Забери награду за урок',
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
             const SizedBox(height: AppSpacing.xxl),
             AppButton(label: 'Забрать награду', onPressed: onClaim),
           ],

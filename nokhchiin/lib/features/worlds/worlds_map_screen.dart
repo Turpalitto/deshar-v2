@@ -18,7 +18,8 @@ class WorldsMapScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final worlds = ref.watch(worldsProvider);
-    final profile = ref.watch(userProfileProvider).value ?? const UserProfileEntity();
+    final profile =
+        ref.watch(userProfileProvider).value ?? const UserProfileEntity();
     final units = ref.watch(learningUnitsProvider);
     final tokens = context.iosTokens;
 
@@ -51,7 +52,9 @@ class WorldsMapScreen extends ConsumerWidget {
                 coins: profile.coins,
               );
               final pct = worldProgressPercent(w, unitList);
-              final color = Color(int.parse(w.gradient.first.replaceFirst('#', '0xFF')));
+              final color = Color(
+                int.parse(w.gradient.first.replaceFirst('#', '0xFF')),
+              );
 
               return NokhchiinWorldCard(
                 index: i,
@@ -65,12 +68,16 @@ class WorldsMapScreen extends ConsumerWidget {
                 unlocked: unlocked,
                 onTap: unlocked
                     ? () {
-                        ref.read(userProfileProvider.notifier).setCurrentWorld(w.id);
-                        if (w.units.isNotEmpty) context.push('/unit/${w.units.first}');
+                        ref
+                            .read(userProfileProvider.notifier)
+                            .setCurrentWorld(w.id);
+                        if (w.units.isNotEmpty) {
+                          context.push('/unit/${w.units.first}');
+                        }
                       }
                     : FeatureFlags.premiumEnabled
-                        ? () => context.push('/paywall?return=/worlds')
-                        : null,
+                    ? () => context.push('/paywall?return=/worlds')
+                    : null,
               ).animate(delay: (i * 40).ms).fadeIn().slideY(begin: 0.06);
             },
           ),

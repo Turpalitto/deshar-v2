@@ -40,21 +40,30 @@ class NotificationService {
     const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosInit = DarwinInitializationSettings();
     await _plugin.initialize(
-      settings: const InitializationSettings(android: androidInit, iOS: iosInit),
+      settings: const InitializationSettings(
+        android: androidInit,
+        iOS: iosInit,
+      ),
     );
 
     final androidPlugin = _plugin
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
-    await androidPlugin?.createNotificationChannel(const AndroidNotificationChannel(
-      _streakChannelId,
-      _streakChannelName,
-      importance: Importance.defaultImportance,
-    ));
-    await androidPlugin?.createNotificationChannel(const AndroidNotificationChannel(
-      _wordChannelId,
-      _wordChannelName,
-      importance: Importance.defaultImportance,
-    ));
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
+    await androidPlugin?.createNotificationChannel(
+      const AndroidNotificationChannel(
+        _streakChannelId,
+        _streakChannelName,
+        importance: Importance.defaultImportance,
+      ),
+    );
+    await androidPlugin?.createNotificationChannel(
+      const AndroidNotificationChannel(
+        _wordChannelId,
+        _wordChannelName,
+        importance: Importance.defaultImportance,
+      ),
+    );
 
     _initialized = true;
   }
@@ -65,15 +74,24 @@ class NotificationService {
     await _ensureInitialized();
 
     final androidPlugin = _plugin
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
     if (androidPlugin != null) {
       return await androidPlugin.requestNotificationsPermission() ?? false;
     }
 
     final iosPlugin = _plugin
-        .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>();
+        .resolvePlatformSpecificImplementation<
+          IOSFlutterLocalNotificationsPlugin
+        >();
     if (iosPlugin != null) {
-      return await iosPlugin.requestPermissions(alert: true, badge: true, sound: true) ?? false;
+      return await iosPlugin.requestPermissions(
+            alert: true,
+            badge: true,
+            sound: true,
+          ) ??
+          false;
     }
 
     return false;
@@ -81,8 +99,14 @@ class NotificationService {
 
   tz.TZDateTime _nextInstanceOfTime(TimeOfDay time) {
     final now = tz.TZDateTime.now(tz.local);
-    var scheduled =
-        tz.TZDateTime(tz.local, now.year, now.month, now.day, time.hour, time.minute);
+    var scheduled = tz.TZDateTime(
+      tz.local,
+      now.year,
+      now.month,
+      now.day,
+      time.hour,
+      time.minute,
+    );
     if (scheduled.isBefore(now)) {
       scheduled = scheduled.add(const Duration(days: 1));
     }
@@ -100,7 +124,10 @@ class NotificationService {
       body: 'Зайди в Нохчийн сегодня, чтобы продолжить серию дней подряд.',
       scheduledDate: _nextInstanceOfTime(time),
       notificationDetails: const NotificationDetails(
-        android: AndroidNotificationDetails(_streakChannelId, _streakChannelName),
+        android: AndroidNotificationDetails(
+          _streakChannelId,
+          _streakChannelName,
+        ),
         iOS: DarwinNotificationDetails(),
       ),
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
@@ -139,4 +166,6 @@ class NotificationService {
   }
 }
 
-final notificationServiceProvider = Provider<NotificationService>((_) => NotificationService());
+final notificationServiceProvider = Provider<NotificationService>(
+  (_) => NotificationService(),
+);

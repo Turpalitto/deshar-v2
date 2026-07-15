@@ -5,12 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/config/feature_flags.dart';
 import '../../core/design/app_icons.dart';
-import '../../core/design/widgets/app_icon_image.dart';
-import '../../core/design/widgets/error_state.dart'; // intentional-mix: shared error placeholder
-import '../../core/design/widgets/loading_state.dart'; // intentional-mix: shared loading placeholder
+import '../../core/design/widgets/reward_celebration.dart';
+import '../../core/design/widgets/word_exercise_card.dart'; // TODO: port to design_system
 import '../../core/utils/number_format.dart';
-import '../../core/design/widgets/reward_celebration.dart'; // intentional-mix: celebration overlay
-import '../../core/design/widgets/word_exercise_card.dart'; // intentional-mix: exercise card layout
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
 import '../../domain/constants/subscription_limits.dart';
@@ -32,7 +29,8 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
   bool _rewardShown = false;
 
   Future<bool> _canReview() async {
-    final profile = ref.read(userProfileProvider).value ?? const UserProfileEntity();
+    final profile =
+        ref.read(userProfileProvider).value ?? const UserProfileEntity();
     return ref.read(canStartReviewUseCaseProvider)(
       reviewsDoneToday: profile.reviewsDoneToday,
     );
@@ -62,9 +60,12 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
   @override
   Widget build(BuildContext context) {
     final due = ref.watch(dueWordsProvider);
-    final profile = ref.watch(userProfileProvider).value ?? const UserProfileEntity();
+    final profile =
+        ref.watch(userProfileProvider).value ?? const UserProfileEntity();
     final tokens = context.iosTokens;
-    final accent = profile.mode == AppMode.kids ? DesignTokens.meadow : tokens.accent;
+    final accent = profile.mode == AppMode.kids
+        ? DesignTokens.meadow
+        : tokens.accent;
 
     if (!_started) {
       return AppScaffold(
@@ -73,18 +74,29 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
             child: Column(
               children: [
-                NokhchiinPageHeader(title: 'Повторение', onBack: () => context.pop()),
+                NokhchiinPageHeader(
+                  title: 'Повторение',
+                  onBack: () => context.pop(),
+                ),
                 const Spacer(),
                 NokhchiinSurfaceCard(
                   radius: 22,
                   padding: const EdgeInsets.all(28),
                   child: Column(
                     children: [
-                      AppIconImage(asset: AppIcons.actionReview, size: 56, color: accent),
+                      AppIconImage(
+                        asset: AppIcons.actionReview,
+                        size: 56,
+                        color: accent,
+                      ),
                       const SizedBox(height: 20),
                       Text(
                         'Сегодня повторить',
-                        style: TextStyle(fontSize: 13, color: tokens.textTertiary, fontWeight: FontWeight.w600),
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: tokens.textTertiary,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                       Text(
                         wordsCount(words.length),
@@ -95,11 +107,15 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                           letterSpacing: -0.3,
                         ),
                       ),
-                      if (FeatureFlags.premiumEnabled && !profile.isPremium) ...[
+                      if (FeatureFlags.premiumEnabled &&
+                          !profile.isPremium) ...[
                         const SizedBox(height: 8),
                         Text(
                           'Free: ${profile.reviewsDoneToday}/${SubscriptionLimits.freeDailyReviewLimit}',
-                          style: TextStyle(fontSize: 13, color: tokens.textTertiary),
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: tokens.textTertiary,
+                          ),
                         ),
                       ],
                     ],
@@ -125,8 +141,8 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
               ],
             ),
           ),
-          loading: () => const LoadingState(),
-          error: (_, _) => ErrorState(
+          loading: () => const NokhchiinLoadingState(),
+          error: (_, _) => NokhchiinErrorState(
             message: 'Не удалось загрузить слова для повторения',
             onRetry: () => ref.invalidate(dueWordsProvider),
           ),
@@ -142,9 +158,16 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  AppIconImage(asset: AppIcons.rewardCelebration, size: 40, color: accent),
+                  AppIconImage(
+                    asset: AppIcons.rewardCelebration,
+                    size: 40,
+                    color: accent,
+                  ),
                   const SizedBox(height: 12),
-                  Text('Всё повторено', style: TextStyle(color: tokens.textSecondary, fontSize: 17)),
+                  Text(
+                    'Всё повторено',
+                    style: TextStyle(color: tokens.textSecondary, fontSize: 17),
+                  ),
                   const SizedBox(height: 6),
                   // Раньше пустое состояние не объясняло, когда появятся новые
                   // слова — пользователь не понимал, стоит ли возвращаться
@@ -159,7 +182,10 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                       return Text(
                         label,
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: tokens.textTertiary, fontSize: 13),
+                        style: TextStyle(
+                          color: tokens.textTertiary,
+                          fontSize: 13,
+                        ),
                       );
                     },
                   ),
@@ -173,31 +199,33 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
               _rewardShown = true;
               WidgetsBinding.instance.addPostFrameCallback((_) async {
                 if (!mounted) return;
-                await ref.read(userProfileProvider.notifier).addXp(_correct * 5, _correct);
+                await ref
+                    .read(userProfileProvider.notifier)
+                    .addXp(_correct * 5, _correct);
                 if (mounted) {
                   // ignore: use_build_context_synchronously
                   await RewardCelebration.show(
                     context, // ignore: use_build_context_synchronously
-                 
-                  iconAsset: AppIcons.rewardCelebration,
-                  title: 'Отлично!',
-                  subtitle: 'Правильно: $_correct · +${_correct * 5} XP',
-                  onDismiss: () {
-                    Navigator.of(context).pop();
-                    if (mounted) {
-                      setState(() {
-                        _started = false;
-                        _index = 0;
-                        _correct = 0;
-                        _rewardShown = false;
-                      });
-                    }
-                  },
-                );
+
+                    iconAsset: AppIcons.rewardCelebration,
+                    title: 'Отлично!',
+                    subtitle: 'Правильно: $_correct · +${_correct * 5} XP',
+                    onDismiss: () {
+                      Navigator.of(context).pop();
+                      if (mounted) {
+                        setState(() {
+                          _started = false;
+                          _index = 0;
+                          _correct = 0;
+                          _rewardShown = false;
+                        });
+                      }
+                    },
+                  );
                 }
               });
             }
-            return const LoadingState();
+            return const NokhchiinLoadingState();
           }
 
           final w = words[_index];
@@ -205,16 +233,31 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
             child: Column(
               children: [
-                NokhchiinPageHeader(title: 'Повторение', onBack: () => setState(() => _started = false)),
+                NokhchiinPageHeader(
+                  title: 'Повторение',
+                  onBack: () => setState(() => _started = false),
+                ),
                 const SizedBox(height: 8),
-                NokhchiinSegmentProgress(step: _index + 1, total: words.length, color: accent),
+                NokhchiinSegmentProgress(
+                  step: _index + 1,
+                  total: words.length,
+                  color: accent,
+                ),
                 const SizedBox(height: 8),
                 Text(
                   '${_index + 1} / ${words.length}',
-                  style: TextStyle(fontSize: 13, color: tokens.textTertiary, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: tokens.textTertiary,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 const Spacer(),
-                WordExerciseCard(word: w, categoryId: w.category ?? 'general', showRussian: _showAnswer),
+                WordExerciseCard(
+                  word: w,
+                  categoryId: w.category ?? 'general',
+                  showRussian: _showAnswer,
+                ),
                 const Spacer(),
                 if (!_showAnswer)
                   NokhchiinButton(
@@ -233,7 +276,9 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                           textColor: tokens.accent,
                           onPressed: () async {
                             await ref.read(reviewWordUseCaseProvider)(w.id, 1);
-                            await ref.read(userProfileProvider.notifier).recordReview();
+                            await ref
+                                .read(userProfileProvider.notifier)
+                                .recordReview();
                             if (!mounted) return;
                             setState(() {
                               _showAnswer = false;
@@ -249,7 +294,9 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                           color: accent,
                           onPressed: () async {
                             await ref.read(reviewWordUseCaseProvider)(w.id, 5);
-                            await ref.read(userProfileProvider.notifier).recordReview();
+                            await ref
+                                .read(userProfileProvider.notifier)
+                                .recordReview();
                             if (!mounted) return;
                             _correct++;
                             setState(() {
@@ -265,8 +312,8 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
             ),
           );
         },
-        loading: () => const LoadingState(),
-        error: (_, _) => ErrorState(
+        loading: () => const NokhchiinLoadingState(),
+        error: (_, _) => NokhchiinErrorState(
           message: 'Не удалось загрузить слова для повторения',
           onRetry: () => ref.invalidate(dueWordsProvider),
         ),

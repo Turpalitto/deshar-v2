@@ -23,10 +23,8 @@ import '../../features/boss/boss_screen.dart';
 import '../../features/stories/stories_list_screen.dart';
 import '../../features/stories/story_reader_screen.dart';
 import '../../features/progress/progress_screen.dart';
-import '../../features/paywall/paywall_screen.dart';
 import '../../features/legal/legal_document_screen.dart';
 import '../../features/games/typing_exercise_screen.dart';
-import '../../features/ai_tutor/ai_tutor_screen.dart';
 import '../../features/culture/culture_capsule_preview_screen.dart';
 import '../design/widgets/app_shell.dart';
 import 'route_transitions.dart';
@@ -43,7 +41,8 @@ class OnboardingGuard {
   static bool completed = false;
 }
 
-Page<void> _fadeScale(GoRouterState state, Widget child) => buildFadeScalePage(state: state, child: child);
+Page<void> _fadeScale(GoRouterState state, Widget child) =>
+    buildFadeScalePage(state: state, child: child);
 
 final appRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
@@ -58,28 +57,18 @@ final appRouter = GoRouter(
     return null;
   },
   routes: [
-    GoRoute(
-      path: '/splash',
-      builder: (_, _) => const SplashScreen(),
-    ),
-    GoRoute(
-      path: '/onboarding',
-      builder: (_, _) => const OnboardingScreen(),
-    ),
+    GoRoute(path: '/splash', builder: (_, _) => const SplashScreen()),
+    GoRoute(path: '/onboarding', builder: (_, _) => const OnboardingScreen()),
     GoRoute(
       path: '/onboarding/placement',
       builder: (_, _) => const PlacementTestScreen(),
     ),
     StatefulShellRoute.indexedStack(
-      builder: (context, state, navigationShell) => AppShell(navigationShell: navigationShell),
+      builder: (context, state, navigationShell) =>
+          AppShell(navigationShell: navigationShell),
       branches: [
         StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: '/',
-              builder: (_, _) => const HomeScreen(),
-            ),
-          ],
+          routes: [GoRoute(path: '/', builder: (_, _) => const HomeScreen())],
         ),
         StatefulShellBranch(
           routes: [
@@ -91,18 +80,12 @@ final appRouter = GoRouter(
         ),
         StatefulShellBranch(
           routes: [
-            GoRoute(
-              path: '/review',
-              builder: (_, _) => const ReviewScreen(),
-            ),
+            GoRoute(path: '/review', builder: (_, _) => const ReviewScreen()),
           ],
         ),
         StatefulShellBranch(
           routes: [
-            GoRoute(
-              path: '/profile',
-              builder: (_, _) => const ProfileScreen(),
-            ),
+            GoRoute(path: '/profile', builder: (_, _) => const ProfileScreen()),
           ],
         ),
       ],
@@ -110,103 +93,124 @@ final appRouter = GoRouter(
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
       path: '/path',
-      pageBuilder: (context, state) => _fadeScale(state, const LearningPathScreen()),
+      pageBuilder: (context, state) =>
+          _fadeScale(state, const LearningPathScreen()),
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
       path: '/unit/:id',
-      pageBuilder: (context, state) =>
-          _fadeScale(state, UnitDetailScreen(unitId: state.pathParameters['id']!)),
+      pageBuilder: (context, state) => _fadeScale(
+        state,
+        UnitDetailScreen(unitId: state.pathParameters['id']!),
+      ),
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
       path: '/lesson/:unitId',
-      pageBuilder: (context, state) =>
-          _fadeScale(state, LessonFlowScreen(unitId: state.pathParameters['unitId']!)),
+      pageBuilder: (context, state) => _fadeScale(
+        state,
+        LessonFlowScreen(unitId: state.pathParameters['unitId']!),
+      ),
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
       path: '/dictionary',
-      pageBuilder: (context, state) => _fadeScale(state, const DictionaryScreen()),
+      pageBuilder: (context, state) =>
+          _fadeScale(state, const DictionaryScreen()),
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
       path: '/dictionary/:id',
-      pageBuilder: (context, state) =>
-          _fadeScale(state, DictionaryDetailScreen(id: state.pathParameters['id']!)),
+      pageBuilder: (context, state) => _fadeScale(
+        state,
+        DictionaryDetailScreen(id: state.pathParameters['id']!),
+      ),
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
       path: '/parent',
-      pageBuilder: (context, state) => _fadeScale(state, const ParentDashboardScreen()),
+      pageBuilder: (context, state) =>
+          _fadeScale(state, const ParentDashboardScreen()),
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
       path: '/flashcards/:unitId',
-      pageBuilder: (context, state) =>
-          _fadeScale(state, FlashcardsScreen(unitId: state.pathParameters['unitId']!)),
+      pageBuilder: (context, state) => _fadeScale(
+        state,
+        FlashcardsScreen(unitId: state.pathParameters['unitId']!),
+      ),
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
       path: '/quiz/:unitId',
-      pageBuilder: (context, state) =>
-          _fadeScale(state, QuizScreen(unitId: state.pathParameters['unitId']!)),
+      pageBuilder: (context, state) => _fadeScale(
+        state,
+        QuizScreen(unitId: state.pathParameters['unitId']!),
+      ),
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
       path: '/match/:unitId',
-      pageBuilder: (context, state) =>
-          _fadeScale(state, MatchScreen(unitId: state.pathParameters['unitId']!)),
+      pageBuilder: (context, state) => _fadeScale(
+        state,
+        MatchScreen(unitId: state.pathParameters['unitId']!),
+      ),
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
       path: '/collections',
-      pageBuilder: (context, state) => _fadeScale(state, const CollectionsScreen()),
+      pageBuilder: (context, state) =>
+          _fadeScale(state, const CollectionsScreen()),
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
       path: '/stories',
-      pageBuilder: (context, state) => _fadeScale(state, const StoriesListScreen()),
+      pageBuilder: (context, state) =>
+          _fadeScale(state, const StoriesListScreen()),
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
       path: '/story/:id',
-      pageBuilder: (context, state) =>
-          _fadeScale(state, StoryReaderScreen(storyId: state.pathParameters['id']!)),
+      pageBuilder: (context, state) => _fadeScale(
+        state,
+        StoryReaderScreen(storyId: state.pathParameters['id']!),
+      ),
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
       path: '/boss/:unitId',
-      pageBuilder: (context, state) =>
-          _fadeScale(state, BossScreen(unitId: state.pathParameters['unitId']!)),
+      pageBuilder: (context, state) => _fadeScale(
+        state,
+        BossScreen(unitId: state.pathParameters['unitId']!),
+      ),
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
       path: '/insights',
-      pageBuilder: (context, state) => _fadeScale(state, const AdultInsightsDashboardScreen()),
+      pageBuilder: (context, state) =>
+          _fadeScale(state, const AdultInsightsDashboardScreen()),
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
       path: '/progress',
-      pageBuilder: (context, state) => _fadeScale(state, const ProgressScreen()),
+      pageBuilder: (context, state) =>
+          _fadeScale(state, const ProgressScreen()),
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
       path: '/legal/privacy',
-      pageBuilder: (context, state) =>
-          _fadeScale(state, const LegalDocumentScreen(type: LegalDocumentType.privacy)),
+      pageBuilder: (context, state) => _fadeScale(
+        state,
+        const LegalDocumentScreen(type: LegalDocumentType.privacy),
+      ),
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
       path: '/legal/terms',
-      pageBuilder: (context, state) =>
-          _fadeScale(state, const LegalDocumentScreen(type: LegalDocumentType.terms)),
-    ),
-    GoRoute(
-      parentNavigatorKey: _rootNavigatorKey,
-      path: '/paywall',
-      pageBuilder: (context, state) =>
-          _fadeScale(state, PaywallScreen(returnPath: state.uri.queryParameters['return'])),
+      pageBuilder: (context, state) => _fadeScale(
+        state,
+        const LegalDocumentScreen(type: LegalDocumentType.terms),
+      ),
     ),
     // Dev-only превью, никогда не должен быть достижим в прод-сборке
     // (аудит §3: раньше был доступен по прямой ссылке в релизе).
@@ -214,18 +218,16 @@ final appRouter = GoRouter(
       GoRoute(
         parentNavigatorKey: _rootNavigatorKey,
         path: '/dev/culture-capsules',
-        pageBuilder: (context, state) => _fadeScale(state, const CultureCapsulePreviewScreen()),
+        pageBuilder: (context, state) =>
+            _fadeScale(state, const CultureCapsulePreviewScreen()),
       ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
-      path: '/ai-tutor',
-      pageBuilder: (context, state) => _fadeScale(state, const AiTutorScreen()),
-    ),
-    GoRoute(
-      parentNavigatorKey: _rootNavigatorKey,
       path: '/typing/:unitId',
-      pageBuilder: (context, state) =>
-          _fadeScale(state, TypingExerciseScreen(unitId: state.pathParameters['unitId']!)),
+      pageBuilder: (context, state) => _fadeScale(
+        state,
+        TypingExerciseScreen(unitId: state.pathParameters['unitId']!),
+      ),
     ),
   ],
 );

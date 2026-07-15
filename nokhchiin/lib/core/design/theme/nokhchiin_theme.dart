@@ -10,22 +10,28 @@ abstract final class NokhchiinTheme {
   static ThemeData light({
     AppMode mode = AppMode.kids,
     KidsAgeGroup age = KidsAgeGroup.age6to9,
-  }) =>
-      _build(Brightness.light, mode, age);
+  }) => _build(Brightness.light, mode, age);
 
   static ThemeData dark({
     AppMode mode = AppMode.kids,
     KidsAgeGroup age = KidsAgeGroup.age6to9,
-  }) =>
-      _build(Brightness.dark, mode, age);
+  }) => _build(Brightness.dark, mode, age);
 
-  static ThemeData _build(Brightness brightness, AppMode mode, KidsAgeGroup age) {
+  static ThemeData _build(
+    Brightness brightness,
+    AppMode mode,
+    KidsAgeGroup age,
+  ) {
     final isDark = brightness == Brightness.dark;
     final isKids = mode == AppMode.kids;
     final scale = _scale(mode, age);
 
-    final bg = isDark ? NokhchiinColors.darkBackground : NokhchiinColors.lightBackground;
-    final surface = isDark ? NokhchiinColors.darkSurface : NokhchiinColors.lightSurface;
+    final bg = isDark
+        ? NokhchiinColors.darkBackground
+        : NokhchiinColors.lightBackground;
+    final surface = isDark
+        ? NokhchiinColors.darkSurface
+        : NokhchiinColors.lightSurface;
     final primary = isKids ? NokhchiinColors.meadow : NokhchiinColors.accent;
     final onPrimary = Colors.white;
 
@@ -36,7 +42,9 @@ abstract final class NokhchiinTheme {
       secondary: NokhchiinColors.accent,
       onSecondary: Colors.white,
       surface: surface,
-      onSurface: isDark ? NokhchiinColors.textPrimaryDark : NokhchiinColors.textPrimaryLight,
+      onSurface: isDark
+          ? NokhchiinColors.textPrimaryDark
+          : NokhchiinColors.textPrimaryLight,
       error: NokhchiinColors.error,
       onError: Colors.white,
     );
@@ -54,7 +62,10 @@ abstract final class NokhchiinTheme {
         scrolledUnderElevation: 0,
         backgroundColor: Colors.transparent,
         foregroundColor: colorScheme.onSurface,
-        titleTextStyle: AppTypography.textTheme(isDark: isDark, scale: scale).titleLarge,
+        titleTextStyle: AppTypography.textTheme(
+          isDark: isDark,
+          scale: scale,
+        ).titleLarge,
       ),
       cardTheme: CardThemeData(
         elevation: 0,
@@ -62,7 +73,9 @@ abstract final class NokhchiinTheme {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(radius),
           side: BorderSide(
-            color: isDark ? NokhchiinColors.darkSurfaceAlt : NokhchiinColors.lightSurfaceAlt,
+            color: isDark
+                ? NokhchiinColors.darkSurfaceAlt
+                : NokhchiinColors.lightSurfaceAlt,
           ),
         ),
       ),
@@ -95,8 +108,12 @@ abstract final class NokhchiinTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: isDark ? NokhchiinColors.darkSurfaceAlt : NokhchiinColors.lightSurface,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppRadii.md)),
+        fillColor: isDark
+            ? NokhchiinColors.darkSurfaceAlt
+            : NokhchiinColors.lightSurface,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppRadii.md),
+        ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.lg,
           vertical: AppSpacing.md,
@@ -159,13 +176,12 @@ class NokhchiinSkin extends ThemeExtension<NokhchiinSkin> {
     double? cardRadius,
     double? touchTarget,
     List<Color>? heroGradient,
-  }) =>
-      NokhchiinSkin(
-        isKids: isKids ?? this.isKids,
-        cardRadius: cardRadius ?? this.cardRadius,
-        touchTarget: touchTarget ?? this.touchTarget,
-        heroGradient: heroGradient ?? this.heroGradient,
-      );
+  }) => NokhchiinSkin(
+    isKids: isKids ?? this.isKids,
+    cardRadius: cardRadius ?? this.cardRadius,
+    touchTarget: touchTarget ?? this.touchTarget,
+    heroGradient: heroGradient ?? this.heroGradient,
+  );
 
   @override
   NokhchiinSkin lerp(ThemeExtension<NokhchiinSkin>? other, double t) {

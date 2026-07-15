@@ -8,7 +8,8 @@ import 'user_profile_provider.dart';
 final billingServiceProvider = Provider<BillingRepository>((ref) {
   final service = BillingService(
     userRepo: ref.watch(userRepoProvider),
-    onPremiumChanged: (v) => ref.read(userProfileProvider.notifier).setPremium(v),
+    onPremiumChanged: (v) =>
+        ref.read(userProfileProvider.notifier).setPremium(v),
   );
   // Раньше dispose() был объявлен, но никогда не вызывался — подписка на
   // поток покупок теоретически текла (аудит §2).
@@ -16,7 +17,8 @@ final billingServiceProvider = Provider<BillingRepository>((ref) {
   return service;
 });
 
-final subscriptionProvider =
-    FutureProvider.autoDispose<SubscriptionEntity>((ref) async {
+final subscriptionProvider = FutureProvider.autoDispose<SubscriptionEntity>((
+  ref,
+) async {
   return ref.watch(billingServiceProvider).getSubscription();
 });

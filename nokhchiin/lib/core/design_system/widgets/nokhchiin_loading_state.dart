@@ -23,7 +23,9 @@ class NokhchiinLoadingState extends StatelessWidget {
             const SizedBox(height: IosSpacing.x6),
             Text(
               message,
-              style: textTheme.bodyMedium?.copyWith(color: tokens.textSecondary),
+              style: textTheme.bodyMedium?.copyWith(
+                color: tokens.textSecondary,
+              ),
             ),
           ],
         ),

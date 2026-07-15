@@ -20,14 +20,18 @@ class AnswerFeedbackAnimator extends StatefulWidget {
   State<AnswerFeedbackAnimator> createState() => _AnswerFeedbackAnimatorState();
 }
 
-class _AnswerFeedbackAnimatorState extends State<AnswerFeedbackAnimator> with SingleTickerProviderStateMixin {
+class _AnswerFeedbackAnimatorState extends State<AnswerFeedbackAnimator>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   bool? _lastFeedback;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 480));
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 480),
+    );
     _lastFeedback = widget.feedback;
     if (widget.feedback != null) _play(widget.feedback!);
   }
@@ -100,10 +104,12 @@ class LessonSpringProgressBar extends StatefulWidget {
   final double height;
 
   @override
-  State<LessonSpringProgressBar> createState() => _LessonSpringProgressBarState();
+  State<LessonSpringProgressBar> createState() =>
+      _LessonSpringProgressBarState();
 }
 
-class _LessonSpringProgressBarState extends State<LessonSpringProgressBar> with SingleTickerProviderStateMixin {
+class _LessonSpringProgressBarState extends State<LessonSpringProgressBar>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   double _displayProgress = 0;
 
@@ -111,7 +117,11 @@ class _LessonSpringProgressBarState extends State<LessonSpringProgressBar> with 
   void initState() {
     super.initState();
     _controller = AnimationController.unbounded(vsync: this)
-      ..addListener(() => setState(() => _displayProgress = _controller.value.clamp(0.0, 1.0)));
+      ..addListener(
+        () => setState(
+          () => _displayProgress = _controller.value.clamp(0.0, 1.0),
+        ),
+      );
     _controller.value = widget.progress;
     _displayProgress = widget.progress;
   }
@@ -126,7 +136,12 @@ class _LessonSpringProgressBarState extends State<LessonSpringProgressBar> with 
 
   void _springTo(double target) {
     _controller.stop();
-    final simulation = SpringSimulation(IosMotion.gentle, _displayProgress, target, 0);
+    final simulation = SpringSimulation(
+      IosMotion.gentle,
+      _displayProgress,
+      target,
+      0,
+    );
     _controller.animateWith(simulation);
   }
 

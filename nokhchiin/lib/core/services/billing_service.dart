@@ -13,10 +13,7 @@ import '../../domain/repositories/repositories.dart';
 /// [BillingUnavailableException]. Локальный premium-флаг не выдаётся
 /// без реальной покупки (регрессия _stubPurchase — аудит 2.1).
 class BillingService implements BillingRepository {
-  BillingService({
-    required this._userRepo,
-    required this._onPremiumChanged,
-  }) {
+  BillingService({required this._userRepo, required this._onPremiumChanged}) {
     _initIap();
   }
 
@@ -63,7 +60,11 @@ class BillingService implements BillingRepository {
       _restoreCompleter = Completer<bool>();
       await _iap.restorePurchases();
     } catch (e, st) {
-      AppLogger.warn('restorePurchases on init failed', error: e, stackTrace: st);
+      AppLogger.warn(
+        'restorePurchases on init failed',
+        error: e,
+        stackTrace: st,
+      );
       _restoreCompleter = null;
       return;
     }
@@ -71,8 +72,10 @@ class BillingService implements BillingRepository {
     // Ждём ответа purchaseStream, а не фиксированную задержку — магазин
     // может отвечать дольше 3 секунд, и раньше premium сбрасывался
     // преждевременно (аудит §5).
-    final confirmed = await _restoreCompleter!.future
-        .timeout(const Duration(seconds: 10), onTimeout: () => false);
+    final confirmed = await _restoreCompleter!.future.timeout(
+      const Duration(seconds: 10),
+      onTimeout: () => false,
+    );
     _restoreCompleter = null;
     if (!confirmed && !_premiumConfirmedByStore) {
       await _onPremiumChanged(false);
@@ -87,7 +90,8 @@ class BillingService implements BillingRepository {
   void _onPurchases(List<PurchaseDetails> purchases) {
     for (final p in purchases) {
       if (p.productID == SubscriptionLimits.premiumProductId &&
-          (p.status == PurchaseStatus.purchased || p.status == PurchaseStatus.restored)) {
+          (p.status == PurchaseStatus.purchased ||
+              p.status == PurchaseStatus.restored)) {
         _premiumConfirmedByStore = true;
         _restoreCompleter?.complete(true);
         _emitPremium();
@@ -155,7 +159,9 @@ class BillingService implements BillingRepository {
         'Магазин недоступен. Повторите покупку позже.',
       );
     }
-    final response = await _iap.queryProductDetails({SubscriptionLimits.premiumProductId});
+    final response = await _iap.queryProductDetails({
+      SubscriptionLimits.premiumProductId,
+    });
     if (response.productDetails.isEmpty) {
       throw const BillingUnavailableException(
         'Товар не найден в магазине. Проверьте регион аккаунта.',

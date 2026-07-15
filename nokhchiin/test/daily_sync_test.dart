@@ -98,7 +98,11 @@ void main() {
 
     test('streak freeze covers exactly one skipped day', () {
       final now = DateTime(2026, 7, 2, 9);
-      final p = profile(lastActiveDate: '2026-06-30', streakDays: 12, streakFreezeCount: 1);
+      final p = profile(
+        lastActiveDate: '2026-06-30',
+        streakDays: 12,
+        streakFreezeCount: 1,
+      );
 
       final result = calculator.sync(p, now);
 
@@ -108,7 +112,11 @@ void main() {
 
     test('streak freeze does not cover a multi-day gap', () {
       final now = DateTime(2026, 7, 2, 9);
-      final p = profile(lastActiveDate: '2026-06-25', streakDays: 12, streakFreezeCount: 1);
+      final p = profile(
+        lastActiveDate: '2026-06-25',
+        streakDays: 12,
+        streakFreezeCount: 1,
+      );
 
       final result = calculator.sync(p, now);
 
@@ -117,7 +125,11 @@ void main() {
     });
 
     test('streak freeze count decrements exactly once per use', () {
-      var p = profile(lastActiveDate: '2026-06-30', streakDays: 12, streakFreezeCount: 2);
+      var p = profile(
+        lastActiveDate: '2026-06-30',
+        streakDays: 12,
+        streakFreezeCount: 2,
+      );
 
       p = calculator.sync(p, DateTime(2026, 7, 2, 9));
       expect(p.streakDays, 13);
@@ -135,7 +147,11 @@ void main() {
 
     test('no freeze available — skipped day still resets (control case)', () {
       final now = DateTime(2026, 7, 2, 9);
-      final p = profile(lastActiveDate: '2026-06-30', streakDays: 12, streakFreezeCount: 0);
+      final p = profile(
+        lastActiveDate: '2026-06-30',
+        streakDays: 12,
+        streakFreezeCount: 0,
+      );
 
       final result = calculator.sync(p, now);
 

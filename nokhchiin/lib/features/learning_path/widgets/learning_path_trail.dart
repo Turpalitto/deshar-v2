@@ -90,7 +90,8 @@ class _LearningPathTrailState extends State<LearningPathTrail> {
           verticalSpacing: LearningPathTrail.verticalSpacing,
         );
 
-        final trailHeight = LearningPathTrail.topPadding +
+        final trailHeight =
+            LearningPathTrail.topPadding +
             (widget.units.length - 1) * LearningPathTrail.verticalSpacing +
             LearningPathTrail.bottomPadding +
             72;
@@ -115,7 +116,9 @@ class _LearningPathTrailState extends State<LearningPathTrail> {
         final contentWidth = width - IosSpacing.screenHorizontal * 2;
 
         return SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: IosSpacing.screenHorizontal),
+          padding: EdgeInsets.symmetric(
+            horizontal: IosSpacing.screenHorizontal,
+          ),
           child: SizedBox(
             height: trailHeight,
             width: contentWidth,
@@ -132,7 +135,10 @@ class _LearningPathTrailState extends State<LearningPathTrail> {
                 ),
                 ...List.generate(widget.units.length, (i) {
                   final unit = widget.units[i];
-                  final visualState = pathNodeVisualState(unit, activeOrder: activeOrder);
+                  final visualState = pathNodeVisualState(
+                    unit,
+                    activeOrder: activeOrder,
+                  );
                   return LearningPathNode(
                     key: ValueKey(unit.id),
                     unit: unit,

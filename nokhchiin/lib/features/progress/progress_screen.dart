@@ -3,9 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/config/feature_flags.dart';
 import '../../core/design/app_icons.dart';
-import '../../core/design/widgets/app_icon_image.dart';
-import '../../core/design/widgets/loading_state.dart'; // intentional-mix: shared loading placeholder
-import '../../core/design/widgets/week_xp_chart.dart'; // intentional-mix: chart widget not yet in design_system
+import '../../core/design/widgets/week_xp_chart.dart'; // TODO: port chart
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
 import '../../core/utils/number_format.dart';
@@ -24,37 +22,58 @@ class ProgressScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profile = ref.watch(userProfileProvider).value ?? const UserProfileEntity();
+    final profile =
+        ref.watch(userProfileProvider).value ?? const UserProfileEntity();
     final mastery = ref.watch(languageMasteryProvider);
     final progressRepo = ref.watch(progressRepoProvider);
     final tokens = context.iosTokens;
-    final accent = profile.mode == AppMode.kids ? DesignTokens.meadow : tokens.accent;
-    final accentMuted = profile.mode == AppMode.kids ? DesignTokens.meadowMuted : tokens.accentMuted;
+    final accent = profile.mode == AppMode.kids
+        ? DesignTokens.meadow
+        : tokens.accent;
+    final accentMuted = profile.mode == AppMode.kids
+        ? DesignTokens.meadowMuted
+        : tokens.accentMuted;
 
     return AppScaffold(
       body: FutureBuilder(
         future: progressRepo.getAllProgress(),
         builder: (context, snap) {
           final wordsStudied =
-              snap.data?.values.where((p) => !p.seededFromPlacement).length ?? 0;
+              snap.data?.values.where((p) => !p.seededFromPlacement).length ??
+              0;
           final alreadyKnown =
               snap.data?.values.where((p) => p.seededFromPlacement).length ?? 0;
           if (snap.connectionState == ConnectionState.waiting) {
-            return const LoadingState();
+            return const NokhchiinLoadingState();
           }
 
           return ListView(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
             children: [
-              NokhchiinPageHeader(title: 'Прогресс SRS', onBack: () => context.pop()),
+              NokhchiinPageHeader(
+                title: 'Прогресс SRS',
+                onBack: () => context.pop(),
+              ),
               const SizedBox(height: 20),
               Row(
                 children: [
-                  NokhchiinStatTile(iconAsset: AppIcons.progressStreak, value: '${profile.streakDays}', label: 'Стрик'),
+                  NokhchiinStatTile(
+                    iconAsset: AppIcons.progressStreak,
+                    value: '${profile.streakDays}',
+                    label: 'Стрик',
+                  ),
                   const SizedBox(width: 10),
-                  NokhchiinStatTile(iconAsset: AppIcons.progressStar, value: '${profile.xp}', label: 'XP'),
+                  NokhchiinStatTile(
+                    iconAsset: AppIcons.progressStar,
+                    value: '${profile.xp}',
+                    label: 'XP',
+                  ),
                   const SizedBox(width: 10),
-                  NokhchiinStatTile(iconAsset: AppIcons.navDictionary, value: '$wordsStudied', label: 'Слов'),
+                  NokhchiinStatTile(
+                    iconAsset: AppIcons.navDictionary,
+                    value: '$wordsStudied',
+                    label: 'Слов',
+                  ),
                 ],
               ),
               const SizedBox(height: 14),
@@ -71,7 +90,11 @@ class ProgressScreen extends ConsumerWidget {
                       trackColor: accentMuted,
                       center: Text(
                         '${mastery.valueOrNull ?? 0}%',
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: accent),
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                          color: accent,
+                        ),
                       ),
                     ),
                     const SizedBox(width: 18),
@@ -91,24 +114,40 @@ class ProgressScreen extends ConsumerWidget {
                             children: [
                               Text(
                                 '${profile.xp} XP · ',
-                                style: TextStyle(fontSize: 13, color: tokens.textSecondary),
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: tokens.textSecondary,
+                                ),
                               ),
-                              AppIconImage(asset: AppIcons.progressCoin, size: 14, color: DesignTokens.gold),
+                              AppIconImage(
+                                asset: AppIcons.progressCoin,
+                                size: 14,
+                                color: DesignTokens.gold,
+                              ),
                               const SizedBox(width: 4),
                               Text(
                                 '${profile.coins}',
-                                style: TextStyle(fontSize: 13, color: tokens.textSecondary),
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: tokens.textSecondary,
+                                ),
                               ),
                             ],
                           ),
                           Text(
                             'Слов сегодня: ${profile.wordsLearnedToday}/${profile.dailyGoalWords}',
-                            style: TextStyle(fontSize: 13, color: tokens.textTertiary),
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: tokens.textTertiary,
+                            ),
                           ),
                           if (alreadyKnown > 0)
                             Text(
                               'Уже знал: ${wordsCount(alreadyKnown)}',
-                              style: TextStyle(fontSize: 13, color: tokens.textTertiary),
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: tokens.textTertiary,
+                              ),
                             ),
                         ],
                       ),
@@ -159,16 +198,26 @@ class ProgressScreen extends ConsumerWidget {
                           child: Row(
                             children: [
                               if (unlocked)
-                                AppIconImage(asset: icon, size: 18, color: accent)
+                                AppIconImage(
+                                  asset: icon,
+                                  size: 18,
+                                  color: accent,
+                                )
                               else
-                                AppIconImage(asset: AppIcons.stateLocked, size: 18, color: tokens.textTertiary),
+                                AppIconImage(
+                                  asset: AppIcons.stateLocked,
+                                  size: 18,
+                                  color: tokens.textTertiary,
+                                ),
                               const SizedBox(width: 10),
                               Expanded(
                                 child: Text(
                                   label,
                                   style: TextStyle(
                                     fontWeight: FontWeight.w600,
-                                    color: unlocked ? tokens.textPrimary : tokens.textTertiary,
+                                    color: unlocked
+                                        ? tokens.textPrimary
+                                        : tokens.textTertiary,
                                   ),
                                 ),
                               ),

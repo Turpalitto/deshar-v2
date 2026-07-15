@@ -36,13 +36,12 @@ class SubscriptionEntity extends Equatable {
     DateTime? trialEndsAt,
     DateTime? expiresAt,
     String? productId,
-  }) =>
-      SubscriptionEntity(
-        tier: tier ?? this.tier,
-        trialEndsAt: trialEndsAt ?? this.trialEndsAt,
-        expiresAt: expiresAt ?? this.expiresAt,
-        productId: productId ?? this.productId,
-      );
+  }) => SubscriptionEntity(
+    tier: tier ?? this.tier,
+    trialEndsAt: trialEndsAt ?? this.trialEndsAt,
+    expiresAt: expiresAt ?? this.expiresAt,
+    productId: productId ?? this.productId,
+  );
 
   @override
   List<Object?> get props => [tier, trialEndsAt, expiresAt, productId];

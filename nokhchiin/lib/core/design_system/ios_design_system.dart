@@ -46,7 +46,10 @@ class IosDesignSystem extends ThemeExtension<IosDesignSystem> {
     );
   }
 
-  static CupertinoThemeData _cupertino(DesignTokens t, {required Brightness brightness}) {
+  static CupertinoThemeData _cupertino(
+    DesignTokens t, {
+    required Brightness brightness,
+  }) {
     return CupertinoThemeData(
       brightness: brightness,
       primaryColor: t.accent,
@@ -104,13 +107,19 @@ class IosDesignSystem extends ThemeExtension<IosDesignSystem> {
       scaffoldBackgroundColor: ds.tokens.background,
       extensions: _mergeExtensions(base, ds),
       // Без Material elevation — плоские поверхности.
-      cardTheme: base.cardTheme.copyWith(elevation: 0, shadowColor: Colors.transparent),
+      cardTheme: base.cardTheme.copyWith(
+        elevation: 0,
+        shadowColor: Colors.transparent,
+      ),
       elevatedButtonTheme: null,
       filledButtonTheme: null,
     );
   }
 
-  static List<ThemeExtension<dynamic>> _mergeExtensions(ThemeData base, IosDesignSystem ds) {
+  static List<ThemeExtension<dynamic>> _mergeExtensions(
+    ThemeData base,
+    IosDesignSystem ds,
+  ) {
     final others = base.extensions.values.where((e) => e is! IosDesignSystem);
     return [ds, ...others];
   }
@@ -122,7 +131,6 @@ class IosDesignSystem extends ThemeExtension<IosDesignSystem> {
             ? IosDesignSystem.dark()
             : IosDesignSystem.light());
   }
-
 
   @override
   IosDesignSystem copyWith({

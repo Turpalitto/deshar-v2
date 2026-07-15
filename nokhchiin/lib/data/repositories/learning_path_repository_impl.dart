@@ -24,18 +24,24 @@ class LearningPathRepositoryImpl implements LearningPathRepository {
       try {
         final id = u['id'] as String;
         final words = await _dictionary.getWordsByCategory(id);
-        units.add(LearningUnitEntity(
-          id: id,
-          order: u['order'] as int,
-          titleRu: u['titleRu'] as String,
-          titleCe: u['titleCe'] as String,
-          icon: u['icon'] as String,
-          requiredMastery: u['requiredMastery'] as int,
-          wordIds: words.map((w) => w.id).toList(),
-          enabled: u['enabled'] as bool? ?? true,
-        ));
+        units.add(
+          LearningUnitEntity(
+            id: id,
+            order: u['order'] as int,
+            titleRu: u['titleRu'] as String,
+            titleCe: u['titleCe'] as String,
+            icon: u['icon'] as String,
+            requiredMastery: u['requiredMastery'] as int,
+            wordIds: words.map((w) => w.id).toList(),
+            enabled: u['enabled'] as bool? ?? true,
+          ),
+        );
       } catch (e, st) {
-        AppLogger.error('Skipping malformed unit in learning_path.json: $u', error: e, stackTrace: st);
+        AppLogger.error(
+          'Skipping malformed unit in learning_path.json: $u',
+          error: e,
+          stackTrace: st,
+        );
       }
     }
     units.sort((a, b) => a.order.compareTo(b.order));

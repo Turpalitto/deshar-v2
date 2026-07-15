@@ -41,7 +41,11 @@ abstract final class CrashReporter {
       );
     };
     PlatformDispatcher.instance.onError = (error, stackTrace) {
-      AppLogger.error('Uncaught platform error', error: error, stackTrace: stackTrace);
+      AppLogger.error(
+        'Uncaught platform error',
+        error: error,
+        stackTrace: stackTrace,
+      );
       return true;
     };
   }
@@ -57,10 +61,6 @@ abstract final class CrashReporter {
       hintObj = Hint();
       hintObj.set('hint', hint);
     }
-    await Sentry.captureException(
-      error,
-      stackTrace: stackTrace,
-      hint: hintObj,
-    );
+    await Sentry.captureException(error, stackTrace: stackTrace, hint: hintObj);
   }
 }

@@ -23,7 +23,10 @@ CustomTransitionPage<T> fadeScaleTransitionPage<T>({
       if (!animation.isAnimating && animation.value == 0) {
         return child;
       }
-      final curved = CurvedAnimation(parent: animation, curve: IosMotion.curveGentle);
+      final curved = CurvedAnimation(
+        parent: animation,
+        curve: IosMotion.curveGentle,
+      );
       return FadeTransition(
         opacity: curved,
         child: ScaleTransition(

@@ -18,12 +18,14 @@ class SeedUnitMasteryFromPlacementUseCase {
   Future<void> call(String unitId) async {
     final words = await _dictionaryRepo.getWordsByCategory(unitId);
     for (final w in words) {
-      await _progressRepo.saveProgress(WordProgressEntity(
-        wordId: w.id,
-        mastery: MasteryLevel.mastered,
-        repetitions: 0,
-        seededFromPlacement: true,
-      ));
+      await _progressRepo.saveProgress(
+        WordProgressEntity(
+          wordId: w.id,
+          mastery: MasteryLevel.mastered,
+          repetitions: 0,
+          seededFromPlacement: true,
+        ),
+      );
     }
   }
 }

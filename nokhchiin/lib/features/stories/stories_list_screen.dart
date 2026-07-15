@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/design/app_icons.dart';
-import '../../core/design/widgets/app_icon_image.dart';
 import '../../core/design/tokens/app_spacing.dart';
 import '../../core/design/widgets/app_card.dart';
 import '../../core/design/widgets/error_state.dart';
@@ -47,7 +46,9 @@ class StoriesListScreen extends ConsumerWidget {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: AppSpacing.md),
                     child: AppCard(
-                      onTap: unlocked ? () => context.push('/story/${s.id}') : null,
+                      onTap: unlocked
+                          ? () => context.push('/story/${s.id}')
+                          : null,
                       child: Row(
                         children: [
                           WordIllustration(
@@ -60,16 +61,24 @@ class StoriesListScreen extends ConsumerWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(s.titleRu, style: Theme.of(context).textTheme.titleLarge),
                                 Text(
-                                  unlocked ? '$panels сцен · награда' : 'Нужно $required% юнита',
+                                  s.titleRu,
+                                  style: Theme.of(context).textTheme.titleLarge,
+                                ),
+                                Text(
+                                  unlocked
+                                      ? '$panels сцен · награда'
+                                      : 'Нужно $required% юнита',
                                   style: Theme.of(context).textTheme.bodySmall,
                                 ),
                               ],
                             ),
                           ),
                           if (unlocked)
-                            AppIconImage(asset: AppIcons.navDictionary, size: 24)
+                            AppIconImage(
+                              asset: AppIcons.navDictionary,
+                              size: 24,
+                            )
                           else
                             AppIconImage(asset: AppIcons.stateLocked, size: 24),
                         ],

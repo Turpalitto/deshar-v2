@@ -22,7 +22,11 @@ final _rng = Random();
 const _passThreshold = 1;
 
 class _Question {
-  const _Question({required this.unitId, required this.target, required this.options});
+  const _Question({
+    required this.unitId,
+    required this.target,
+    required this.options,
+  });
   final String unitId;
   final WordEntity target;
   final List<WordEntity> options;
@@ -35,7 +39,8 @@ class PlacementTestScreen extends ConsumerStatefulWidget {
   const PlacementTestScreen({super.key});
 
   @override
-  ConsumerState<PlacementTestScreen> createState() => _PlacementTestScreenState();
+  ConsumerState<PlacementTestScreen> createState() =>
+      _PlacementTestScreenState();
 }
 
 class _PlacementTestScreenState extends ConsumerState<PlacementTestScreen> {
@@ -67,8 +72,9 @@ class _PlacementTestScreenState extends ConsumerState<PlacementTestScreen> {
     final profile = ref.read(userProfileProvider).value;
     final mode = profile?.mode ?? AppMode.adult;
     final unitLimit = GameplayDifficulty.placementUnitLimit(mode: mode);
-    final questionsPerUnit =
-        GameplayDifficulty.placementQuestionsPerUnit(mode: mode);
+    final questionsPerUnit = GameplayDifficulty.placementQuestionsPerUnit(
+      mode: mode,
+    );
 
     final units = await ref.read(learningPathRepoProvider).getUnits();
     // Только стартовые юниты (requiredMastery == 0) — не все 10 enabled,
@@ -96,8 +102,10 @@ class _PlacementTestScreenState extends ConsumerState<PlacementTestScreen> {
         final seen = <String>{target.russian.trim().toLowerCase()};
         final distractors = <WordEntity>[];
         final age = profile?.ageGroup ?? KidsAgeGroup.age6to9;
-        final optionCount =
-            GameplayDifficulty.quizOptionCount(mode: mode, age: age);
+        final optionCount = GameplayDifficulty.quizOptionCount(
+          mode: mode,
+          age: age,
+        );
         final distractorNeed = optionCount - 1;
         for (final w in pool) {
           final key = w.russian.trim().toLowerCase();
@@ -105,10 +113,11 @@ class _PlacementTestScreenState extends ConsumerState<PlacementTestScreen> {
           if (distractors.length >= distractorNeed) break;
         }
         if (distractors.length < distractorNeed) {
-          final extra = allWords
-              .where((w) => !seen.contains(w.russian.trim().toLowerCase()))
-              .toList()
-            ..shuffle(_rng);
+          final extra =
+              allWords
+                  .where((w) => !seen.contains(w.russian.trim().toLowerCase()))
+                  .toList()
+                ..shuffle(_rng);
           for (final w in extra) {
             final key = w.russian.trim().toLowerCase();
             if (seen.add(key)) distractors.add(w);
@@ -117,7 +126,9 @@ class _PlacementTestScreenState extends ConsumerState<PlacementTestScreen> {
         }
         final options = [target, ...distractors.take(distractorNeed)]
           ..shuffle(_rng);
-        questions.add(_Question(unitId: unitId, target: target, options: options));
+        questions.add(
+          _Question(unitId: unitId, target: target, options: options),
+        );
       }
     }
 
@@ -189,8 +200,7 @@ class _PlacementTestScreenState extends ConsumerState<PlacementTestScreen> {
 
     final q = _questions[_index];
 
-    final isKids =
-        ref.watch(userProfileProvider).value?.mode == AppMode.kids;
+    final isKids = ref.watch(userProfileProvider).value?.mode == AppMode.kids;
 
     return AppScaffold(
       title: isKids ? 'Что ты уже знаешь?' : 'Проверим, что ты уже знаешь',
@@ -206,7 +216,10 @@ class _PlacementTestScreenState extends ConsumerState<PlacementTestScreen> {
           children: [
             Text(
               'Вопрос ${_index + 1} из ${_questions.length}',
-              style: TextStyle(color: tokens.textTertiary, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                color: tokens.textTertiary,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             const SizedBox(height: AppSpacing.lg),
             Text(
@@ -230,7 +243,9 @@ class _PlacementTestScreenState extends ConsumerState<PlacementTestScreen> {
               return Padding(
                 padding: const EdgeInsets.only(bottom: AppSpacing.md),
                 child: NokhchiinQuizOption(
-                  label: o.emoji != null ? '${o.emoji}  ${o.russian}' : o.russian,
+                  label: o.emoji != null
+                      ? '${o.emoji}  ${o.russian}'
+                      : o.russian,
                   letter: String.fromCharCode(65 + i),
                   selected: _selectedOption == i ? true : null,
                   correct: _selectedOption == i ? isTarget : null,

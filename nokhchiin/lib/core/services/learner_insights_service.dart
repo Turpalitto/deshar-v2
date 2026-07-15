@@ -43,7 +43,9 @@ abstract final class LearnerInsightsService {
     );
   }
 
-  static LearningUnitEntity? _weakestUnlockedUnit(List<LearningUnitEntity> units) {
+  static LearningUnitEntity? _weakestUnlockedUnit(
+    List<LearningUnitEntity> units,
+  ) {
     final unlocked = units.where((u) => u.isUnlocked).toList();
     if (unlocked.isEmpty) return null;
 

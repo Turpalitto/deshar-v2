@@ -5,11 +5,7 @@ import 'app_button.dart';
 import 'app_icon_image.dart';
 
 class ErrorState extends StatelessWidget {
-  const ErrorState({
-    super.key,
-    required this.message,
-    this.onRetry,
-  });
+  const ErrorState({super.key, required this.message, this.onRetry});
 
   final String message;
   final VoidCallback? onRetry;
@@ -24,10 +20,18 @@ class ErrorState extends StatelessWidget {
           children: [
             const AppIconImage(asset: AppIcons.stateError, size: 48),
             const SizedBox(height: AppSpacing.lg),
-            Text(message, style: Theme.of(context).textTheme.bodyLarge, textAlign: TextAlign.center),
+            Text(
+              message,
+              style: Theme.of(context).textTheme.bodyLarge,
+              textAlign: TextAlign.center,
+            ),
             if (onRetry != null) ...[
               const SizedBox(height: AppSpacing.xl),
-              AppButton(label: 'Повторить', onPressed: onRetry, expanded: false),
+              AppButton(
+                label: 'Повторить',
+                onPressed: onRetry,
+                expanded: false,
+              ),
             ],
           ],
         ),

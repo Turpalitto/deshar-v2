@@ -27,19 +27,19 @@ class AnalyticsEvent extends Equatable {
   final Map<String, String> properties;
 
   Map<String, dynamic> toJson() => {
-        'name': name.id,
-        'timestamp': timestamp.toIso8601String(),
-        'properties': properties,
-      };
+    'name': name.id,
+    'timestamp': timestamp.toIso8601String(),
+    'properties': properties,
+  };
 
   factory AnalyticsEvent.fromJson(Map<String, dynamic> json) => AnalyticsEvent(
-        name: AnalyticsEventName.values.firstWhere(
-          (e) => e.id == json['name'],
-          orElse: () => AnalyticsEventName.paywallViewed,
-        ),
-        timestamp: DateTime.parse(json['timestamp'] as String),
-        properties: Map<String, String>.from(json['properties'] as Map? ?? {}),
-      );
+    name: AnalyticsEventName.values.firstWhere(
+      (e) => e.id == json['name'],
+      orElse: () => AnalyticsEventName.paywallViewed,
+    ),
+    timestamp: DateTime.parse(json['timestamp'] as String),
+    properties: Map<String, String>.from(json['properties'] as Map? ?? {}),
+  );
 
   @override
   List<Object?> get props => [name, timestamp];

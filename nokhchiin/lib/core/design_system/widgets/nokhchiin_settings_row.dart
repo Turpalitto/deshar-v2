@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../design/widgets/app_icon_image.dart';
 import '../design_system.dart';
 
 /// Строка настроек профиля (Figma Make).
@@ -44,7 +43,11 @@ class NokhchiinSettingsRow extends StatelessWidget {
                 ),
               ),
               trailing ??
-                  Icon(Icons.chevron_right_rounded, color: tokens.textTertiary, size: 22),
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    color: tokens.textTertiary,
+                    size: 22,
+                  ),
             ],
           ),
         ),

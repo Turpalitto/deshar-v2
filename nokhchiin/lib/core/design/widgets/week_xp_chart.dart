@@ -43,11 +43,15 @@ class WeekXpChart extends StatelessWidget {
             Text(
               'XP за неделю',
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: tokens.textPrimary,
-                  ),
+                fontWeight: FontWeight.w700,
+                color: tokens.textPrimary,
+              ),
             ),
-            NokhchiinChip(label: '$totalXp XP', color: active, background: muted),
+            NokhchiinChip(
+              label: '$totalXp XP',
+              color: active,
+              background: muted,
+            ),
           ],
         ),
         const SizedBox(height: 14),
@@ -57,7 +61,9 @@ class WeekXpChart extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: List.generate(7, (i) {
               final v = data[i];
-              final barH = v == 0 ? 4.0 : (v / max * (height - 20)).clamp(8.0, height - 20);
+              final barH = v == 0
+                  ? 4.0
+                  : (v / max * (height - 20)).clamp(8.0, height - 20);
               final isToday = i == today;
               return Expanded(
                 child: Padding(
@@ -75,7 +81,10 @@ class WeekXpChart extends StatelessWidget {
                               ? LinearGradient(
                                   begin: Alignment.topCenter,
                                   end: Alignment.bottomCenter,
-                                  colors: [active, active.withValues(alpha: 0.7)],
+                                  colors: [
+                                    active,
+                                    active.withValues(alpha: 0.7),
+                                  ],
                                 )
                               : null,
                           color: isToday ? null : muted,
@@ -101,7 +110,9 @@ class WeekXpChart extends StatelessWidget {
                         _days[i],
                         style: TextStyle(
                           fontSize: 10,
-                          fontWeight: isToday ? FontWeight.w700 : FontWeight.w500,
+                          fontWeight: isToday
+                              ? FontWeight.w700
+                              : FontWeight.w500,
                           color: isToday ? active : tokens.textTertiary,
                         ),
                       ),

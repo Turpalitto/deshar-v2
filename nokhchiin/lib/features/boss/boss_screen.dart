@@ -6,17 +6,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../core/config/feature_flags.dart';
 import '../../core/design/tokens/app_durations.dart';
 import '../../core/design/tokens/app_spacing.dart';
 import '../../core/design/app_icons.dart';
-import '../../core/design/widgets/empty_state.dart';
-import '../../core/design/widgets/loading_state.dart';
 import '../../core/design/widgets/reward_celebration.dart';
 import '../../core/design/widgets/word_exercise_card.dart';
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
-import '../../core/services/audio_service.dart';
 import '../../core/utils/exercise_word_pool.dart';
 import '../../core/utils/gameplay_difficulty.dart';
 import '../../domain/entities/content_entities.dart';
@@ -25,7 +21,6 @@ import '../../domain/entities/word_entity.dart';
 import '../games/widgets/exercise_presentation.dart';
 import '../games/widgets/game_session_widgets.dart';
 
-final _audioProvider = Provider((_) => AudioService());
 final _rng = Random();
 
 class BossScreen extends ConsumerStatefulWidget {
@@ -139,12 +134,13 @@ class _BossScreenState extends ConsumerState<BossScreen> {
     var unlockedWorld = false;
 
     if (won) {
-      await ref.read(userProfileProvider.notifier).addXp(
-            _boss?.rewardXp ?? 100,
-            _boss?.rewardStars ?? 25,
-          );
+      await ref
+          .read(userProfileProvider.notifier)
+          .addXp(_boss?.rewardXp ?? 100, _boss?.rewardStars ?? 25);
       unlockedWorld = await _unlockNextWorld();
-      await ref.read(userProfileProvider.notifier).unlockAchievement('collector');
+      await ref
+          .read(userProfileProvider.notifier)
+          .unlockAchievement('collector');
     }
     if (!mounted) return;
 
@@ -154,7 +150,7 @@ class _BossScreenState extends ConsumerState<BossScreen> {
       title: won ? 'Победа!' : 'Попробуй ещё',
       subtitle: won
           ? 'Счёт: $_score / ${_words.length}'
-              '${unlockedWorld ? '\nНовый мир открыт!' : ''}'
+                '${unlockedWorld ? '\nНовый мир открыт!' : ''}'
           : 'Счёт: $_score / ${_words.length}',
       dismissLabel: 'OK',
       onDismiss: () {
@@ -205,7 +201,9 @@ class _BossScreenState extends ConsumerState<BossScreen> {
   @override
   Widget build(BuildContext context) {
     if (_loading) {
-      return const AppScaffold(body: LoadingState(message: 'Босс готовится…'));
+      return const AppScaffold(
+        body: NokhchiinLoadingState(message: 'Босс готовится…'),
+      );
     }
     if (_boss == null) {
       return AppScaffold(
@@ -230,7 +228,7 @@ class _BossScreenState extends ConsumerState<BossScreen> {
     }
     if (_words.isEmpty) {
       return const AppScaffold(
-        body: EmptyState(
+        body: NokhchiinEmptyState(
           iconAsset: AppIcons.stateEmpty,
           title: 'Недостаточно слов для босса',
         ),
@@ -238,7 +236,7 @@ class _BossScreenState extends ConsumerState<BossScreen> {
     }
     if (_index >= _words.length) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _finish());
-      return const AppScaffold(body: LoadingState());
+      return const AppScaffold(body: NokhchiinLoadingState());
     }
 
     final target = _words[_index];
@@ -272,17 +270,8 @@ class _BossScreenState extends ConsumerState<BossScreen> {
             const SizedBox(height: AppSpacing.md),
             AnswerFeedbackAnimator(
               feedback: _lastCorrect,
-              child: WordExerciseCard(
-                word: target,
-                categoryId: widget.unitId,
-              ),
+              child: WordExerciseCard(word: target, categoryId: widget.unitId),
             ).animate(key: ValueKey(target.id)).fadeIn(),
-            if (FeatureFlags.audioEnabled)
-              IconButton(
-                icon: const Icon(Icons.volume_up_rounded, size: 36),
-                onPressed: () =>
-                    ref.read(_audioProvider).speakChechen(target.chechen),
-              ),
             const Spacer(),
             ...options.asMap().entries.map((entry) {
               final i = entry.key;
@@ -293,7 +282,9 @@ class _BossScreenState extends ConsumerState<BossScreen> {
               return Padding(
                 padding: const EdgeInsets.only(bottom: AppSpacing.sm),
                 child: NokhchiinQuizOption(
-                  label: o.emoji != null ? '${o.emoji}  ${o.russian}' : o.russian,
+                  label: o.emoji != null
+                      ? '${o.emoji}  ${o.russian}'
+                      : o.russian,
                   letter: String.fromCharCode(65 + i),
                   selected: wasSelected ? true : null,
                   correct: wasSelected ? isTarget : null,

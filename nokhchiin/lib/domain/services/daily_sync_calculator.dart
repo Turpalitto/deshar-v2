@@ -18,7 +18,8 @@ class DailySyncCalculator {
     var freezeCount = profile.streakFreezeCount;
     if (profile.lastActiveDate == yesterday) {
       streak = profile.streakDays + 1;
-    } else if (profile.lastActiveDate == twoDaysAgo && profile.streakFreezeCount > 0) {
+    } else if (profile.lastActiveDate == twoDaysAgo &&
+        profile.streakFreezeCount > 0) {
       // Пропущен ровно один день, есть заморозка — тратим её, стрик не рвётся.
       streak = profile.streakDays + 1;
       freezeCount = profile.streakFreezeCount - 1;
@@ -40,15 +41,20 @@ class DailySyncCalculator {
           : now;
       var days = now.difference(lastActive).inDays;
       if (days < 1) days = 1;
-      if (days > 7) days = 7;      for (var i = 0; i < days; i++) {
+      if (days > 7) days = 7;
+      for (var i = 0; i < days; i++) {
         weekly.removeAt(0);
         weekly.add(0);
       }
     }
 
     final achievements = List<String>.from(profile.achievements);
-    if (streak >= 3 && !achievements.contains('streak_3')) achievements.add('streak_3');
-    if (streak >= 7 && !achievements.contains('streak_7')) achievements.add('streak_7');
+    if (streak >= 3 && !achievements.contains('streak_3')) {
+      achievements.add('streak_3');
+    }
+    if (streak >= 7 && !achievements.contains('streak_7')) {
+      achievements.add('streak_7');
+    }
 
     return profile.copyWith(
       lastActiveDate: today,

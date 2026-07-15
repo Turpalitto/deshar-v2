@@ -51,9 +51,9 @@ class ExerciseProgressHeader extends StatelessWidget {
             label!,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: tokens.textTertiary,
-                  fontWeight: FontWeight.w600,
-                ),
+              color: tokens.textTertiary,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ],
       ],

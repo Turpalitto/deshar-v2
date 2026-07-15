@@ -13,11 +13,9 @@ import '../../core/design/tokens/nokhchiin_colors.dart';
 import '../../core/design/app_icons.dart';
 import '../../core/design/widgets/app_button.dart';
 import '../../core/design/widgets/app_card.dart';
-import '../../core/design/widgets/app_scaffold.dart';
-import '../../core/design/widgets/empty_state.dart';
-import '../../core/design/widgets/loading_state.dart';
 import '../../core/design/widgets/reward_celebration.dart';
 import '../../core/design/widgets/word_exercise_card.dart';
+import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
 import '../../core/utils/chechen_text_utils.dart';
 import '../../core/utils/exercise_word_pool.dart';
@@ -106,40 +104,42 @@ class _TypingExerciseScreenState extends ConsumerState<TypingExerciseScreen> {
     }
     if (!mounted) return;
 
-    unawaited(Future.delayed(AppDurations.normal, () async {
-      if (!mounted) return;
-      if (_index < _words.length - 1) {
-        setState(() {
-          _index++;
-          _controller.clear();
-          _lastCorrect = null;
-        });
-      } else {
-        await ref.read(userProfileProvider.notifier).addXp(30, 6);
+    unawaited(
+      Future.delayed(AppDurations.normal, () async {
         if (!mounted) return;
-        await RewardCelebration.show(
-          context,
-          iconAsset: AppIcons.rewardCelebration,
-          title: 'Отлично!',
-          subtitle:
-              'Правильно: $_score / ${_words.length} · комбо ×${_combo.streak} · +30 XP',
-          onDismiss: () {
-            Navigator.of(context).pop();
-            context.pop();
-          },
-        );
-      }
-    }));
+        if (_index < _words.length - 1) {
+          setState(() {
+            _index++;
+            _controller.clear();
+            _lastCorrect = null;
+          });
+        } else {
+          await ref.read(userProfileProvider.notifier).addXp(30, 6);
+          if (!mounted) return;
+          await RewardCelebration.show(
+            context,
+            iconAsset: AppIcons.rewardCelebration,
+            title: 'Отлично!',
+            subtitle:
+                'Правильно: $_score / ${_words.length} · комбо ×${_combo.streak} · +30 XP',
+            onDismiss: () {
+              Navigator.of(context).pop();
+              context.pop();
+            },
+          );
+        }
+      }),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     if (_loading) {
-      return const AppScaffold(body: LoadingState());
+      return const AppScaffold(body: NokhchiinLoadingState());
     }
     if (_words.isEmpty) {
       return const AppScaffold(
-        body: EmptyState(
+        body: NokhchiinEmptyState(
           iconAsset: AppIcons.stateEmpty,
           title: 'Недостаточно слов для упражнения',
         ),
@@ -150,8 +150,8 @@ class _TypingExerciseScreenState extends ConsumerState<TypingExerciseScreen> {
     final feedbackColor = _lastCorrect == null
         ? null
         : _lastCorrect!
-            ? NokhchiinColors.success
-            : NokhchiinColors.error;
+        ? NokhchiinColors.success
+        : NokhchiinColors.error;
 
     return AppScaffold(
       title: 'Ввод · ${_index + 1}/${_words.length}',

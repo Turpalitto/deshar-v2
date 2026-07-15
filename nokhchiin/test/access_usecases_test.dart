@@ -7,7 +7,6 @@ import 'package:nokhchiin/domain/repositories/billing_repository.dart';
 import 'package:nokhchiin/domain/repositories/repositories.dart';
 import 'package:nokhchiin/domain/usecases/access_usecases.dart';
 
-
 class _FakeBilling implements BillingRepository {
   _FakeBilling(this.tier);
   SubscriptionTier tier;
@@ -77,7 +76,6 @@ void main() {
     expect(await useCase(unitPaid, masteryUnlocked: true), isFalse);
     expect(unitPaid.order, greaterThan(SubscriptionLimits.freeUnitMaxOrder));
   });
-
 
   test('premium user can access any mastery-unlocked unit', () async {
     final useCase = CanAccessUnitUseCase(

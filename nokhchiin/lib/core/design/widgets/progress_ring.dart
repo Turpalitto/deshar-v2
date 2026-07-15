@@ -25,8 +25,8 @@ class ProgressRing extends StatelessWidget {
     final color = p >= 0.8
         ? NokhchiinColors.masteryHigh
         : p >= 0.4
-            ? NokhchiinColors.masteryMid
-            : NokhchiinColors.masteryLow;
+        ? NokhchiinColors.masteryMid
+        : NokhchiinColors.masteryLow;
 
     return SizedBox(
       width: size,
@@ -50,8 +50,8 @@ class ProgressRing extends StatelessWidget {
                   Text(
                     '$percent%',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w800,
-                        ),
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                   if (label != null)
                     Text(label!, style: Theme.of(context).textTheme.labelSmall),
