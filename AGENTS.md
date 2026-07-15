@@ -274,3 +274,9 @@ cd nokhchiin && flutter test
 
 - [Hugging Face: NM-development/nmd-ce-ru-171k-v0](https://huggingface.co/datasets/NM-development/nmd-ce-ru-171k-v0)
 - Учебная лексика: `vocabulary_corrections.json`
+
+---
+
+## История прошлых сессий
+
+Контекст предыдущей работы (перенесён из архивной opencode-сессии) — в файле [`SESSION_HISTORY.md`](./SESSION_HISTORY.md). Прочитай его, если нужен контекст ранее принятых решений.
