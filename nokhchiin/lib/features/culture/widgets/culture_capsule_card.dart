@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../../core/design/app_icons.dart';
-import '../../../core/design/widgets/app_icon_image.dart';
 import '../../../core/design_system/design_system.dart';
 import '../../../domain/entities/culture_capsule.dart';
 
@@ -38,7 +37,9 @@ class CultureCapsuleCard extends StatelessWidget {
           ),
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: IosSpacing.screenHorizontal),
+              padding: const EdgeInsets.symmetric(
+                horizontal: IosSpacing.screenHorizontal,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -50,10 +51,18 @@ class CultureCapsuleCard extends StatelessWidget {
                       style: TextButton.styleFrom(
                         backgroundColor: Colors.white.withValues(alpha: 0.1),
                         foregroundColor: Colors.white.withValues(alpha: 0.65),
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 8,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
-                      child: const Text('✕ Закрыть', style: TextStyle(fontWeight: FontWeight.w500)),
+                      child: const Text(
+                        '✕ Закрыть',
+                        style: TextStyle(fontWeight: FontWeight.w500),
+                      ),
                     ),
                   ),
                   const SizedBox(height: IosSpacing.x6),
@@ -92,7 +101,9 @@ class CultureCapsuleCard extends StatelessWidget {
                               paragraphs[i],
                               style: TextStyle(
                                 fontSize: i == 0 ? 16 : 15,
-                                color: Color(0xFFF5F0E8).withValues(alpha: i == 0 ? 0.85 : 0.6),
+                                color: Color(
+                                  0xFFF5F0E8,
+                                ).withValues(alpha: i == 0 ? 0.85 : 0.6),
                                 height: 1.65,
                               ),
                             ),
@@ -100,21 +111,37 @@ class CultureCapsuleCard extends StatelessWidget {
                           const SizedBox(height: IosSpacing.x6),
                           Row(
                             children: [
-                              _FactChip(iconAsset: AppIcons.cultureHandshake, label: 'Уважение'),
+                              _FactChip(
+                                iconAsset: AppIcons.cultureHandshake,
+                                label: 'Уважение',
+                              ),
                               const SizedBox(width: 10),
-                              _FactChip(iconAsset: AppIcons.cultureFeast, label: 'Стол'),
+                              _FactChip(
+                                iconAsset: AppIcons.cultureFeast,
+                                label: 'Стол',
+                              ),
                               const SizedBox(width: 10),
-                              _FactChip(iconAsset: AppIcons.cultureMountains, label: 'Нохчалла'),
+                              _FactChip(
+                                iconAsset: AppIcons.cultureMountains,
+                                label: 'Нохчалла',
+                              ),
                             ],
                           ),
                           const SizedBox(height: IosSpacing.x6),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 18,
+                              vertical: 16,
+                            ),
                             decoration: BoxDecoration(
-                              color: DesignTokens.cultureAccent.withValues(alpha: 0.12),
+                              color: DesignTokens.cultureAccent.withValues(
+                                alpha: 0.12,
+                              ),
                               borderRadius: BorderRadius.circular(16),
                               border: Border.all(
-                                color: DesignTokens.cultureAccent.withValues(alpha: 0.25),
+                                color: DesignTokens.cultureAccent.withValues(
+                                  alpha: 0.25,
+                                ),
                               ),
                             ),
                             child: const Column(
@@ -227,11 +254,8 @@ class _IllustrationFallback extends StatelessWidget {
 }
 
 class _FactChip extends StatelessWidget {
-  const _FactChip({
-    this.emoji,
-    this.iconAsset,
-    required this.label,
-  }) : assert(emoji != null || iconAsset != null);
+  const _FactChip({this.emoji, this.iconAsset, required this.label})
+    : assert(emoji != null || iconAsset != null);
 
   final String? emoji;
   final String? iconAsset;

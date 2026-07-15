@@ -5,14 +5,12 @@ import '../../domain/entities/word_entity.dart';
 import '../../core/services/progress_stats_service.dart';
 import '../../core/services/learner_insights_service.dart';
 import 'repository_providers.dart';
+import 'datasource_providers.dart';
 import 'usecase_providers.dart';
 import 'user_profile_provider.dart';
-import '../../data/datasources/content_datasource.dart';
 
 // --- Worlds / Collections / Stories ---
 // autoDispose: экран-scope, лёгкая JSON-загрузка. Аудит §3.2.
-final contentSourceProvider = Provider((_) => ContentDataSource());
-
 /// Миры с юнитами, отфильтрованными по реально включённым юнитам
 /// learning_path.json. Мир без единого включённого юнита скрывается:
 /// раньше тап по такому миру вёл на «Юнит не найден» — worlds.json
@@ -40,25 +38,29 @@ final worldsProvider = FutureProvider.autoDispose((ref) async {
         ),
   ];
 });
-final collectionsProvider =
-    FutureProvider.autoDispose((ref) => ref.read(contentSourceProvider).loadCollections());
-final storiesProvider =
-    FutureProvider.autoDispose((ref) => ref.read(contentSourceProvider).loadStories());
+final collectionsProvider = FutureProvider.autoDispose(
+  (ref) => ref.read(contentSourceProvider).loadCollections(),
+);
+final storiesProvider = FutureProvider.autoDispose(
+  (ref) => ref.read(contentSourceProvider).loadStories(),
+);
 
 // --- Dictionary & Learning units ---
 final dictionaryProvider = FutureProvider<List<WordEntity>>((ref) async {
   return ref.watch(dictionaryRepoProvider).getAllWords();
 });
 
-final dueWordsProvider =
-    FutureProvider.autoDispose<List<WordEntity>>((ref) async {
+final dueWordsProvider = FutureProvider.autoDispose<List<WordEntity>>((
+  ref,
+) async {
   // autoDispose: только Review-экран. Аудит §3.2 — screen-scope, не копить
   // состояние между навигацией.
   return ref.watch(getDueWordsUseCaseProvider)();
 });
 
-final learningUnitsProvider =
-    FutureProvider<List<LearningUnitEntity>>((ref) async {
+final learningUnitsProvider = FutureProvider<List<LearningUnitEntity>>((
+  ref,
+) async {
   final all = await ref.watch(learningPathRepoProvider).getUnits();
   // Скрываем юниты без контента (enabled: false в learning_path.json).
   // Юниты без lessons.json (school/adjectives/phrases/dialogues/stories)
@@ -80,18 +82,20 @@ final learningUnitsProvider =
       masteryUnlocked = prevPct >= u.requiredMastery;
     }
     final unlocked = await canAccess(u, masteryUnlocked: masteryUnlocked);
-    result.add(LearningUnitEntity(
-      id: u.id,
-      order: u.order,
-      titleRu: u.titleRu,
-      titleCe: u.titleCe,
-      icon: u.icon,
-      requiredMastery: u.requiredMastery,
-      wordIds: u.wordIds,
-      isUnlocked: unlocked,
-      masteryPercent: pct,
-      enabled: u.enabled,
-    ));
+    result.add(
+      LearningUnitEntity(
+        id: u.id,
+        order: u.order,
+        titleRu: u.titleRu,
+        titleCe: u.titleCe,
+        icon: u.icon,
+        requiredMastery: u.requiredMastery,
+        wordIds: u.wordIds,
+        isUnlocked: unlocked,
+        masteryPercent: pct,
+        enabled: u.enabled,
+      ),
+    );
     prev = u;
   }
   return result;
@@ -105,16 +109,17 @@ final progressStatsProvider = Provider(
   ),
 );
 
-final languageMasteryProvider =
-    FutureProvider.autoDispose<int>((ref) async {
+final languageMasteryProvider = FutureProvider.autoDispose<int>((ref) async {
   return ref.watch(progressStatsProvider).languageMasteryPercent();
 });
 
-final learnerInsightsProvider =
-    FutureProvider.autoDispose<LearnerInsights>((ref) async {
+final learnerInsightsProvider = FutureProvider.autoDispose<LearnerInsights>((
+  ref,
+) async {
   final units = await ref.watch(learningUnitsProvider.future);
   final language = await ref.watch(languageMasteryProvider.future);
-  final profile = ref.watch(userProfileProvider).value ?? const UserProfileEntity();
+  final profile =
+      ref.watch(userProfileProvider).value ?? const UserProfileEntity();
 
   return LearnerInsightsService.build(
     units: units,
@@ -126,8 +131,9 @@ final learnerInsightsProvider =
   );
 });
 
-final continueUnitProvider =
-    FutureProvider.autoDispose<LearningUnitEntity?>((ref) async {
+final continueUnitProvider = FutureProvider.autoDispose<LearningUnitEntity?>((
+  ref,
+) async {
   final units = await ref.watch(learningUnitsProvider.future);
   return ref.watch(progressStatsProvider).findContinueUnit(units);
 });

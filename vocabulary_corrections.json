@@ -108,6 +108,42 @@
             "hint": "Принимать пищу",
             "sources": ["curated", "verified"],
             "quality": 100
+        },
+        "даймохк": {
+            "chechen": "Даймохк",
+            "russian": "Родина",
+            "category": "family",
+            "emoji": "🏔️",
+            "hint": "Чеченская земля",
+            "sources": ["lessons", "verified"],
+            "quality": 100
+        },
+        "нохчалла": {
+            "chechen": "Нохчалла",
+            "russian": "Чеченство",
+            "category": "family",
+            "emoji": "🐺",
+            "hint": "Чеченская идентичность",
+            "sources": ["lessons", "verified"],
+            "quality": 100
+        },
+        "тайпа": {
+            "chechen": "Тайпа",
+            "russian": "Тайп, род",
+            "category": "family",
+            "emoji": "🌳",
+            "hint": "Родовая общность",
+            "sources": ["lessons", "verified"],
+            "quality": 100
+        },
+        "адат": {
+            "chechen": "Адат",
+            "russian": "Адат, обычай",
+            "category": "family",
+            "emoji": "📜",
+            "hint": "Традиционный уклад и нормы поведения",
+            "sources": ["lessons", "verified"],
+            "quality": 100
         }
     },
   "curated_fixes": [

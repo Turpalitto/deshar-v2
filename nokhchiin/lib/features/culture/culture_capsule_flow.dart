@@ -22,6 +22,8 @@ abstract final class CultureCapsuleFlow {
     final continued = await CultureCapsuleModal.show(context, capsule);
     if (!context.mounted || !continued) return;
 
-    await ref.read(userProfileProvider.notifier).markCultureCapsuleSeen(capsule.id);
+    await ref
+        .read(userProfileProvider.notifier)
+        .markCultureCapsuleSeen(capsule.id);
   }
 }

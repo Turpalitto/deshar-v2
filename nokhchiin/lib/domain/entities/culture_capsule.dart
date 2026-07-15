@@ -22,8 +22,11 @@ class CultureCapsule extends Equatable {
   /// Юнит, к которому привязана капсула (`LearningUnitEntity.id`).
   final String relatedUnitId;
 
-  List<String> get paragraphs =>
-      body.split(RegExp(r'\n\s*\n')).map((p) => p.trim()).where((p) => p.isNotEmpty).toList();
+  List<String> get paragraphs => body
+      .split(RegExp(r'\n\s*\n'))
+      .map((p) => p.trim())
+      .where((p) => p.isNotEmpty)
+      .toList();
 
   @override
   List<Object?> get props => [id];

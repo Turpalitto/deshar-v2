@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/design/widgets/loading_state.dart';
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
 import '../../domain/entities/culture_capsule.dart';
@@ -33,8 +32,9 @@ class CultureCapsulePreviewScreen extends ConsumerWidget {
             );
           },
         ),
-        loading: () => const LoadingState(),
-        error: (_, _) => const Center(child: Text('Не удалось загрузить капсулы')),
+        loading: () => const NokhchiinLoadingState(),
+        error: (_, _) =>
+            const Center(child: Text('Не удалось загрузить капсулы')),
       ),
     );
   }
@@ -71,12 +71,16 @@ class _PreviewTile extends StatelessWidget {
           children: [
             Text(
               capsule.title,
-              style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
+              style: textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
             ),
             const SizedBox(height: IosSpacing.x1),
             Text(
               'unit: ${capsule.relatedUnitId}',
-              style: textTheme.labelMedium?.copyWith(color: tokens.textTertiary),
+              style: textTheme.labelMedium?.copyWith(
+                color: tokens.textTertiary,
+              ),
             ),
             const SizedBox(height: IosSpacing.x2),
             Text(

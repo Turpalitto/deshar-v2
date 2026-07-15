@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import '../../domain/entities/content_entities.dart';
+import '../../domain/entities/culture_capsule.dart';
 import 'content_parse_exception.dart';
 
 String _requireString(Map<String, dynamic> json, String field, String file) {
@@ -96,7 +97,10 @@ List<T> parseContentList<T>({
   }).toList();
 }
 
-WorldEntity parseWorld(Map<String, dynamic> json, {String file = 'worlds.json'}) {
+WorldEntity parseWorld(
+  Map<String, dynamic> json, {
+  String file = 'worlds.json',
+}) {
   return WorldEntity(
     id: _requireString(json, 'id', file),
     titleRu: _requireString(json, 'titleRu', file),
@@ -109,7 +113,10 @@ WorldEntity parseWorld(Map<String, dynamic> json, {String file = 'worlds.json'})
   );
 }
 
-CollectionEntity parseCollection(Map<String, dynamic> json, {String file = 'collections.json'}) {
+CollectionEntity parseCollection(
+  Map<String, dynamic> json, {
+  String file = 'collections.json',
+}) {
   return CollectionEntity(
     id: _requireString(json, 'id', file),
     titleRu: _requireString(json, 'titleRu', file),
@@ -121,7 +128,10 @@ CollectionEntity parseCollection(Map<String, dynamic> json, {String file = 'coll
   );
 }
 
-ChestEntity parseChest(Map<String, dynamic> json, {String file = 'collections.json'}) {
+ChestEntity parseChest(
+  Map<String, dynamic> json, {
+  String file = 'collections.json',
+}) {
   return ChestEntity(
     id: _requireString(json, 'id', file),
     titleRu: _requireString(json, 'titleRu', file),
@@ -130,7 +140,10 @@ ChestEntity parseChest(Map<String, dynamic> json, {String file = 'collections.js
   );
 }
 
-StoryDialogueLine parseStoryDialogue(Map<String, dynamic> json, {String file = 'stories.json'}) {
+StoryDialogueLine parseStoryDialogue(
+  Map<String, dynamic> json, {
+  String file = 'stories.json',
+}) {
   return StoryDialogueLine(
     speaker: _requireString(json, 'speaker', file),
     chechen: _requireString(json, 'chechen', file),
@@ -138,7 +151,10 @@ StoryDialogueLine parseStoryDialogue(Map<String, dynamic> json, {String file = '
   );
 }
 
-StoryPanelEntity parseStoryPanel(Map<String, dynamic> json, {String file = 'stories.json'}) {
+StoryPanelEntity parseStoryPanel(
+  Map<String, dynamic> json, {
+  String file = 'stories.json',
+}) {
   final dialogueRaw = json['dialogue'];
   final dialogue = <StoryDialogueLine>[];
   if (dialogueRaw is List) {
@@ -155,7 +171,10 @@ StoryPanelEntity parseStoryPanel(Map<String, dynamic> json, {String file = 'stor
   );
 }
 
-StoryQuizEntity parseStoryQuiz(Map<String, dynamic> json, {String file = 'stories.json'}) {
+StoryQuizEntity parseStoryQuiz(
+  Map<String, dynamic> json, {
+  String file = 'stories.json',
+}) {
   return StoryQuizEntity(
     question: _requireString(json, 'question', file),
     answer: _requireString(json, 'answer', file),
@@ -163,7 +182,10 @@ StoryQuizEntity parseStoryQuiz(Map<String, dynamic> json, {String file = 'storie
   );
 }
 
-StoryEntity parseStory(Map<String, dynamic> json, {String file = 'stories.json'}) {
+StoryEntity parseStory(
+  Map<String, dynamic> json, {
+  String file = 'stories.json',
+}) {
   final panelsRaw = json['panels'];
   final panels = <StoryPanelEntity>[];
   if (panelsRaw is List) {
@@ -211,37 +233,57 @@ BossEntity parseBoss(Map<String, dynamic> json, {String file = 'bosses.json'}) {
   );
 }
 
+CultureCapsule parseCultureCapsule(
+  Map<String, dynamic> json, {
+  String file = 'culture_capsules.json',
+}) {
+  return CultureCapsule(
+    id: _requireString(json, 'id', file),
+    title: _requireString(json, 'title', file),
+    body: _requireString(json, 'body', file),
+    relatedUnitId: _requireString(json, 'relatedUnitId', file),
+    imagePath: json['imagePath'] as String?,
+  );
+}
+
 List<WorldEntity> parseWorlds(String raw) => parseContentList(
-      raw: raw,
-      file: 'worlds.json',
-      rootKey: 'worlds',
-      parseItem: parseWorld,
-    );
+  raw: raw,
+  file: 'worlds.json',
+  rootKey: 'worlds',
+  parseItem: parseWorld,
+);
 
 List<CollectionEntity> parseCollections(String raw) => parseContentList(
-      raw: raw,
-      file: 'collections.json',
-      rootKey: 'collections',
-      parseItem: parseCollection,
-    );
+  raw: raw,
+  file: 'collections.json',
+  rootKey: 'collections',
+  parseItem: parseCollection,
+);
 
 List<ChestEntity> parseChests(String raw) => parseContentList(
-      raw: raw,
-      file: 'collections.json',
-      rootKey: 'chests',
-      parseItem: parseChest,
-    );
+  raw: raw,
+  file: 'collections.json',
+  rootKey: 'chests',
+  parseItem: parseChest,
+);
 
 List<StoryEntity> parseStories(String raw) => parseContentList(
-      raw: raw,
-      file: 'stories.json',
-      rootKey: 'stories',
-      parseItem: parseStory,
-    );
+  raw: raw,
+  file: 'stories.json',
+  rootKey: 'stories',
+  parseItem: parseStory,
+);
 
 List<BossEntity> parseBosses(String raw) => parseContentList(
-      raw: raw,
-      file: 'bosses.json',
-      rootKey: 'bosses',
-      parseItem: parseBoss,
-    );
+  raw: raw,
+  file: 'bosses.json',
+  rootKey: 'bosses',
+  parseItem: parseBoss,
+);
+
+List<CultureCapsule> parseCultureCapsules(String raw) => parseContentList(
+  raw: raw,
+  file: 'culture_capsules.json',
+  rootKey: 'capsules',
+  parseItem: parseCultureCapsule,
+);

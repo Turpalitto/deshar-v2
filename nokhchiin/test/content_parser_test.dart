@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nokhchiin/data/datasources/content_parse_exception.dart';
 import 'package:nokhchiin/data/datasources/content_parser.dart';
@@ -22,7 +24,12 @@ void main() {
 
     test('missing id throws ContentParseException', () {
       expect(
-        () => parseWorld({'titleRu': 'x', 'titleCe': 'y', 'gradient': [], 'units': []}),
+        () => parseWorld({
+          'titleRu': 'x',
+          'titleCe': 'y',
+          'gradient': [],
+          'units': [],
+        }),
         throwsA(isA<ContentParseException>()),
       );
     });
@@ -70,7 +77,11 @@ void main() {
             'imageKey': 'meadow',
             'narrationRu': 'Утро',
             'dialogue': [
-              {'speaker': 'Цхьогал', 'chechen': 'Маршалла', 'russian': 'Привет'},
+              {
+                'speaker': 'Цхьогал',
+                'chechen': 'Маршалла',
+                'russian': 'Привет',
+              },
             ],
           },
         ],
@@ -127,6 +138,46 @@ void main() {
           'rewardXp': 1,
         }),
         throwsA(isA<ContentParseException>()),
+      );
+    });
+  });
+
+  group('parseCultureCapsule', () {
+    test('happy path keeps the unit link and optional illustration', () {
+      final capsule = parseCultureCapsule({
+        'id': 'home_hospitality',
+        'relatedUnitId': 'home',
+        'title': 'Дом и гостеприимство',
+        'body': 'Первый абзац.\n\nВторой абзац.',
+        'imagePath': 'assets/images/culture/home_welcome.png',
+      });
+
+      expect(capsule.relatedUnitId, 'home');
+      expect(capsule.paragraphs, hasLength(2));
+      expect(capsule.imagePath, 'assets/images/culture/home_welcome.png');
+    });
+
+    test('missing body throws', () {
+      expect(
+        () => parseCultureCapsule({
+          'id': 'x',
+          'relatedUnitId': 'home',
+          'title': 'x',
+        }),
+        throwsA(isA<ContentParseException>()),
+      );
+    });
+
+    test('bundled capsules cover every learning unit exactly once', () {
+      final raw = File('assets/data/culture_capsules.json').readAsStringSync();
+      final capsules = parseCultureCapsules(raw);
+      final unitIds = capsules.map((capsule) => capsule.relatedUnitId).toSet();
+
+      expect(capsules, hasLength(15));
+      expect(unitIds, hasLength(15));
+      expect(
+        unitIds,
+        containsAll(['greetings', 'animals', 'school', 'stories']),
       );
     });
   });

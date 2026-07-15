@@ -204,19 +204,7 @@ def compact_entry(e: dict) -> dict:
 # 3. Кураторская выборка (curated_vocabulary.json) — точный lookup, без догадок
 # --------------------------------------------------------------------------
 
-RU_CATEGORY_KEYWORDS = {
-    "greetings": ("привет", "спасибо", "здравств", "прощ", "пожалуйста"),
-    "animals": ("живот", "птиц", "рыб", "насек", "кот", "собак", "лошад", "коров", "овц"),
-    "colors": ("цвет", "красн", "син", "зелён", "жёлт", "бел", "чёрн", "сер"),
-    "numbers": ("число", "один", "два", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять", "десять"),
-    "family": ("мать", "отец", "брат", "сестр", "сын", "дочь", "семь", "жена", "муж", "дед", "баб"),
-    "food": ("еда", "пищ", "хлеб", "молок", "мяс", "вода", "чай", "суп", "фрукт", "овощ"),
-    "nature": ("гора", "река", "лес", "небо", "солнц", "дожд", "снег", "ветер", "земл", "мор", "озер"),
-    "body": ("голова", "глаз", "ухо", "нос", "рот", "рука", "нога", "сердц", "тело", "палец"),
-    "home": ("дом", "комнат", "окно", "двер", "стол", "стул"),
-    "verbs": ("идти", "бежать", "сидеть", "стоять", "спать", "есть", "пить", "говорить", "читать", "писать"),
-    "school": ("школа", "учитель", "ученик", "урок", "тетрад", "ручка", "класс", "учебник", "экзамен", "доска", "парта"),
-}
+LESSONS_PATH = ASSETS / "lessons.json"
 
 ADJECTIVE_LOOKUPS = [
     "большой", "маленький", "хороший", "плохой", "красивый", "новый", "старый",
@@ -224,16 +212,6 @@ ADJECTIVE_LOOKUPS = [
     "сильный", "слабый", "умный", "добрый", "злой", "чистый", "длинный",
     "короткий", "широкий", "узкий", "лёгкий", "тяжёлый",
 ]
-PHRASE_LOOKUPS = [
-    "как дела", "до свидания", "извините", "где ты", "я не понимаю",
-    "приятного аппетита", "с днём рождения", "добро пожаловать",
-    "который час", "сколько это стоит", "будьте здоровы", "хорошего дня",
-]
-DIALOGUE_LOOKUPS = [
-    "как тебя зовут", "меня зовут", "сколько тебе лет", "откуда ты",
-    "где ты живёшь", "как твои дела", "что ты делаешь", "куда ты идёшь",
-]
-
 EMOJI_BY_CATEGORY = {
     "greetings": "👋", "animals": "🐾", "colors": "🎨", "numbers": "🔢",
     "family": "❤️", "food": "🍎", "nature": "🌳", "body": "🫀", "home": "🏠",
@@ -260,84 +238,92 @@ def cap(s: str) -> str:
     return s[0].upper() + s[1:] if s else s
 
 
+def load_lessons() -> list[dict]:
+    path = LESSONS_PATH if LESSONS_PATH.exists() else ROOT / "nokhchiin" / "assets" / "data" / "lessons.json"
+    if not path.exists():
+        return []
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
 def build_curated(dictionary_entries: list[dict]) -> dict:
+    """Curated = lessons.json (primary) + vocabulary_corrections + exact adjective lookup.
+
+    Keyword-майнинг по русским подстрокам удалён — давал ложные категории
+    (аудит P0). Runtime уроков читает lessons.json напрямую; curated — fallback
+    и словарный индекс verified-записей.
+    """
     by_norm_ru: dict[str, list[dict]] = {}
     by_key: dict[str, dict] = {}
 
     for e in dictionary_entries:
         by_norm_ru.setdefault(e["russian"].strip().lower(), []).append(e)
 
-    def add(ce: str, ru: str, category: str, sources: list[str], hint: str | None = None,
-            emoji: str | None = None):
+    def add(
+        ce: str,
+        ru: str,
+        category: str,
+        sources: list[str],
+        hint: str | None = None,
+        emoji: str | None = None,
+        pronunciation: str | None = None,
+    ):
         key = re.sub(r"\s+", "", ce.lower())
         if key in by_key:
             return
-        by_key[key] = {
+        entry = {
             "chechen": cap(ce),
-            "russian": cap(ru),
+            "russian": ru if ru and ru[0].isupper() else cap(ru),
             "category": category,
             "emoji": emoji or EMOJI_BY_CATEGORY.get(category, EMOJI_DEFAULT),
-            "hint": hint or f"Слово из словаря: {ru}",
+            "hint": hint or f"Учебное слово: {ru}",
             "sources": sources,
         }
+        if pronunciation:
+            entry["pronunciation"] = pronunciation
+        by_key[key] = entry
 
+    # 1. lessons.json — источник правды для уроков
+    for lesson in load_lessons():
+        cat = lesson["id"]
+        for w in lesson.get("words", []):
+            add(
+                w["chechen"],
+                w["russian"],
+                cat,
+                ["lessons", "curated"],
+                w.get("hint"),
+                emoji=w.get("emoji"),
+                pronunciation=w.get("pronunciation"),
+            )
+
+    # 2. vocabulary_corrections.json — ручные overrides
     corrections_path = ROOT / "vocabulary_corrections.json"
     if corrections_path.exists():
         corrections = json.loads(corrections_path.read_text(encoding="utf-8"))
         for item in corrections.get("overrides", {}).values():
-            add(item["chechen"], item["russian"], item.get("category") or "default",
-                list(dict.fromkeys([*item.get("sources", []), "curated"])), item.get("hint"),
-                emoji=item.get("emoji"))
+            add(
+                item["chechen"],
+                item["russian"],
+                item.get("category") or "default",
+                list(dict.fromkeys([*item.get("sources", []), "curated", "verified"])),
+                item.get("hint"),
+                emoji=item.get("emoji"),
+            )
 
-    per_category_target = 25
-    counts = {c: 0 for c in RU_CATEGORY_KEYWORDS}
-    for e in dictionary_entries:
-        ce, ru = e["chechen"], e["russian"]
-        if not is_learnable(ce, ru):
-            continue
-        ru_low = ru.lower()
-        for cat, keys in RU_CATEGORY_KEYWORDS.items():
-            if counts[cat] >= per_category_target:
-                continue
-            if any(k in ru_low for k in keys):
-                add(ce, ru, cat, list(dict.fromkeys([*e["sources"], "curated"])))
-                counts[cat] += 1
-                break
-
+    # 3. Точный lookup прилагательных (без substring-майнинга)
     def exact_lookup(term: str) -> list[dict]:
-        return by_norm_ru.get(term, [])
+        return by_norm_ru.get(term.lower(), [])
 
     for term in ADJECTIVE_LOOKUPS:
         for e in exact_lookup(term):
             if is_learnable(e["chechen"], e["russian"]):
-                add(e["chechen"], e["russian"], "adjectives",
-                    list(dict.fromkeys([*e["sources"], "curated"])))
+                add(
+                    e["chechen"],
+                    e["russian"],
+                    "adjectives",
+                    list(dict.fromkeys([*e["sources"], "curated"])),
+                )
                 break
-
-    for term in PHRASE_LOOKUPS:
-        for e in exact_lookup(term):
-            if len(e["chechen"]) <= 40:
-                add(e["chechen"], e["russian"], "phrases",
-                    list(dict.fromkeys([*e["sources"], "curated"])))
-                break
-
-    for term in DIALOGUE_LOOKUPS:
-        for e in exact_lookup(term):
-            if len(e["chechen"]) <= 60:
-                add(e["chechen"], e["russian"], "dialogues",
-                    list(dict.fromkeys([*e["sources"], "curated"])))
-                break
-
-    story_count = 0
-    for e in dictionary_entries:
-        if story_count >= 15:
-            break
-        if "literature" not in e["sources"]:
-            continue
-        ce = e["chechen"]
-        if 20 <= len(ce) <= 90 and ce.endswith((".", "!", "?")):
-            add(ce, e["russian"], "stories", list(dict.fromkeys([*e["sources"], "curated"])))
-            story_count += 1
 
     entries = sorted(by_key.values(), key=lambda x: x["chechen"].lower())
     return {"sources": SOURCES_META, "totalEntries": len(entries), "entries": entries}

@@ -24,5 +24,5 @@ final userRepoProvider = Provider<UserRepository>(
 );
 
 final cultureCapsuleRepoProvider = Provider<CultureCapsuleRepository>(
-  (_) => CultureCapsuleRepositoryImpl(),
+  (ref) => CultureCapsuleRepositoryImpl(ref.watch(contentSourceProvider)),
 );

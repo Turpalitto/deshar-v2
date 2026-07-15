@@ -1,0 +1,302 @@
+{
+  "emoji_issues": [],
+  "translation_issues": [
+    {
+      "chechen": "Бага",
+      "curated": "Рот",
+      "dictionary": "фальц"
+    },
+    {
+      "chechen": "БархӀ",
+      "curated": "Восемь",
+      "dictionary": "восьмерка"
+    },
+    {
+      "chechen": "Баьццара",
+      "curated": "Зелёный",
+      "dictionary": "зеленый"
+    },
+    {
+      "chechen": "Белш",
+      "curated": "Сердце",
+      "dictionary": "плечо"
+    },
+    {
+      "chechen": "Бен",
+      "curated": "Сын",
+      "dictionary": "целинный"
+    },
+    {
+      "chechen": "Болх бан",
+      "curated": "Работать",
+      "dictionary": "функционировать"
+    },
+    {
+      "chechen": "Ваха",
+      "curated": "Идти, пойти",
+      "dictionary": "побывать"
+    },
+    {
+      "chechen": "Вон",
+      "curated": "Плохой",
+      "dictionary": "хулиганить"
+    },
+    {
+      "chechen": "ГӀант",
+      "curated": "Стул",
+      "dictionary": "табуретка"
+    },
+    {
+      "chechen": "ГӀирса",
+      "curated": "Бежать",
+      "dictionary": "средство"
+    },
+    {
+      "chechen": "ГӀо",
+      "curated": "Помощь",
+      "dictionary": "субсидия"
+    },
+    {
+      "chechen": "Да",
+      "curated": "Папа, отец",
+      "dictionary": "хозяйка"
+    },
+    {
+      "chechen": "Дала",
+      "curated": "Знать",
+      "dictionary": "хлопнуть"
+    },
+    {
+      "chechen": "Дешар",
+      "curated": "Школа, учёба",
+      "dictionary": "чтение"
+    },
+    {
+      "chechen": "Дийца",
+      "curated": "Говорить",
+      "dictionary": "трубить"
+    },
+    {
+      "chechen": "Дика",
+      "curated": "Хороший",
+      "dictionary": "хорошо"
+    },
+    {
+      "chechen": "Дика ду",
+      "curated": "Хорошо, всё в порядке",
+      "dictionary": "я этого не забуду!"
+    },
+    {
+      "chechen": "Дог",
+      "curated": "Сердце",
+      "dictionary": "чувство"
+    },
+    {
+      "chechen": "ДогӀа",
+      "curated": "Дождь",
+      "dictionary": "усадить"
+    },
+    {
+      "chechen": "Зуда",
+      "curated": "Жена",
+      "dictionary": "супруга"
+    },
+    {
+      "chechen": "Корта",
+      "curated": "Голова",
+      "dictionary": "шляпка"
+    },
+    {
+      "chechen": "Котам",
+      "curated": "Петух",
+      "dictionary": "курица"
+    },
+    {
+      "chechen": "Куьг",
+      "curated": "Нога",
+      "dictionary": "рука"
+    },
+    {
+      "chechen": "Кхаж",
+      "curated": "Суп",
+      "dictionary": "тираж"
+    },
+    {
+      "chechen": "Кхоъ",
+      "curated": "Три",
+      "dictionary": "удовлетворительно"
+    },
+    {
+      "chechen": "Къолам",
+      "curated": "Карандаш",
+      "dictionary": "ручка"
+    },
+    {
+      "chechen": "Лекха",
+      "curated": "Большой",
+      "dictionary": "рослый"
+    },
+    {
+      "chechen": "Ловза",
+      "curated": "Играть",
+      "dictionary": "сыграть"
+    },
+    {
+      "chechen": "Лу",
+      "curated": "Олень",
+      "dictionary": "косуля"
+    },
+    {
+      "chechen": "Луш",
+      "curated": "Слушать",
+      "dictionary": "под"
+    },
+    {
+      "chechen": "Маьлхан",
+      "curated": "Солнце",
+      "dictionary": "солнечный"
+    },
+    {
+      "chechen": "Мийла",
+      "curated": "Пить",
+      "dictionary": "хлебать"
+    },
+    {
+      "chechen": "Можа",
+      "curated": "Жёлтый",
+      "dictionary": "желтый"
+    },
+    {
+      "chechen": "Нана",
+      "curated": "Мама, мать",
+      "dictionary": "родительница"
+    },
+    {
+      "chechen": "Никх",
+      "curated": "Пчела",
+      "dictionary": "улей"
+    },
+    {
+      "chechen": "РагӀ",
+      "curated": "Очередь",
+      "dictionary": "этап"
+    },
+    {
+      "chechen": "Салам",
+      "curated": "Мир, привет",
+      "dictionary": "поклон"
+    },
+    {
+      "chechen": "Сира",
+      "curated": "Синий",
+      "dictionary": "серый"
+    },
+    {
+      "chechen": "Стигал",
+      "curated": "Небо",
+      "dictionary": "поднебесье"
+    },
+    {
+      "chechen": "Тайпа",
+      "curated": "Тайп, род",
+      "dictionary": "фамилия"
+    },
+    {
+      "chechen": "ТӀаьхьа",
+      "curated": "Стоять",
+      "dictionary": "тогда"
+    },
+    {
+      "chechen": "Хи",
+      "curated": "Река, вода",
+      "dictionary": "чернь"
+    },
+    {
+      "chechen": "Хьажа",
+      "curated": "Смотреть",
+      "dictionary": "щупать"
+    },
+    {
+      "chechen": "Хьаст",
+      "curated": "Ветер",
+      "dictionary": "родник"
+    },
+    {
+      "chechen": "Хьаша",
+      "curated": "Гость",
+      "dictionary": "утоптать"
+    },
+    {
+      "chechen": "Цхьаъ",
+      "curated": "Один",
+      "dictionary": "штука"
+    },
+    {
+      "chechen": "Цхьогал",
+      "curated": "Лиса",
+      "dictionary": "песец"
+    },
+    {
+      "chechen": "ЦӀа",
+      "curated": "Горячий",
+      "dictionary": "хата"
+    },
+    {
+      "chechen": "ЦӀе",
+      "curated": "Красный",
+      "dictionary": "термин"
+    },
+    {
+      "chechen": "ЦӀен",
+      "curated": "Красный",
+      "dictionary": "румяный"
+    },
+    {
+      "chechen": "ЦӀий",
+      "curated": "Дом",
+      "dictionary": "кровь"
+    },
+    {
+      "chechen": "ЦӀокъ",
+      "curated": "Барс, снежный барс",
+      "dictionary": "рысь"
+    },
+    {
+      "chechen": "Ча",
+      "curated": "Медведь",
+      "dictionary": "солома"
+    },
+    {
+      "chechen": "Шиъ",
+      "curated": "Два",
+      "dictionary": "раз"
+    },
+    {
+      "chechen": "Шура",
+      "curated": "Молоко",
+      "dictionary": "удой"
+    },
+    {
+      "chechen": "Ӏа",
+      "curated": "Есть, кушать",
+      "dictionary": "проработка"
+    },
+    {
+      "chechen": "Ӏаж",
+      "curated": "Яблоко",
+      "dictionary": "яблоня"
+    },
+    {
+      "chechen": "Ӏалам",
+      "curated": "Мир, природа",
+      "dictionary": "природа"
+    },
+    {
+      "chechen": "Ӏаьржа",
+      "curated": "Чёрный",
+      "dictionary": "черный"
+    }
+  ],
+  "duplicate_chechen": [],
+  "auto_emoji_fixes": {}
+}
