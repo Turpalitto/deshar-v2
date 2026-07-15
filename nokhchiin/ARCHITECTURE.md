@@ -20,7 +20,7 @@ lib/
 │   ├── theme/                # Дизайн-система 2026
 │   ├── router/               # GoRouter
 │   ├── providers/            # DI через Riverpod
-│   ├── services/             # Audio, будущий AI
+│   ├── services/             # Analytics, crash reporting, notifications
 │   └── widgets/              # Переиспользуемые UI
 ├── domain/
 │   ├── entities/             # Word, Progress, User, Unit
@@ -47,7 +47,7 @@ lib/
 - `partOfSpeech`, `category`, `exampleCe/Ru`
 - `synonyms`, `sources[]`, `tags[]`
 - `emoji`, `illustrationKey` (будущие иллюстрации)
-- `audioCeUrl`, `audioRuUrl` (записи носителей)
+- `audioCeUrl`, `audioRuUrl` — зарезервированные nullable-поля модели; в текущей сборке аудио нет
 
 ## Mastery (6 уровней)
 `unseen → seen → recognizing → remembering → using → mastered`
@@ -59,20 +59,23 @@ SM-2 алгоритм в `SpacedRepetitionEngine`. Слова с `needsReview` �
 Юниты в `assets/data/learning_path.json`. Следующий юнит открывается при mastery ≥ `requiredMastery` предыдущего.
 
 ## Источники словаря
-1. **Мациев А.Г.** — `tools/build_dictionary.py` → PDF парсинг
-2. **Алироев И.Ю. (2005)** — curated entries (PDF скан, OCR в roadmap)
-3. **curated_vocabulary.json** — проверенная лексика (приоритет)
+1. **Hugging Face `NM-development/nmd-ce-ru-171k-v0`** — единственный
+   источник полного словаря; Библия исключается при сборке.
+2. **`vocabulary_corrections.json`** — ручные, проверенные исправления
+   учебной лексики.
+3. **`curated_vocabulary.json`** — собранный набор приоритетных слов для
+   уроков и игр.
 
-## Импорт PDF
+Словарь обновляется воспроизводимо из корня монорепозитория:
+
 ```bash
-# Maciev_dictionary.pdf — в корень репозитория (в .gitignore)
-python tools/build_dictionary.py --copy-assets
+python tools/build_dictionary.py --hf-dataset NM-development/nmd-ce-ru-171k-v0 --copy-assets
+# или только curated-слой, если полный dictionary.json уже есть:
+python tools/build_dictionary.py --curate-only --copy-assets
 ```
 
-## AI (заготовка)
-- `AiTutorRepository` — интерфейс готов
-- `AiTutorRepositoryStub` — заглушка
-- Будущее: генерация упражнений, историй, проверка произношения
+Культурные интерлюдии находятся в `assets/data/culture_capsules.json`;
+контент можно вычитывать и расширять без изменения Flutter-кода.
 
 ## Запуск
 ```bash
@@ -83,8 +86,8 @@ flutter run
 
 ## Roadmap
 - [x] Словарь — Hugging Face nmd-ce-ru-171k-v0 (заменил PDF/OCR)
-- [ ] Иллюстрации единого стиля
+- [~] Иллюстрации единого стиля — первая культурная пара добавлена; нужны
+  изображения для остальных учебных тем после редакторской вычитки.
 - [ ] Записи носителей языка
 - [ ] Истории и комиксы
 - [ ] Босс-уровни, коллекции, миры
-- [ ] AI-преподаватель

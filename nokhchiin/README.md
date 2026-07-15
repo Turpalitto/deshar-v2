@@ -58,7 +58,7 @@ lib/
 ## Маршруты (GoRouter)
 
 Таб-бар: `/` Home · `/worlds` · `/review` · `/profile`
-Также: `/splash`, `/onboarding`, `/dictionary`, `/path`, `/insights`, `/paywall`, `/parent`, games, stories, boss, `/legal/{privacy,terms}`.
+Также: `/splash`, `/onboarding`, `/dictionary`, `/path`, `/insights`, `/parent`, games, stories, boss, `/legal/{privacy,terms}`. Paywall, AI-наставник и аудио не входят в текущую открытую сборку.
 
 ## Данные
 

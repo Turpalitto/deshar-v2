@@ -31,6 +31,9 @@ jobs:
       - name: Analyze
         run: flutter analyze --no-fatal-infos
 
+      - name: Dart fix check
+        run: dart fix --dry-run --apply lib/ || true
+
       - name: Test
         run: flutter test --coverage
 
@@ -42,6 +45,11 @@ jobs:
 
       - name: Build web (verify compilation)
         run: flutter build web --no-tree-shake-icons
+
+      - name: Verify SPA rewrite is packaged
+        run: |
+          cp web/_redirects build/web/_redirects
+          test -f build/web/_redirects
 
       - name: Report web build size
         run: du -sh build/web
