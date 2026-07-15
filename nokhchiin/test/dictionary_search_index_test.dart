@@ -34,6 +34,11 @@ void main() {
       expect(results.map((e) => e.russian), contains('мать'));
     });
 
+    test('finds entries by a token prefix', () {
+      final results = buildIndex().search('чёр');
+      expect(results.map((e) => e.russian), contains('чёрный'));
+    });
+
     test('returns no results for an unrelated query', () {
       expect(buildIndex().search('zzz'), isEmpty);
     });

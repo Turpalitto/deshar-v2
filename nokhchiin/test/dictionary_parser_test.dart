@@ -4,6 +4,35 @@ import 'package:nokhchiin/domain/entities/enums.dart';
 import 'package:nokhchiin/data/datasources/asset_dictionary_parser.dart';
 
 void main() {
+  group('parseLessonsFromMaps', () {
+    test('parses lesson words with hints and category', () {
+      final parsed = parseLessonsFromMaps([
+        {
+          'id': 'greetings',
+          'words': [
+            {
+              'chechen': 'Маршалла',
+              'russian': 'Привет, здравствуйте',
+              'pronunciation': 'Марш·алла',
+              'emoji': '👋',
+              'hint': 'Традиционное пожелание мира',
+            },
+          ],
+        },
+      ]);
+
+      expect(parsed.byCategory['greetings']!.length, 1);
+      final word = parsed.byCategory['greetings']!.first;
+      expect(word.chechen, 'Маршалла');
+      expect(word.russian, 'Привет, здравствуйте');
+      expect(word.pronunciation, 'Марш·алла');
+      expect(word.category, 'greetings');
+      expect(word.sources, ['lessons']);
+      expect(word.hint, 'Традиционное пожелание мира');
+      expect(parsed.byId[word.id], word);
+    });
+  });
+
   group('parseBundledDictionaryIsolate', () {
     test('parses curated entries correctly', () {
       final rawJson = {
@@ -16,11 +45,7 @@ void main() {
               'emoji': '👋',
               'sources': ['curated'],
             },
-            {
-              'chechen': 'ткъа',
-              'russian': 'Двадцать',
-              'category': 'numbers',
-            },
+            {'chechen': 'ткъа', 'russian': 'Двадцать', 'category': 'numbers'},
           ],
         }),
         'dictionary': jsonEncode({'entries': []}),
@@ -61,6 +86,39 @@ void main() {
       expect(words[0].sources, ['maciev']);
     });
 
+    test('lessons entries merge before full dictionary', () {
+      final rawJson = {
+        'curated': jsonEncode({'entries': []}),
+        'lessons': jsonEncode([
+          {
+            'id': 'family',
+            'words': [
+              {
+                'chechen': 'Даймохк',
+                'russian': 'Родина',
+                'emoji': '🏔️',
+                'hint': 'Чеченская земля',
+              },
+            ],
+          },
+        ]),
+        'dictionary': jsonEncode({
+          'entries': [
+            {
+              'chechen': 'даймохк',
+              'russian': 'Родина',
+              'sources': ['maciev'],
+            },
+          ],
+        }),
+      };
+
+      final words = parseBundledDictionaryIsolate(rawJson);
+      expect(words.length, 1);
+      expect(words[0].russian, 'Родина');
+      expect(words[0].sources, ['lessons']);
+    });
+
     test('curated entries take priority (deduplication)', () {
       final rawJson = {
         'curated': jsonEncode({
@@ -96,11 +154,7 @@ void main() {
       final rawJson = {
         'curated': jsonEncode({
           'entries': [
-            {
-              'chechen': 'нана',
-              'russian': 'Мать',
-              'category': 'family',
-            },
+            {'chechen': 'нана', 'russian': 'Мать', 'category': 'family'},
           ],
         }),
         'dictionary': jsonEncode({'entries': []}),

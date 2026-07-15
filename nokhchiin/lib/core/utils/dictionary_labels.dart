@@ -34,7 +34,10 @@ abstract final class DictionaryLabels {
     'curated': 'Проверено',
   };
 
-  static String? categoryLabel(String? category, {List<String> sources = const []}) {
+  static String? categoryLabel(
+    String? category, {
+    List<String> sources = const [],
+  }) {
     if (category != null && category.isNotEmpty) {
       final mapped = _labels[category];
       if (mapped != null) return mapped;
@@ -54,7 +57,10 @@ abstract final class DictionaryLabels {
     final p = pronunciation?.trim();
     if (p == null || p.isEmpty) return null;
     final ceNorm = chechen.replaceAll(RegExp(r'\s+'), '').toLowerCase();
-    final pNorm = p.replaceAll('·', '').replaceAll(RegExp(r'\s+'), '').toLowerCase();
+    final pNorm = p
+        .replaceAll('·', '')
+        .replaceAll(RegExp(r'\s+'), '')
+        .toLowerCase();
     if (pNorm == ceNorm) return null;
     if (p.toLowerCase() == chechen.toLowerCase()) return null;
     return p;

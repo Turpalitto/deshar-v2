@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/design/app_icons.dart';
-import '../../../core/design/widgets/app_icon_image.dart';
 import '../../../core/design_system/design_system.dart';
 import '../../../core/providers/word_of_the_day_provider.dart';
 
@@ -41,10 +40,16 @@ class WordOfTheDayCard extends ConsumerWidget {
                     ],
                   ),
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: DesignTokens.gold.withValues(alpha: 0.25)),
+                  border: Border.all(
+                    color: DesignTokens.gold.withValues(alpha: 0.25),
+                  ),
                 ),
                 alignment: Alignment.center,
-                child: AppIconImage(asset: AppIcons.progressStar, size: 22, color: DesignTokens.gold),
+                child: AppIconImage(
+                  asset: AppIcons.progressStar,
+                  size: 22,
+                  color: DesignTokens.gold,
+                ),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -91,7 +96,11 @@ class WordOfTheDayCard extends ConsumerWidget {
                   color: tokens.surfaceMuted,
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.chevron_right_rounded, size: 18, color: tokens.textSecondary),
+                child: Icon(
+                  Icons.chevron_right_rounded,
+                  size: 18,
+                  color: tokens.textSecondary,
+                ),
               ),
             ],
           ),

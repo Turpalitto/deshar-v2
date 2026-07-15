@@ -33,10 +33,13 @@ class DictionaryDetailScreen extends ConsumerWidget {
           : [
               IconButton(
                 icon: Icon(
-                  e.favorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                  e.favorite
+                      ? Icons.favorite_rounded
+                      : Icons.favorite_border_rounded,
                   color: e.favorite ? Colors.redAccent : null,
                 ),
-                onPressed: () => ref.read(dictionarySearchRepoProvider).toggleFavorite(e.id),
+                onPressed: () =>
+                    ref.read(dictionarySearchRepoProvider).toggleFavorite(e.id),
                 tooltip: 'Избранное',
               ),
               IconButton(
@@ -48,7 +51,10 @@ class DictionaryDetailScreen extends ConsumerWidget {
       body: entry.when(
         data: (e) => e == null
             ? _NotFound(onBack: () => context.pop())
-            : _DetailContent(entry: e, related: related.valueOrNull ?? const []),
+            : _DetailContent(
+                entry: e,
+                related: related.valueOrNull ?? const [],
+              ),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, _) => _NotFound(onBack: () => context.pop()),
       ),
@@ -56,9 +62,14 @@ class DictionaryDetailScreen extends ConsumerWidget {
   }
 
   void _onCopy(BuildContext context, DictionaryEntry entry) {
-    Clipboard.setData(ClipboardData(text: '${entry.chechen} — ${entry.russian}'));
+    Clipboard.setData(
+      ClipboardData(text: '${entry.chechen} — ${entry.russian}'),
+    );
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Скопировано'), duration: Duration(seconds: 1)),
+      const SnackBar(
+        content: Text('Скопировано'),
+        duration: Duration(seconds: 1),
+      ),
     );
   }
 }
@@ -72,7 +83,10 @@ class _DetailContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tokens = context.iosTokens;
-    final categoryLabel = DictionaryLabels.categoryLabel(entry.category, sources: entry.sources);
+    final categoryLabel = DictionaryLabels.categoryLabel(
+      entry.category,
+      sources: entry.sources,
+    );
 
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
@@ -155,13 +169,15 @@ class _DetailContent extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            ...related.map((r) => Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: _RelatedRow(
-                    entry: r,
-                    onTap: () => context.push('/dictionary/${r.id}'),
-                  ),
-                )),
+            ...related.map(
+              (r) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: _RelatedRow(
+                  entry: r,
+                  onTap: () => context.push('/dictionary/${r.id}'),
+                ),
+              ),
+            ),
           ],
         ],
       ),
@@ -223,7 +239,11 @@ class _Row extends StatelessWidget {
       children: [
         Text(
           '$label: ',
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: tokens.textTertiary),
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: tokens.textTertiary,
+          ),
         ),
         Expanded(
           child: Text(

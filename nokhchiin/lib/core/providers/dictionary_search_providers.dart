@@ -11,7 +11,9 @@ const _pageSize = 40;
 
 /// Глобальный репозиторий словаря (search + pagination + favorites).
 /// Живёт весь app lifecycle — не autoDispose: индекс дорогой.
-final dictionarySearchRepoProvider = Provider<DictionarySearchRepository>((ref) {
+final dictionarySearchRepoProvider = Provider<DictionarySearchRepository>((
+  ref,
+) {
   return DictionarySearchRepositoryImpl(
     ref.watch(assetDictSourceProvider),
     ref.watch(progressRepoProvider),
@@ -19,7 +21,9 @@ final dictionarySearchRepoProvider = Provider<DictionarySearchRepository>((ref) 
 });
 
 /// Фильтр экрана словаря.
-final dictionaryFilterProvider = StateProvider<DictionaryFilter>((_) => DictionaryFilter.all);
+final dictionaryFilterProvider = StateProvider<DictionaryFilter>(
+  (_) => DictionaryFilter.all,
+);
 
 /// Запрос поиска.
 final dictionaryQueryProvider = StateProvider<String>((_) => '');
@@ -67,11 +71,13 @@ class DictionarySearchViewState {
 /// нотифаер с чистого листа (страница 0). [loadMore] дописывает следующую
 /// страницу к уже накопленному списку, не сбрасывая его.
 final dictionarySearchProvider =
-    AsyncNotifierProvider.autoDispose<DictionarySearchNotifier, DictionarySearchViewState>(
-  DictionarySearchNotifier.new,
-);
+    AsyncNotifierProvider.autoDispose<
+      DictionarySearchNotifier,
+      DictionarySearchViewState
+    >(DictionarySearchNotifier.new);
 
-class DictionarySearchNotifier extends AutoDisposeAsyncNotifier<DictionarySearchViewState> {
+class DictionarySearchNotifier
+    extends AutoDisposeAsyncNotifier<DictionarySearchViewState> {
   late String _query;
   late DictionaryFilter _filter;
 
@@ -86,7 +92,9 @@ class DictionarySearchNotifier extends AutoDisposeAsyncNotifier<DictionarySearch
     required int page,
     required List<DictionaryEntry> existing,
   }) async {
-    final result = await ref.read(dictionarySearchRepoProvider).search(
+    final result = await ref
+        .read(dictionarySearchRepoProvider)
+        .search(
           query: _query,
           page: page,
           pageSize: _pageSize,
@@ -109,7 +117,10 @@ class DictionarySearchNotifier extends AutoDisposeAsyncNotifier<DictionarySearch
 
     state = AsyncData(current.copyWith(isLoadingMore: true));
     try {
-      final next = await _fetchPage(page: current.page + 1, existing: current.entries);
+      final next = await _fetchPage(
+        page: current.page + 1,
+        existing: current.entries,
+      );
       state = AsyncData(next);
     } catch (_) {
       // Транзиентная ошибка подгрузки — не теряем уже показанные записи,
@@ -127,14 +138,18 @@ class DictionarySearchNotifier extends AutoDisposeAsyncNotifier<DictionarySearch
 
     final idx = current.entries.indexWhere((e) => e.id == id);
     if (idx < 0) return;
-    final updated = current.entries[idx].copyWith(favorite: !current.entries[idx].favorite);
+    final updated = current.entries[idx].copyWith(
+      favorite: !current.entries[idx].favorite,
+    );
 
     if (_filter == DictionaryFilter.favorites && !updated.favorite) {
       final entries = [...current.entries]..removeAt(idx);
-      state = AsyncData(current.copyWith(
-        entries: entries,
-        totalCount: current.totalCount > 0 ? current.totalCount - 1 : 0,
-      ));
+      state = AsyncData(
+        current.copyWith(
+          entries: entries,
+          totalCount: current.totalCount > 0 ? current.totalCount - 1 : 0,
+        ),
+      );
     } else {
       final entries = [...current.entries];
       entries[idx] = updated;
@@ -144,16 +159,16 @@ class DictionarySearchNotifier extends AutoDisposeAsyncNotifier<DictionarySearch
 }
 
 /// Запись по id (для detail screen).
-final dictionaryEntryProvider =
-    FutureProvider.autoDispose.family<DictionaryEntry?, String>((ref, id) async {
-  return ref.watch(dictionarySearchRepoProvider).getById(id);
-});
+final dictionaryEntryProvider = FutureProvider.autoDispose
+    .family<DictionaryEntry?, String>((ref, id) async {
+      return ref.watch(dictionarySearchRepoProvider).getById(id);
+    });
 
 /// Связанные записи.
-final dictionaryRelatedProvider =
-    FutureProvider.autoDispose.family<List<DictionaryEntry>, String>((ref, id) async {
-  return ref.watch(dictionarySearchRepoProvider).getRelated(id);
-});
+final dictionaryRelatedProvider = FutureProvider.autoDispose
+    .family<List<DictionaryEntry>, String>((ref, id) async {
+      return ref.watch(dictionarySearchRepoProvider).getRelated(id);
+    });
 
 /// Total count.
 final dictionaryTotalCountProvider = FutureProvider<int>((ref) async {
@@ -168,21 +183,20 @@ enum DictionaryFilter {
   words,
   phrases,
   sentences,
-  favorites,
-  ;
+  favorites;
 
   String get label => switch (this) {
-        all => 'Все',
-        words => 'Слова',
-        phrases => 'Фразы',
-        sentences => 'Предложения',
-        favorites => 'Избранное',
-      };
+    all => 'Все',
+    words => 'Слова',
+    phrases => 'Фразы',
+    sentences => 'Предложения',
+    favorites => 'Избранное',
+  };
 
   EntryType? toTypeFilter() => switch (this) {
-        words => EntryType.word,
-        phrases => EntryType.phrase,
-        sentences => EntryType.sentence,
-        _ => null,
-      };
+    words => EntryType.word,
+    phrases => EntryType.phrase,
+    sentences => EntryType.sentence,
+    _ => null,
+  };
 }

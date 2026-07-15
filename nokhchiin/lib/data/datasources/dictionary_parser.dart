@@ -12,7 +12,10 @@ class DictionaryParser {
 
   /// Преобразует raw row → [DictionaryEntry].
   /// row должен содержать ключи `chechen`/`ce` и `russian`/`ru`.
-  DictionaryEntry parse(Map<String, dynamic> row, {String Function(String, String)? idFactory}) {
+  DictionaryEntry parse(
+    Map<String, dynamic> row, {
+    String Function(String, String)? idFactory,
+  }) {
     final ceRaw = _read(row, const ['chechen', 'ce']);
     final ruRaw = _read(row, const ['russian', 'ru']);
     final category = _read(row, const ['category']).trim();
@@ -120,8 +123,9 @@ class DictionaryParser {
 
   // --- Search tokens ---
 
-  /// Токены для инвертированного индекса: каждое слово ce + ru в нижнем регистре.
-  /// Плюс полные строки для match-prefix.
+  /// Нормализованные слова ce + ru. Префиксы здесь не хранятся:
+  /// поиск проверяет startsWith на лету. Материализация всех префиксов
+  /// раздувала словарь до сотен мегабайт на Android.
   Set<String> _buildTokens(String ce, String ru) {
     final tokens = <String>{};
     for (final word in ce.split(RegExp(r'\s+'))) {
@@ -132,22 +136,11 @@ class DictionaryParser {
       // внутри normalizeForSearch безопасно.
       final lower = ChechenTextUtils.normalizeForSearch(word);
       tokens.add(lower);
-      // Префиксы для partial match (минимум 2 буквы).
-      if (lower.length > 2) {
-        for (var i = 2; i <= lower.length; i++) {
-          tokens.add(lower.substring(0, i));
-        }
-      }
     }
     for (final word in ru.split(RegExp(r'\s+'))) {
       if (word.isEmpty) continue;
       final lower = word.toLowerCase();
       tokens.add(lower);
-      if (lower.length > 2) {
-        for (var i = 2; i <= lower.length; i++) {
-          tokens.add(lower.substring(0, i));
-        }
-      }
     }
     return tokens;
   }

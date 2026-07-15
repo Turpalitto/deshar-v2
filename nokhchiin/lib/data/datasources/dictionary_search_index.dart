@@ -1,88 +1,74 @@
 import '../../core/utils/chechen_text_utils.dart';
-import '../../domain/entities/entry_type.dart';
 import '../../domain/entities/dictionary_entry.dart';
+import '../../domain/entities/entry_type.dart';
 
-/// Инвертированный индекс для быстрого partial-search.
+/// Memory-conscious search over the bundled dictionary.
 ///
-/// Строится один раз из всех [DictionaryEntry]. Поиск O(1) lookup
-/// вместо линейного scan по 139k записей.
+/// Entries already own normalized [DictionaryEntry.searchTokens]. Keeping a
+/// second postings graph for 134k entries more than doubled Android memory and
+/// pushed profile PSS above 650 MB. A bounded scan is a better trade-off here:
+/// the UI debounces queries and only asks for the first few hundred matches.
 class DictionarySearchIndex {
-  DictionarySearchIndex(List<DictionaryEntry> entries) : _all = entries {
-    _build();
-  }
+  DictionarySearchIndex(List<DictionaryEntry> entries) : _all = entries;
 
   final List<DictionaryEntry> _all;
-
-  /// token → множество индексов в [_all].
-  final Map<String, Set<int>> _postings = {};
 
   int get length => _all.length;
   List<DictionaryEntry> get all => List.unmodifiable(_all);
 
-  void _build() {
-    for (var i = 0; i < _all.length; i++) {
-      for (final token in _all[i].searchTokens) {
-        _postings.putIfAbsent(token, () => <int>{}).add(i);
-      }
-    }
-  }
-
-  /// Partial match: каждое слово запроса должно быть префиксом хотя бы одного
-  /// токена записи. Возвращает до [limit] записей.
-  ///
-  /// Каждый термин ищется в двух формах — обычной lowercase (для русских
-  /// токенов) и палочка-нормализованной через [ChechenTextUtils] (для
-  /// чеченских, проиндексированных с заменой 1/I/l/| → Ӏ) — индекс не знает
-  /// заранее, на каком языке термин, поэтому объединяем оба совпадения.
-  List<DictionaryEntry> search(String query, {int limit = 80, EntryType? typeFilter}) {
-    final trimmed = query.trim();
-    if (trimmed.isEmpty) return const [];
-
-    final terms = trimmed.split(RegExp(r'\s+')).where((t) => t.isNotEmpty).toList();
+  List<DictionaryEntry> search(
+    String query, {
+    int limit = 80,
+    EntryType? typeFilter,
+  }) {
+    final terms = query
+        .trim()
+        .split(RegExp(r'\s+'))
+        .where((term) => term.isNotEmpty)
+        .map(
+          (term) =>
+              (term.toLowerCase(), ChechenTextUtils.normalizeForSearch(term)),
+        )
+        .toList();
     if (terms.isEmpty) return const [];
 
-    final termForms = <(String raw, String normalized)>[];
-    Set<int>? result;
-    for (final term in terms) {
-      final raw = term.toLowerCase();
-      final normalized = ChechenTextUtils.normalizeForSearch(term);
-      termForms.add((raw, normalized));
+    final exact = <DictionaryEntry>[];
+    final prefix = <DictionaryEntry>[];
+    for (final entry in _all) {
+      if (typeFilter != null && entry.type != typeFilter) continue;
 
-      final hit = <int>{...?_postings[raw]};
-      if (normalized != raw) hit.addAll(_postings[normalized] ?? const {});
-      if (hit.isEmpty) return const [];
-      result = result == null ? hit : result.intersection(hit);
-      if (result.isEmpty) return const [];
-    }
-
-    final matches = <MapEntry<int, int>>[]; // index, score
-    for (final idx in result!) {
-      final e = _all[idx];
-      if (typeFilter != null && e.type != typeFilter) continue;
-      // Score: точное совпадение слова > префикс.
-      var score = 0;
-      for (final (raw, normalized) in termForms) {
-        final exact = e.searchTokens.contains(raw) ||
-            (normalized != raw && e.searchTokens.contains(normalized));
-        if (exact) score += 10;
+      var allMatch = true;
+      var allExact = true;
+      for (final (raw, normalized) in terms) {
+        final exactTerm =
+            entry.searchTokens.contains(raw) ||
+            entry.searchTokens.contains(normalized);
+        final prefixTerm =
+            exactTerm ||
+            entry.searchTokens.any(
+              (token) => token.startsWith(raw) || token.startsWith(normalized),
+            );
+        if (!prefixTerm) {
+          allMatch = false;
+          break;
+        }
+        if (!exactTerm) allExact = false;
       }
-      matches.add(MapEntry(idx, score));
+      if (!allMatch) continue;
+      (allExact ? exact : prefix).add(entry);
+      if (exact.length >= limit) break;
     }
-    matches.sort((a, b) => b.value.compareTo(a.value));
 
-    return matches.take(limit).map((m) => _all[m.key]).toList();
+    if (exact.length >= limit) return exact.take(limit).toList();
+    return [...exact, ...prefix.take(limit - exact.length)];
   }
 
-  /// Записи по типу.
-  List<DictionaryEntry> byType(EntryType type, {int limit = 200}) {
-    return _all.where((e) => e.type == type).take(limit).toList();
-  }
+  List<DictionaryEntry> byType(EntryType type, {int limit = 200}) =>
+      _all.where((entry) => entry.type == type).take(limit).toList();
 
-  /// Записи по категории.
-  List<DictionaryEntry> byCategory(String category, {int limit = 200}) {
-    return _all.where((e) => e.category == category).take(limit).toList();
-  }
+  List<DictionaryEntry> byCategory(String category, {int limit = 200}) =>
+      _all.where((entry) => entry.category == category).take(limit).toList();
 
-  /// Избранное.
-  List<DictionaryEntry> favorites() => _all.where((e) => e.favorite).toList();
+  List<DictionaryEntry> favorites() =>
+      _all.where((entry) => entry.favorite).toList();
 }

@@ -75,17 +75,23 @@ class DictionaryRepositoryImpl implements DictionaryRepository {
   }
 
   @override
-  Future<List<WordEntity>> search(String query,
-      {String? category, PartOfSpeech? pos}) async {
+  Future<List<WordEntity>> search(
+    String query, {
+    String? category,
+    PartOfSpeech? pos,
+  }) async {
     final q = query.toLowerCase().trim();
     if (q.isEmpty) return [];
     final all = await _load();
-    return all.where((w) {
-      if (category != null && w.category != category) return false;
-      if (pos != null && w.partOfSpeech != pos) return false;
-      return w.chechen.toLowerCase().contains(q) ||
-          w.russian.toLowerCase().contains(q);
-    }).take(80).toList();
+    return all
+        .where((w) {
+          if (category != null && w.category != category) return false;
+          if (pos != null && w.partOfSpeech != pos) return false;
+          return w.chechen.toLowerCase().contains(q) ||
+              w.russian.toLowerCase().contains(q);
+        })
+        .take(80)
+        .toList();
   }
 
   @override

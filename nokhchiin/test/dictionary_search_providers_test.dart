@@ -64,20 +64,27 @@ List<WordEntity> _generateWords(int count) {
 /// Строит container с фейковыми data source/progress repo и держит
 /// dictionarySearchProvider живым на время теста (иначе autoDispose
 /// снесёт состояние между обращениями к container.read).
-ProviderContainer _makeContainer(_FakeDictionaryDataSource dataSource, {ProgressRepository? progress}) {
-  final container = ProviderContainer(overrides: [
-    assetDictSourceProvider.overrideWithValue(dataSource),
-    progressRepoProvider.overrideWithValue(progress ?? _FakeProgressRepo()),
-  ]);
+ProviderContainer _makeContainer(
+  _FakeDictionaryDataSource dataSource, {
+  ProgressRepository? progress,
+}) {
+  final container = ProviderContainer(
+    overrides: [
+      assetDictSourceProvider.overrideWithValue(dataSource),
+      progressRepoProvider.overrideWithValue(progress ?? _FakeProgressRepo()),
+    ],
+  );
   addTearDown(container.dispose);
-  container.listen(dictionarySearchProvider, (_, __) {});
+  container.listen(dictionarySearchProvider, (_, _) {});
   return container;
 }
 
 void main() {
   group('DictionarySearchNotifier — пагинация', () {
     test('loadMore дописывает страницы, а не заменяет их', () async {
-      final container = _makeContainer(_FakeDictionaryDataSource(_generateWords(100)));
+      final container = _makeContainer(
+        _FakeDictionaryDataSource(_generateWords(100)),
+      );
 
       final first = await container.read(dictionarySearchProvider.future);
       expect(first.entries.length, 40);
@@ -98,15 +105,23 @@ void main() {
 
       // Страницы кончились — повторный loadMore ничего не меняет.
       await container.read(dictionarySearchProvider.notifier).loadMore();
-      expect(container.read(dictionarySearchProvider).value!.entries.length, 100);
+      expect(
+        container.read(dictionarySearchProvider).value!.entries.length,
+        100,
+      );
     });
 
     test('смена запроса сбрасывает список на страницу 0', () async {
-      final container = _makeContainer(_FakeDictionaryDataSource(_generateWords(100)));
+      final container = _makeContainer(
+        _FakeDictionaryDataSource(_generateWords(100)),
+      );
 
       await container.read(dictionarySearchProvider.future);
       await container.read(dictionarySearchProvider.notifier).loadMore();
-      expect(container.read(dictionarySearchProvider).value!.entries.length, 80);
+      expect(
+        container.read(dictionarySearchProvider).value!.entries.length,
+        80,
+      );
 
       container.read(dictionaryQueryProvider.notifier).state = 'слово001';
       final afterQuery = await container.read(dictionarySearchProvider.future);
@@ -120,13 +135,16 @@ void main() {
     });
 
     test('смена фильтра сбрасывает список на страницу 0', () async {
-      final container = _makeContainer(_FakeDictionaryDataSource(_generateWords(100)));
+      final container = _makeContainer(
+        _FakeDictionaryDataSource(_generateWords(100)),
+      );
 
       await container.read(dictionarySearchProvider.future);
       await container.read(dictionarySearchProvider.notifier).loadMore();
       expect(container.read(dictionarySearchProvider).value!.page, 1);
 
-      container.read(dictionaryFilterProvider.notifier).state = DictionaryFilter.favorites;
+      container.read(dictionaryFilterProvider.notifier).state =
+          DictionaryFilter.favorites;
       final afterFilter = await container.read(dictionarySearchProvider.future);
 
       expect(afterFilter.page, 0);
@@ -135,50 +153,71 @@ void main() {
   });
 
   group('DictionarySearchNotifier — ошибки загрузки', () {
-    test('провал загрузки становится реальной ошибкой, а не пустым результатом', () async {
-      final dataSource = _FakeDictionaryDataSource(_generateWords(10))..shouldFail = true;
-      final container = _makeContainer(dataSource);
+    test(
+      'провал загрузки становится реальной ошибкой, а не пустым результатом',
+      () async {
+        final dataSource = _FakeDictionaryDataSource(_generateWords(10))
+          ..shouldFail = true;
+        final container = _makeContainer(dataSource);
 
-      await expectLater(
-        container.read(dictionarySearchProvider.future),
-        throwsA(isA<Exception>()),
-      );
-      expect(container.read(dictionarySearchProvider).hasError, isTrue);
-    });
+        await expectLater(
+          container.read(dictionarySearchProvider.future),
+          throwsA(isA<Exception>()),
+        );
+        expect(container.read(dictionarySearchProvider).hasError, isTrue);
+      },
+    );
 
-    test('после провала повтор (invalidate) реально перезагружает данные', () async {
-      final dataSource = _FakeDictionaryDataSource(_generateWords(10))..shouldFail = true;
-      final container = _makeContainer(dataSource);
+    test(
+      'после провала повтор (invalidate) реально перезагружает данные',
+      () async {
+        final dataSource = _FakeDictionaryDataSource(_generateWords(10))
+          ..shouldFail = true;
+        final container = _makeContainer(dataSource);
 
-      await expectLater(container.read(dictionarySearchProvider.future), throwsA(anything));
+        await expectLater(
+          container.read(dictionarySearchProvider.future),
+          throwsA(anything),
+        );
 
-      dataSource.shouldFail = false;
-      container.invalidate(dictionarySearchProvider);
+        dataSource.shouldFail = false;
+        container.invalidate(dictionarySearchProvider);
 
-      final result = await container.read(dictionarySearchProvider.future);
-      expect(result.entries.length, 10);
-    });
+        final result = await container.read(dictionarySearchProvider.future);
+        expect(result.entries.length, 10);
+      },
+    );
   });
 
   group('Единый id между словарём и остальным приложением', () {
     test('DictionaryEntry.id совпадает с исходным WordEntity.id', () async {
       final words = [
-        const WordEntity(id: 'known-id-123', chechen: 'бер', russian: 'Ребёнок'),
+        const WordEntity(
+          id: 'known-id-123',
+          chechen: 'бер',
+          russian: 'Ребёнок',
+        ),
         ..._generateWords(5),
       ];
       final container = _makeContainer(_FakeDictionaryDataSource(words));
 
       await container.read(dictionarySearchProvider.future);
 
-      final entry = await container.read(dictionarySearchRepoProvider).getById('known-id-123');
+      final entry = await container
+          .read(dictionarySearchRepoProvider)
+          .getById('known-id-123');
       expect(entry, isNotNull);
       expect(entry!.chechen, 'бер');
       expect(entry.russian, 'Ребёнок');
 
       // Избранное, поставленное по этому id, должно быть видно при повторном чтении —
       // т.е. это тот же id, под которым прогресс хранится в остальном приложении.
-      await container.read(dictionarySearchProvider.notifier).toggleFavorite('known-id-123');
-      final refetched = await container.read(dictionarySearchRepoProvider).getById('known-id-123');
+      await container
+          .read(dictionarySearchProvider.notifier)
+          .toggleFavorite('known-id-123');
+      final refetched = await container
+          .read(dictionarySearchRepoProvider)
+          .getById('known-id-123');
       expect(refetched!.favorite, isTrue);
     });
   });

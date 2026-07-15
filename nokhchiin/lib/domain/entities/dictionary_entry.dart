@@ -56,18 +56,18 @@ class DictionaryEntry extends Equatable {
   bool get isSentence => type == EntryType.sentence;
 
   DictionaryEntry copyWith({bool? favorite}) => DictionaryEntry(
-        id: id,
-        type: type,
-        chechen: chechen,
-        russian: russian,
-        preview: preview,
-        searchTokens: searchTokens,
-        examples: examples,
-        category: category,
-        pronunciation: pronunciation,
-        sources: sources,
-        favorite: favorite ?? this.favorite,
-      );
+    id: id,
+    type: type,
+    chechen: chechen,
+    russian: russian,
+    preview: preview,
+    searchTokens: searchTokens,
+    examples: examples,
+    category: category,
+    pronunciation: pronunciation,
+    sources: sources,
+    favorite: favorite ?? this.favorite,
+  );
 
   @override
   List<Object?> get props => [id, favorite];

@@ -18,11 +18,17 @@ class AssetDictionaryDataSource {
   Future<Result<List<WordEntity>>> loadCuratedWords() async {
     if (_curatedCached != null) return _curatedCached!;
     try {
-      final raw = await rootBundle.loadString('assets/data/curated_vocabulary.json');
+      final raw = await rootBundle.loadString(
+        'assets/data/curated_vocabulary.json',
+      );
       _curatedCached = Success(parseCuratedWords(raw));
       return _curatedCached!;
     } catch (e, st) {
-      AppLogger.error('Failed to load curated vocabulary', error: e, stackTrace: st);
+      AppLogger.error(
+        'Failed to load curated vocabulary',
+        error: e,
+        stackTrace: st,
+      );
       return Failure(e, st);
     }
   }
@@ -32,9 +38,15 @@ class AssetDictionaryDataSource {
   Future<Result<List<WordEntity>>> loadBundledDictionary() async {
     if (_cached != null) return _cached!;
     try {
-      final curatedRaw = await rootBundle.loadString('assets/data/curated_vocabulary.json');
-      final dictRaw = await rootBundle.loadString('assets/data/dictionary.json');
-      final lessonsRaw = await rootBundle.loadString('assets/data/lessons.json');
+      final curatedRaw = await rootBundle.loadString(
+        'assets/data/curated_vocabulary.json',
+      );
+      final dictRaw = await rootBundle.loadString(
+        'assets/data/dictionary.json',
+      );
+      final lessonsRaw = await rootBundle.loadString(
+        'assets/data/lessons.json',
+      );
 
       final words = await compute(parseBundledDictionaryIsolate, {
         'curated': curatedRaw,
@@ -44,10 +56,19 @@ class AssetDictionaryDataSource {
       _cached = Success(words);
       return _cached!;
     } catch (e, st) {
-      AppLogger.error('Failed to load bundled dictionary', error: e, stackTrace: st);
+      AppLogger.error(
+        'Failed to load bundled dictionary',
+        error: e,
+        stackTrace: st,
+      );
       return Failure(e, st);
     }
   }
+
+  /// Освобождает тяжёлый список WordEntity после того, как экран
+  /// словаря построил свою presentation-модель. Учебный слой
+  /// при редком запросе full dataset сможет загрузить его заново.
+  void releaseBundledDictionaryCache() => _cached = null;
 
   Future<Result<List<Map<String, dynamic>>>> loadLessonsJson() async {
     try {
@@ -67,7 +88,11 @@ class AssetDictionaryDataSource {
       final list = List<Map<String, dynamic>>.from(data['units'] as List);
       return Success(list);
     } catch (e, st) {
-      AppLogger.error('Failed to load learning_path.json', error: e, stackTrace: st);
+      AppLogger.error(
+        'Failed to load learning_path.json',
+        error: e,
+        stackTrace: st,
+      );
       return Failure(e, st);
     }
   }

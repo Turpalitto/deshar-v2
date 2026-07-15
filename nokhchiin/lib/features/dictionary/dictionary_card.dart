@@ -41,11 +41,17 @@ class DictionaryCard extends StatelessWidget {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: _typeColor(entry.type, tokens).withValues(alpha: 0.1),
+                    color: _typeColor(
+                      entry.type,
+                      tokens,
+                    ).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   alignment: Alignment.center,
-                  child: Text(entry.type.emoji, style: const TextStyle(fontSize: 18)),
+                  child: Text(
+                    entry.type.emoji,
+                    style: const TextStyle(fontSize: 18),
+                  ),
                 ),
                 const SizedBox(width: 14),
                 // Текст
@@ -80,11 +86,18 @@ class DictionaryCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 10),
                 // Бейдж типа (только не word — для слов не показываем)
-                if (entry.type != EntryType.word && entry.type != EntryType.unknown)
+                if (entry.type != EntryType.word &&
+                    entry.type != EntryType.unknown)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
-                      color: _typeColor(entry.type, tokens).withValues(alpha: 0.08),
+                      color: _typeColor(
+                        entry.type,
+                        tokens,
+                      ).withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -99,15 +112,22 @@ class DictionaryCard extends StatelessWidget {
                 // Favorite
                 IconButton(
                   icon: Icon(
-                    entry.favorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                    entry.favorite
+                        ? Icons.favorite_rounded
+                        : Icons.favorite_border_rounded,
                     size: 18,
-                    color: entry.favorite ? Colors.redAccent : tokens.textTertiary,
+                    color: entry.favorite
+                        ? Colors.redAccent
+                        : tokens.textTertiary,
                   ),
                   onPressed: onFavorite,
                   tooltip: 'Избранное',
                   padding: EdgeInsets.zero,
                   // HIG-минимум 44×44 (аудит §3) — карточка тапается тысячи раз.
-                  constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
+                  constraints: const BoxConstraints(
+                    minWidth: 44,
+                    minHeight: 44,
+                  ),
                 ),
               ],
             ),

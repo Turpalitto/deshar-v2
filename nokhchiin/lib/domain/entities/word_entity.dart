@@ -41,7 +41,8 @@ class WordEntity extends Equatable {
   final String? hint;
   final NounClass? nounClass;
 
-  bool get isPhrase => chechen.contains(' ') || partOfSpeech == PartOfSpeech.phrase;
+  bool get isPhrase =>
+      chechen.contains(' ') || partOfSpeech == PartOfSpeech.phrase;
 
   WordEntity copyWith({
     String? chechen,

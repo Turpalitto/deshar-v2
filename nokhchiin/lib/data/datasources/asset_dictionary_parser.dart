@@ -15,15 +15,13 @@ const _uuid = Uuid();
 /// квизе, placement-тесте и «слове дня».
 /// Парсинг lessons.json — primary source для слов уроков/игр.
 ({Map<String, List<WordEntity>> byCategory, Map<String, WordEntity> byId})
-    parseLessonsWords(String lessonsRaw) {
+parseLessonsWords(String lessonsRaw) {
   final lessons = jsonDecode(lessonsRaw) as List;
-  return parseLessonsFromMaps(
-    lessons.cast<Map<String, dynamic>>(),
-  );
+  return parseLessonsFromMaps(lessons.cast<Map<String, dynamic>>());
 }
 
 ({Map<String, List<WordEntity>> byCategory, Map<String, WordEntity> byId})
-    parseLessonsFromMaps(List<Map<String, dynamic>> lessons) {
+parseLessonsFromMaps(List<Map<String, dynamic>> lessons) {
   final byCategory = <String, List<WordEntity>>{};
   final byId = <String, WordEntity>{};
   for (final map in lessons) {
@@ -53,7 +51,9 @@ List<WordEntity> parseCuratedWords(String curatedRaw) {
 }
 
 /// Top-level для [compute]: парсинг JSON словаря вне UI isolate.
-List<WordEntity> parseBundledDictionaryIsolate(Map<String, String> rawJsonByKey) {
+List<WordEntity> parseBundledDictionaryIsolate(
+  Map<String, String> rawJsonByKey,
+) {
   final words = <WordEntity>[];
   final seen = <String>{};
 
@@ -142,11 +142,12 @@ WordEntity _fromDictionary(Map<String, dynamic> j) {
 }
 
 String _id(String chechen, String russian) => _uuid.v5(
-      Namespace.url.value,
-      '${chechen.toLowerCase().replaceAll(' ', '')}|${russian.toLowerCase().trim()}',
-    );
+  Namespace.url.value,
+  '${chechen.toLowerCase().replaceAll(' ', '')}|${russian.toLowerCase().trim()}',
+);
 
-String _capitalize(String s) => s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
+String _capitalize(String s) =>
+    s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
 
 PartOfSpeech _guessPos(String? cat) {
   if (cat == 'verbs') return PartOfSpeech.verb;

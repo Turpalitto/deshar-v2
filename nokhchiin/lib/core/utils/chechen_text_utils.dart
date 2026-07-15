@@ -43,6 +43,7 @@ abstract final class ChechenTextUtils {
   }) {
     final q = query.trim();
     if (q.isEmpty) return true;
-    return containsNormalized(chechen, q) || russian.toLowerCase().contains(q.toLowerCase());
+    return containsNormalized(chechen, q) ||
+        russian.toLowerCase().contains(q.toLowerCase());
   }
 }

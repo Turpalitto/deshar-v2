@@ -42,7 +42,8 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
       ref.read(dictionarySearchProvider.notifier).loadMore();
     }
   }
@@ -104,8 +105,15 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
                 style: TextStyle(fontSize: 15, color: tokens.textPrimary),
                 decoration: InputDecoration(
                   hintText: l10n.dictionarySearchHint,
-                  hintStyle: TextStyle(color: tokens.textTertiary, fontSize: 15),
-                  prefixIcon: Icon(Icons.search_rounded, color: tokens.textTertiary, size: 20),
+                  hintStyle: TextStyle(
+                    color: tokens.textTertiary,
+                    fontSize: 15,
+                  ),
+                  prefixIcon: Icon(
+                    Icons.search_rounded,
+                    color: tokens.textTertiary,
+                    size: 20,
+                  ),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(vertical: 14),
                 ),
@@ -134,8 +142,14 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
                       color: selected ? color : tokens.textSecondary,
                     ),
                     backgroundColor: tokens.surface,
-                    side: BorderSide(color: selected ? color.withValues(alpha: 0.3) : tokens.separator),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                    side: BorderSide(
+                      color: selected
+                          ? color.withValues(alpha: 0.3)
+                          : tokens.separator,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
                     showCheckmark: false,
                     padding: const EdgeInsets.symmetric(horizontal: 4),
                   ),
@@ -153,11 +167,18 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.search_off_rounded, size: 48, color: tokens.textTertiary),
+                        Icon(
+                          Icons.search_off_rounded,
+                          size: 48,
+                          color: tokens.textTertiary,
+                        ),
                         const SizedBox(height: 12),
                         Text(
                           'Ничего не найдено',
-                          style: TextStyle(fontSize: 15, color: tokens.textTertiary),
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: tokens.textTertiary,
+                          ),
                         ),
                       ],
                     ),
@@ -165,26 +186,34 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
                 }
                 return ListView.builder(
                   controller: _scrollController,
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 4,
+                  ),
                   itemCount: data.entries.length + (data.hasMore ? 1 : 0),
                   itemBuilder: (context, i) {
                     if (i >= data.entries.length) {
                       return const Padding(
                         padding: EdgeInsets.all(20),
-                        child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                        child: Center(
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
                       );
                     }
                     final entry = data.entries[i];
                     return DictionaryCard(
                       entry: entry,
                       onTap: () => context.push('/dictionary/${entry.id}'),
-                      onFavorite: () =>
-                          ref.read(dictionarySearchProvider.notifier).toggleFavorite(entry.id),
+                      onFavorite: () => ref
+                          .read(dictionarySearchProvider.notifier)
+                          .toggleFavorite(entry.id),
                     );
                   },
                 );
               },
-              loading: () => const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+              loading: () => const Center(
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
               error: (e, _) => Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,

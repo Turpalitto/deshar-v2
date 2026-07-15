@@ -60,7 +60,11 @@ class DictionarySearchRepositoryImpl implements DictionarySearchRepository {
         case Failure(:final error, :final stackTrace):
           _loadError = error;
           _loadStackTrace = stackTrace;
-          AppLogger.error('DictionarySearchRepo load failed', error: error, stackTrace: stackTrace);
+          AppLogger.error(
+            'DictionarySearchRepo load failed',
+            error: error,
+            stackTrace: stackTrace,
+          );
           return;
       }
 
@@ -87,6 +91,7 @@ class DictionarySearchRepositoryImpl implements DictionarySearchRepository {
         );
         entries.add(entry);
       }
+      _assets.releaseBundledDictionaryCache();
 
       // Дедуп по id.
       final seen = <String>{};
@@ -104,10 +109,16 @@ class DictionarySearchRepositoryImpl implements DictionarySearchRepository {
       _index = DictionarySearchIndex(_entries!);
       _loadError = null;
 
-      debugPrint('DictionarySearchRepo loaded: ${_entries!.length} entries, '
-          '${_index!.length} indexed');
+      debugPrint(
+        'DictionarySearchRepo loaded: ${_entries!.length} entries, '
+        '${_index!.length} indexed',
+      );
     } catch (e, st) {
-      AppLogger.error('DictionarySearchRepo load failed', error: e, stackTrace: st);
+      AppLogger.error(
+        'DictionarySearchRepo load failed',
+        error: e,
+        stackTrace: st,
+      );
       _loadError = e;
       _loadStackTrace = st;
     }

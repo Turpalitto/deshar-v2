@@ -15,7 +15,10 @@ import 'repository_providers.dart';
 /// «Подошвенные плюсневые артерии»; во-вторых, его парсинг (23 МБ JSON) на
 /// web выполняется в главном потоке (compute() без изолята) и замораживал UI
 /// на первом кадре Home.
-Future<WordEntity?> wordForDate(DictionaryRepository repo, DateTime date) async {
+Future<WordEntity?> wordForDate(
+  DictionaryRepository repo,
+  DateTime date,
+) async {
   final all = await repo.getCuratedWords();
   if (all.isEmpty) return null;
 
@@ -27,7 +30,9 @@ Future<WordEntity?> wordForDate(DictionaryRepository repo, DateTime date) async 
 /// «Слово дня» — одна и та же запись словаря для всех пользователей в
 /// течение календарного дня. Индекс детерминирован датой, поэтому не нужно
 /// хранить его отдельно — просто пересчитывается при каждом обращении.
-final wordOfTheDayProvider = FutureProvider.autoDispose<WordEntity?>((ref) async {
+final wordOfTheDayProvider = FutureProvider.autoDispose<WordEntity?>((
+  ref,
+) async {
   final repo = ref.watch(dictionaryRepoProvider);
   return wordForDate(repo, DateTime.now());
 });
