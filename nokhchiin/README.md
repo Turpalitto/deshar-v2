@@ -7,7 +7,7 @@ Production-grade, **offline-first** Flutter-приложение для изуч
 - **Платформа:** Flutter (iOS, Android, Web)
 - **Аудитория:** взрослый трек (SRS, инсайты, культура) + детский (игры)
 - **Данные:** JSON в `assets/data/`, прогресс в Hive
-- **Словарь:** ~5 500 проверенных пар чеченский↔русский
+- **Словарь:** ~134 000 пар из Hugging Face + приоритетный проверяемый curated-слой
 
 ## Запуск
 
@@ -32,7 +32,8 @@ flutter test
 dart analyze lib/
 ```
 
-Покрыты: spaced repetition engine, парсер словаря, access/learning use cases, onboarding.
+Покрыты: spaced repetition engine, парсер и поиск словаря, access/learning use cases,
+onboarding, billing/paywall и ключевой release journey.
 
 ## Архитектура
 
@@ -69,13 +70,21 @@ lib/
 - `learning_path.json` — юниты Path (с `enabled: false` для нереализованных)
 - `worlds.json`, `collections.json`, `stories.json`, `bosses.json` — контент
 
-Пайплайн словаря: `tools/sanitize_dictionary.py --copy-root` (из корня workspace).
+Пайплайн словаря запускается из корня workspace:
+
+```bash
+python tools/build_dictionary.py --hf-dataset NM-development/nmd-ce-ru-171k-v0 --copy-assets
+python tools/build_dictionary.py --curate-only --copy-assets
+```
+
+Приложение читает подготовленные assets локально и не зависит от сети во время обучения.
 
 ## Документация
 
 - `AGENTS.md` (корень workspace) — точка входа для IDE/агентов
 - `nokhchiin/.agents/AGENTS.md` — детальные правила Flutter
-- `design.md`, `todo.md` — архитектура и задачи
+- `ARCHITECTURE.md` — актуальная архитектура и источники данных
+- `PRODUCT_QUALITY.md` — продуктовые и редакторские критерии качества
 
 ## Лицензия
 
