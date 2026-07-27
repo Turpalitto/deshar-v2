@@ -37,6 +37,12 @@ jobs:
       - name: Test
         run: flutter test --coverage
 
+      - name: Audit lesson vocabulary
+        run: python ../tools/audit_lesson_vocabulary.py
+
+      - name: Audit learning content links
+        run: python ../tools/audit_learning_content.py
+
       - name: Upload coverage
         uses: codecov/codecov-action@v4
         with:
