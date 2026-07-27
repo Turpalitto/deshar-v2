@@ -6,13 +6,13 @@
     {"id": "numbers", "order": 3, "titleRu": "Числа", "titleCe": "Терахьаш", "icon": "hash", "requiredMastery": 70},
     {"id": "family", "order": 4, "titleRu": "Семья", "titleCe": "Доьзал", "icon": "heart", "requiredMastery": 70},
     {"id": "food", "order": 5, "titleRu": "Еда", "titleCe": "Кхача", "icon": "food", "requiredMastery": 70},
-    {"id": "home", "order": 6, "titleRu": "Дом", "titleCe": "ЦӀий", "icon": "home", "requiredMastery": 70},
+    {"id": "home", "order": 6, "titleRu": "Дом", "titleCe": "ЦӀа", "icon": "home", "requiredMastery": 70},
     {"id": "body", "order": 7, "titleRu": "Тело", "titleCe": "ДегӀ", "icon": "body", "requiredMastery": 70},
     {"id": "nature", "order": 8, "titleRu": "Природа", "titleCe": "Ӏалам", "icon": "tree", "requiredMastery": 70},
-    {"id": "verbs", "order": 9, "titleRu": "Глаголы", "titleCe": "Дешнар", "icon": "bolt", "requiredMastery": 70},
-    {"id": "adjectives", "order": 10, "titleRu": "Прилагательные", "titleCe": "Бесаш", "icon": "palette", "requiredMastery": 75},
-    {"id": "phrases", "order": 11, "titleRu": "Фразы", "titleCe": "Йолу йоазув", "icon": "chat", "requiredMastery": 75},
-    {"id": "dialogues", "order": 12, "titleRu": "Диалоги", "titleCe": "Дийцар", "icon": "people", "requiredMastery": 80},
+    {"id": "verbs", "order": 9, "titleRu": "Глаголы", "titleCe": "Хандош", "icon": "bolt", "requiredMastery": 70},
+    {"id": "adjectives", "order": 10, "titleRu": "Прилагательные", "titleCe": "Билгалдош", "icon": "palette", "requiredMastery": 75},
+    {"id": "phrases", "order": 11, "titleRu": "Фразы", "titleCe": "Фраза", "icon": "chat", "requiredMastery": 75},
+    {"id": "dialogues", "order": 12, "titleRu": "Диалоги", "titleCe": "Къамел", "icon": "people", "requiredMastery": 80},
     {"id": "school", "order": 13, "titleRu": "Школа", "titleCe": "Дешар", "icon": "book", "requiredMastery": 70, "enabled": false},
     {"id": "stories", "order": 14, "titleRu": "Истории", "titleCe": "Бахархой", "icon": "story", "requiredMastery": 85, "enabled": false}
   ]

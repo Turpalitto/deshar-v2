@@ -29,15 +29,6 @@
             "sources": ["maciev", "curated"],
             "quality": 100
         },
-        "хӀуьрӀап": {
-            "chechen": "ХӀуьрӀап",
-            "russian": "Перезрелый огурец",
-            "category": "food",
-            "emoji": "🥒",
-            "hint": "Огурец, переросший на лозе",
-            "sources": ["curated", "verified"],
-            "quality": 100
-        },
         "хьаша": {
             "chechen": "Хьаша",
             "russian": "Гость",
@@ -64,48 +55,12 @@
             "sources": ["curated", "verified"],
             "quality": 100
         },
-        "гӏе": {
-            "chechen": "Гӏе",
-            "russian": "Олово",
-            "category": "default",
-            "emoji": "📖",
-            "hint": "Химический элемент, олово",
-            "sources": ["curated", "verified"],
-            "quality": 100
-        },
         "гӀо": {
             "chechen": "ГӀо",
             "russian": "Помощь",
             "category": "default",
             "emoji": "📖",
             "hint": "Помощь, содействие",
-            "sources": ["curated", "verified"],
-            "quality": 100
-        },
-        "зӀа": {
-            "chechen": "ЗӀа",
-            "russian": "Заяц",
-            "category": "animals",
-            "emoji": "🐇",
-            "hint": "Быстроногий лесной зверёк",
-            "sources": ["curated", "verified"],
-            "quality": 100
-        },
-        "цӀе": {
-            "chechen": "ЦӀе",
-            "russian": "Kрасный",
-            "category": "colors",
-            "emoji": "🔴",
-            "hint": "Яркий красный цвет",
-            "sources": ["curated", "verified"],
-            "quality": 100
-        },
-        "Ӏа": {
-            "chechen": "Ӏа",
-            "russian": "Есть, кушать",
-            "category": "verbs",
-            "emoji": "🍽️",
-            "hint": "Принимать пищу",
             "sources": ["curated", "verified"],
             "quality": 100
         },
@@ -118,30 +73,12 @@
             "sources": ["lessons", "verified"],
             "quality": 100
         },
-        "нохчалла": {
-            "chechen": "Нохчалла",
-            "russian": "Чеченство",
-            "category": "family",
-            "emoji": "🐺",
-            "hint": "Чеченская идентичность",
-            "sources": ["lessons", "verified"],
-            "quality": 100
-        },
         "тайпа": {
             "chechen": "Тайпа",
-            "russian": "Тайп, род",
+            "russian": "Род",
             "category": "family",
             "emoji": "🌳",
             "hint": "Родовая общность",
-            "sources": ["lessons", "verified"],
-            "quality": 100
-        },
-        "адат": {
-            "chechen": "Адат",
-            "russian": "Адат, обычай",
-            "category": "family",
-            "emoji": "📜",
-            "hint": "Традиционный уклад и нормы поведения",
             "sources": ["lessons", "verified"],
             "quality": 100
         }
@@ -154,11 +91,11 @@
       "reason": "Ухо по-чеченски — лерг, не лор (ошибка в старых карточках)"
     },
     {
-      "wrong_chechen": "КогӀам",
+      "wrong_chechen": "Куьг",
       "wrong_russian": "Нога",
-      "correct_chechen": "Куьг",
+      "correct_chechen": "Ког",
       "russian": "Нога",
-      "reason": "КогӀам — рука; нога — куьг"
+      "reason": "Куьг — рука; нога — ког"
     },
     {
       "wrong_chechen": "Стол",
@@ -171,7 +108,7 @@
       "wrong_russian": "Книга",
       "correct_chechen": "Книга",
       "russian": "Книга",
-      "reason": "Дешар в Maciev = школа; книга — Книга"
+      "reason": "Дешар в Maciev = учёба/чтение; книга — Книга"
     }
   ]
 }

@@ -266,6 +266,7 @@ def build_curated(dictionary_entries: list[dict]) -> dict:
         hint: str | None = None,
         emoji: str | None = None,
         pronunciation: str | None = None,
+        review_status: str | None = None,
     ):
         key = re.sub(r"\s+", "", ce.lower())
         if key in by_key:
@@ -280,6 +281,8 @@ def build_curated(dictionary_entries: list[dict]) -> dict:
         }
         if pronunciation:
             entry["pronunciation"] = pronunciation
+        if review_status:
+            entry["reviewStatus"] = review_status
         by_key[key] = entry
 
     # 1. lessons.json — источник правды для уроков
@@ -290,10 +293,11 @@ def build_curated(dictionary_entries: list[dict]) -> dict:
                 w["chechen"],
                 w["russian"],
                 cat,
-                ["lessons", "curated"],
+                list(dict.fromkeys([*w.get("sources", []), "lessons", "curated"])),
                 w.get("hint"),
                 emoji=w.get("emoji"),
                 pronunciation=w.get("pronunciation"),
+                review_status=w.get("reviewStatus"),
             )
 
     # 2. vocabulary_corrections.json — ручные overrides

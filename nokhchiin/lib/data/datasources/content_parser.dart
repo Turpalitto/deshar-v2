@@ -237,12 +237,33 @@ CultureCapsule parseCultureCapsule(
   Map<String, dynamic> json, {
   String file = 'culture_capsules.json',
 }) {
+  final featuredWordJson = json['featuredWord'];
+  if (featuredWordJson != null && featuredWordJson is! Map<String, dynamic>) {
+    throw ContentParseException(
+      file: file,
+      key: 'featuredWord',
+      message: 'expected object, got $featuredWordJson',
+    );
+  }
   return CultureCapsule(
     id: _requireString(json, 'id', file),
     title: _requireString(json, 'title', file),
     body: _requireString(json, 'body', file),
     relatedUnitId: _requireString(json, 'relatedUnitId', file),
+    eyebrow: _requireString(json, 'eyebrow', file),
+    tags: _requireStringList(json['tags'], 'tags', file),
     imagePath: json['imagePath'] as String?,
+    featuredWord: featuredWordJson == null
+        ? null
+        : CultureCapsuleWord(
+            chechen: _requireString(featuredWordJson, 'chechen', file),
+            russian: _requireString(featuredWordJson, 'russian', file),
+            pronunciation: _requireString(
+              featuredWordJson,
+              'pronunciation',
+              file,
+            ),
+          ),
   );
 }
 

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -147,14 +148,24 @@ void main() {
       final capsule = parseCultureCapsule({
         'id': 'home_hospitality',
         'relatedUnitId': 'home',
+        'eyebrow': 'Дом · гостеприимство',
+        'tags': ['Дом', 'Гость', 'Уважение'],
         'title': 'Дом и гостеприимство',
         'body': 'Первый абзац.\n\nВторой абзац.',
         'imagePath': 'assets/images/culture/home_welcome.png',
+        'featuredWord': {
+          'chechen': 'ЦӀий',
+          'russian': 'Дом',
+          'pronunciation': 'ЦӀий',
+        },
       });
 
       expect(capsule.relatedUnitId, 'home');
       expect(capsule.paragraphs, hasLength(2));
       expect(capsule.imagePath, 'assets/images/culture/home_welcome.png');
+      expect(capsule.eyebrow, 'Дом · гостеприимство');
+      expect(capsule.tags, ['Дом', 'Гость', 'Уважение']);
+      expect(capsule.featuredWord?.chechen, 'ЦӀий');
     });
 
     test('missing body throws', () {
@@ -179,6 +190,40 @@ void main() {
         unitIds,
         containsAll(['greetings', 'animals', 'school', 'stories']),
       );
+    });
+
+    test('bundled capsule words belong to their linked lessons', () {
+      final capsuleRaw = File(
+        'assets/data/culture_capsules.json',
+      ).readAsStringSync();
+      final capsules = parseCultureCapsules(capsuleRaw);
+      final lessonRaw =
+          jsonDecode(File('assets/data/lessons.json').readAsStringSync())
+              as List<dynamic>;
+      final lessonWords = <String, Set<String>>{};
+      for (final item in lessonRaw.cast<Map<String, dynamic>>()) {
+        final words = (item['words'] as List<dynamic>)
+            .cast<Map<String, dynamic>>();
+        lessonWords[item['id'] as String] = {
+          for (final word in words)
+            '${word['chechen']}|${word['russian']}|${word['pronunciation']}',
+        };
+      }
+
+      for (final capsule in capsules) {
+        expect(capsule.eyebrow, isNotEmpty, reason: capsule.id);
+        expect(capsule.tags, hasLength(3), reason: capsule.id);
+        final featured = capsule.featuredWord;
+        if (featured == null) continue;
+        expect(
+          lessonWords[capsule.relatedUnitId],
+          contains(
+            '${featured.chechen}|${featured.russian}|'
+            '${featured.pronunciation}',
+          ),
+          reason: '${capsule.id} points to a word outside its lesson',
+        );
+      }
     });
   });
 

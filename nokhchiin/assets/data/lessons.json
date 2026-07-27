@@ -8,17 +8,19 @@
     "words": [
       {
         "chechen": "Маршалла",
-        "russian": "Привет, здравствуйте",
+        "russian": "Привет",
         "pronunciation": "Марш·алла",
         "emoji": "👋",
         "hint": "Традиционное пожелание мира"
       },
       {
-        "chechen": "Салам",
-        "russian": "Мир, привет",
-        "pronunciation": "Салам",
+        "chechen": "Маршалла хуьлда",
+        "russian": "Здравствуйте",
+        "pronunciation": "Маршалла хуьлда",
         "emoji": "🕊️",
-        "hint": "Арабское заимствование — мир"
+        "hint": "Вежливая форма приветствия",
+        "sources": ["dialang"],
+        "reviewStatus": "source_checked"
       },
       {
         "chechen": "Баркалла",
@@ -28,67 +30,73 @@
         "hint": "Выражение благодарности"
       },
       {
-        "chechen": "Хьоьга баркалла",
-        "russian": "Тебе спасибо",
-        "pronunciation": "Хьоьга · баркалла",
+        "chechen": "Марша догӀийла",
+        "russian": "Добро пожаловать",
+        "pronunciation": "Марша догӀийла",
         "emoji": "💚",
-        "hint": "Благодарность лично тебе"
+        "hint": "Приветствие гостя",
+        "sources": ["dialang"],
+        "reviewStatus": "source_checked"
       },
       {
-        "chechen": "Ӏуьйра дика ду",
+        "chechen": "Ӏуьйре дика хуьлда",
         "russian": "Доброе утро",
-        "pronunciation": "Ӏуьйра · дика · ду",
+        "pronunciation": "Ӏуьйре дика хуьлда",
         "emoji": "🌅",
         "hint": "Полная форма утреннего приветствия"
       },
       {
-        "chechen": "Де дика ду",
+        "chechen": "Дика де ду",
         "russian": "Добрый день",
-        "pronunciation": "Де · дика · ду",
+        "pronunciation": "Дика де ду",
         "emoji": "☀️",
         "hint": "Приветствие в дневное время"
       },
       {
-        "chechen": "Суьйра дика ду",
+        "chechen": "Суьйре дика хуьлда",
         "russian": "Добрый вечер",
-        "pronunciation": "Суьйра · дика · ду",
+        "pronunciation": "Суьйре дика хуьлда",
         "emoji": "🌇",
         "hint": "Вечернее приветствие"
       },
       {
-        "chechen": "Суьйна хьа",
-        "russian": "Доброй ночи",
-        "pronunciation": "Суьйна · хьа",
-        "emoji": "🌙",
-        "hint": "Пожелание перед сном"
-      },
-      {
         "chechen": "Марша Ӏайла",
         "russian": "До свидания",
-        "pronunciation": "Марша · Ӏайла",
-        "emoji": "👋",
-        "hint": "Оставайся с миром"
+        "pronunciation": "Марша Ӏайла",
+        "emoji": "🌙",
+        "hint": "Пожелание мира при прощании",
+        "sources": ["dialang"],
+        "reviewStatus": "source_checked"
       },
       {
-        "chechen": "Саламат бе",
-        "russian": "До свидания, будь здоров",
-        "pronunciation": "Саламат · бе",
+        "chechen": "Бехк ма билла",
+        "russian": "Извините",
+        "pronunciation": "Бехк ма билла",
+        "emoji": "👋",
+        "hint": "Вежливая просьба простить",
+        "sources": ["dialang"],
+        "reviewStatus": "source_checked"
+      },
+      {
+        "chechen": "ХӀаъ",
+        "russian": "Да",
+        "pronunciation": "ХӀаъ",
         "emoji": "✨",
-        "hint": "Прощание с пожеланием здоровья"
+        "hint": "Утвердительный ответ"
       },
       {
         "chechen": "Дика ду",
-        "russian": "Хорошо, всё в порядке",
+        "russian": "Хорошо",
         "pronunciation": "Дика · ду",
         "emoji": "👍",
         "hint": "Ответ на «как дела?»"
       },
       {
-        "chechen": "Вайн дерриг",
-        "russian": "Всего доброго",
-        "pronunciation": "Вайн · дерриг",
+        "chechen": "ХӀан-хӀа",
+        "russian": "Нет",
+        "pronunciation": "ХӀан-хӀа",
         "emoji": "💫",
-        "hint": "Пожелание на прощание"
+        "hint": "Отрицательный ответ"
       }
     ]
   },
@@ -142,58 +150,58 @@
         "hint": "Хитрое рыжее животное"
       },
       {
-        "chechen": "Лу",
+        "chechen": "Сай",
         "russian": "Олень",
-        "pronunciation": "Лу",
+        "pronunciation": "Сай",
         "emoji": "🦌",
         "hint": "Горный обитатель"
       },
       {
         "chechen": "ЦӀокъ",
-        "russian": "Барс, снежный барс",
+        "russian": "Барс",
         "pronunciation": "ЦӀокъ",
         "emoji": "🐆",
         "hint": "Кавказский леопард"
       },
       {
-        "chechen": "Гаттар",
+        "chechen": "Етт",
         "russian": "Корова",
-        "pronunciation": "Гат·тар",
+        "pronunciation": "Етт",
         "emoji": "🐄",
         "hint": "Домашний скот"
       },
       {
-        "chechen": "Беж",
+        "chechen": "УьстагӀ",
         "russian": "Овца",
-        "pronunciation": "Беж",
+        "pronunciation": "УьстагӀ",
         "emoji": "🐑",
         "hint": "Стадное животное"
       },
       {
-        "chechen": "Никх",
+        "chechen": "Накхармоза",
         "russian": "Пчела",
-        "pronunciation": "Никх",
+        "pronunciation": "Накхармоза",
         "emoji": "🐝",
         "hint": "Трудолюбивое насекомое"
       },
       {
         "chechen": "Котам",
-        "russian": "Петух",
+        "russian": "Курица",
         "pronunciation": "Котам",
-        "emoji": "🐓",
+        "emoji": "🐔",
         "hint": "Домашняя птица"
       },
       {
-        "chechen": "Кот",
-        "russian": "Кот",
-        "pronunciation": "Кот",
-        "emoji": "🐈",
-        "hint": "Кот (самец)"
+        "chechen": "БоргӀал",
+        "russian": "Петух",
+        "pronunciation": "БоргӀал",
+        "emoji": "🐓",
+        "hint": "Самец домашней курицы"
       },
       {
-        "chechen": "ЗӀа",
+        "chechen": "Пхьагал",
         "russian": "Заяц",
-        "pronunciation": "ЗӀа",
+        "pronunciation": "Пхьагал",
         "emoji": "🐇",
         "hint": "Быстроногий зверёк"
       }
@@ -207,9 +215,9 @@
     "color": "linear-gradient(135deg, #d01884, #a91369)",
     "words": [
       {
-        "chechen": "ЦӀе",
+        "chechen": "ЦӀен",
         "russian": "Красный",
-        "pronunciation": "ЦӀе",
+        "pronunciation": "ЦӀен",
         "emoji": "🔴",
         "hint": "Цвет огня"
       },
@@ -249,18 +257,18 @@
         "hint": "Цвет ночи"
       },
       {
-        "chechen": "Сироз",
+        "chechen": "Сира",
         "russian": "Серый",
-        "pronunciation": "Сироз",
+        "pronunciation": "Сира",
         "emoji": "🩶",
         "hint": "Нейтральный оттенок"
       },
       {
-        "chechen": "КӀайн-можа",
-        "russian": "Бело-жёлтый",
-        "pronunciation": "КӀайн·-можа",
-        "emoji": "🌼",
-        "hint": "Светлый оттенок"
+        "chechen": "Боьмаша",
+        "russian": "Коричневый",
+        "pronunciation": "Боьмаша",
+        "emoji": "🟤",
+        "hint": "Цвет дерева и земли"
       }
     ]
   },
@@ -352,14 +360,14 @@
     "words": [
       {
         "chechen": "Нана",
-        "russian": "Мама, мать",
+        "russian": "Мама",
         "pronunciation": "Нана",
         "emoji": "👩",
         "hint": "Мать"
       },
       {
         "chechen": "Да",
-        "russian": "Папа, отец",
+        "russian": "Отец",
         "pronunciation": "Да",
         "emoji": "👨",
         "hint": "Отец"
@@ -393,16 +401,16 @@
         "hint": "Бабушка"
       },
       {
-        "chechen": "Бен",
+        "chechen": "ВоӀ",
         "russian": "Сын",
-        "pronunciation": "Бен",
+        "pronunciation": "ВоӀ",
         "emoji": "👶",
         "hint": "Сын"
       },
       {
-        "chechen": "Йоь",
+        "chechen": "ЙоӀ",
         "russian": "Дочь",
-        "pronunciation": "Йоь",
+        "pronunciation": "ЙоӀ",
         "emoji": "👧",
         "hint": "Дочь"
       },
@@ -421,9 +429,9 @@
         "hint": "Супруга"
       },
       {
-        "chechen": "Маьла",
+        "chechen": "Майра",
         "russian": "Муж",
-        "pronunciation": "Маьла",
+        "pronunciation": "Майра",
         "emoji": "💍",
         "hint": "Супруг"
       },
@@ -442,15 +450,15 @@
         "hint": "Чеченская земля, откуда ты родом"
       },
       {
-        "chechen": "Нохчалла",
-        "russian": "Чеченство, чеченская идентичность",
-        "pronunciation": "Нох·чал·ла",
-        "emoji": "🐺",
-        "hint": "То, что связывает всех чеченцев"
+        "chechen": "Да-нана",
+        "russian": "Родители",
+        "pronunciation": "Да-нана",
+        "emoji": "👪",
+        "hint": "Отец и мать"
       },
       {
         "chechen": "Тайпа",
-        "russian": "Тайп, род",
+        "russian": "Род",
         "pronunciation": "Тай·па",
         "emoji": "🌳",
         "hint": "Родовая общность — основа чеченского общества"
@@ -500,30 +508,30 @@
         "hint": "Белковый продукт"
       },
       {
-        "chechen": "Кхаж",
+        "chechen": "Чорпа",
         "russian": "Суп",
-        "pronunciation": "Кхаж",
+        "pronunciation": "Чорпа",
         "emoji": "🍲",
         "hint": "Горячее блюдо"
       },
       {
-        "chechen": "Хьажу",
+        "chechen": "Нехча",
         "russian": "Сыр",
-        "pronunciation": "Хьажу",
+        "pronunciation": "Нехча",
         "emoji": "🧀",
         "hint": "Молочный продукт"
       },
       {
-        "chechen": "Кхи",
+        "chechen": "ЧӀара",
         "russian": "Рыба",
-        "pronunciation": "Кхи",
+        "pronunciation": "ЧӀара",
         "emoji": "🐟",
         "hint": "Морской продукт"
       },
       {
-        "chechen": "Картоф",
+        "chechen": "Картол",
         "russian": "Картофель",
-        "pronunciation": "Кар·тоф",
+        "pronunciation": "Картол",
         "emoji": "🥔",
         "hint": "Овощ"
       }
@@ -538,15 +546,15 @@
     "words": [
       {
         "chechen": "Хи",
-        "russian": "Река, вода",
+        "russian": "Вода",
         "pronunciation": "Хи",
         "emoji": "🌊",
         "hint": "Течёт по долинам"
       },
       {
-        "chechen": "Маьлхан",
+        "chechen": "Малх",
         "russian": "Солнце",
-        "pronunciation": "Маь·лхан",
+        "pronunciation": "Малх",
         "emoji": "☀️",
         "hint": "Светило"
       },
@@ -586,22 +594,22 @@
         "hint": "Осадки"
       },
       {
-        "chechen": "Лё",
+        "chechen": "Ло",
         "russian": "Снег",
-        "pronunciation": "Лё",
+        "pronunciation": "Ло",
         "emoji": "❄️",
         "hint": "Зимой с неба"
       },
       {
-        "chechen": "Хьаст",
+        "chechen": "Мох",
         "russian": "Ветер",
-        "pronunciation": "Хьаст",
+        "pronunciation": "Мох",
         "emoji": "💨",
         "hint": "Дует с гор"
       },
       {
         "chechen": "Ӏалам",
-        "russian": "Мир, природа",
+        "russian": "Природа",
         "pronunciation": "Ӏалам",
         "emoji": "🌍",
         "hint": "Всё вокруг"
@@ -611,7 +619,7 @@
   {
     "id": "body",
     "title": "Тело",
-    "chechenTitle": "Ден",
+    "chechenTitle": "ДегӀ",
     "icon": "🫀",
     "color": "linear-gradient(135deg, #dc2626, #b91c1c)",
     "words": [
@@ -623,9 +631,9 @@
         "hint": "Часть тела"
       },
       {
-        "chechen": "БӀаьрга",
+        "chechen": "БӀаьрг",
         "russian": "Глаз",
-        "pronunciation": "БӀа·ьрга",
+        "pronunciation": "БӀаьрг",
         "emoji": "👁️",
         "hint": "Орган зрения"
       },
@@ -637,9 +645,9 @@
         "hint": "Орган слуха"
       },
       {
-        "chechen": "Муьга",
+        "chechen": "Мара",
         "russian": "Нос",
-        "pronunciation": "Муьга",
+        "pronunciation": "Мара",
         "emoji": "👃",
         "hint": "Обоняние"
       },
@@ -651,74 +659,74 @@
         "hint": "Для речи и еды"
       },
       {
-        "chechen": "КогӀам",
+        "chechen": "Куьг",
         "russian": "Рука",
-        "pronunciation": "Ког·Ӏам",
+        "pronunciation": "Куьг",
         "emoji": "✋",
         "hint": "Верхняя конечность"
       },
       {
-        "chechen": "КогӀам бӀаьрга",
+        "chechen": "ПӀелг",
         "russian": "Палец",
-        "pronunciation": "КогӀам · бӀаьрга",
+        "pronunciation": "ПӀелг",
         "emoji": "☝️",
         "hint": "На руке"
       },
       {
-        "chechen": "Куьг",
+        "chechen": "Ког",
         "russian": "Нога",
-        "pronunciation": "Куьг",
+        "pronunciation": "Ког",
         "emoji": "🦵",
         "hint": "Нижняя конечность"
       },
       {
         "chechen": "Белш",
-        "russian": "Сердце",
+        "russian": "Плечо",
         "pronunciation": "Белш",
-        "emoji": "❤️",
-        "hint": "Орган кровообращения"
+        "emoji": "💪",
+        "hint": "Верхняя часть руки"
       },
       {
         "chechen": "Дог",
         "russian": "Сердце",
         "pronunciation": "Дог",
         "emoji": "❤️",
-        "hint": "Синоним белш"
+        "hint": "Орган кровообращения"
       }
     ]
   },
   {
     "id": "home",
     "title": "Дом и быт",
-    "chechenTitle": "ЦӀий",
+    "chechenTitle": "ЦӀа",
     "icon": "🏠",
     "color": "linear-gradient(135deg, #4f46e5, #3730a3)",
     "words": [
       {
-        "chechen": "ЦӀий",
+        "chechen": "ЦӀа",
         "russian": "Дом",
-        "pronunciation": "ЦӀий",
+        "pronunciation": "ЦӀа",
         "emoji": "🏠",
         "hint": "Жилище"
       },
       {
-        "chechen": "Хьаьжкхечо",
+        "chechen": "Чоь",
         "russian": "Комната",
-        "pronunciation": "Хьаьж·кхечо",
+        "pronunciation": "Чоь",
         "emoji": "🛋️",
         "hint": "Помещение"
       },
       {
-        "chechen": "Хьаьж",
+        "chechen": "Кор",
         "russian": "Окно",
-        "pronunciation": "Хьаьж",
+        "pronunciation": "Кор",
         "emoji": "🪟",
         "hint": "Свет в дом"
       },
       {
-        "chechen": "НаьӀар",
+        "chechen": "НеӀ",
         "russian": "Дверь",
-        "pronunciation": "Наь·Ӏар",
+        "pronunciation": "НеӀ",
         "emoji": "🚪",
         "hint": "Вход"
       },
@@ -751,74 +759,74 @@
         "hint": "Для письма"
       },
       {
-        "chechen": "Газета",
+        "chechen": "Газет",
         "russian": "Газета",
-        "pronunciation": "Газ·ета",
+        "pronunciation": "Газет",
         "emoji": "📰",
         "hint": "Печатное издание"
       },
       {
-        "chechen": "Дешар",
-        "russian": "Школа, учёба",
-        "pronunciation": "Дешар",
-        "emoji": "🏫",
-        "hint": "Место обучения"
+        "chechen": "Маьнга",
+        "russian": "Кровать",
+        "pronunciation": "Маьнга",
+        "emoji": "🛏️",
+        "hint": "Место для сна"
       }
     ]
   },
   {
     "id": "verbs",
     "title": "Глаголы",
-    "chechenTitle": "Дешар",
+    "chechenTitle": "Хандош",
     "icon": "⚡",
     "color": "linear-gradient(135deg, #ca8a04, #a16207)",
     "words": [
       {
         "chechen": "Ваха",
-        "russian": "Идти, пойти",
+        "russian": "Идти",
         "pronunciation": "Ваха",
         "emoji": "🚶",
         "hint": "Движение пешком"
       },
       {
-        "chechen": "ГӀирса",
+        "chechen": "Ида",
         "russian": "Бежать",
-        "pronunciation": "ГӀи·рса",
+        "pronunciation": "Ида",
         "emoji": "🏃",
         "hint": "Быстрое движение"
       },
       {
-        "chechen": "Лаьш",
+        "chechen": "Ӏан",
         "russian": "Сидеть",
-        "pronunciation": "Лаьш",
+        "pronunciation": "Ӏан",
         "emoji": "💺",
         "hint": "Сидячая поза"
       },
       {
-        "chechen": "ТӀаьхьа",
+        "chechen": "Латта",
         "russian": "Стоять",
-        "pronunciation": "ТӀа·ьхьа",
+        "pronunciation": "Латта",
         "emoji": "🧍",
         "hint": "На ногах"
       },
       {
-        "chechen": "Ӏойла",
+        "chechen": "Наб ян",
         "russian": "Спать",
-        "pronunciation": "Ӏойла",
+        "pronunciation": "Наб ян",
         "emoji": "😴",
         "hint": "Отдых ночью"
       },
       {
-        "chechen": "Ӏа",
-        "russian": "Есть, кушать",
-        "pronunciation": "Ӏа",
+        "chechen": "Даа",
+        "russian": "Есть",
+        "pronunciation": "Даа",
         "emoji": "🍽️",
         "hint": "Принимать пищу"
       },
       {
-        "chechen": "Мийла",
+        "chechen": "Мала",
         "russian": "Пить",
-        "pronunciation": "Мийла",
+        "pronunciation": "Мала",
         "emoji": "🥤",
         "hint": "Утолять жажду"
       },
@@ -837,9 +845,9 @@
         "hint": "Воспринимать текст"
       },
       {
-        "chechen": "Язда",
+        "chechen": "Яздан",
         "russian": "Писать",
-        "pronunciation": "Язда",
+        "pronunciation": "Яздан",
         "emoji": "✍️",
         "hint": "Создавать текст"
       },
@@ -851,16 +859,16 @@
         "hint": "Наблюдать"
       },
       {
-        "chechen": "Луш",
+        "chechen": "ЛадогӀа",
         "russian": "Слушать",
-        "pronunciation": "Луш",
+        "pronunciation": "ЛадогӀа",
         "emoji": "👂",
         "hint": "Воспринимать звуки"
       },
       {
-        "chechen": "Дала",
+        "chechen": "Хаа",
         "russian": "Знать",
-        "pronunciation": "Дала",
+        "pronunciation": "Хаа",
         "emoji": "🧠",
         "hint": "Обладать знанием"
       },
@@ -883,52 +891,52 @@
   {
     "id": "adjectives",
     "title": "Прилагательные",
-    "chechenTitle": "Бесаш",
+    "chechenTitle": "Билгалдош",
     "icon": "✨",
     "color": "linear-gradient(135deg, #7c3aed, #5b21b6)",
     "words": [
       {"chechen": "Дика", "russian": "Хороший", "pronunciation": "Дика", "emoji": "👍", "hint": "Положительная оценка"},
       {"chechen": "Вон", "russian": "Плохой", "pronunciation": "Вон", "emoji": "👎", "hint": "Отрицательная оценка"},
-      {"chechen": "Лекха", "russian": "Большой", "pronunciation": "Лек·ха", "emoji": "⬆️", "hint": "Размер"},
-      {"chechen": "ЗӀамига", "russian": "Маленький", "pronunciation": "ЗӀа·ми·га", "emoji": "⬇️", "hint": "Размер"},
+      {"chechen": "Доккха", "russian": "Большой", "pronunciation": "Доккха", "emoji": "⬆️", "hint": "Размер"},
+      {"chechen": "Жима", "russian": "Маленький", "pronunciation": "Жима", "emoji": "⬇️", "hint": "Размер"},
       {"chechen": "ЦӀен", "russian": "Красный", "pronunciation": "ЦӀен", "emoji": "🔴", "hint": "Цвет"},
-      {"chechen": "Сира", "russian": "Синий", "pronunciation": "Сира", "emoji": "🔵", "hint": "Цвет"},
-      {"chechen": "ЦӀа", "russian": "Горячий", "pronunciation": "ЦӀа", "emoji": "🔥", "hint": "Температура"},
+      {"chechen": "Сийна", "russian": "Синий", "pronunciation": "Сийна", "emoji": "🔵", "hint": "Цвет"},
+      {"chechen": "Довха", "russian": "Горячий", "pronunciation": "Довха", "emoji": "🔥", "hint": "Температура"},
       {"chechen": "Шийла", "russian": "Холодный", "pronunciation": "Ший·ла", "emoji": "❄️", "hint": "Температура"}
     ]
   },
   {
     "id": "phrases",
     "title": "Фразы",
-    "chechenTitle": "Йолу йоазув",
+    "chechenTitle": "Фраза",
     "icon": "💬",
     "color": "linear-gradient(135deg, #0d904f, #0a6e3c)",
     "words": [
-      {"chechen": "Суьйтта хиллар хьуна?", "russian": "Как дела?", "pronunciation": "Суьйтта · хиллар · хьуна", "emoji": "💬", "hint": "Спросить о самочувствии"},
-      {"chechen": "ХӀоан йоцуш", "russian": "Я не понимаю", "pronunciation": "ХӀоан · йоцуш", "emoji": "🤷", "hint": "Когда слышишь незнакомые слова"},
-      {"chechen": "Дика хуьлу", "russian": "Хорошего дня", "pronunciation": "Дика · хуьлу", "emoji": "☀️", "hint": "Пожелание при расставании"},
-      {"chechen": "Марша Ӏайла", "russian": "До свидания", "pronunciation": "Марша · Ӏайла", "emoji": "👋", "hint": "Прощание"},
-      {"chechen": "Хьоьга баркалла", "russian": "Тебе спасибо", "pronunciation": "Хьоьга · баркалла", "emoji": "🙏", "hint": "Благодарность лично"},
-      {"chechen": "Суьйтта ваха?", "russian": "Как ты?", "pronunciation": "Суьйтта · ваха", "emoji": "🙂", "hint": "Разговорное приветствие дома"},
-      {"chechen": "Лаьса дика ду", "russian": "Всё хорошо", "pronunciation": "Лаьса · дика · ду", "emoji": "✅", "hint": "Ответ на «как дела»"},
-      {"chechen": "Хьуна ахь дика ду", "russian": "Тебе хорошо?", "pronunciation": "Хьуна · ахь · дика · ду", "emoji": "💚", "hint": "Забота о близком"}
+      {"chechen": "Маршалла хуьлда", "russian": "Здравствуйте", "pronunciation": "Маршалла хуьлда", "emoji": "💬", "hint": "Вежливое приветствие", "sources": ["dialang"], "reviewStatus": "source_checked"},
+      {"chechen": "Со ца кхета", "russian": "Я не понимаю", "pronunciation": "Со ца кхета", "emoji": "🤷", "hint": "Когда слышишь незнакомые слова"},
+      {"chechen": "Ӏодика йойла", "russian": "Хорошего дня", "pronunciation": "Ӏодика йойла", "emoji": "☀️", "hint": "Пожелание при расставании"},
+      {"chechen": "Марша Ӏайла", "russian": "До свидания", "pronunciation": "Марша Ӏайла", "emoji": "👋", "hint": "Прощание", "sources": ["dialang"], "reviewStatus": "source_checked"},
+      {"chechen": "Баркалла", "russian": "Спасибо", "pronunciation": "Баркалла", "emoji": "🙏", "hint": "Благодарность"},
+      {"chechen": "Бехк ма билла", "russian": "Извините", "pronunciation": "Бехк ма билла", "emoji": "🙂", "hint": "Вежливая просьба простить", "sources": ["dialang"], "reviewStatus": "source_checked"},
+      {"chechen": "Дика ду", "russian": "Хорошо", "pronunciation": "Дика ду", "emoji": "✅", "hint": "Положительный ответ"},
+      {"chechen": "Ӏуьйре дика хуьлда", "russian": "Доброе утро", "pronunciation": "Ӏуьйре дика хуьлда", "emoji": "🌅", "hint": "Утреннее приветствие"}
     ]
   },
   {
     "id": "dialogues",
     "title": "Диалоги",
-    "chechenTitle": "Дийцар",
+    "chechenTitle": "Къамел",
     "icon": "🗣️",
     "color": "linear-gradient(135deg, #1a73e8, #1557b0)",
     "words": [
-      {"chechen": "Цхьуна цӀе хьан йо?", "russian": "Как тебя зовут?", "pronunciation": "Цхьуна · цӀе · хьан · йо", "emoji": "🗣️", "hint": "Знакомство"},
-      {"chechen": "Суна цӀе Ахмад", "russian": "Меня зовут Ахмад", "pronunciation": "Суна · цӀе · Ахмад", "emoji": "🙂", "hint": "Представление — подставь своё имя"},
-      {"chechen": "Маха хьан де?", "russian": "Сколько тебе лет?", "pronunciation": "Маха · хьан · де", "emoji": "🎂", "hint": "Возраст"},
-      {"chechen": "Суна Ӏишу йу", "russian": "Мне семь лет", "pronunciation": "Суна · Ӏишу · йу", "emoji": "7️⃣", "hint": "Ответ — подставь свой возраст"},
-      {"chechen": "Цхьа хьуна маха де?", "russian": "А тебе сколько?", "pronunciation": "Цхьа · хьуна · маха · де", "emoji": "❓", "hint": "Встречный вопрос"},
-      {"chechen": "Хьуна моха йо?", "russian": "Откуда ты?", "pronunciation": "Хьуна · моха · йо", "emoji": "🗺️", "hint": "Происхождение, родину"},
-      {"chechen": "Суна Даймохка бу", "russian": "Я из Чечни", "pronunciation": "Суна · Даймохка · бу", "emoji": "🏔️", "hint": "Связь с родиной"},
-      {"chechen": "Хьуна цхьа моха йо?", "russian": "А ты откуда?", "pronunciation": "Хьуна · цхьа · моха · йо", "emoji": "🌍", "hint": "Диалог о происхождении"}
+      {"chechen": "Хьан цӀе муха ю?", "russian": "Как тебя зовут?", "pronunciation": "Хьан цӀе муха ю", "emoji": "🗣️", "hint": "Знакомство"},
+      {"chechen": "Сан цӀе ю", "russian": "Меня зовут", "pronunciation": "Сан цӀе ю", "emoji": "🙂", "hint": "После фразы назови своё имя"},
+      {"chechen": "Маса шо ду хьан?", "russian": "Сколько тебе лет?", "pronunciation": "Маса шо ду хьан", "emoji": "🎂", "hint": "Вопрос о возрасте"},
+      {"chechen": "Хьо мичара ву?", "russian": "Откуда ты?", "pronunciation": "Хьо мичара ву", "emoji": "🗺️", "hint": "Форма обращения к мужчине"},
+      {"chechen": "Муха ву хьо?", "russian": "Как дела?", "pronunciation": "Муха ву хьо", "emoji": "❓", "hint": "Форма обращения к мужчине"},
+      {"chechen": "Со ца кхета", "russian": "Я не понимаю", "pronunciation": "Со ца кхета", "emoji": "🤷", "hint": "Попроси объяснить ещё раз"},
+      {"chechen": "Со кхета", "russian": "Я понимаю", "pronunciation": "Со кхета", "emoji": "✅", "hint": "Подтверждение понимания"},
+      {"chechen": "Баркалла", "russian": "Спасибо", "pronunciation": "Баркалла", "emoji": "🙏", "hint": "Вежливое завершение разговора"}
     ]
   }
 ]

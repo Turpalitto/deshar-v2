@@ -70,7 +70,7 @@
       "emoji": "🌙",
       "gradient": ["#FFE0B2", "#FFF3E0"],
       "unlockCoins": 200,
-      "units": ["adjectives"]
+      "units": ["adjectives", "phrases", "dialogues"]
     }
   ]
 }
