@@ -27,6 +27,7 @@ class CultureCapsuleCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final paragraphs = capsule.paragraphs;
+    final featuredWord = capsule.featuredWord;
 
     return ColoredBox(
       color: DesignTokens.cultureDark,
@@ -73,7 +74,7 @@ class CultureCapsuleCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Text(
-                            'АДАТ · КУЛЬТУРА',
+                            capsule.eyebrow.toUpperCase(),
                             style: TextStyle(
                               fontSize: 11,
                               color: DesignTokens.cultureAccent,
@@ -109,74 +110,69 @@ class CultureCapsuleCard extends StatelessWidget {
                             ),
                           ],
                           const SizedBox(height: IosSpacing.x6),
-                          Row(
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
                             children: [
-                              _FactChip(
-                                iconAsset: AppIcons.cultureHandshake,
-                                label: 'Уважение',
-                              ),
-                              const SizedBox(width: 10),
-                              _FactChip(
-                                iconAsset: AppIcons.cultureFeast,
-                                label: 'Стол',
-                              ),
-                              const SizedBox(width: 10),
-                              _FactChip(
-                                iconAsset: AppIcons.cultureMountains,
-                                label: 'Нохчалла',
-                              ),
+                              for (final tag in capsule.tags)
+                                _TopicChip(label: tag),
                             ],
                           ),
-                          const SizedBox(height: IosSpacing.x6),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 18,
-                              vertical: 16,
-                            ),
-                            decoration: BoxDecoration(
-                              color: DesignTokens.cultureAccent.withValues(
-                                alpha: 0.12,
+                          if (featuredWord != null) ...[
+                            const SizedBox(height: IosSpacing.x6),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 18,
+                                vertical: 16,
                               ),
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
+                              decoration: BoxDecoration(
                                 color: DesignTokens.cultureAccent.withValues(
-                                  alpha: 0.25,
+                                  alpha: 0.12,
+                                ),
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color: DesignTokens.cultureAccent.withValues(
+                                    alpha: 0.25,
+                                  ),
                                 ),
                               ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'СЛОВО ИЗ УРОКА',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: DesignTokens.cultureAccent,
+                                      fontWeight: FontWeight.w700,
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    featuredWord.chechen,
+                                    style: const TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.w700,
+                                      color: Color(0xFFF5F0E8),
+                                      letterSpacing: 0.3,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    '${featuredWord.russian} · '
+                                    '[${featuredWord.pronunciation}]',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: const Color(
+                                        0xFFF5F0E8,
+                                      ).withValues(alpha: 0.5),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                            child: const Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'СЛОВО ИЗ КАПСУЛЫ',
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    color: DesignTokens.cultureAccent,
-                                    fontWeight: FontWeight.w700,
-                                    letterSpacing: 0.5,
-                                  ),
-                                ),
-                                SizedBox(height: 8),
-                                Text(
-                                  'Хьаша',
-                                  style: TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.w700,
-                                    color: Color(0xFFF5F0E8),
-                                    letterSpacing: 0.3,
-                                  ),
-                                ),
-                                SizedBox(height: 2),
-                                Text(
-                                  'Гость · [khyasha]',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Color(0x80F5F0E8),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                          ],
                           const SizedBox(height: IosSpacing.x8),
                         ],
                       ),
@@ -253,41 +249,40 @@ class _IllustrationFallback extends StatelessWidget {
   }
 }
 
-class _FactChip extends StatelessWidget {
-  const _FactChip({this.emoji, this.iconAsset, required this.label})
-    : assert(emoji != null || iconAsset != null);
+class _TopicChip extends StatelessWidget {
+  const _TopicChip({required this.label});
 
-  final String? emoji;
-  final String? iconAsset;
   final String label;
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 10),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.07),
-          borderRadius: BorderRadius.circular(14),
-        ),
-        child: Column(
-          children: [
-            if (iconAsset != null)
-              AppIconImage(asset: iconAsset!, size: 24)
-            else
-              Text(emoji!, style: const TextStyle(fontSize: 24)),
-            const SizedBox(height: 6),
-            Text(
-              label,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 11,
-                color: Colors.white.withValues(alpha: 0.5),
-                fontWeight: FontWeight.w600,
-              ),
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 12),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.07),
+        borderRadius: BorderRadius.circular(100),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 6,
+            height: 6,
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              color: DesignTokens.cultureAccent,
             ),
-          ],
-        ),
+          ),
+          const SizedBox(width: 7),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11,
+              color: Colors.white.withValues(alpha: 0.65),
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
       ),
     );
   }

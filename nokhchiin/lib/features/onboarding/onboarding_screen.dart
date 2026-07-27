@@ -25,134 +25,82 @@ class OnboardingScreen extends ConsumerWidget {
 
     return AppScaffold(
       showOrnament: true,
-      body: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 28, 24, 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                      children: [
-                        const NokhchiinAppIcon(size: 44),
-                        const SizedBox(width: 10),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final wide = constraints.maxWidth >= 760;
+          final intro = _OnboardingIntro(
+            adultTitle: l10n.adultModeTitle,
+            adultSubtitle: l10n.adultModeSubtitle,
+            kidsTitle: l10n.kidsModeTitle,
+            kidsSubtitle: l10n.kidsModeSubtitle,
+            onAdultTap: () async {
+              await ref
+                  .read(userProfileProvider.notifier)
+                  .setMode(AppMode.adult);
+              if (context.mounted) {
+                unawaited(context.push('/onboarding/placement'));
+              }
+            },
+            onKidsTap: () async {
+              await ref
+                  .read(userProfileProvider.notifier)
+                  .setMode(AppMode.kids);
+              if (context.mounted) _showAgePicker(context, ref);
+            },
+          );
+
+          return Padding(
+            padding: EdgeInsets.fromLTRB(
+              wide ? 32 : 24,
+              wide ? 24 : 20,
+              wide ? 32 : 24,
+              12,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _BrandHeader(
+                  title: l10n.appTitle,
+                  textColor: tokens.textPrimary,
+                  secondaryColor: tokens.textTertiary,
+                ),
+                SizedBox(height: wide ? 24 : 18),
+                Expanded(
+                  child: wide
+                      ? Row(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            Text(
-                              l10n.appTitle,
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700,
-                                color: tokens.textPrimary,
-                                letterSpacing: -0.2,
-                              ),
+                            const Expanded(
+                              flex: 11,
+                              child: _WorldHeroPanel(expanded: true),
                             ),
-                            Text(
-                              // Реальное число вместо устаревшего "7800+" (аудит §7:
-                              // реально ≈134k слов после слияния с датасетом HF).
-                              'Чеченский язык · ${formatThousands(dictionaryWordCount)}+ '
-                              '${pluralize(dictionaryWordCount, one: 'слово', few: 'слова', many: 'слов')}',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: tokens.textTertiary,
-                                fontWeight: FontWeight.w500,
-                              ),
+                            const SizedBox(width: 28),
+                            Expanded(
+                              flex: 9,
+                              child: SingleChildScrollView(child: intro),
                             ),
                           ],
+                        )
+                      : SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              const SizedBox(
+                                height: 168,
+                                child: _WorldHeroPanel(),
+                              ),
+                              const SizedBox(height: 24),
+                              intro,
+                            ],
+                          ),
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 36),
-                    Text(
-                      'Сайн дог ду хьуна',
-                      style: TextStyle(
-                        fontSize: 34,
-                        fontWeight: FontWeight.w700,
-                        color: tokens.textPrimary,
-                        letterSpacing: -0.4,
-                        height: 1.15,
-                      ),
-                    ).animate().fadeIn().slideY(begin: 0.08),
-                    const SizedBox(height: 10),
-                    Text(
-                      'Рады тебя видеть!',
-                      style: TextStyle(
-                        fontSize: 17,
-                        color: tokens.textSecondary,
-                      ),
-                    ).animate().fadeIn(delay: 60.ms),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Выбери трек — мы подберём уроки и темп специально для тебя.',
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: tokens.textTertiary,
-                        height: 1.5,
-                      ),
-                    ).animate().fadeIn(delay: 100.ms),
-                    const SizedBox(height: 36),
-                    _TrackCard(
-                      iconAsset: AppIcons.navDictionary,
-                      title: l10n.adultModeTitle,
-                      subtitle: l10n.adultModeSubtitle,
-                      badge: '17+',
-                      accent: tokens.accent,
-                      accentMuted: tokens.accentMuted,
-                      onTap: () async {
-                        await ref
-                            .read(userProfileProvider.notifier)
-                            .setMode(AppMode.adult);
-                        if (context.mounted) {
-                          unawaited(context.push('/onboarding/placement'));
-                        }
-                      },
-                    ).animate().fadeIn(delay: 160.ms).slideX(),
-                    const SizedBox(height: 12),
-                    _TrackCard(
-                      iconAsset: AppIcons.gamePlay,
-                      title: l10n.kidsModeTitle,
-                      subtitle: l10n.kidsModeSubtitle,
-                      badge: '3–12',
-                      accent: DesignTokens.meadow,
-                      accentMuted: DesignTokens.meadowMuted,
-                      onTap: () async {
-                        await ref
-                            .read(userProfileProvider.notifier)
-                            .setMode(AppMode.kids);
-                        if (context.mounted) _showAgePicker(context, ref);
-                      },
-                    ).animate().fadeIn(delay: 220.ms).slideX(),
-                    const SizedBox(height: 24),
-                    Row(
-                      children: [
-                        _FeatureTile(
-                          iconAsset: AppIcons.actionReview,
-                          label: 'SM-2 SRS',
-                        ),
-                        const SizedBox(width: 8),
-                        _FeatureTile(
-                          iconAsset: AppIcons.stateOffline,
-                          label: 'Офлайн',
-                        ),
-                        const SizedBox(width: 8),
-                        _FeatureTile(
-                          iconAsset: AppIcons.cultureMountains,
-                          label: 'Культура',
-                        ),
-                      ],
-                    ).animate().fadeIn(delay: 280.ms),
-                  ],
                 ),
-              ),
+                const SizedBox(height: AppSpacing.sm),
+                const LegalLinksRow(compact: true),
+              ],
             ),
-            const SizedBox(height: AppSpacing.sm),
-            const LegalLinksRow(compact: true),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
@@ -204,6 +152,261 @@ class OnboardingScreen extends ConsumerWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _BrandHeader extends StatelessWidget {
+  const _BrandHeader({
+    required this.title,
+    required this.textColor,
+    required this.secondaryColor,
+  });
+
+  final String title;
+  final Color textColor;
+  final Color secondaryColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const NokhchiinAppIcon(size: 44),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: textColor,
+                  letterSpacing: -0.3,
+                ),
+              ),
+              Text(
+                'Чеченский язык · ${formatThousands(dictionaryWordCount)}+ '
+                '${pluralize(dictionaryWordCount, one: 'слово', few: 'слова', many: 'слов')}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: secondaryColor,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            color: DesignTokens.meadowMuted,
+            borderRadius: BorderRadius.circular(100),
+          ),
+          child: const Text(
+            'OFFLINE',
+            style: TextStyle(
+              color: DesignTokens.meadow,
+              fontSize: 10,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 0.8,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _WorldHeroPanel extends StatelessWidget {
+  const _WorldHeroPanel({this.expanded = false});
+
+  final bool expanded;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(expanded ? 30 : 22),
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.asset(
+            'assets/images/brand/onboarding_world.webp',
+            fit: BoxFit.cover,
+            alignment: expanded ? Alignment.center : Alignment.centerRight,
+            filterQuality: FilterQuality.medium,
+            cacheWidth: expanded ? 1200 : 760,
+          ),
+          const DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Colors.transparent, Color(0xCC16110C)],
+                stops: [0.38, 1],
+              ),
+            ),
+          ),
+          Positioned(
+            left: expanded ? 26 : 16,
+            right: expanded ? 26 : 16,
+            bottom: expanded ? 24 : 14,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Wrap(
+                  spacing: 7,
+                  runSpacing: 7,
+                  children: const [
+                    _HeroPill(label: '15 юнитов'),
+                    _HeroPill(label: '8 миров'),
+                    _HeroPill(label: 'Без рекламы'),
+                  ],
+                ),
+                if (expanded) ...[
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Путь к языку начинается дома',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 27,
+                      height: 1.08,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -0.6,
+                    ),
+                  ),
+                  const SizedBox(height: 7),
+                  Text(
+                    'Уроки, истории и культура в одном спокойном ритме.',
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.78),
+                      fontSize: 14,
+                      height: 1.4,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    ).animate().fadeIn(duration: 480.ms).scaleXY(begin: 0.985);
+  }
+}
+
+class _HeroPill extends StatelessWidget {
+  const _HeroPill({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: const Color(0xCCF7F4EF),
+        borderRadius: BorderRadius.circular(100),
+      ),
+      child: Text(
+        label,
+        style: const TextStyle(
+          color: Color(0xFF26201A),
+          fontSize: 11,
+          fontWeight: FontWeight.w800,
+        ),
+      ),
+    );
+  }
+}
+
+class _OnboardingIntro extends StatelessWidget {
+  const _OnboardingIntro({
+    required this.adultTitle,
+    required this.adultSubtitle,
+    required this.kidsTitle,
+    required this.kidsSubtitle,
+    required this.onAdultTap,
+    required this.onKidsTap,
+  });
+
+  final String adultTitle;
+  final String adultSubtitle;
+  final String kidsTitle;
+  final String kidsSubtitle;
+  final VoidCallback onAdultTap;
+  final VoidCallback onKidsTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final tokens = context.iosTokens;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          'Сайн дог ду хьуна',
+          style: TextStyle(
+            fontSize: 34,
+            fontWeight: FontWeight.w800,
+            color: tokens.textPrimary,
+            letterSpacing: -0.7,
+            height: 1.08,
+          ),
+        ).animate().fadeIn().slideY(begin: 0.08),
+        const SizedBox(height: 10),
+        Text(
+          'Рады тебя видеть!',
+          style: TextStyle(fontSize: 17, color: tokens.textSecondary),
+        ).animate().fadeIn(delay: 60.ms),
+        const SizedBox(height: 4),
+        Text(
+          'Выбери свой ритм — мы подберём уроки, повторение и истории специально для тебя.',
+          style: TextStyle(
+            fontSize: 15,
+            color: tokens.textTertiary,
+            height: 1.5,
+          ),
+        ).animate().fadeIn(delay: 100.ms),
+        const SizedBox(height: 28),
+        _TrackCard(
+          iconAsset: AppIcons.navDictionary,
+          title: adultTitle,
+          subtitle: adultSubtitle,
+          badge: '17+',
+          accent: tokens.accent,
+          accentMuted: tokens.accentMuted,
+          onTap: onAdultTap,
+        ).animate().fadeIn(delay: 160.ms).slideX(),
+        const SizedBox(height: 12),
+        _TrackCard(
+          iconAsset: AppIcons.gamePlay,
+          title: kidsTitle,
+          subtitle: kidsSubtitle,
+          badge: '3–12',
+          accent: DesignTokens.meadow,
+          accentMuted: DesignTokens.meadowMuted,
+          onTap: onKidsTap,
+        ).animate().fadeIn(delay: 220.ms).slideX(),
+        const SizedBox(height: 20),
+        Row(
+          children: [
+            _FeatureTile(
+              iconAsset: AppIcons.actionReview,
+              label: 'Умный повтор',
+            ),
+            const SizedBox(width: 8),
+            _FeatureTile(iconAsset: AppIcons.stateOffline, label: 'Офлайн'),
+            const SizedBox(width: 8),
+            _FeatureTile(
+              iconAsset: AppIcons.cultureMountains,
+              label: 'Культура',
+            ),
+          ],
+        ).animate().fadeIn(delay: 280.ms),
+      ],
     );
   }
 }

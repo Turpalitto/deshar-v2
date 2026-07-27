@@ -107,10 +107,13 @@ final appRouter = GoRouter(
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
       path: '/lesson/:unitId',
-      pageBuilder: (context, state) => _fadeScale(
-        state,
-        LessonFlowScreen(unitId: state.pathParameters['unitId']!),
-      ),
+      pageBuilder: (context, state) {
+        final unitId = state.pathParameters['unitId']!;
+        return _fadeScale(
+          state,
+          LessonFlowScreen(key: ValueKey(unitId), unitId: unitId),
+        );
+      },
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,

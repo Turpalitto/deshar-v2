@@ -10,11 +10,13 @@ class NokhchiinTabBar extends StatelessWidget {
     required this.currentIndex,
     required this.onTap,
     this.accent,
+    this.floating = false,
   });
 
   final int currentIndex;
   final ValueChanged<int> onTap;
   final Color? accent;
+  final bool floating;
 
   static const _labels = ['Главная', 'Миры', 'Повтор', 'Профиль'];
 
@@ -26,9 +28,23 @@ class NokhchiinTabBar extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: tokens.backgroundElevated,
-        border: Border(top: BorderSide(color: tokens.separator, width: 0.5)),
+        border: floating
+            ? Border.all(color: tokens.separator, width: 0.7)
+            : Border(top: BorderSide(color: tokens.separator, width: 0.5)),
+        borderRadius: floating ? BorderRadius.circular(24) : null,
+        boxShadow: floating
+            ? [
+                BoxShadow(
+                  color: Colors.black.withValues(
+                    alpha: tokens.isDark ? 0.32 : 0.10,
+                  ),
+                  blurRadius: 28,
+                  offset: const Offset(0, 12),
+                ),
+              ]
+            : null,
       ),
-      padding: const EdgeInsets.only(top: 8, bottom: 20),
+      padding: EdgeInsets.only(top: 8, bottom: floating ? 9 : 20),
       child: Row(
         children: List.generate(4, (i) {
           final isActive = currentIndex == i;

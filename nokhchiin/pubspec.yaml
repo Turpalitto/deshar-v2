@@ -82,6 +82,8 @@ flutter:
     # ассеты — раньше ~1.3 МБ лишнего веса в каждой сборке (аудит §4).
     - assets/images/brand/culture_guest.png
     - assets/images/brand/culture_hospitality.png
+    - assets/images/brand/onboarding_world.webp
     - assets/images/culture/home_welcome.png
     - assets/images/culture/mountain_path.png
+    - assets/images/culture/nature_observation.webp
     - assets/icons/

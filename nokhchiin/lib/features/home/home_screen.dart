@@ -89,6 +89,18 @@ class HomeScreen extends ConsumerWidget {
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
             sliver: SliverToBoxAdapter(
+              child: _DailyGoalCard(
+                profile: profile,
+                dueCount: due.valueOrNull?.length ?? 0,
+                accent: accent,
+                accentMuted: accentMuted,
+                onReview: () => context.go('/review'),
+              ).animate().fadeIn(delay: 110.ms),
+            ),
+          ),
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
+            sliver: SliverToBoxAdapter(
               child: Row(
                 children: [
                   Expanded(
@@ -506,6 +518,187 @@ class _HomeHeader extends ConsumerWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DailyGoalCard extends StatelessWidget {
+  const _DailyGoalCard({
+    required this.profile,
+    required this.dueCount,
+    required this.accent,
+    required this.accentMuted,
+    required this.onReview,
+  });
+
+  final UserProfileEntity profile;
+  final int dueCount;
+  final Color accent;
+  final Color accentMuted;
+  final VoidCallback onReview;
+
+  @override
+  Widget build(BuildContext context) {
+    final tokens = context.iosTokens;
+    final progress = profile.dailyGoalProgress / 100;
+    final completed = progress >= 1;
+
+    return NokhchiinSurfaceCard(
+      radius: 20,
+      padding: const EdgeInsets.all(18),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  color: completed ? DesignTokens.goldMuted : accentMuted,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                alignment: Alignment.center,
+                child: AppIconImage(
+                  asset: completed
+                      ? AppIcons.rewardCelebration
+                      : AppIcons.progressStar,
+                  size: 22,
+                  color: completed ? DesignTokens.gold : accent,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      completed ? 'Цель дня выполнена' : 'План на сегодня',
+                      style: TextStyle(
+                        color: tokens.textPrimary,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: -0.2,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '${profile.wordsLearnedToday} из ${profile.dailyGoalWords} новых слов',
+                      style: TextStyle(
+                        color: tokens.textTertiary,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Text(
+                '${profile.dailyGoalProgress}%',
+                style: TextStyle(
+                  color: completed ? DesignTokens.gold : accent,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(100),
+            child: LinearProgressIndicator(
+              minHeight: 7,
+              value: progress.clamp(0, 1),
+              backgroundColor: tokens.surfaceMuted,
+              valueColor: AlwaysStoppedAnimation(
+                completed ? DesignTokens.gold : accent,
+              ),
+            ),
+          ),
+          const SizedBox(height: 14),
+          Row(
+            children: [
+              Expanded(
+                child: _DailyMetric(
+                  value: '${profile.todayMinutes}/${profile.dailyGoalMinutes}',
+                  label: 'минут',
+                  color: accent,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _DailyMetric(
+                  value: '${profile.reviewsDoneToday}',
+                  label: 'повторено',
+                  color: DesignTokens.gold,
+                  onTap: dueCount > 0 ? onReview : null,
+                  badge: dueCount > 0 ? '$dueCount ждут' : null,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _DailyMetric(
+                  value: '${profile.streakDays}',
+                  label: 'дней подряд',
+                  color: DesignTokens.cultureAccent,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DailyMetric extends StatelessWidget {
+  const _DailyMetric({
+    required this.value,
+    required this.label,
+    required this.color,
+    this.onTap,
+    this.badge,
+  });
+
+  final String value;
+  final String label;
+  final Color color;
+  final VoidCallback? onTap;
+  final String? badge;
+
+  @override
+  Widget build(BuildContext context) {
+    final tokens = context.iosTokens;
+    return Material(
+      color: tokens.surfaceMuted,
+      borderRadius: BorderRadius.circular(13),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(13),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                value,
+                maxLines: 1,
+                style: TextStyle(
+                  color: color,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 1),
+              Text(
+                badge ?? label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(color: tokens.textTertiary, fontSize: 10),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -11,6 +11,7 @@ class AppScaffold extends StatelessWidget {
     this.floatingActionButton,
     this.showOrnament = true,
     this.darkOrnament = false,
+    this.maxContentWidth = 920,
   });
 
   final String? title;
@@ -19,6 +20,7 @@ class AppScaffold extends StatelessWidget {
   final Widget? floatingActionButton;
   final bool showOrnament;
   final bool darkOrnament;
+  final double? maxContentWidth;
 
   @override
   Widget build(BuildContext context) {
@@ -37,48 +39,58 @@ class AppScaffold extends StatelessWidget {
               ),
             ),
           SafeArea(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                if (title != null || actions != null)
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.lg,
-                      AppSpacing.sm,
-                      AppSpacing.lg,
-                      0,
-                    ),
-                    child: Row(
-                      children: [
-                        if (Navigator.canPop(context))
-                          IconButton(
-                            icon: Icon(
-                              Icons.arrow_back_ios_new_rounded,
-                              color: tokens.textTertiary,
-                              size: 20,
-                            ),
-                            onPressed: () => Navigator.maybePop(context),
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: maxContentWidth ?? double.infinity,
+                ),
+                child: SizedBox.expand(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (title != null || actions != null)
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(
+                            AppSpacing.lg,
+                            AppSpacing.sm,
+                            AppSpacing.lg,
+                            0,
                           ),
-                        if (title != null)
-                          Expanded(
-                            child: Text(
-                              title!,
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.w700,
-                                color: tokens.textPrimary,
-                                letterSpacing: -0.2,
-                              ),
-                            ),
-                          )
-                        else
-                          const Spacer(),
-                        ...?actions,
-                      ],
-                    ),
+                          child: Row(
+                            children: [
+                              if (Navigator.canPop(context))
+                                IconButton(
+                                  icon: Icon(
+                                    Icons.arrow_back_ios_new_rounded,
+                                    color: tokens.textTertiary,
+                                    size: 20,
+                                  ),
+                                  onPressed: () => Navigator.maybePop(context),
+                                ),
+                              if (title != null)
+                                Expanded(
+                                  child: Text(
+                                    title!,
+                                    style: TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.w700,
+                                      color: tokens.textPrimary,
+                                      letterSpacing: -0.2,
+                                    ),
+                                  ),
+                                )
+                              else
+                                const Spacer(),
+                              ...?actions,
+                            ],
+                          ),
+                        ),
+                      Expanded(child: body),
+                    ],
                   ),
-                Expanded(child: body),
-              ],
+                ),
+              ),
             ),
           ),
         ],

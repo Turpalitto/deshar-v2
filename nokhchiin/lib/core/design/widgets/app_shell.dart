@@ -27,10 +27,27 @@ class AppShell extends ConsumerWidget {
     return Scaffold(
       backgroundColor: context.iosTokens.background,
       body: navigationShell,
-      bottomNavigationBar: NokhchiinTabBar(
-        currentIndex: navigationShell.currentIndex,
-        onTap: _onTap,
-        accent: accent,
+      bottomNavigationBar: LayoutBuilder(
+        builder: (context, constraints) {
+          final floating = constraints.maxWidth >= 760;
+          final bar = NokhchiinTabBar(
+            currentIndex: navigationShell.currentIndex,
+            onTap: _onTap,
+            accent: accent,
+            floating: floating,
+          );
+          if (!floating) return bar;
+          return SafeArea(
+            minimum: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+            child: Center(
+              heightFactor: 1,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 680),
+                child: bar,
+              ),
+            ),
+          );
+        },
       ),
     );
   }
