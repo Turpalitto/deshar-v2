@@ -26,22 +26,27 @@ jobs:
 
       - name: Check formatting
         run: dart format --set-exit-if-changed .
-        continue-on-error: true
 
       - name: Analyze
-        run: flutter analyze --no-fatal-infos
-
-      - name: Dart fix check
-        run: dart fix --dry-run --apply lib/ || true
+        run: flutter analyze
 
       - name: Test
         run: flutter test --coverage
+
+      - name: Enforce domain and data coverage
+        run: python ../tools/check_coverage.py coverage/lcov.info --include lib/domain/ --include lib/data/ --minimum 60
 
       - name: Audit lesson vocabulary
         run: python ../tools/audit_lesson_vocabulary.py
 
       - name: Audit learning content links
         run: python ../tools/audit_learning_content.py
+
+      - name: Validate all learning content
+        run: python ../tools/validate_content.py
+
+      - name: Audit dictionary package
+        run: python ../tools/audit_dictionary_package.py
 
       - name: Upload coverage
         uses: codecov/codecov-action@v4
@@ -59,4 +64,7 @@ jobs:
 
       - name: Report web build size
         run: du -sh build/web
+
+      - name: Build Android (verify compilation)
+        run: flutter build apk --debug
 
