@@ -51,9 +51,9 @@ enum ReviewStatus {
 
   String get labelRu => switch (this) {
     draft => 'Черновик',
-    sourceChecked => 'Источник проверен',
+    sourceChecked => 'Найдено в словарном источнике',
     nativeVerified => 'Проверено носителем',
-    published => 'Опубликовано',
+    published => 'Проверено носителем и редактором',
   };
 
   bool get canAppearInLearning => this != draft;

@@ -5,6 +5,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:nokhchiin/domain/entities/content_metadata.dart';
 
 void main() {
+  test('review statuses explain the actual verification level', () {
+    expect(ReviewStatus.draft.labelRu, 'Черновик');
+    expect(ReviewStatus.sourceChecked.labelRu, 'Найдено в словарном источнике');
+    expect(ReviewStatus.nativeVerified.labelRu, 'Проверено носителем');
+    expect(ReviewStatus.published.labelRu, 'Проверено носителем и редактором');
+  });
+
   test('learning JSON has explicit conservative review metadata', () {
     final lessons =
         jsonDecode(File('assets/data/lessons.json').readAsStringSync()) as List;
