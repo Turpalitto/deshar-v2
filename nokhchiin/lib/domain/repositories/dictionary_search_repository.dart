@@ -13,6 +13,7 @@ abstract class DictionarySearchRepository {
     required int pageSize,
     EntryType? typeFilter,
     bool favoritesOnly = false,
+    bool fullDictionary = false,
   });
 
   /// Одна запись по id.

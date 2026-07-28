@@ -28,6 +28,12 @@ final dictionaryFilterProvider = StateProvider<DictionaryFilter>(
 /// Запрос поиска.
 final dictionaryQueryProvider = StateProvider<String>((_) => '');
 
+enum DictionaryScope { core, full }
+
+final dictionaryScopeProvider = StateProvider<DictionaryScope>(
+  (_) => DictionaryScope.core,
+);
+
 /// Накопленный список результатов поиска + состояние пагинации.
 ///
 /// В отличие от одиночной страницы из [DictionarySearchResult], [entries]
@@ -80,11 +86,13 @@ class DictionarySearchNotifier
     extends AutoDisposeAsyncNotifier<DictionarySearchViewState> {
   late String _query;
   late DictionaryFilter _filter;
+  late DictionaryScope _scope;
 
   @override
   Future<DictionarySearchViewState> build() async {
     _query = ref.watch(dictionaryQueryProvider);
     _filter = ref.watch(dictionaryFilterProvider);
+    _scope = ref.watch(dictionaryScopeProvider);
     return _fetchPage(page: 0, existing: const []);
   }
 
@@ -100,6 +108,7 @@ class DictionarySearchNotifier
           pageSize: _pageSize,
           typeFilter: _filter.toTypeFilter(),
           favoritesOnly: _filter == DictionaryFilter.favorites,
+          fullDictionary: _scope == DictionaryScope.full,
         );
     return DictionarySearchViewState(
       entries: [...existing, ...result.entries],
@@ -173,8 +182,14 @@ final dictionaryRelatedProvider = FutureProvider.autoDispose
 /// Total count.
 final dictionaryTotalCountProvider = FutureProvider<int>((ref) async {
   final repo = ref.watch(dictionarySearchRepoProvider);
+  final scope = ref.watch(dictionaryScopeProvider);
   // Триггерим загрузку.
-  await repo.search(query: '', page: 0, pageSize: 1);
+  await repo.search(
+    query: '',
+    page: 0,
+    pageSize: 1,
+    fullDictionary: scope == DictionaryScope.full,
+  );
   return repo.totalCount;
 });
 

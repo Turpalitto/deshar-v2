@@ -11,7 +11,10 @@
         "russian": "Привет",
         "pronunciation": "Марш·алла",
         "emoji": "👋",
-        "hint": "Традиционное пожелание мира"
+        "hint": "Традиционное пожелание мира",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Маршалла хуьлда",
@@ -19,15 +22,22 @@
         "pronunciation": "Маршалла хуьлда",
         "emoji": "🕊️",
         "hint": "Вежливая форма приветствия",
-        "sources": ["dialang"],
-        "reviewStatus": "source_checked"
+        "sources": [
+          "dialang"
+        ],
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "dialang"
       },
       {
         "chechen": "Баркалла",
         "russian": "Спасибо",
         "pronunciation": "Барк·алла",
         "emoji": "🙏",
-        "hint": "Выражение благодарности"
+        "hint": "Выражение благодарности",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Марша догӀийла",
@@ -35,29 +45,42 @@
         "pronunciation": "Марша догӀийла",
         "emoji": "💚",
         "hint": "Приветствие гостя",
-        "sources": ["dialang"],
-        "reviewStatus": "source_checked"
+        "sources": [
+          "dialang"
+        ],
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "dialang"
       },
       {
         "chechen": "Ӏуьйре дика хуьлда",
         "russian": "Доброе утро",
         "pronunciation": "Ӏуьйре дика хуьлда",
         "emoji": "🌅",
-        "hint": "Полная форма утреннего приветствия"
+        "hint": "Полная форма утреннего приветствия",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "gatitos"
       },
       {
         "chechen": "Дика де ду",
         "russian": "Добрый день",
         "pronunciation": "Дика де ду",
         "emoji": "☀️",
-        "hint": "Приветствие в дневное время"
+        "hint": "Приветствие в дневное время",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "gatitos"
       },
       {
         "chechen": "Суьйре дика хуьлда",
         "russian": "Добрый вечер",
         "pronunciation": "Суьйре дика хуьлда",
         "emoji": "🌇",
-        "hint": "Вечернее приветствие"
+        "hint": "Вечернее приветствие",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "gatitos"
       },
       {
         "chechen": "Марша Ӏайла",
@@ -65,8 +88,12 @@
         "pronunciation": "Марша Ӏайла",
         "emoji": "🌙",
         "hint": "Пожелание мира при прощании",
-        "sources": ["dialang"],
-        "reviewStatus": "source_checked"
+        "sources": [
+          "dialang"
+        ],
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "dialang"
       },
       {
         "chechen": "Бехк ма билла",
@@ -74,29 +101,42 @@
         "pronunciation": "Бехк ма билла",
         "emoji": "👋",
         "hint": "Вежливая просьба простить",
-        "sources": ["dialang"],
-        "reviewStatus": "source_checked"
+        "sources": [
+          "dialang"
+        ],
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "dialang"
       },
       {
         "chechen": "ХӀаъ",
         "russian": "Да",
         "pronunciation": "ХӀаъ",
         "emoji": "✨",
-        "hint": "Утвердительный ответ"
+        "hint": "Утвердительный ответ",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "baltoslav"
       },
       {
         "chechen": "Дика ду",
         "russian": "Хорошо",
         "pronunciation": "Дика · ду",
         "emoji": "👍",
-        "hint": "Ответ на «как дела?»"
+        "hint": "Ответ на «как дела?»",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "ХӀан-хӀа",
         "russian": "Нет",
         "pronunciation": "ХӀан-хӀа",
         "emoji": "💫",
-        "hint": "Отрицательный ответ"
+        "hint": "Отрицательный ответ",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "gatitos"
       }
     ]
   },
@@ -112,98 +152,140 @@
         "russian": "Кошка",
         "pronunciation": "Цициг",
         "emoji": "🐱",
-        "hint": "Домашнее животное"
+        "hint": "Домашнее животное",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "ЖӀаьла",
         "russian": "Собака",
         "pronunciation": "ЖӀа·ьла",
         "emoji": "🐶",
-        "hint": "Верный друг человека"
+        "hint": "Верный друг человека",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Говр",
         "russian": "Лошадь",
         "pronunciation": "Говр",
         "emoji": "🐴",
-        "hint": "Гордое животное гор"
+        "hint": "Гордое животное гор",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Борз",
         "russian": "Волк",
         "pronunciation": "Борз",
         "emoji": "🐺",
-        "hint": "Символ смелости"
+        "hint": "Символ смелости",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Ча",
         "russian": "Медведь",
         "pronunciation": "Ча",
         "emoji": "🐻",
-        "hint": "Хозяин леса"
+        "hint": "Хозяин леса",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Цхьогал",
         "russian": "Лиса",
         "pronunciation": "Цхь·огал",
         "emoji": "🦊",
-        "hint": "Хитрое рыжее животное"
+        "hint": "Хитрое рыжее животное",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Сай",
         "russian": "Олень",
         "pronunciation": "Сай",
         "emoji": "🦌",
-        "hint": "Горный обитатель"
+        "hint": "Горный обитатель",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "ЦӀокъ",
         "russian": "Барс",
         "pronunciation": "ЦӀокъ",
         "emoji": "🐆",
-        "hint": "Кавказский леопард"
+        "hint": "Кавказский леопард",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Етт",
         "russian": "Корова",
         "pronunciation": "Етт",
         "emoji": "🐄",
-        "hint": "Домашний скот"
+        "hint": "Домашний скот",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "УьстагӀ",
         "russian": "Овца",
         "pronunciation": "УьстагӀ",
         "emoji": "🐑",
-        "hint": "Стадное животное"
+        "hint": "Стадное животное",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Накхармоза",
         "russian": "Пчела",
         "pronunciation": "Накхармоза",
         "emoji": "🐝",
-        "hint": "Трудолюбивое насекомое"
+        "hint": "Трудолюбивое насекомое",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Котам",
         "russian": "Курица",
         "pronunciation": "Котам",
         "emoji": "🐔",
-        "hint": "Домашняя птица"
+        "hint": "Домашняя птица",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "БоргӀал",
         "russian": "Петух",
         "pronunciation": "БоргӀал",
         "emoji": "🐓",
-        "hint": "Самец домашней курицы"
+        "hint": "Самец домашней курицы",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Пхьагал",
         "russian": "Заяц",
         "pronunciation": "Пхьагал",
         "emoji": "🐇",
-        "hint": "Быстроногий зверёк"
+        "hint": "Быстроногий зверёк",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       }
     ]
   },
@@ -219,56 +301,80 @@
         "russian": "Красный",
         "pronunciation": "ЦӀен",
         "emoji": "🔴",
-        "hint": "Цвет огня"
+        "hint": "Цвет огня",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Сийна",
         "russian": "Синий",
         "pronunciation": "Сийна",
         "emoji": "🔵",
-        "hint": "Цвет неба"
+        "hint": "Цвет неба",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "baltoslav"
       },
       {
         "chechen": "Баьццара",
         "russian": "Зелёный",
         "pronunciation": "Баьц·цара",
         "emoji": "🟢",
-        "hint": "Цвет травы"
+        "hint": "Цвет травы",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Можа",
         "russian": "Жёлтый",
         "pronunciation": "Можа",
         "emoji": "🟡",
-        "hint": "Цвет солнца"
+        "hint": "Цвет солнца",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "КӀайн",
         "russian": "Белый",
         "pronunciation": "КӀайн",
         "emoji": "⚪",
-        "hint": "Цвет снега"
+        "hint": "Цвет снега",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Ӏаьржа",
         "russian": "Чёрный",
         "pronunciation": "Ӏаь·ржа",
         "emoji": "⚫",
-        "hint": "Цвет ночи"
+        "hint": "Цвет ночи",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Сира",
         "russian": "Серый",
         "pronunciation": "Сира",
         "emoji": "🩶",
-        "hint": "Нейтральный оттенок"
+        "hint": "Нейтральный оттенок",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Боьмаша",
         "russian": "Коричневый",
         "pronunciation": "Боьмаша",
         "emoji": "🟤",
-        "hint": "Цвет дерева и земли"
+        "hint": "Цвет дерева и земли",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       }
     ]
   },
@@ -284,70 +390,100 @@
         "russian": "Один",
         "pronunciation": "Цхьаъ",
         "emoji": "1️⃣",
-        "hint": "Число 1"
+        "hint": "Число 1",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Шиъ",
         "russian": "Два",
         "pronunciation": "Шиъ",
         "emoji": "2️⃣",
-        "hint": "Число 2"
+        "hint": "Число 2",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "gatitos"
       },
       {
         "chechen": "Кхоъ",
         "russian": "Три",
         "pronunciation": "Кхоъ",
         "emoji": "3️⃣",
-        "hint": "Число 3"
+        "hint": "Число 3",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Диъ",
         "russian": "Четыре",
         "pronunciation": "Диъ",
         "emoji": "4️⃣",
-        "hint": "Число 4"
+        "hint": "Число 4",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Пхиъ",
         "russian": "Пять",
         "pronunciation": "Пхиъ",
         "emoji": "5️⃣",
-        "hint": "Число 5"
+        "hint": "Число 5",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Ялх",
         "russian": "Шесть",
         "pronunciation": "Ялх",
         "emoji": "6️⃣",
-        "hint": "Число 6"
+        "hint": "Число 6",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "ВорхӀ",
         "russian": "Семь",
         "pronunciation": "ВорхӀ",
         "emoji": "7️⃣",
-        "hint": "Число 7"
+        "hint": "Число 7",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "БархӀ",
         "russian": "Восемь",
         "pronunciation": "БархӀ",
         "emoji": "8️⃣",
-        "hint": "Число 8"
+        "hint": "Число 8",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Исс",
         "russian": "Девять",
         "pronunciation": "Исс",
         "emoji": "9️⃣",
-        "hint": "Число 9"
+        "hint": "Число 9",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Итт",
         "russian": "Десять",
         "pronunciation": "Итт",
         "emoji": "🔟",
-        "hint": "Число 10"
+        "hint": "Число 10",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       }
     ]
   },
@@ -363,105 +499,150 @@
         "russian": "Мама",
         "pronunciation": "Нана",
         "emoji": "👩",
-        "hint": "Мать"
+        "hint": "Мать",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Да",
         "russian": "Отец",
         "pronunciation": "Да",
         "emoji": "👨",
-        "hint": "Отец"
+        "hint": "Отец",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Ваша",
         "russian": "Брат",
         "pronunciation": "Ваша",
         "emoji": "👦",
-        "hint": "Брат"
+        "hint": "Брат",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Йиша",
         "russian": "Сестра",
         "pronunciation": "Йиша",
         "emoji": "👧",
-        "hint": "Сестра"
+        "hint": "Сестра",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Деда",
         "russian": "Дедушка",
         "pronunciation": "Деда",
         "emoji": "👴",
-        "hint": "Дед по отцу"
+        "hint": "Дед по отцу",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "baltoslav"
       },
       {
         "chechen": "Денана",
         "russian": "Бабушка",
         "pronunciation": "Ден·ана",
         "emoji": "👵",
-        "hint": "Бабушка"
+        "hint": "Бабушка",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "ВоӀ",
         "russian": "Сын",
         "pronunciation": "ВоӀ",
         "emoji": "👶",
-        "hint": "Сын"
+        "hint": "Сын",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "ЙоӀ",
         "russian": "Дочь",
         "pronunciation": "ЙоӀ",
         "emoji": "👧",
-        "hint": "Дочь"
+        "hint": "Дочь",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Доьзал",
         "russian": "Семья",
         "pronunciation": "Доь·зал",
         "emoji": "👨‍👩‍👧",
-        "hint": "Родные люди"
+        "hint": "Родные люди",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Зуда",
         "russian": "Жена",
         "pronunciation": "Зуда",
         "emoji": "💍",
-        "hint": "Супруга"
+        "hint": "Супруга",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Майра",
         "russian": "Муж",
         "pronunciation": "Майра",
         "emoji": "💍",
-        "hint": "Супруг"
+        "hint": "Супруг",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Хьаша",
         "russian": "Гость",
         "pronunciation": "Хьа·ша",
         "emoji": "🏠",
-        "hint": "Гость в доме — священная традиция"
+        "hint": "Гость в доме — священная традиция",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "baltoslav"
       },
       {
         "chechen": "Даймохк",
         "russian": "Родина",
         "pronunciation": "Дай·мохк",
         "emoji": "🏔️",
-        "hint": "Чеченская земля, откуда ты родом"
+        "hint": "Чеченская земля, откуда ты родом",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Да-нана",
         "russian": "Родители",
         "pronunciation": "Да-нана",
         "emoji": "👪",
-        "hint": "Отец и мать"
+        "hint": "Отец и мать",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Тайпа",
         "russian": "Род",
         "pronunciation": "Тай·па",
         "emoji": "🌳",
-        "hint": "Родовая общность — основа чеченского общества"
+        "hint": "Родовая общность — основа чеченского общества",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       }
     ]
   },
@@ -477,63 +658,90 @@
         "russian": "Молоко",
         "pronunciation": "Шура",
         "emoji": "🥛",
-        "hint": "Молочный продукт"
+        "hint": "Молочный продукт",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Бепиг",
         "russian": "Хлеб",
         "pronunciation": "Бепиг",
         "emoji": "🍞",
-        "hint": "Основной продукт"
+        "hint": "Основной продукт",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Чай",
         "russian": "Чай",
         "pronunciation": "Чай",
         "emoji": "🍵",
-        "hint": "Горячий напиток"
+        "hint": "Горячий напиток",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Ӏаж",
         "russian": "Яблоко",
         "pronunciation": "Ӏаж",
         "emoji": "🍏",
-        "hint": "Фрукт"
+        "hint": "Фрукт",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Жижиг",
         "russian": "Мясо",
         "pronunciation": "Жижиг",
         "emoji": "🥩",
-        "hint": "Белковый продукт"
+        "hint": "Белковый продукт",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Чорпа",
         "russian": "Суп",
         "pronunciation": "Чорпа",
         "emoji": "🍲",
-        "hint": "Горячее блюдо"
+        "hint": "Горячее блюдо",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Нехча",
         "russian": "Сыр",
         "pronunciation": "Нехча",
         "emoji": "🧀",
-        "hint": "Молочный продукт"
+        "hint": "Молочный продукт",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "ЧӀара",
         "russian": "Рыба",
         "pronunciation": "ЧӀара",
         "emoji": "🐟",
-        "hint": "Морской продукт"
+        "hint": "Морской продукт",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Картол",
         "russian": "Картофель",
         "pronunciation": "Картол",
         "emoji": "🥔",
-        "hint": "Овощ"
+        "hint": "Овощ",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       }
     ]
   },
@@ -549,70 +757,100 @@
         "russian": "Вода",
         "pronunciation": "Хи",
         "emoji": "🌊",
-        "hint": "Течёт по долинам"
+        "hint": "Течёт по долинам",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Малх",
         "russian": "Солнце",
         "pronunciation": "Малх",
         "emoji": "☀️",
-        "hint": "Светило"
+        "hint": "Светило",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Лам",
         "russian": "Гора",
         "pronunciation": "Лам",
         "emoji": "🏔️",
-        "hint": "Кавказские вершины"
+        "hint": "Кавказские вершины",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Зезаг",
         "russian": "Цветок",
         "pronunciation": "Зезаг",
         "emoji": "🌷",
-        "hint": "Растение"
+        "hint": "Растение",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Хьун",
         "russian": "Лес",
         "pronunciation": "Хьун",
         "emoji": "🌲",
-        "hint": "Деревья и звери"
+        "hint": "Деревья и звери",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Стигал",
         "russian": "Небо",
         "pronunciation": "Сти·гал",
         "emoji": "🌌",
-        "hint": "Над головой"
+        "hint": "Над головой",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "ДогӀа",
         "russian": "Дождь",
         "pronunciation": "ДогӀа",
         "emoji": "🌧️",
-        "hint": "Осадки"
+        "hint": "Осадки",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Ло",
         "russian": "Снег",
         "pronunciation": "Ло",
         "emoji": "❄️",
-        "hint": "Зимой с неба"
+        "hint": "Зимой с неба",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Мох",
         "russian": "Ветер",
         "pronunciation": "Мох",
         "emoji": "💨",
-        "hint": "Дует с гор"
+        "hint": "Дует с гор",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Ӏалам",
         "russian": "Природа",
         "pronunciation": "Ӏалам",
         "emoji": "🌍",
-        "hint": "Всё вокруг"
+        "hint": "Всё вокруг",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       }
     ]
   },
@@ -628,70 +866,100 @@
         "russian": "Голова",
         "pronunciation": "Корта",
         "emoji": "🗣️",
-        "hint": "Часть тела"
+        "hint": "Часть тела",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "БӀаьрг",
         "russian": "Глаз",
         "pronunciation": "БӀаьрг",
         "emoji": "👁️",
-        "hint": "Орган зрения"
+        "hint": "Орган зрения",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Лерг",
         "russian": "Ухо",
         "pronunciation": "Лерг",
         "emoji": "👂",
-        "hint": "Орган слуха"
+        "hint": "Орган слуха",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Мара",
         "russian": "Нос",
         "pronunciation": "Мара",
         "emoji": "👃",
-        "hint": "Обоняние"
+        "hint": "Обоняние",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Бага",
         "russian": "Рот",
         "pronunciation": "Бага",
         "emoji": "👄",
-        "hint": "Для речи и еды"
+        "hint": "Для речи и еды",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Куьг",
         "russian": "Рука",
         "pronunciation": "Куьг",
         "emoji": "✋",
-        "hint": "Верхняя конечность"
+        "hint": "Верхняя конечность",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "ПӀелг",
         "russian": "Палец",
         "pronunciation": "ПӀелг",
         "emoji": "☝️",
-        "hint": "На руке"
+        "hint": "На руке",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Ког",
         "russian": "Нога",
         "pronunciation": "Ког",
         "emoji": "🦵",
-        "hint": "Нижняя конечность"
+        "hint": "Нижняя конечность",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Белш",
         "russian": "Плечо",
         "pronunciation": "Белш",
         "emoji": "💪",
-        "hint": "Верхняя часть руки"
+        "hint": "Верхняя часть руки",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Дог",
         "russian": "Сердце",
         "pronunciation": "Дог",
         "emoji": "❤️",
-        "hint": "Орган кровообращения"
+        "hint": "Орган кровообращения",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       }
     ]
   },
@@ -707,70 +975,100 @@
         "russian": "Дом",
         "pronunciation": "ЦӀа",
         "emoji": "🏠",
-        "hint": "Жилище"
+        "hint": "Жилище",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Чоь",
         "russian": "Комната",
         "pronunciation": "Чоь",
         "emoji": "🛋️",
-        "hint": "Помещение"
+        "hint": "Помещение",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Кор",
         "russian": "Окно",
         "pronunciation": "Кор",
         "emoji": "🪟",
-        "hint": "Свет в дом"
+        "hint": "Свет в дом",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "НеӀ",
         "russian": "Дверь",
         "pronunciation": "НеӀ",
         "emoji": "🚪",
-        "hint": "Вход"
+        "hint": "Вход",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Стол",
         "russian": "Стол",
         "pronunciation": "Стол",
         "emoji": "🍽️",
-        "hint": "Мебель — за ним едят"
+        "hint": "Мебель — за ним едят",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "ГӀант",
         "russian": "Стул",
         "pronunciation": "ГӀант",
         "emoji": "🪑",
-        "hint": "Сиденье"
+        "hint": "Сиденье",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Книга",
         "russian": "Книга",
         "pronunciation": "Книга",
         "emoji": "📚",
-        "hint": "Источник знаний"
+        "hint": "Источник знаний",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Къолам",
         "russian": "Карандаш",
         "pronunciation": "Къо·лам",
         "emoji": "✏️",
-        "hint": "Для письма"
+        "hint": "Для письма",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Газет",
         "russian": "Газета",
         "pronunciation": "Газет",
         "emoji": "📰",
-        "hint": "Печатное издание"
+        "hint": "Печатное издание",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Маьнга",
         "russian": "Кровать",
         "pronunciation": "Маьнга",
         "emoji": "🛏️",
-        "hint": "Место для сна"
+        "hint": "Место для сна",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       }
     ]
   },
@@ -786,105 +1084,150 @@
         "russian": "Идти",
         "pronunciation": "Ваха",
         "emoji": "🚶",
-        "hint": "Движение пешком"
+        "hint": "Движение пешком",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Ида",
         "russian": "Бежать",
         "pronunciation": "Ида",
         "emoji": "🏃",
-        "hint": "Быстрое движение"
+        "hint": "Быстрое движение",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Ӏан",
         "russian": "Сидеть",
         "pronunciation": "Ӏан",
         "emoji": "💺",
-        "hint": "Сидячая поза"
+        "hint": "Сидячая поза",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Латта",
         "russian": "Стоять",
         "pronunciation": "Латта",
         "emoji": "🧍",
-        "hint": "На ногах"
+        "hint": "На ногах",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Наб ян",
         "russian": "Спать",
         "pronunciation": "Наб ян",
         "emoji": "😴",
-        "hint": "Отдых ночью"
+        "hint": "Отдых ночью",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Даа",
         "russian": "Есть",
         "pronunciation": "Даа",
         "emoji": "🍽️",
-        "hint": "Принимать пищу"
+        "hint": "Принимать пищу",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "baltoslav"
       },
       {
         "chechen": "Мала",
         "russian": "Пить",
         "pronunciation": "Мала",
         "emoji": "🥤",
-        "hint": "Утолять жажду"
+        "hint": "Утолять жажду",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Дийца",
         "russian": "Говорить",
         "pronunciation": "Дийца",
         "emoji": "💬",
-        "hint": "Общаться"
+        "hint": "Общаться",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Деша",
         "russian": "Читать",
         "pronunciation": "Деша",
         "emoji": "📖",
-        "hint": "Воспринимать текст"
+        "hint": "Воспринимать текст",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "baltoslav"
       },
       {
         "chechen": "Яздан",
         "russian": "Писать",
         "pronunciation": "Яздан",
         "emoji": "✍️",
-        "hint": "Создавать текст"
+        "hint": "Создавать текст",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Хьажа",
         "russian": "Смотреть",
         "pronunciation": "Хьажа",
         "emoji": "👀",
-        "hint": "Наблюдать"
+        "hint": "Наблюдать",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "ЛадогӀа",
         "russian": "Слушать",
         "pronunciation": "ЛадогӀа",
         "emoji": "👂",
-        "hint": "Воспринимать звуки"
+        "hint": "Воспринимать звуки",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Хаа",
         "russian": "Знать",
         "pronunciation": "Хаа",
         "emoji": "🧠",
-        "hint": "Обладать знанием"
+        "hint": "Обладать знанием",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Болх бан",
         "russian": "Работать",
         "pronunciation": "Болх · бан",
         "emoji": "💼",
-        "hint": "Трудиться"
+        "hint": "Трудиться",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       },
       {
         "chechen": "Ловза",
         "russian": "Играть",
         "pronunciation": "Ловза",
         "emoji": "🎮",
-        "hint": "Развлечение"
+        "hint": "Развлечение",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
       }
     ]
   },
@@ -895,14 +1238,86 @@
     "icon": "✨",
     "color": "linear-gradient(135deg, #7c3aed, #5b21b6)",
     "words": [
-      {"chechen": "Дика", "russian": "Хороший", "pronunciation": "Дика", "emoji": "👍", "hint": "Положительная оценка"},
-      {"chechen": "Вон", "russian": "Плохой", "pronunciation": "Вон", "emoji": "👎", "hint": "Отрицательная оценка"},
-      {"chechen": "Доккха", "russian": "Большой", "pronunciation": "Доккха", "emoji": "⬆️", "hint": "Размер"},
-      {"chechen": "Жима", "russian": "Маленький", "pronunciation": "Жима", "emoji": "⬇️", "hint": "Размер"},
-      {"chechen": "ЦӀен", "russian": "Красный", "pronunciation": "ЦӀен", "emoji": "🔴", "hint": "Цвет"},
-      {"chechen": "Сийна", "russian": "Синий", "pronunciation": "Сийна", "emoji": "🔵", "hint": "Цвет"},
-      {"chechen": "Довха", "russian": "Горячий", "pronunciation": "Довха", "emoji": "🔥", "hint": "Температура"},
-      {"chechen": "Шийла", "russian": "Холодный", "pronunciation": "Ший·ла", "emoji": "❄️", "hint": "Температура"}
+      {
+        "chechen": "Дика",
+        "russian": "Хороший",
+        "pronunciation": "Дика",
+        "emoji": "👍",
+        "hint": "Положительная оценка",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
+      },
+      {
+        "chechen": "Вон",
+        "russian": "Плохой",
+        "pronunciation": "Вон",
+        "emoji": "👎",
+        "hint": "Отрицательная оценка",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
+      },
+      {
+        "chechen": "Доккха",
+        "russian": "Большой",
+        "pronunciation": "Доккха",
+        "emoji": "⬆️",
+        "hint": "Размер",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
+      },
+      {
+        "chechen": "Жима",
+        "russian": "Маленький",
+        "pronunciation": "Жима",
+        "emoji": "⬇️",
+        "hint": "Размер",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
+      },
+      {
+        "chechen": "ЦӀен",
+        "russian": "Красный",
+        "pronunciation": "ЦӀен",
+        "emoji": "🔴",
+        "hint": "Цвет",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
+      },
+      {
+        "chechen": "Сийна",
+        "russian": "Синий",
+        "pronunciation": "Сийна",
+        "emoji": "🔵",
+        "hint": "Цвет",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "baltoslav"
+      },
+      {
+        "chechen": "Довха",
+        "russian": "Горячий",
+        "pronunciation": "Довха",
+        "emoji": "🔥",
+        "hint": "Температура",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
+      },
+      {
+        "chechen": "Шийла",
+        "russian": "Холодный",
+        "pronunciation": "Ший·ла",
+        "emoji": "❄️",
+        "hint": "Температура",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
+      }
     ]
   },
   {
@@ -912,14 +1327,95 @@
     "icon": "💬",
     "color": "linear-gradient(135deg, #0d904f, #0a6e3c)",
     "words": [
-      {"chechen": "Маршалла хуьлда", "russian": "Здравствуйте", "pronunciation": "Маршалла хуьлда", "emoji": "💬", "hint": "Вежливое приветствие", "sources": ["dialang"], "reviewStatus": "source_checked"},
-      {"chechen": "Со ца кхета", "russian": "Я не понимаю", "pronunciation": "Со ца кхета", "emoji": "🤷", "hint": "Когда слышишь незнакомые слова"},
-      {"chechen": "Ӏодика йойла", "russian": "Хорошего дня", "pronunciation": "Ӏодика йойла", "emoji": "☀️", "hint": "Пожелание при расставании"},
-      {"chechen": "Марша Ӏайла", "russian": "До свидания", "pronunciation": "Марша Ӏайла", "emoji": "👋", "hint": "Прощание", "sources": ["dialang"], "reviewStatus": "source_checked"},
-      {"chechen": "Баркалла", "russian": "Спасибо", "pronunciation": "Баркалла", "emoji": "🙏", "hint": "Благодарность"},
-      {"chechen": "Бехк ма билла", "russian": "Извините", "pronunciation": "Бехк ма билла", "emoji": "🙂", "hint": "Вежливая просьба простить", "sources": ["dialang"], "reviewStatus": "source_checked"},
-      {"chechen": "Дика ду", "russian": "Хорошо", "pronunciation": "Дика ду", "emoji": "✅", "hint": "Положительный ответ"},
-      {"chechen": "Ӏуьйре дика хуьлда", "russian": "Доброе утро", "pronunciation": "Ӏуьйре дика хуьлда", "emoji": "🌅", "hint": "Утреннее приветствие"}
+      {
+        "chechen": "Маршалла хуьлда",
+        "russian": "Здравствуйте",
+        "pronunciation": "Маршалла хуьлда",
+        "emoji": "💬",
+        "hint": "Вежливое приветствие",
+        "sources": [
+          "dialang"
+        ],
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "dialang"
+      },
+      {
+        "chechen": "Со ца кхета",
+        "russian": "Я не понимаю",
+        "pronunciation": "Со ца кхета",
+        "emoji": "🤷",
+        "hint": "Когда слышишь незнакомые слова",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "gatitos"
+      },
+      {
+        "chechen": "Ӏодика йойла",
+        "russian": "Хорошего дня",
+        "pronunciation": "Ӏодика йойла",
+        "emoji": "☀️",
+        "hint": "Пожелание при расставании",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "gatitos"
+      },
+      {
+        "chechen": "Марша Ӏайла",
+        "russian": "До свидания",
+        "pronunciation": "Марша Ӏайла",
+        "emoji": "👋",
+        "hint": "Прощание",
+        "sources": [
+          "dialang"
+        ],
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "dialang"
+      },
+      {
+        "chechen": "Баркалла",
+        "russian": "Спасибо",
+        "pronunciation": "Баркалла",
+        "emoji": "🙏",
+        "hint": "Благодарность",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
+      },
+      {
+        "chechen": "Бехк ма билла",
+        "russian": "Извините",
+        "pronunciation": "Бехк ма билла",
+        "emoji": "🙂",
+        "hint": "Вежливая просьба простить",
+        "sources": [
+          "dialang"
+        ],
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "dialang"
+      },
+      {
+        "chechen": "Дика ду",
+        "russian": "Хорошо",
+        "pronunciation": "Дика ду",
+        "emoji": "✅",
+        "hint": "Положительный ответ",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
+      },
+      {
+        "chechen": "Ӏуьйре дика хуьлда",
+        "russian": "Доброе утро",
+        "pronunciation": "Ӏуьйре дика хуьлда",
+        "emoji": "🌅",
+        "hint": "Утреннее приветствие",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "gatitos"
+      }
     ]
   },
   {
@@ -929,14 +1425,86 @@
     "icon": "🗣️",
     "color": "linear-gradient(135deg, #1a73e8, #1557b0)",
     "words": [
-      {"chechen": "Хьан цӀе муха ю?", "russian": "Как тебя зовут?", "pronunciation": "Хьан цӀе муха ю", "emoji": "🗣️", "hint": "Знакомство"},
-      {"chechen": "Сан цӀе ю", "russian": "Меня зовут", "pronunciation": "Сан цӀе ю", "emoji": "🙂", "hint": "После фразы назови своё имя"},
-      {"chechen": "Маса шо ду хьан?", "russian": "Сколько тебе лет?", "pronunciation": "Маса шо ду хьан", "emoji": "🎂", "hint": "Вопрос о возрасте"},
-      {"chechen": "Хьо мичара ву?", "russian": "Откуда ты?", "pronunciation": "Хьо мичара ву", "emoji": "🗺️", "hint": "Форма обращения к мужчине"},
-      {"chechen": "Муха ву хьо?", "russian": "Как дела?", "pronunciation": "Муха ву хьо", "emoji": "❓", "hint": "Форма обращения к мужчине"},
-      {"chechen": "Со ца кхета", "russian": "Я не понимаю", "pronunciation": "Со ца кхета", "emoji": "🤷", "hint": "Попроси объяснить ещё раз"},
-      {"chechen": "Со кхета", "russian": "Я понимаю", "pronunciation": "Со кхета", "emoji": "✅", "hint": "Подтверждение понимания"},
-      {"chechen": "Баркалла", "russian": "Спасибо", "pronunciation": "Баркалла", "emoji": "🙏", "hint": "Вежливое завершение разговора"}
+      {
+        "chechen": "Хьан цӀе муха ю?",
+        "russian": "Как тебя зовут?",
+        "pronunciation": "Хьан цӀе муха ю",
+        "emoji": "🗣️",
+        "hint": "Знакомство",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "gatitos"
+      },
+      {
+        "chechen": "Сан цӀе ю",
+        "russian": "Меня зовут",
+        "pronunciation": "Сан цӀе ю",
+        "emoji": "🙂",
+        "hint": "После фразы назови своё имя",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "gatitos"
+      },
+      {
+        "chechen": "Маса шо ду хьан?",
+        "russian": "Сколько тебе лет?",
+        "pronunciation": "Маса шо ду хьан",
+        "emoji": "🎂",
+        "hint": "Вопрос о возрасте",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
+      },
+      {
+        "chechen": "Хьо мичара ву?",
+        "russian": "Откуда ты?",
+        "pronunciation": "Хьо мичара ву",
+        "emoji": "🗺️",
+        "hint": "Форма обращения к мужчине",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "gatitos"
+      },
+      {
+        "chechen": "Муха ву хьо?",
+        "russian": "Как дела?",
+        "pronunciation": "Муха ву хьо",
+        "emoji": "❓",
+        "hint": "Форма обращения к мужчине",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "gatitos"
+      },
+      {
+        "chechen": "Со ца кхета",
+        "russian": "Я не понимаю",
+        "pronunciation": "Со ца кхета",
+        "emoji": "🤷",
+        "hint": "Попроси объяснить ещё раз",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "gatitos"
+      },
+      {
+        "chechen": "Со кхета",
+        "russian": "Я понимаю",
+        "pronunciation": "Со кхета",
+        "emoji": "✅",
+        "hint": "Подтверждение понимания",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "gatitos"
+      },
+      {
+        "chechen": "Баркалла",
+        "russian": "Спасибо",
+        "pronunciation": "Баркалла",
+        "emoji": "🙏",
+        "hint": "Вежливое завершение разговора",
+        "reviewStatus": "source_checked",
+        "frequencyTier": "common",
+        "sourceRef": "maciev"
+      }
     ]
   }
 ]

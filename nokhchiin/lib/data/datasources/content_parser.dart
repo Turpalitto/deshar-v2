@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import '../../domain/entities/content_entities.dart';
+import '../../domain/entities/conversation_entities.dart';
 import '../../domain/entities/culture_capsule.dart';
 import 'content_parse_exception.dart';
 
@@ -308,3 +309,41 @@ List<CultureCapsule> parseCultureCapsules(String raw) => parseContentList(
   rootKey: 'capsules',
   parseItem: parseCultureCapsule,
 );
+
+ConversationCategoryDefinition parseConversationCategory(
+  Map<String, dynamic> json, {
+  String file = 'conversation_categories.json',
+}) {
+  final entries = <ConversationEntryRef>[];
+  final rawEntries = json['entries'];
+  if (rawEntries is List) {
+    for (final raw in rawEntries) {
+      if (raw is! Map<String, dynamic>) continue;
+      entries.add(
+        ConversationEntryRef(
+          chechen: _requireString(raw, 'chechen', file),
+          russian: _requireString(raw, 'russian', file),
+          quizTypes: (raw['quizTypes'] as List? ?? const [])
+              .map(VocabularyQuizType.fromJson)
+              .whereType<VocabularyQuizType>()
+              .toList(),
+        ),
+      );
+    }
+  }
+  return ConversationCategoryDefinition(
+    id: _requireString(json, 'id', file),
+    title: _requireString(json, 'title', file),
+    icon: _requireString(json, 'icon', file),
+    enabled: json['enabled'] as bool? ?? false,
+    entries: entries,
+  );
+}
+
+List<ConversationCategoryDefinition> parseConversationCategories(String raw) =>
+    parseContentList(
+      raw: raw,
+      file: 'conversation_categories.json',
+      rootKey: 'categories',
+      parseItem: parseConversationCategory,
+    );

@@ -1,6 +1,7 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import '../../domain/entities/word_progress_entity.dart';
 import '../../domain/entities/enums.dart';
+import '../../domain/entities/deck_entity.dart';
 import '../../core/utils/app_logger.dart';
 
 class LocalProgressDataSource {
@@ -74,29 +75,95 @@ class LocalProgressDataSource {
     'repetitions': p.repetitions,
     'nextReviewAt': p.nextReviewAt?.toIso8601String(),
     'lastReviewedAt': p.lastReviewedAt?.toIso8601String(),
+    'lastSuccessfulReviewAt': p.lastSuccessfulReviewAt?.toIso8601String(),
+    'successfulReviewDays': p.successfulReviewDays,
     'correctStreak': p.correctStreak,
     'wrongCount': p.wrongCount,
     'isFavorite': p.isFavorite,
     'seededFromPlacement': p.seededFromPlacement,
+    'deckIds': p.deckIds.toList()..sort(),
   };
 
-  WordProgressEntity _fromMap(String id, Map map) => WordProgressEntity(
-    wordId: id,
-    mastery: MasteryLevel.fromValue(map['mastery'] as int? ?? 0),
-    easeFactor: (map['easeFactor'] as num?)?.toDouble() ?? 2.5,
-    intervalDays: map['intervalDays'] as int? ?? 0,
-    repetitions: map['repetitions'] as int? ?? 0,
-    nextReviewAt: map['nextReviewAt'] != null
-        ? DateTime.parse(map['nextReviewAt'] as String)
-        : null,
-    lastReviewedAt: map['lastReviewedAt'] != null
-        ? DateTime.parse(map['lastReviewedAt'] as String)
-        : null,
-    correctStreak: map['correctStreak'] as int? ?? 0,
-    wrongCount: map['wrongCount'] as int? ?? 0,
-    isFavorite: map['isFavorite'] as bool? ?? false,
-    seededFromPlacement: map['seededFromPlacement'] as bool? ?? false,
-  );
+  WordProgressEntity _fromMap(String id, Map map) {
+    final mastery = MasteryLevel.fromValue(map['mastery'] as int? ?? 0);
+    final repetitions = map['repetitions'] as int? ?? 0;
+    final lastReviewedAt = _parseDate(map['lastReviewedAt']);
+    final migratedSuccessfulDays =
+        map['successfulReviewDays'] as int? ??
+        (mastery.isMastered ? 3 : repetitions.clamp(0, 2));
+
+    return WordProgressEntity(
+      wordId: id,
+      mastery: mastery,
+      easeFactor: (map['easeFactor'] as num?)?.toDouble() ?? 2.5,
+      intervalDays: map['intervalDays'] as int? ?? 0,
+      repetitions: repetitions,
+      nextReviewAt: _parseDate(map['nextReviewAt']),
+      lastReviewedAt: lastReviewedAt,
+      lastSuccessfulReviewAt:
+          _parseDate(map['lastSuccessfulReviewAt']) ??
+          (repetitions > 0 ? lastReviewedAt : null),
+      successfulReviewDays: migratedSuccessfulDays,
+      correctStreak: map['correctStreak'] as int? ?? 0,
+      wrongCount: map['wrongCount'] as int? ?? 0,
+      isFavorite: map['isFavorite'] as bool? ?? false,
+      seededFromPlacement: map['seededFromPlacement'] as bool? ?? false,
+      deckIds: {
+        for (final id in (map['deckIds'] as List? ?? const []))
+          if (id is String && id.isNotEmpty) id,
+      },
+    );
+  }
+
+  DateTime? _parseDate(Object? value) {
+    if (value == null) return null;
+    return DateTime.tryParse(value.toString());
+  }
+}
+
+class LocalDeckDataSource {
+  static const boxName = 'decks_v1';
+
+  Future<void> init() async {
+    if (!Hive.isBoxOpen(boxName)) {
+      await Hive.openBox<Map>(boxName);
+    }
+  }
+
+  Box<Map> get _box => Hive.box<Map>(boxName);
+
+  Future<List<DeckEntity>> getAll() async {
+    final decks = <DeckEntity>[];
+    for (final value in _box.values) {
+      final id = value['id'];
+      final title = value['title'];
+      if (id is! String || title is! String || title.trim().isEmpty) continue;
+      decks.add(
+        DeckEntity(
+          id: id,
+          title: title,
+          isSystem: false,
+          createdAt: DateTime.tryParse(value['createdAt']?.toString() ?? ''),
+        ),
+      );
+    }
+    decks.sort(
+      (a, b) =>
+          (a.createdAt ?? DateTime(0)).compareTo(b.createdAt ?? DateTime(0)),
+    );
+    return decks;
+  }
+
+  Future<void> save(DeckEntity deck) async {
+    if (deck.isSystem) return;
+    await _box.put(deck.id, {
+      'id': deck.id,
+      'title': deck.title,
+      'createdAt': deck.createdAt?.toIso8601String(),
+    });
+  }
+
+  Future<void> delete(String deckId) => _box.delete(deckId);
 }
 
 class LocalUserDataSource {

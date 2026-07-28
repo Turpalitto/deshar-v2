@@ -5,6 +5,17 @@ import '../../domain/repositories/repositories.dart';
 
 /// Единая загрузка и подготовка слов для всех игровых упражнений.
 abstract final class ExerciseWordPool {
+  static Future<List<WordEntity>> loadForIds(
+    DictionaryRepository repo,
+    List<String> ids, {
+    required int take,
+    Random? rng,
+  }) async {
+    final words = await repo.getWordsByIds(ids);
+    words.shuffle(rng ?? Random());
+    return words.take(take).toList();
+  }
+
   /// Слова юнита (lessons-first) + добор из lesson pool при нехватке.
   static Future<List<WordEntity>> loadForUnit(
     DictionaryRepository repo,

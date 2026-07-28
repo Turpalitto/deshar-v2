@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "categories": [
+    {
+      "id": "introductions",
+      "title": "Знакомство",
+      "icon": "👋",
+      "enabled": true,
+      "entries": [
+        {"chechen": "Маршалла", "russian": "Привет", "quizTypes": ["chooseMeaning", "chooseReply"]},
+        {"chechen": "Хьан цӀе муха ю?", "russian": "Как тебя зовут?", "quizTypes": ["chooseMeaning", "answerReply"]},
+        {"chechen": "Сан цӀе ю", "russian": "Меня зовут", "quizTypes": ["completePhrase", "assemblePhrase"]},
+        {"chechen": "Муха ву хьо?", "russian": "Как дела?", "quizTypes": ["chooseReply", "answerReply"]}
+      ]
+    },
+    {
+      "id": "family",
+      "title": "Семья",
+      "icon": "👨‍👩‍👧",
+      "enabled": false,
+      "entries": []
+    },
+    {
+      "id": "home",
+      "title": "Дома",
+      "icon": "🏠",
+      "enabled": false,
+      "entries": []
+    },
+    {
+      "id": "guests",
+      "title": "В гостях",
+      "icon": "🍵",
+      "enabled": true,
+      "entries": [
+        {"chechen": "Марша догӀийла", "russian": "Добро пожаловать", "quizTypes": ["chooseMeaning", "chooseReply"]},
+        {"chechen": "Баркалла", "russian": "Спасибо", "quizTypes": ["chooseWord", "answerReply"]}
+      ]
+    },
+    {
+      "id": "with_child",
+      "title": "Общение с ребёнком",
+      "icon": "🧸",
+      "enabled": false,
+      "entries": []
+    },
+    {
+      "id": "requests",
+      "title": "Просьбы",
+      "icon": "🙏",
+      "enabled": false,
+      "entries": []
+    },
+    {
+      "id": "gratitude",
+      "title": "Благодарность",
+      "icon": "💚",
+      "enabled": true,
+      "entries": [
+        {"chechen": "Баркалла", "russian": "Спасибо", "quizTypes": ["chooseMeaning", "chooseWord", "answerReply"]}
+      ]
+    },
+    {
+      "id": "road",
+      "title": "Дорога",
+      "icon": "🗺️",
+      "enabled": false,
+      "entries": []
+    },
+    {
+      "id": "shopping",
+      "title": "Покупки",
+      "icon": "🛍️",
+      "enabled": false,
+      "entries": []
+    },
+    {
+      "id": "health",
+      "title": "Здоровье",
+      "icon": "🩺",
+      "enabled": false,
+      "entries": []
+    },
+    {
+      "id": "emotions",
+      "title": "Эмоции",
+      "icon": "🙂",
+      "enabled": false,
+      "entries": []
+    },
+    {
+      "id": "phone",
+      "title": "Телефонный разговор",
+      "icon": "☎️",
+      "enabled": false,
+      "entries": []
+    },
+    {
+      "id": "elders",
+      "title": "Общение со старшими",
+      "icon": "🤝",
+      "enabled": true,
+      "entries": [
+        {"chechen": "Маршалла хуьлда", "russian": "Здравствуйте", "quizTypes": ["chooseMeaning", "chooseReply"]},
+        {"chechen": "Марша Ӏайла", "russian": "До свидания", "quizTypes": ["chooseMeaning", "answerReply"]}
+      ]
+    }
+  ]
+}

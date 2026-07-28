@@ -23,11 +23,15 @@ class QuizScreen extends ConsumerStatefulWidget {
   const QuizScreen({
     super.key,
     required this.unitId,
+    this.deckId,
+    this.wordIds,
     this.embedded = false,
     this.maxQuestions,
     this.onComplete,
   });
   final String unitId;
+  final String? deckId;
+  final List<String>? wordIds;
   final bool embedded;
   final int? maxQuestions;
   final VoidCallback? onComplete;
@@ -59,13 +63,29 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
       mode: profile?.mode ?? AppMode.kids,
       age: profile?.ageGroup ?? KidsAgeGroup.age6to9,
     );
-    final words = await ExerciseWordPool.loadForUnit(
-      ref.read(dictionaryRepoProvider),
-      widget.unitId,
-      minCount: optionCount,
-      take: 20,
-      rng: _rng,
-    );
+    final dictionary = ref.read(dictionaryRepoProvider);
+    final deckId = widget.deckId;
+    final words = widget.wordIds != null
+        ? await ExerciseWordPool.loadForIds(
+            dictionary,
+            widget.wordIds!,
+            take: 20,
+            rng: _rng,
+          )
+        : deckId == null
+        ? await ExerciseWordPool.loadForUnit(
+            dictionary,
+            widget.unitId,
+            minCount: optionCount,
+            take: 20,
+            rng: _rng,
+          )
+        : await ExerciseWordPool.loadForIds(
+            dictionary,
+            await ref.read(deckRepoProvider).getWordIds(deckId),
+            take: 20,
+            rng: _rng,
+          );
     if (mounted) {
       setState(() {
         _words = words;

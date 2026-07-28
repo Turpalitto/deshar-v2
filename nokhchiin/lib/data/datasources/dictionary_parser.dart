@@ -1,4 +1,5 @@
 import '../../core/utils/chechen_text_utils.dart';
+import '../../domain/entities/content_metadata.dart';
 import '../../domain/entities/dictionary_entry.dart';
 import '../../domain/entities/entry_type.dart';
 
@@ -43,7 +44,27 @@ class DictionaryParser {
       category: category.isEmpty ? null : category,
       pronunciation: pronunciation.isEmpty ? null : pronunciation,
       sources: sources,
+      examples: _examples(row),
+      frequencyTier: FrequencyTier.fromJson(row['frequencyTier']),
+      languageRegister: LanguageRegister.fromJson(row['register']),
+      region: _optional(row['region']),
+      reviewStatus: ReviewStatus.fromJson(row['reviewStatus']),
+      sourceRef: _optional(row['sourceRef']),
+      audioId: _optional(row['audioId']),
+      license: _optional(row['license']),
     );
+  }
+
+  List<ExamplePair> _examples(Map<String, dynamic> row) {
+    final ce = _optional(row['exampleCe']);
+    final ru = _optional(row['exampleRu']);
+    if (ce == null || ru == null) return const [];
+    return [ExamplePair(chechen: ce, russian: ru)];
+  }
+
+  String? _optional(Object? value) {
+    if (value is! String || value.trim().isEmpty) return null;
+    return value.trim();
   }
 
   /// Автоматическая классификация по эвристикам.

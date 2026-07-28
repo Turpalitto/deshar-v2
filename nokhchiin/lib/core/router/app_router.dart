@@ -19,6 +19,7 @@ import '../../features/profile/profile_screen.dart';
 import '../../features/review/review_screen.dart';
 import '../../features/worlds/worlds_map_screen.dart';
 import '../../features/collections/collections_screen.dart';
+import '../../features/collections/deck_detail_screen.dart';
 import '../../features/boss/boss_screen.dart';
 import '../../features/stories/stories_list_screen.dart';
 import '../../features/stories/story_reader_screen.dart';
@@ -26,6 +27,10 @@ import '../../features/progress/progress_screen.dart';
 import '../../features/legal/legal_document_screen.dart';
 import '../../features/games/typing_exercise_screen.dart';
 import '../../features/culture/culture_capsule_preview_screen.dart';
+import '../../features/today/today_screen.dart';
+import '../../features/conversations/conversation_screen.dart';
+import '../../features/games/kids_games_screen.dart';
+import '../../features/home/kids_session_screen.dart';
 import '../design/widgets/app_shell.dart';
 import 'route_transitions.dart';
 
@@ -73,14 +78,22 @@ final appRouter = GoRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: '/worlds',
-              builder: (_, _) => const WorldsMapScreen(),
+              path: '/collections',
+              builder: (_, _) => const CollectionsScreen(),
             ),
+            GoRoute(path: '/games', builder: (_, _) => const KidsGamesScreen()),
           ],
         ),
         StatefulShellBranch(
           routes: [
-            GoRoute(path: '/review', builder: (_, _) => const ReviewScreen()),
+            GoRoute(
+              path: '/dictionary',
+              builder: (_, _) => const DictionaryScreen(),
+            ),
+            GoRoute(
+              path: '/phrases',
+              builder: (_, _) => const ConversationScreen(),
+            ),
           ],
         ),
         StatefulShellBranch(
@@ -95,6 +108,18 @@ final appRouter = GoRouter(
       path: '/path',
       pageBuilder: (context, state) =>
           _fadeScale(state, const LearningPathScreen()),
+    ),
+    GoRoute(
+      parentNavigatorKey: _rootNavigatorKey,
+      path: '/today/new',
+      pageBuilder: (context, state) =>
+          _fadeScale(state, const TodayNewWordsScreen()),
+    ),
+    GoRoute(
+      parentNavigatorKey: _rootNavigatorKey,
+      path: '/today/quiz',
+      pageBuilder: (context, state) =>
+          _fadeScale(state, const TodayQuizScreen()),
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
@@ -117,9 +142,20 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
-      path: '/dictionary',
+      path: '/worlds',
       pageBuilder: (context, state) =>
-          _fadeScale(state, const DictionaryScreen()),
+          _fadeScale(state, const WorldsMapScreen()),
+    ),
+    GoRoute(
+      parentNavigatorKey: _rootNavigatorKey,
+      path: '/review',
+      pageBuilder: (context, state) => _fadeScale(state, const ReviewScreen()),
+    ),
+    GoRoute(
+      parentNavigatorKey: _rootNavigatorKey,
+      path: '/kids/session',
+      pageBuilder: (context, state) =>
+          _fadeScale(state, const KidsSessionScreen()),
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
@@ -161,15 +197,61 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
-      path: '/collections',
-      pageBuilder: (context, state) =>
-          _fadeScale(state, const CollectionsScreen()),
+      path: '/deck/:id',
+      pageBuilder: (context, state) => _fadeScale(
+        state,
+        DeckDetailScreen(deckId: state.pathParameters['id']!),
+      ),
+    ),
+    GoRoute(
+      parentNavigatorKey: _rootNavigatorKey,
+      path: '/deck/:id/flashcards',
+      pageBuilder: (context, state) => _fadeScale(
+        state,
+        FlashcardsScreen(
+          unitId: 'deck',
+          deckId: state.pathParameters['id']!,
+          deckFilter: state.uri.queryParameters['filter'],
+        ),
+      ),
+    ),
+    GoRoute(
+      parentNavigatorKey: _rootNavigatorKey,
+      path: '/deck/:id/quiz',
+      pageBuilder: (context, state) => _fadeScale(
+        state,
+        QuizScreen(unitId: 'deck', deckId: state.pathParameters['id']!),
+      ),
+    ),
+    GoRoute(
+      parentNavigatorKey: _rootNavigatorKey,
+      path: '/deck/:id/match',
+      pageBuilder: (context, state) => _fadeScale(
+        state,
+        MatchScreen(unitId: 'deck', deckId: state.pathParameters['id']!),
+      ),
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
       path: '/stories',
       pageBuilder: (context, state) =>
           _fadeScale(state, const StoriesListScreen()),
+    ),
+    GoRoute(
+      parentNavigatorKey: _rootNavigatorKey,
+      path: '/phrases/:id',
+      pageBuilder: (context, state) => _fadeScale(
+        state,
+        ConversationDetailScreen(categoryId: state.pathParameters['id']!),
+      ),
+    ),
+    GoRoute(
+      parentNavigatorKey: _rootNavigatorKey,
+      path: '/phrases/:id/quiz',
+      pageBuilder: (context, state) => _fadeScale(
+        state,
+        ConversationQuizScreen(categoryId: state.pathParameters['id']!),
+      ),
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,

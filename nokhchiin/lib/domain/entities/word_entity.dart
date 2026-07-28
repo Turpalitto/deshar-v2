@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'content_metadata.dart';
 import 'enums.dart';
 
 /// Единая сущность слова — центр всей платформы.
@@ -21,6 +22,13 @@ class WordEntity extends Equatable {
     this.tags = const [],
     this.hint,
     this.nounClass,
+    this.frequencyTier,
+    this.languageRegister,
+    this.region,
+    this.reviewStatus = ReviewStatus.draft,
+    this.sourceRef,
+    this.audioId,
+    this.license,
   });
 
   final String id;
@@ -40,6 +48,13 @@ class WordEntity extends Equatable {
   final List<String> tags;
   final String? hint;
   final NounClass? nounClass;
+  final FrequencyTier? frequencyTier;
+  final LanguageRegister? languageRegister;
+  final String? region;
+  final ReviewStatus reviewStatus;
+  final String? sourceRef;
+  final String? audioId;
+  final String? license;
 
   bool get isPhrase =>
       chechen.contains(' ') || partOfSpeech == PartOfSpeech.phrase;
@@ -61,6 +76,13 @@ class WordEntity extends Equatable {
     List<String>? tags,
     String? hint,
     NounClass? nounClass,
+    FrequencyTier? frequencyTier,
+    LanguageRegister? languageRegister,
+    String? region,
+    ReviewStatus? reviewStatus,
+    String? sourceRef,
+    String? audioId,
+    String? license,
   }) {
     return WordEntity(
       id: id,
@@ -80,6 +102,13 @@ class WordEntity extends Equatable {
       tags: tags ?? this.tags,
       hint: hint ?? this.hint,
       nounClass: nounClass ?? this.nounClass,
+      frequencyTier: frequencyTier ?? this.frequencyTier,
+      languageRegister: languageRegister ?? this.languageRegister,
+      region: region ?? this.region,
+      reviewStatus: reviewStatus ?? this.reviewStatus,
+      sourceRef: sourceRef ?? this.sourceRef,
+      audioId: audioId ?? this.audioId,
+      license: license ?? this.license,
     );
   }
 

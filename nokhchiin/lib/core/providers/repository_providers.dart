@@ -12,6 +12,14 @@ final progressRepoProvider = Provider<ProgressRepository>(
   (ref) => ProgressRepositoryImpl(ref.watch(progressLocalProvider)),
 );
 
+final deckRepoProvider = Provider<DeckRepository>(
+  (ref) => DeckRepositoryImpl(
+    ref.watch(deckLocalProvider),
+    ref.watch(progressRepoProvider),
+    ref.watch(dictionaryRepoProvider),
+  ),
+);
+
 final learningPathRepoProvider = Provider<LearningPathRepository>(
   (ref) => LearningPathRepositoryImpl(
     ref.watch(assetDictSourceProvider),

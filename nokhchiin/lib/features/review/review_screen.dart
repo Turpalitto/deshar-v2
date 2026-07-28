@@ -57,6 +57,110 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
     return 'через ${diff.inDays} дн';
   }
 
+  Future<void> _submitRating(
+    String wordId,
+    int quality, {
+    required bool remembered,
+  }) async {
+    await ref.read(reviewWordUseCaseProvider)(wordId, quality);
+    await ref.read(userProfileProvider.notifier).recordReview();
+    if (!mounted) return;
+    if (remembered) _correct++;
+    setState(() {
+      _showAnswer = false;
+      _index++;
+    });
+  }
+
+  Widget _ratingButton({
+    required String label,
+    required int quality,
+    required String wordId,
+    required Color color,
+    Color? textColor,
+  }) {
+    return Expanded(
+      child: NokhchiinButton(
+        label: label,
+        color: color,
+        textColor: textColor,
+        onPressed: () =>
+            _submitRating(wordId, quality, remembered: quality >= 3),
+      ),
+    );
+  }
+
+  Widget _ratingControls({
+    required AppMode mode,
+    required String wordId,
+    required Color accent,
+    required DesignTokens tokens,
+  }) {
+    if (mode == AppMode.kids) {
+      return Row(
+        children: [
+          _ratingButton(
+            label: 'Не помню',
+            quality: 1,
+            wordId: wordId,
+            color: tokens.accentMuted,
+            textColor: tokens.accent,
+          ),
+          const SizedBox(width: 12),
+          _ratingButton(
+            label: 'Помню',
+            quality: 4,
+            wordId: wordId,
+            color: accent,
+          ),
+        ],
+      );
+    }
+
+    return Column(
+      children: [
+        Row(
+          children: [
+            _ratingButton(
+              label: 'Снова',
+              quality: 1,
+              wordId: wordId,
+              color: tokens.accentMuted,
+              textColor: tokens.accent,
+            ),
+            const SizedBox(width: 12),
+            _ratingButton(
+              label: 'Трудно',
+              quality: 3,
+              wordId: wordId,
+              color: tokens.surfaceMuted,
+              textColor: tokens.textSecondary,
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            _ratingButton(
+              label: 'Хорошо',
+              quality: 4,
+              wordId: wordId,
+              color: accent,
+            ),
+            const SizedBox(width: 12),
+            _ratingButton(
+              label: 'Легко',
+              quality: 5,
+              wordId: wordId,
+              color: DesignTokens.gold,
+              textColor: tokens.textPrimary,
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final due = ref.watch(dueWordsProvider);
@@ -267,46 +371,11 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                     onPressed: () => setState(() => _showAnswer = true),
                   )
                 else
-                  Row(
-                    children: [
-                      Expanded(
-                        child: NokhchiinButton(
-                          label: 'Не помню',
-                          color: tokens.accentMuted,
-                          textColor: tokens.accent,
-                          onPressed: () async {
-                            await ref.read(reviewWordUseCaseProvider)(w.id, 1);
-                            await ref
-                                .read(userProfileProvider.notifier)
-                                .recordReview();
-                            if (!mounted) return;
-                            setState(() {
-                              _showAnswer = false;
-                              _index++;
-                            });
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: NokhchiinButton(
-                          label: 'Помню ✓',
-                          color: accent,
-                          onPressed: () async {
-                            await ref.read(reviewWordUseCaseProvider)(w.id, 5);
-                            await ref
-                                .read(userProfileProvider.notifier)
-                                .recordReview();
-                            if (!mounted) return;
-                            _correct++;
-                            setState(() {
-                              _showAnswer = false;
-                              _index++;
-                            });
-                          },
-                        ),
-                      ),
-                    ],
+                  _ratingControls(
+                    mode: profile.mode,
+                    wordId: w.id,
+                    accent: accent,
+                    tokens: tokens,
                   ),
               ],
             ),

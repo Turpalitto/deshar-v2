@@ -23,8 +23,10 @@ class _FakeProgressRepo implements ProgressRepository {
   }
 
   @override
-  Future<List<WordProgressEntity>> getDueForReview() async =>
-      _data.values.where((p) => p.repetitions > 0 && p.needsReview).toList();
+  Future<List<WordProgressEntity>> getDueForReview({DateTime? now}) async {
+    final timestamp = now ?? DateTime.now();
+    return _data.values.where((p) => p.needsReviewAt(timestamp)).toList();
+  }
 
   @override
   Future<List<String>> getFavorites() async =>

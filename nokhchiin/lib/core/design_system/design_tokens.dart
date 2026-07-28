@@ -54,10 +54,16 @@ class DesignTokens {
 
   /// Культурные цвета чеченской идентичности (орнаменты, раздел «Культура»).
   /// Сохраняются поверх deshar-палитры как акценты наследия.
-  static const meadow = Color(0xFF1B6B4A);
-  static const meadowMuted = Color(0xFFD4F0E0);
-  static const gold = Color(0xFFD4A84B);
-  static const goldMuted = Color(0xFFFFF4D4);
+  static const meadow = Color(0xFF167D5A);
+  static const meadowMuted = Color(0xFFD9F2E5);
+  static const terracotta = Color(0xFFC95E3D);
+  static const terracottaMuted = Color(0xFFFFE1D8);
+  static const gold = Color(0xFFB77900);
+  static const goldMuted = Color(0xFFFFF0C2);
+  static const coral = Color(0xFFC33A55);
+  static const coralMuted = Color(0xFFFFE0E6);
+  static const sky = Color(0xFF2E6EAE);
+  static const skyMuted = Color(0xFFDDEBFA);
   static const cultureDark = Color(0xFF1E1510);
   static const cultureAccent = Color(0xFFE8A87C);
 
@@ -68,21 +74,17 @@ class DesignTokens {
     IosAccentVariant accent = IosAccentVariant.meadow,
   }) {
     final a = _accentPair(accent, isDark: false);
-    // Editorial-luxury палитра: тёплый крем (#F7F4EF — токен Figma Make)
-    // вместо холодного серо-белого, эспрессо-нейтрали вместо сине-серых.
-    // Раньше фон был холодный (#FAFBFC), а орнамент/культура — тёплые:
-    // смешение тёплых и холодных серых — типовой маркер шаблонного дизайна.
+    // Lively iOS palette: calm green-tinted neutrals with semantic accents
+    // for learning, speech, rare vocabulary, favorites, and personal decks.
     return DesignTokens(
-      background: const Color(0xFFF7F4EF),
+      background: const Color(0xFFF4F7F5),
       backgroundElevated: const Color(0xFFFFFFFF),
       surface: const Color(0xFFFFFFFF),
-      surfaceMuted: const Color(0xFFF0EBE2),
-      separator: const Color(0xFFE9E2D6),
-      textPrimary: const Color(0xFF26201A),
-      // Тёплые серые той же (эспрессо) температуры. Контраст на #F7F4EF:
-      // #5C5347 ≈ 6.2:1, #6E6558 ≈ 4.7:1 — WCAG AA соблюдён.
-      textSecondary: const Color(0xFF5C5347),
-      textTertiary: const Color(0xFF6E6558),
+      surfaceMuted: const Color(0xFFE8EFEB),
+      separator: const Color(0xFFD9E3DE),
+      textPrimary: const Color(0xFF18211D),
+      textSecondary: const Color(0xFF5F6D66),
+      textTertiary: const Color(0xFF7B8982),
       accent: a.$1,
       accentMuted: a.$2,
       accentOn: const Color(0xFFFFFFFF),
@@ -129,16 +131,16 @@ class DesignTokens {
       IosAccentVariant.meadow =>
         isDark
             ? (const Color(0xFF2ECC71), const Color(0xFF1A3A28))
-            : (const Color(0xFF1B6B4A), const Color(0xFFD4F0E0)),
+            : (meadow, meadowMuted),
       // Терракота — культурный акцент (орнамент, heritage).
       IosAccentVariant.terracotta =>
         isDark
             ? (const Color(0xFFE8A87C), const Color(0xFF5C3D2E))
-            : (const Color(0xFFC4724E), const Color(0xFFF5E0D4)),
+            : (terracotta, terracottaMuted),
       IosAccentVariant.sunGold =>
         isDark
             ? (const Color(0xFFF0D78C), const Color(0xFF5C4A20))
-            : (const Color(0xFFD4A84B), const Color(0xFFF8ECD0)),
+            : (gold, goldMuted),
     };
   }
 

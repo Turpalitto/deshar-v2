@@ -1,9 +1,10 @@
 /// Нормализация чеченского текста для поиска (палочка Ӏ и варианты ввода).
 abstract final class ChechenTextUtils {
-  /// U+04CF CYRILLIC LETTER PALOCHKA
-  static const palochka = '\u04CF';
+  /// Каноническое написание в контенте: U+04C0 CYRILLIC LETTER PALOCHKA.
+  static const palochka = '\u04C0';
+  static const _lowercasePalochka = '\u04CF';
 
-  /// Нормализует ввод для сопоставления: 1/I/l/| → Ӏ, lower case, без лишних пробелов.
+  /// Нормализует ввод для сопоставления: Ӏ/ӏ/1/I/l/| → один search-key.
   static String normalizeForSearch(String input) {
     final buffer = StringBuffer();
     for (final rune in input.runes) {
@@ -19,6 +20,7 @@ abstract final class ChechenTextUtils {
 
   static bool _isPalochkaAlias(String ch) {
     return ch == palochka ||
+        ch == _lowercasePalochka ||
         ch == '1' ||
         ch == 'I' ||
         ch == 'i' ||

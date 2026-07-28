@@ -95,7 +95,7 @@ class StoryPanelEntity extends Equatable {
   final List<StoryDialogueLine> dialogue;
 
   @override
-  List<Object?> get props => [imageKey];
+  List<Object?> get props => [imageKey, narrationRu, dialogue];
 }
 
 class StoryQuizEntity extends Equatable {
@@ -110,7 +110,7 @@ class StoryQuizEntity extends Equatable {
   final List<String> options;
 
   @override
-  List<Object?> get props => [question];
+  List<Object?> get props => [question, answer, options];
 }
 
 class StoryEntity extends Equatable {

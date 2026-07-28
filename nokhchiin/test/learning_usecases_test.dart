@@ -24,8 +24,10 @@ class _FakeProgressRepo implements ProgressRepository {
   }
 
   @override
-  Future<List<WordProgressEntity>> getDueForReview() async =>
-      _data.values.where((p) => p.repetitions > 0 && p.needsReview).toList();
+  Future<List<WordProgressEntity>> getDueForReview({DateTime? now}) async {
+    final timestamp = now ?? DateTime.now();
+    return _data.values.where((p) => p.needsReviewAt(timestamp)).toList();
+  }
 
   @override
   Future<List<String>> getFavorites() async =>
@@ -162,7 +164,7 @@ void main() {
     });
 
     test('returns due words sorted by next review date', () async {
-      final now = DateTime.now();
+      final now = DateTime(2026, 7, 28, 12);
       final useCase = GetDueWordsUseCase(
         _FakeProgressRepo({
           'w1': WordProgressEntity(
@@ -182,7 +184,7 @@ void main() {
         _FakeDictionaryRepo(_words),
       );
 
-      final due = await useCase();
+      final due = await useCase(now: now);
 
       expect(due.length, 2);
       final ids = due.map((w) => w.id).toSet();
@@ -190,7 +192,7 @@ void main() {
     });
 
     test('respects limit parameter', () async {
-      final now = DateTime.now();
+      final now = DateTime(2026, 7, 28, 12);
       final useCase = GetDueWordsUseCase(
         _FakeProgressRepo({
           'w1': WordProgressEntity(
@@ -215,7 +217,7 @@ void main() {
         _FakeDictionaryRepo(_words),
       );
 
-      final due = await useCase(limit: 2);
+      final due = await useCase(limit: 2, now: now);
       expect(due.length, 2);
     });
   });

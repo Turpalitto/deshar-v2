@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 
+import 'content_metadata.dart';
 import 'entry_type.dart';
 
 /// Чистая модель записи словаря для presentation-слоя.
@@ -20,6 +21,13 @@ class DictionaryEntry extends Equatable {
     this.pronunciation,
     this.sources = const [],
     this.favorite = false,
+    this.frequencyTier,
+    this.languageRegister,
+    this.region,
+    this.reviewStatus = ReviewStatus.draft,
+    this.sourceRef,
+    this.audioId,
+    this.license,
   });
 
   final String id;
@@ -51,6 +59,13 @@ class DictionaryEntry extends Equatable {
 
   /// Избранное (синхронизируется с Hive через repository).
   final bool favorite;
+  final FrequencyTier? frequencyTier;
+  final LanguageRegister? languageRegister;
+  final String? region;
+  final ReviewStatus reviewStatus;
+  final String? sourceRef;
+  final String? audioId;
+  final String? license;
 
   bool get isWord => type == EntryType.word;
   bool get isSentence => type == EntryType.sentence;
@@ -67,6 +82,13 @@ class DictionaryEntry extends Equatable {
     pronunciation: pronunciation,
     sources: sources,
     favorite: favorite ?? this.favorite,
+    frequencyTier: frequencyTier,
+    languageRegister: languageRegister,
+    region: region,
+    reviewStatus: reviewStatus,
+    sourceRef: sourceRef,
+    audioId: audioId,
+    license: license,
   );
 
   @override

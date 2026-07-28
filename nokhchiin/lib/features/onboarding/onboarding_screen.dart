@@ -187,8 +187,8 @@ class _BrandHeader extends StatelessWidget {
                 ),
               ),
               Text(
-                'Чеченский язык · ${formatThousands(dictionaryWordCount)}+ '
-                '${pluralize(dictionaryWordCount, one: 'слово', few: 'слова', many: 'слов')}',
+                'Чеченский язык · ${formatThousands(dictionaryEntryCount)}+ '
+                '${pluralize(dictionaryEntryCount, one: 'запись', few: 'записи', many: 'записей')}',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(

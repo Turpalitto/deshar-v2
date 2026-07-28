@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/entities/word_entity.dart';
 import '../../domain/repositories/repositories.dart';
+import '../../domain/services/daily_content_selector.dart';
 import 'repository_providers.dart';
 
 /// Детерминированное «слово дня» для произвольной календарной даты — один и
@@ -20,11 +21,10 @@ Future<WordEntity?> wordForDate(
   DateTime date,
 ) async {
   final all = await repo.getCuratedWords();
-  if (all.isEmpty) return null;
-
-  final seed = date.year * 372 + date.month * 31 + date.day;
-  final index = seed % all.length;
-  return all[index];
+  return const DailyContentSelector().wordOfDayForDate(
+    date: date,
+    curatedWords: all,
+  );
 }
 
 /// «Слово дня» — одна и та же запись словаря для всех пользователей в

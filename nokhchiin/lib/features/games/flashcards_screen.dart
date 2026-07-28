@@ -22,10 +22,16 @@ class FlashcardsScreen extends ConsumerStatefulWidget {
   const FlashcardsScreen({
     super.key,
     required this.unitId,
+    this.deckId,
+    this.deckFilter,
+    this.wordIds,
     this.embedded = false,
     this.onComplete,
   });
   final String unitId;
+  final String? deckId;
+  final String? deckFilter;
+  final List<String>? wordIds;
   final bool embedded;
   final VoidCallback? onComplete;
 
@@ -54,13 +60,46 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
       mode: profile?.mode ?? AppMode.kids,
       age: profile?.ageGroup ?? KidsAgeGroup.age6to9,
     );
-    final words = await ExerciseWordPool.loadForUnit(
-      ref.read(dictionaryRepoProvider),
-      widget.unitId,
-      minCount: 1,
-      take: limit,
-      rng: _rng,
-    );
+    final dictionary = ref.read(dictionaryRepoProvider);
+    final deckId = widget.deckId;
+    late final List<WordEntity> words;
+    if (widget.wordIds != null) {
+      words = await ExerciseWordPool.loadForIds(
+        dictionary,
+        widget.wordIds!,
+        take: limit,
+        rng: _rng,
+      );
+    } else if (deckId == null) {
+      words = await ExerciseWordPool.loadForUnit(
+        dictionary,
+        widget.unitId,
+        minCount: 1,
+        take: limit,
+        rng: _rng,
+      );
+    } else {
+      var ids = await ref.read(deckRepoProvider).getWordIds(deckId);
+      final progress = await ref.read(progressRepoProvider).getAllProgress();
+      final now = DateTime.now();
+      if (widget.deckFilter == 'new') {
+        ids = [
+          for (final id in ids)
+            if ((progress[id]?.mastery.isLearned ?? false) == false) id,
+        ];
+      } else if (widget.deckFilter == 'due') {
+        ids = [
+          for (final id in ids)
+            if (progress[id]?.needsReviewAt(now) ?? false) id,
+        ];
+      }
+      words = await ExerciseWordPool.loadForIds(
+        dictionary,
+        ids,
+        take: limit,
+        rng: _rng,
+      );
+    }
     if (mounted) {
       setState(() {
         _words = words;

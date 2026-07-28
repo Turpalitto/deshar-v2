@@ -45,10 +45,12 @@
       "emoji": "🍲",
       "panels": [
         {
+          "imageKey": "family_table",
           "narrationRu": "Нана зовёт всю семью за стол.",
           "dialogue": [{"speaker": "Нана", "chechen": "Кхига!", "russian": "Ешьте!"}]
         },
         {
+          "imageKey": "family_thanks",
           "narrationRu": "Дети благодарят маму.",
           "dialogue": [{"speaker": "Бен", "chechen": "Хьоьга баркалла, нана!", "russian": "Тебе спасибо, мама!"}]
         }

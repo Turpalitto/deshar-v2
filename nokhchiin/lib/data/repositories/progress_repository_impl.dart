@@ -18,15 +18,14 @@ class ProgressRepositoryImpl implements ProgressRepository {
       _local.save(progress);
 
   @override
-  Future<List<WordProgressEntity>> getDueForReview() async {
+  Future<List<WordProgressEntity>> getDueForReview({DateTime? now}) async {
     final all = await _local.getAll();
     // Фильтр: только слова, которые реально изучались (repetitions > 0).
     // Предотвращает попадание случайно увиденных слов в SRS-очередь.
     // Аудит logic §7.
-    final now = DateTime.now();
-    return all.values
-        .where((p) => p.repetitions > 0 && p.needsReviewAt(now))
-        .toList();
+    final timestamp = now ?? DateTime.now();
+    return all.values.where((p) => p.needsReviewAt(timestamp)).toList()
+      ..sort((a, b) => a.nextReviewAt!.compareTo(b.nextReviewAt!));
   }
 
   @override

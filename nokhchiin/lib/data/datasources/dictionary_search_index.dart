@@ -4,14 +4,25 @@ import '../../domain/entities/entry_type.dart';
 
 /// Memory-conscious search over the bundled dictionary.
 ///
-/// Entries already own normalized [DictionaryEntry.searchTokens]. Keeping a
-/// second postings graph for 134k entries more than doubled Android memory and
-/// pushed profile PSS above 650 MB. A bounded scan is a better trade-off here:
-/// the UI debounces queries and only asks for the first few hundred matches.
+/// Entries already own normalized [DictionaryEntry.searchTokens]. A complete
+/// postings graph for 134k entries more than doubled Android memory, so this
+/// index keeps only compact first-rune buckets and performs a bounded scan
+/// inside the relevant bucket.
 class DictionarySearchIndex {
-  DictionarySearchIndex(List<DictionaryEntry> entries) : _all = entries;
+  DictionarySearchIndex(List<DictionaryEntry> entries) : _all = entries {
+    for (final entry in entries) {
+      final bucketKeys = <String>{};
+      for (final token in entry.searchTokens) {
+        if (token.isNotEmpty) bucketKeys.add(_firstRune(token));
+      }
+      for (final key in bucketKeys) {
+        (_firstRuneBuckets[key] ??= []).add(entry);
+      }
+    }
+  }
 
   final List<DictionaryEntry> _all;
+  final Map<String, List<DictionaryEntry>> _firstRuneBuckets = {};
 
   int get length => _all.length;
   List<DictionaryEntry> get all => List.unmodifiable(_all);
@@ -32,9 +43,18 @@ class DictionarySearchIndex {
         .toList();
     if (terms.isEmpty) return const [];
 
+    final first = terms.first;
+    final candidates = <DictionaryEntry>{};
+    for (final key in {
+      if (first.$1.isNotEmpty) _firstRune(first.$1),
+      if (first.$2.isNotEmpty) _firstRune(first.$2),
+    }) {
+      candidates.addAll(_firstRuneBuckets[key] ?? const []);
+    }
+
     final exact = <DictionaryEntry>[];
     final prefix = <DictionaryEntry>[];
-    for (final entry in _all) {
+    for (final entry in candidates) {
       if (typeFilter != null && entry.type != typeFilter) continue;
 
       var allMatch = true;
@@ -71,4 +91,7 @@ class DictionarySearchIndex {
 
   List<DictionaryEntry> favorites() =>
       _all.where((entry) => entry.favorite).toList();
+
+  static String _firstRune(String value) =>
+      String.fromCharCode(value.runes.first);
 }

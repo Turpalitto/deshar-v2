@@ -2,11 +2,19 @@ import 'package:flutter/services.dart';
 
 import '../../core/utils/app_logger.dart';
 import '../../domain/entities/content_entities.dart';
+import '../../domain/entities/conversation_entities.dart';
 import '../../domain/entities/culture_capsule.dart';
 import 'content_parse_exception.dart';
 import 'content_parser.dart';
 
 class ContentDataSource {
+  Future<List<ConversationCategoryDefinition>> loadConversationCategories() =>
+      _loadList(
+        asset: 'assets/data/conversation_categories.json',
+        label: 'conversation categories',
+        parse: parseConversationCategories,
+      );
+
   Future<List<CultureCapsule>> loadCultureCapsules() => _loadList(
     asset: 'assets/data/culture_capsules.json',
     label: 'culture capsules',

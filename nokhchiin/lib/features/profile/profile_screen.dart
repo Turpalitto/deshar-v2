@@ -228,11 +228,31 @@ class ProfileScreen extends ConsumerWidget {
               border: Border.all(color: accent.withValues(alpha: 0.2)),
             ),
             child: Text(
-              'Интервальное повторение (SRS) — открой раздел «Повтор» в таб-баре.',
+              isKids
+                  ? 'Повторения входят в короткие занятия.'
+                  : 'Интервальные повторения находятся в разделе «Сегодня».',
               style: Theme.of(context).textTheme.bodySmall,
             ),
           ),
           const SizedBox(height: AppSpacing.lg),
+          if (!isKids) ...[
+            Text(
+              'Дополнительно',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            NokhchiinSettingsRow(
+              iconAsset: AppIcons.cultureHeritage,
+              label: 'Разговорник',
+              onTap: () => context.push('/phrases'),
+            ),
+            NokhchiinSettingsRow(
+              iconAsset: AppIcons.navWorlds,
+              label: 'Миры и игровой путь',
+              onTap: () => context.push('/worlds'),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+          ],
           Text('Режим обучения', style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: AppSpacing.sm),
           SizedBox(
@@ -346,8 +366,14 @@ class ProfileScreen extends ConsumerWidget {
           const SizedBox(height: AppSpacing.sm),
           SwitchListTile(
             value: profile.chechenUiEnabled,
-            onChanged: (v) =>
-                ref.read(userProfileProvider.notifier).setChechenUiEnabled(v),
+            onChanged: (value) => _guarded(
+              context,
+              ref,
+              needsGate: isKids,
+              action: () => ref
+                  .read(userProfileProvider.notifier)
+                  .setChechenUiEnabled(value),
+            ),
             title: const Text('Интерфейс на чеченском'),
             subtitle: const Text(
               'Immersion mode — кнопки и подписи на нохчийн мотт',
@@ -392,20 +418,25 @@ class ProfileScreen extends ConsumerWidget {
             label: 'Уведомления',
             trailing: Switch.adaptive(
               value: profile.notificationsEnabled,
-              onChanged: (value) async {
-                final ok = await ref
-                    .read(userProfileProvider.notifier)
-                    .setNotificationsEnabled(value);
-                if (value && !ok && context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        'Включите уведомления в настройках устройства, чтобы получать напоминания',
+              onChanged: (value) => _guarded(
+                context,
+                ref,
+                needsGate: isKids,
+                action: () async {
+                  final ok = await ref
+                      .read(userProfileProvider.notifier)
+                      .setNotificationsEnabled(value);
+                  if (value && !ok && context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'Включите уведомления в настройках устройства, чтобы получать напоминания',
+                        ),
                       ),
-                    ),
-                  );
-                }
-              },
+                    );
+                  }
+                },
+              ),
             ),
           ),
           const SizedBox(height: AppSpacing.sm),

@@ -85,7 +85,7 @@ class _StoryReaderScreenState extends ConsumerState<StoryReaderScreen> {
     }
 
     final panel = _panels[_panel];
-    final unitId = _story!.unitId;
+    final visual = _panelVisual(panel, _story!);
 
     // Единый шелл AppScaffold вместо голого Scaffold+AppBar — раньше в
     // приложении было 4 несовместимых системы шапки экрана (аудит §3/§8).
@@ -105,7 +105,11 @@ class _StoryReaderScreenState extends ConsumerState<StoryReaderScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            WordIllustration(category: unitId, emoji: _story!.emoji, size: 200),
+            WordIllustration(
+              category: visual.category,
+              emoji: visual.emoji,
+              size: 200,
+            ),
             const SizedBox(height: 16),
             Text(
               panel.narrationRu,
@@ -146,6 +150,19 @@ class _StoryReaderScreenState extends ConsumerState<StoryReaderScreen> {
       ),
     );
   }
+
+  ({String category, String? emoji}) _panelVisual(
+    StoryPanelEntity panel,
+    StoryEntity story,
+  ) => switch (panel.imageKey) {
+    'meadow_morning' => (category: 'nature', emoji: '🌄'),
+    'fox_meets_bear' => (category: 'animals', emoji: '🐻'),
+    'fox_thanks' => (category: 'food', emoji: '🍎'),
+    'sunset' => (category: 'nature', emoji: '🌇'),
+    'family_table' => (category: 'food', emoji: '🍲'),
+    'family_thanks' => (category: 'family', emoji: '🙏'),
+    _ => (category: story.unitId, emoji: story.emoji),
+  };
 
   Widget _buildQuiz(BuildContext context) {
     if (_quizIndex >= _quiz.length) {

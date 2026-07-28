@@ -6,7 +6,7 @@ import 'nokhchiin_theme.dart';
 
 /// Светлая/тёмная схема (системная или ручная).
 final themeBrightnessProvider = StateProvider<ThemeMode>(
-  (_) => ThemeMode.system,
+  (_) => ThemeMode.light,
 );
 
 /// Активная тема с учётом режима пользователя (kids/adult).

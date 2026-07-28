@@ -225,6 +225,20 @@ void main() {
         );
       }
     });
+
+    test('bundled capsules have local illustrations', () {
+      final raw = File('assets/data/culture_capsules.json').readAsStringSync();
+      final capsules = parseCultureCapsules(raw);
+
+      for (final capsule in capsules) {
+        expect(capsule.imagePath, isNotNull, reason: capsule.id);
+        expect(
+          File(capsule.imagePath!).existsSync(),
+          isTrue,
+          reason: '${capsule.id} references a missing illustration',
+        );
+      }
+    });
   });
 
   group('parseWorlds list', () {
@@ -234,5 +248,16 @@ void main() {
         throwsA(isA<ContentParseException>()),
       );
     });
+  });
+
+  test('bundled story panels have stable illustration keys', () {
+    final raw = File('assets/data/stories.json').readAsStringSync();
+    final stories = parseStories(raw);
+
+    for (final story in stories) {
+      for (final panel in story.panels) {
+        expect(panel.imageKey.trim(), isNotEmpty, reason: story.id);
+      }
+    }
   });
 }

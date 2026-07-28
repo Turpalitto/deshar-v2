@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:uuid/uuid.dart';
 
 import '../../domain/entities/enums.dart';
+import '../../domain/entities/content_metadata.dart';
 import '../../domain/entities/word_entity.dart';
 import '../../core/utils/dictionary_labels.dart';
 
@@ -99,8 +100,17 @@ WordEntity _fromLesson(Map<String, dynamic> j, String category) {
     category: category,
     sources: const ['lessons'],
     emoji: j['emoji'] as String?,
-    tags: const ['verified'],
+    tags: const [],
     hint: j['hint'] as String?,
+    frequencyTier: FrequencyTier.fromJson(j['frequencyTier']),
+    languageRegister: LanguageRegister.fromJson(j['register']),
+    region: j['region'] as String?,
+    reviewStatus: ReviewStatus.fromJson(j['reviewStatus']),
+    sourceRef: j['sourceRef'] as String?,
+    exampleCe: j['exampleCe'] as String?,
+    exampleRu: j['exampleRu'] as String?,
+    audioId: j['audioId'] as String?,
+    license: j['license'] as String?,
   );
 }
 
@@ -116,9 +126,18 @@ WordEntity _fromCurated(Map<String, dynamic> j) {
     category: j['category'] as String?,
     sources: List<String>.from(j['sources'] ?? ['curated']),
     emoji: j['emoji'] as String?,
-    tags: const ['verified'],
+    tags: const [],
     hint: j['hint'] as String?,
     nounClass: NounClass.fromCode(j['nounClass'] as String?),
+    frequencyTier: FrequencyTier.fromJson(j['frequencyTier']),
+    languageRegister: LanguageRegister.fromJson(j['register']),
+    region: j['region'] as String?,
+    reviewStatus: ReviewStatus.fromJson(j['reviewStatus']),
+    sourceRef: j['sourceRef'] as String?,
+    exampleCe: j['exampleCe'] as String?,
+    exampleRu: j['exampleRu'] as String?,
+    audioId: j['audioId'] as String?,
+    license: j['license'] as String?,
   );
 }
 
@@ -138,6 +157,15 @@ WordEntity _fromDictionary(Map<String, dynamic> j) {
     sources: sources,
     emoji: j['emoji'] as String?,
     nounClass: NounClass.fromCode(j['nounClass'] as String?),
+    frequencyTier: FrequencyTier.fromJson(j['frequencyTier']),
+    languageRegister: LanguageRegister.fromJson(j['register']),
+    region: j['region'] as String?,
+    reviewStatus: ReviewStatus.fromJson(j['reviewStatus']),
+    sourceRef: j['sourceRef'] as String?,
+    exampleCe: j['exampleCe'] as String?,
+    exampleRu: j['exampleRu'] as String?,
+    audioId: j['audioId'] as String?,
+    license: j['license'] as String?,
   );
 }
 

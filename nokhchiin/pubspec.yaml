@@ -74,6 +74,8 @@ flutter:
     - assets/data/bosses.json
     - assets/data/illustrations_manifest.json
     - assets/data/culture_capsules.json
+    - assets/data/conversation_categories.json
+    - assets/data/audio_manifest.json
     # Явный список вместо всей директории: остальные файлы в
     # assets/images/brand/ (icon.png, splash-icon.png, android-icon-*.png,
     # favicon.png) — это исходники для flutter_launcher_icons/

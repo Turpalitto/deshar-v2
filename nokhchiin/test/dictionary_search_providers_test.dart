@@ -16,9 +16,19 @@ class _FakeDictionaryDataSource extends AssetDictionaryDataSource {
 
   final List<WordEntity> _words;
   bool shouldFail = false;
+  int curatedLoads = 0;
+  int fullLoads = 0;
 
   @override
   Future<Result<List<WordEntity>>> loadBundledDictionary() async {
+    fullLoads++;
+    if (shouldFail) return Failure(Exception('boom'));
+    return Success(_words);
+  }
+
+  @override
+  Future<Result<List<WordEntity>>> loadCuratedWords() async {
+    curatedLoads++;
     if (shouldFail) return Failure(Exception('boom'));
     return Success(_words);
   }
@@ -39,7 +49,8 @@ class _FakeProgressRepo implements ProgressRepository {
   }
 
   @override
-  Future<List<WordProgressEntity>> getDueForReview() async => const [];
+  Future<List<WordProgressEntity>> getDueForReview({DateTime? now}) async =>
+      const [];
 
   @override
   Future<List<String>> getFavorites() async =>
@@ -81,6 +92,23 @@ ProviderContainer _makeContainer(
 
 void main() {
   group('DictionarySearchNotifier — пагинация', () {
+    test(
+      'full dictionary is loaded only after explicit scope switch',
+      () async {
+        final dataSource = _FakeDictionaryDataSource(_generateWords(100));
+        final container = _makeContainer(dataSource);
+
+        await container.read(dictionarySearchProvider.future);
+        expect(dataSource.curatedLoads, 1);
+        expect(dataSource.fullLoads, 0);
+
+        container.read(dictionaryScopeProvider.notifier).state =
+            DictionaryScope.full;
+        await container.read(dictionarySearchProvider.future);
+        expect(dataSource.fullLoads, 1);
+      },
+    );
+
     test('loadMore дописывает страницы, а не заменяет их', () async {
       final container = _makeContainer(
         _FakeDictionaryDataSource(_generateWords(100)),

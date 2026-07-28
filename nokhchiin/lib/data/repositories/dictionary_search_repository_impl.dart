@@ -27,14 +27,30 @@ class DictionarySearchRepositoryImpl implements DictionarySearchRepository {
   List<DictionaryEntry>? _entries;
   DictionarySearchIndex? _index;
   Map<String, DictionaryEntry>? _byId;
+  List<DictionaryEntry>? _coreEntries;
+  DictionarySearchIndex? _coreIndex;
+  Map<String, DictionaryEntry>? _coreById;
   Set<String>? _favoriteIds;
   Future<void>? _loadFuture;
+  Future<void>? _coreLoadFuture;
   Object? _loadError;
   StackTrace? _loadStackTrace;
+  int _activeCount = 0;
 
-  Future<void> _ensureLoaded() async {
+  Future<void> _ensureLoaded({required bool fullDictionary}) async {
+    if (!fullDictionary) {
+      if (_coreEntries != null) return;
+      _coreLoadFuture ??= _loadCore();
+      try {
+        await _coreLoadFuture;
+      } catch (_) {
+        _coreLoadFuture = null;
+        rethrow;
+      }
+      return;
+    }
     if (_entries != null) return;
-    _loadFuture ??= _load();
+    _loadFuture ??= _loadFull();
     await _loadFuture;
     if (_loadError != null) {
       // Не мемоизируем провал — следующий вызов должен реально повторить
@@ -49,7 +65,23 @@ class DictionarySearchRepositoryImpl implements DictionarySearchRepository {
     }
   }
 
-  Future<void> _load() async {
+  Future<void> _loadCore() async {
+    final result = await _assets.loadCuratedWords();
+    final words = switch (result) {
+      Success(:final data) => data,
+      Failure(:final error, :final stackTrace) => Error.throwWithStackTrace(
+        error,
+        stackTrace ?? StackTrace.current,
+      ),
+    };
+    await _ensureFavoritesLoaded();
+    _coreEntries = words.map(_entryFromWord).toList()
+      ..sort((a, b) => a.chechen.compareTo(b.chechen));
+    _coreById = {for (final entry in _coreEntries!) entry.id: entry};
+    _coreIndex = DictionarySearchIndex(_coreEntries!);
+  }
+
+  Future<void> _loadFull() async {
     try {
       final result = await _assets.loadBundledDictionary();
       final List<WordEntity> words;
@@ -68,39 +100,17 @@ class DictionarySearchRepositoryImpl implements DictionarySearchRepository {
           return;
       }
 
-      // datasource возвращает List<WordEntity> из legacy parser.
-      // Здесь маппим в DictionaryEntry через DictionaryParser.
-      final parser = const DictionaryParser();
-      final entries = <DictionaryEntry>[];
-
-      // Сначала читаем сырой JSON напрямую для полной классификации.
-      // WordEntity уже потерял часть инфо (hint, quality) — но для
-      // classification достаточно ce/ru/category.
-      for (final w in words) {
-        final entry = parser.parse(
-          {
-            'chechen': w.chechen,
-            'russian': w.russian,
-            'category': w.category,
-            'pronunciation': w.pronunciation,
-            'sources': w.sources,
-          },
-          // Тот же id, что и в WordEntity — избранное/прогресс словаря
-          // должны совпадать с играми/SRS, которые ключуются по WordEntity.id.
-          idFactory: (ce, ru) => w.id,
-        );
-        entries.add(entry);
-      }
+      final entries = words.map(_entryFromWord).toList();
       _assets.releaseBundledDictionaryCache();
 
       // Дедуп по id.
       final seen = <String>{};
-      _entries = entries.where((e) => seen.add(e.id)).toList()
-        ..sort((a, b) => a.chechen.compareTo(b.chechen));
+      // dictionary.json уже имеет стабильный порядок сборки. Повторная
+      // сортировка 134k presentation-моделей на каждом запуске не нужна.
+      _entries = entries.where((e) => seen.add(e.id)).toList();
 
       // Favorites из Hive.
-      final favIds = await _progress.getFavorites();
-      _favoriteIds = favIds.toSet();
+      await _ensureFavoritesLoaded();
       _entries = _entries!
           .map((e) => e.copyWith(favorite: _favoriteIds!.contains(e.id)))
           .toList();
@@ -124,8 +134,33 @@ class DictionarySearchRepositoryImpl implements DictionarySearchRepository {
     }
   }
 
+  DictionaryEntry _entryFromWord(WordEntity word) {
+    final parser = const DictionaryParser();
+    final entry = parser.parse({
+      'chechen': word.chechen,
+      'russian': word.russian,
+      'category': word.category,
+      'pronunciation': word.pronunciation,
+      'sources': word.sources,
+      'frequencyTier': word.frequencyTier?.name,
+      'register': word.languageRegister?.name,
+      'region': word.region,
+      'reviewStatus': word.reviewStatus.jsonValue,
+      'sourceRef': word.sourceRef,
+      'exampleCe': word.exampleCe,
+      'exampleRu': word.exampleRu,
+      'audioId': word.audioId,
+      'license': word.license,
+    }, idFactory: (_, _) => word.id);
+    return entry.copyWith(favorite: _favoriteIds?.contains(word.id) ?? false);
+  }
+
+  Future<void> _ensureFavoritesLoaded() async {
+    _favoriteIds ??= (await _progress.getFavorites()).toSet();
+  }
+
   @override
-  int get totalCount => _entries?.length ?? 0;
+  int get totalCount => _activeCount;
 
   @override
   Future<DictionarySearchResult> search({
@@ -134,14 +169,17 @@ class DictionarySearchRepositoryImpl implements DictionarySearchRepository {
     required int pageSize,
     EntryType? typeFilter,
     bool favoritesOnly = false,
+    bool fullDictionary = false,
   }) async {
-    await _ensureLoaded();
+    await _ensureLoaded(fullDictionary: fullDictionary);
     final q = query.trim();
-    final index = _index!;
+    final index = fullDictionary ? _index! : _coreIndex!;
+    final entries = fullDictionary ? _entries! : _coreEntries!;
+    _activeCount = entries.length;
 
     List<DictionaryEntry> base;
     if (q.isEmpty) {
-      base = _entries!;
+      base = entries;
     } else {
       // typeFilter передаётся в индекс, а не пост-фильтруется: раньше
       // top-500 по score могли быть все одного типа, и пост-фильтр по
@@ -174,20 +212,29 @@ class DictionarySearchRepositoryImpl implements DictionarySearchRepository {
 
   @override
   Future<DictionaryEntry?> getById(String id) async {
-    await _ensureLoaded();
+    await _ensureLoaded(fullDictionary: false);
+    final core = _coreById?[id];
+    if (core != null) return core;
+    await _ensureLoaded(fullDictionary: true);
     return _byId?[id];
   }
 
   @override
   Future<List<DictionaryEntry>> getRelated(String id, {int limit = 10}) async {
-    await _ensureLoaded();
-    final entry = _byId?[id];
+    await _ensureLoaded(fullDictionary: false);
+    var sourceEntries = _coreEntries!;
+    var entry = _coreById?[id];
+    if (entry == null) {
+      await _ensureLoaded(fullDictionary: true);
+      sourceEntries = _entries!;
+      entry = _byId?[id];
+    }
     if (entry == null) return const [];
 
     final related = <DictionaryEntry>[];
     // По категории.
     if (entry.category != null) {
-      for (final e in _entries!) {
+      for (final e in sourceEntries) {
         if (e.id == id) continue;
         if (e.category == entry.category) related.add(e);
         if (related.length >= limit) break;
@@ -195,7 +242,7 @@ class DictionarySearchRepositoryImpl implements DictionarySearchRepository {
     }
     // По общим токенам (если ещё не хватает).
     if (related.length < limit) {
-      for (final e in _entries!) {
+      for (final e in sourceEntries) {
         if (e.id == id) continue;
         if (related.any((r) => r.id == e.id)) continue;
         if (e.searchTokens.intersection(entry.searchTokens).isNotEmpty) {
@@ -209,19 +256,31 @@ class DictionarySearchRepositoryImpl implements DictionarySearchRepository {
 
   @override
   Future<List<DictionaryEntry>> getFavorites() async {
-    await _ensureLoaded();
+    await _ensureLoaded(fullDictionary: true);
     return _entries!.where((e) => e.favorite).toList();
   }
 
   @override
   Future<void> toggleFavorite(String id) async {
     await _progress.toggleFavorite(id);
-    final e = _byId?[id];
+    await _ensureLoaded(fullDictionary: false);
+    var e = _coreById?[id] ?? _byId?[id];
+    if (e == null) {
+      await _ensureLoaded(fullDictionary: true);
+      e = _byId?[id];
+    }
     if (e == null) return;
     final updated = e.copyWith(favorite: !e.favorite);
-    _byId![id] = updated;
-    final idx = _entries!.indexWhere((x) => x.id == id);
-    if (idx >= 0) _entries![idx] = updated;
+    if (_coreById?.containsKey(id) == true) {
+      _coreById![id] = updated;
+      final index = _coreEntries!.indexWhere((item) => item.id == id);
+      if (index >= 0) _coreEntries![index] = updated;
+    }
+    if (_byId?.containsKey(id) == true) {
+      _byId![id] = updated;
+      final index = _entries!.indexWhere((item) => item.id == id);
+      if (index >= 0) _entries![index] = updated;
+    }
     if (updated.favorite) {
       _favoriteIds?.add(id);
     } else {

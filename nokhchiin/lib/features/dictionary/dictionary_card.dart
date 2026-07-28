@@ -4,10 +4,6 @@ import '../../core/design_system/design_system.dart';
 import '../../domain/entities/dictionary_entry.dart';
 import '../../domain/entities/entry_type.dart';
 
-/// Карточка записи словаря — Apple Dictionary style.
-///
-/// Минимальная, элегантная. Не перегружена. Иконка типа, чеченский,
-/// перевод, бейдж типа, кнопка избранного. Никакого сырого текста.
 class DictionaryCard extends StatelessWidget {
   const DictionaryCard({
     super.key,
@@ -23,128 +19,120 @@ class DictionaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tokens = context.iosTokens;
+    final color = _typeColor(entry.type, tokens);
 
     return Semantics(
       button: true,
       label: '${entry.chechen} — ${entry.russian}. ${entry.type.label}',
       child: Material(
-        color: Colors.transparent,
+        color: tokens.surface,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(14),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            child: Row(
-              children: [
-                // Иконка типа
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: _typeColor(
-                      entry.type,
-                      tokens,
-                    ).withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    entry.type.emoji,
-                    style: const TextStyle(fontSize: 18),
-                  ),
-                ),
-                const SizedBox(width: 14),
-                // Текст
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        entry.preview,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: tokens.textPrimary,
-                          letterSpacing: 0.2,
-                        ),
-                      ),
-                      const SizedBox(height: 3),
-                      Text(
-                        entry.russian,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: tokens.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 10),
-                // Бейдж типа (только не word — для слов не показываем)
-                if (entry.type != EntryType.word &&
-                    entry.type != EntryType.unknown)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 64),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(12, 8, 6, 8),
+              child: Row(
+                children: [
+                  DecoratedBox(
                     decoration: BoxDecoration(
-                      color: _typeColor(
-                        entry.type,
-                        tokens,
-                      ).withValues(alpha: 0.08),
+                      color: color.withValues(alpha: tokens.isDark ? 0.2 : 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Text(
-                      entry.type.label,
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w600,
-                        color: _typeColor(entry.type, tokens),
+                    child: SizedBox.square(
+                      dimension: 40,
+                      child: Icon(
+                        _typeIcon(entry.type),
+                        color: color,
+                        size: 20,
                       ),
                     ),
                   ),
-                // Favorite
-                IconButton(
-                  icon: Icon(
-                    entry.favorite
-                        ? Icons.favorite_rounded
-                        : Icons.favorite_border_rounded,
-                    size: 18,
-                    color: entry.favorite
-                        ? Colors.redAccent
-                        : tokens.textTertiary,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          entry.preview,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: tokens.textPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          entry.russian,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: tokens.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  onPressed: onFavorite,
-                  tooltip: 'Избранное',
-                  padding: EdgeInsets.zero,
-                  // HIG-минимум 44×44 (аудит §3) — карточка тапается тысячи раз.
-                  constraints: const BoxConstraints(
-                    minWidth: 44,
-                    minHeight: 44,
+                  if (entry.type != EntryType.word &&
+                      entry.type != EntryType.unknown)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 6),
+                      child: Text(
+                        entry.type.label,
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          color: color,
+                        ),
+                      ),
+                    ),
+                  IconButton(
+                    icon: Icon(
+                      entry.favorite
+                          ? Icons.favorite_rounded
+                          : Icons.favorite_border_rounded,
+                      size: 20,
+                      color: entry.favorite
+                          ? tokens.error
+                          : tokens.textTertiary,
+                    ),
+                    onPressed: onFavorite,
+                    tooltip: entry.favorite
+                        ? 'Удалить из избранного'
+                        : 'Добавить в избранное',
+                    constraints: const BoxConstraints(
+                      minWidth: 44,
+                      minHeight: 44,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
       ),
     );
   }
-
-  Color _typeColor(EntryType type, DesignTokens tokens) {
-    return switch (type) {
-      EntryType.word => tokens.accent,
-      EntryType.phrase => const Color(0xFF3D7A5C),
-      EntryType.idiom => const Color(0xFFC4724E),
-      EntryType.expression => const Color(0xFFD4A84B),
-      EntryType.sentence => const Color(0xFF6B7280),
-      EntryType.unknown => tokens.textTertiary,
-    };
-  }
 }
+
+IconData _typeIcon(EntryType type) => switch (type) {
+  EntryType.word => Icons.text_fields_rounded,
+  EntryType.phrase => Icons.format_quote_rounded,
+  EntryType.idiom => Icons.forum_outlined,
+  EntryType.expression => Icons.translate_rounded,
+  EntryType.sentence => Icons.subject_rounded,
+  EntryType.unknown => Icons.help_outline_rounded,
+};
+
+Color _typeColor(EntryType type, DesignTokens tokens) => switch (type) {
+  EntryType.word => DesignTokens.meadow,
+  EntryType.phrase => DesignTokens.terracotta,
+  EntryType.idiom => DesignTokens.coral,
+  EntryType.expression => DesignTokens.gold,
+  EntryType.sentence => DesignTokens.sky,
+  EntryType.unknown => tokens.textTertiary,
+};

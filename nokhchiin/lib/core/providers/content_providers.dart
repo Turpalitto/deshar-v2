@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/content_entities.dart';
+import '../../domain/entities/conversation_entities.dart';
 import '../../domain/entities/learning_entities.dart';
 import '../../domain/entities/word_entity.dart';
 import '../../core/services/progress_stats_service.dart';
@@ -44,6 +45,42 @@ final collectionsProvider = FutureProvider.autoDispose(
 final storiesProvider = FutureProvider.autoDispose(
   (ref) => ref.read(contentSourceProvider).loadStories(),
 );
+
+final conversationCategoriesProvider = FutureProvider<List<ConversationCategoryEntity>>((
+  ref,
+) async {
+  final definitions = await ref
+      .read(contentSourceProvider)
+      .loadConversationCategories();
+  final words = await ref.watch(dictionaryRepoProvider).getCuratedWords();
+  final byPair = {
+    for (final word in words)
+      '${word.chechen.trim().toLowerCase()}|${word.russian.trim().toLowerCase()}':
+          word,
+  };
+  return [
+    for (final definition in definitions)
+      ConversationCategoryEntity(
+        id: definition.id,
+        title: definition.title,
+        icon: definition.icon,
+        enabled: definition.enabled,
+        entries: [
+          for (final entryRef in definition.entries)
+            if (byPair['${entryRef.chechen.trim().toLowerCase()}|${entryRef.russian.trim().toLowerCase()}']
+                case final word?)
+              if (word.reviewStatus.canAppearInLearning) word,
+        ],
+        quizTypesByWordId: {
+          for (final entryRef in definition.entries)
+            if (byPair['${entryRef.chechen.trim().toLowerCase()}|${entryRef.russian.trim().toLowerCase()}']
+                case final word?)
+              if (word.reviewStatus.canAppearInLearning)
+                word.id: entryRef.quizTypes,
+        },
+      ),
+  ];
+});
 
 // --- Dictionary & Learning units ---
 final dictionaryProvider = FutureProvider<List<WordEntity>>((ref) async {

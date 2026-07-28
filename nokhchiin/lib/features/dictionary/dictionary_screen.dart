@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -10,10 +11,6 @@ import '../../core/providers/dictionary_search_providers.dart';
 import '../../core/utils/number_format.dart';
 import 'dictionary_card.dart';
 
-/// Переработанный экран словаря — Apple Dictionary style.
-///
-/// Header + search + filter chips + virtualized list.
-/// UI получает только [DictionaryEntry] — никогда сырой JSON.
 class DictionaryScreen extends ConsumerStatefulWidget {
   const DictionaryScreen({super.key});
 
@@ -61,6 +58,14 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
     if (_scrollController.hasClients) _scrollController.jumpTo(0);
   }
 
+  void _resetSearch() {
+    _debounce?.cancel();
+    _searchController.clear();
+    ref.read(dictionaryQueryProvider.notifier).state = '';
+    ref.read(dictionaryFilterProvider.notifier).state = DictionaryFilter.all;
+    if (_scrollController.hasClients) _scrollController.jumpTo(0);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -68,166 +73,156 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
     final result = ref.watch(dictionarySearchProvider);
     final totalCount = ref.watch(dictionaryTotalCountProvider).valueOrNull ?? 0;
     final currentFilter = ref.watch(dictionaryFilterProvider);
+    final scope = ref.watch(dictionaryScopeProvider);
+    final query = ref.watch(dictionaryQueryProvider);
+    final visibleCount = result.valueOrNull?.totalCount ?? totalCount;
 
-    // Единый шелл AppScaffold вместо голого Scaffold с самодельным
-    // хедером — раньше в приложении было 4 несовместимых системы шапки
-    // экрана (аудит §3/§8).
     return AppScaffold(
       title: l10n.dictionaryTitle,
-      actions: [
-        if (totalCount > 0)
-          Padding(
-            padding: const EdgeInsets.only(right: 4),
-            child: Text(
-              '${formatThousands(totalCount)} '
-              '${pluralize(totalCount, one: 'слово', few: 'слова', many: 'слов')}',
-              style: TextStyle(
-                fontSize: 13,
-                color: tokens.textTertiary,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-      ],
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
-            child: Container(
-              decoration: BoxDecoration(
-                color: tokens.surface,
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: tokens.separator),
+            padding: const EdgeInsets.fromLTRB(16, 6, 16, 0),
+            child: CupertinoSlidingSegmentedControl<DictionaryScope>(
+              groupValue: scope,
+              backgroundColor: tokens.surfaceMuted,
+              thumbColor: tokens.surface,
+              padding: const EdgeInsets.all(3),
+              children: const {
+                DictionaryScope.core: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 18, vertical: 7),
+                  child: Text('Основной'),
+                ),
+                DictionaryScope.full: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 18, vertical: 7),
+                  child: Text('Все записи'),
+                ),
+              },
+              onValueChanged: (value) {
+                if (value == null) return;
+                ref.read(dictionaryScopeProvider.notifier).state = value;
+                if (_scrollController.hasClients) {
+                  _scrollController.jumpTo(0);
+                }
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 10),
+            child: CupertinoSearchTextField(
+              controller: _searchController,
+              onChanged: _onSearchChanged,
+              onSuffixTap: () {
+                _searchController.clear();
+                _onSearchChanged('');
+              },
+              placeholder: l10n.dictionarySearchHint,
+              backgroundColor: tokens.surfaceMuted,
+              itemColor: tokens.textTertiary,
+              style: TextStyle(color: tokens.textPrimary, fontSize: 15),
+              placeholderStyle: TextStyle(
+                color: tokens.textTertiary,
+                fontSize: 15,
               ),
-              child: TextField(
-                controller: _searchController,
-                onChanged: _onSearchChanged,
-                style: TextStyle(fontSize: 15, color: tokens.textPrimary),
-                decoration: InputDecoration(
-                  hintText: l10n.dictionarySearchHint,
-                  hintStyle: TextStyle(
-                    color: tokens.textTertiary,
-                    fontSize: 15,
-                  ),
-                  prefixIcon: Icon(
-                    Icons.search_rounded,
-                    color: tokens.textTertiary,
-                    size: 20,
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 14),
+              borderRadius: BorderRadius.circular(8),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 11),
+            ),
+          ),
+          SizedBox(
+            height: 36,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemCount: DictionaryFilter.values.length,
+              separatorBuilder: (_, _) => const SizedBox(width: 8),
+              itemBuilder: (context, index) {
+                final filter = DictionaryFilter.values[index];
+                return _FilterPill(
+                  label: filter.label,
+                  selected: filter == currentFilter,
+                  onTap: () => _onFilterChanged(filter),
+                );
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(18, 10, 18, 8),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                '${formatThousands(visibleCount)} '
+                '${pluralize(visibleCount, one: 'запись', few: 'записи', many: 'записей')}',
+                style: TextStyle(
+                  color: tokens.textSecondary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),
           ),
-          // Filter chips
-          SizedBox(
-            height: 44,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              children: DictionaryFilter.values.map((f) {
-                final selected = f == currentFilter;
-                final color = _filterColor(f, tokens);
-                return Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: FilterChip(
-                    label: Text(f.label),
-                    selected: selected,
-                    onSelected: (_) => _onFilterChanged(f),
-                    selectedColor: color.withValues(alpha: 0.15),
-                    labelStyle: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: selected ? color : tokens.textSecondary,
-                    ),
-                    backgroundColor: tokens.surface,
-                    side: BorderSide(
-                      color: selected
-                          ? color.withValues(alpha: 0.3)
-                          : tokens.separator,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    showCheckmark: false,
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                  ),
-                );
-              }).toList(),
-            ),
-          ),
-          const SizedBox(height: 8),
-          // List
           Expanded(
-            child: result.when(
-              data: (data) {
-                if (data.entries.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.search_off_rounded,
-                          size: 48,
-                          color: tokens.textTertiary,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: DecoratedBox(
+                  decoration: BoxDecoration(color: tokens.surface),
+                  child: result.when(
+                    data: (data) {
+                      if (data.entries.isEmpty) {
+                        return NokhchiinEmptyState(
+                          iconAsset: 'assets/icons/state_empty.svg',
+                          title: query.trim().isEmpty
+                              ? 'В этом разделе пока нет записей'
+                              : 'Ничего не найдено',
+                          subtitle: query.trim().isEmpty
+                              ? 'Выберите другой тип записи.'
+                              : 'Проверьте написание или сбросьте фильтры.',
+                          actionLabel: 'Сбросить фильтры',
+                          onAction: _resetSearch,
+                        );
+                      }
+                      return ListView.separated(
+                        controller: _scrollController,
+                        padding: EdgeInsets.zero,
+                        itemCount: data.entries.length + (data.hasMore ? 1 : 0),
+                        separatorBuilder: (_, index) => Divider(
+                          height: 1,
+                          indent: index < data.entries.length ? 64 : 0,
+                          color: tokens.separator,
                         ),
-                        const SizedBox(height: 12),
-                        Text(
-                          'Ничего не найдено',
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: tokens.textTertiary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-                return ListView.builder(
-                  controller: _scrollController,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 4,
-                  ),
-                  itemCount: data.entries.length + (data.hasMore ? 1 : 0),
-                  itemBuilder: (context, i) {
-                    if (i >= data.entries.length) {
-                      return const Padding(
-                        padding: EdgeInsets.all(20),
-                        child: Center(
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        ),
+                        itemBuilder: (context, index) {
+                          if (index >= data.entries.length) {
+                            return const SizedBox(
+                              height: 64,
+                              child: Center(
+                                child: CupertinoActivityIndicator(),
+                              ),
+                            );
+                          }
+                          final entry = data.entries[index];
+                          return DictionaryCard(
+                            entry: entry,
+                            onTap: () =>
+                                context.push('/dictionary/${entry.id}'),
+                            onFavorite: () => ref
+                                .read(dictionarySearchProvider.notifier)
+                                .toggleFavorite(entry.id),
+                          );
+                        },
                       );
-                    }
-                    final entry = data.entries[i];
-                    return DictionaryCard(
-                      entry: entry,
-                      onTap: () => context.push('/dictionary/${entry.id}'),
-                      onFavorite: () => ref
-                          .read(dictionarySearchProvider.notifier)
-                          .toggleFavorite(entry.id),
-                    );
-                  },
-                );
-              },
-              loading: () => const Center(
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
-              error: (e, _) => Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text('Ошибка загрузки'),
-                    const SizedBox(height: 12),
-                    TextButton(
-                      onPressed: () {
+                    },
+                    loading: () => const Center(
+                      child: CupertinoActivityIndicator(radius: 12),
+                    ),
+                    error: (_, _) => NokhchiinErrorState(
+                      message: 'Не удалось загрузить словарь',
+                      onRetry: () {
                         ref.invalidate(dictionarySearchProvider);
                         ref.invalidate(dictionaryTotalCountProvider);
                       },
-                      child: const Text('Повторить'),
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),
@@ -236,14 +231,43 @@ class _DictionaryScreenState extends ConsumerState<DictionaryScreen> {
       ),
     );
   }
+}
 
-  Color _filterColor(DictionaryFilter f, DesignTokens tokens) {
-    return switch (f) {
-      DictionaryFilter.all => tokens.accent,
-      DictionaryFilter.words => const Color(0xFF1B6B4A),
-      DictionaryFilter.phrases => const Color(0xFF3D7A5C),
-      DictionaryFilter.sentences => const Color(0xFF6B7280),
-      DictionaryFilter.favorites => Colors.redAccent,
-    };
+class _FilterPill extends StatelessWidget {
+  const _FilterPill({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final tokens = context.iosTokens;
+    return Material(
+      color: selected ? tokens.accent : tokens.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: BorderSide(color: selected ? tokens.accent : tokens.separator),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+          child: Text(
+            label,
+            style: TextStyle(
+              color: selected ? tokens.accentOn : tokens.textSecondary,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

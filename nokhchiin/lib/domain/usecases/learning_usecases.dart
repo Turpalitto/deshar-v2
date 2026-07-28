@@ -33,8 +33,8 @@ class GetDueWordsUseCase {
   final ProgressRepository _progressRepo;
   final DictionaryRepository _dictionaryRepo;
 
-  Future<List<WordEntity>> call({int limit = 20}) async {
-    final due = await _progressRepo.getDueForReview();
+  Future<List<WordEntity>> call({int limit = 20, DateTime? now}) async {
+    final due = await _progressRepo.getDueForReview(now: now);
     due.sort(
       (a, b) => (a.nextReviewAt ?? DateTime(2000)).compareTo(
         b.nextReviewAt ?? DateTime(2000),

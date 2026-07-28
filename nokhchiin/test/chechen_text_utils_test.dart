@@ -16,6 +16,10 @@ void main() {
         ChechenTextUtils.normalizeForSearch('lаьржа'),
         ChechenTextUtils.normalizeForSearch('Ӏаьржа'),
       );
+      expect(
+        ChechenTextUtils.normalizeForSearch('ӏаьржа'),
+        ChechenTextUtils.normalizeForSearch('Ӏаьржа'),
+      );
     });
 
     test('matchesWordQuery finds words with mixed palochka input', () {

@@ -6,20 +6,20 @@ abstract final class NokhchiinColors {
   static const mountain = Color(0xFF4A5D4E);
   static const stone = Color(0xFF6B7280);
   static const stoneDark = Color(0xFF374151);
-  static const meadow = Color(0xFF5C8A6B);
-  static const meadowLight = Color(0xFFD4E8D8);
-  static const sky = Color(0xFFB8C9D9);
-  static const skyLight = Color(0xFFE8EEF4);
+  static const meadow = Color(0xFF167D5A);
+  static const meadowLight = Color(0xFFD9F2E5);
+  static const sky = Color(0xFF2E6EAE);
+  static const skyLight = Color(0xFFDDEBFA);
 
   // Акцент — терракотовый (орнамент, не кислотный)
-  static const accent = Color(0xFFC45C3E);
-  static const accentDark = Color(0xFF9E4A32);
-  static const accentLight = Color(0xFFF5E6E2);
+  static const accent = Color(0xFFC95E3D);
+  static const accentDark = Color(0xFFA9482D);
+  static const accentLight = Color(0xFFFFE1D8);
 
   // Светлая тема
-  static const lightBackground = Color(0xFFF5F3EF);
-  static const lightSurface = Color(0xFFFFFCF8);
-  static const lightSurfaceAlt = Color(0xFFEDE9E3);
+  static const lightBackground = Color(0xFFF4F7F5);
+  static const lightSurface = Color(0xFFFFFFFF);
+  static const lightSurfaceAlt = Color(0xFFE8EFEB);
 
   // Тёмная тема
   static const darkBackground = Color(0xFF1A1F1C);
@@ -27,8 +27,8 @@ abstract final class NokhchiinColors {
   static const darkSurfaceAlt = Color(0xFF2F3833);
 
   // Текст
-  static const textPrimaryLight = Color(0xFF1C2420);
-  static const textSecondaryLight = Color(0xFF5C665F);
+  static const textPrimaryLight = Color(0xFF18211D);
+  static const textSecondaryLight = Color(0xFF5F6D66);
   static const textPrimaryDark = Color(0xFFF0EDE8);
   static const textSecondaryDark = Color(0xFFA8B0AA);
 

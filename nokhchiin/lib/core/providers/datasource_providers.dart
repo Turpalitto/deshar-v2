@@ -5,5 +5,6 @@ import '../../data/datasources/local_storage_datasource.dart';
 
 final assetDictSourceProvider = Provider((_) => AssetDictionaryDataSource());
 final progressLocalProvider = Provider((_) => LocalProgressDataSource());
+final deckLocalProvider = Provider((_) => LocalDeckDataSource());
 final userLocalProvider = Provider((_) => LocalUserDataSource());
 final contentSourceProvider = Provider((_) => ContentDataSource());

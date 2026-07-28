@@ -11,14 +11,16 @@ class NokhchiinTabBar extends StatelessWidget {
     required this.onTap,
     this.accent,
     this.floating = false,
+    required this.labels,
+    required this.iconAssets,
   });
 
   final int currentIndex;
   final ValueChanged<int> onTap;
   final Color? accent;
   final bool floating;
-
-  static const _labels = ['Главная', 'Миры', 'Повтор', 'Профиль'];
+  final List<String> labels;
+  final List<String> iconAssets;
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +55,7 @@ class NokhchiinTabBar extends StatelessWidget {
             child: Semantics(
               button: true,
               selected: isActive,
-              label: _labels[i],
+              label: labels[i],
               child: InkWell(
                 onTap: () {
                   HapticFeedback.selectionClick();
@@ -73,17 +75,21 @@ class NokhchiinTabBar extends StatelessWidget {
                       ),
                       decoration: BoxDecoration(
                         color: isActive
-                            ? active.withValues(
-                                alpha: tokens.isDark ? 0.22 : 0.12,
-                              )
+                            ? (tokens.isDark
+                                  ? active.withValues(alpha: 0.22)
+                                  : tokens.accentMuted)
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(100),
                       ),
-                      child: AppTabIcon(index: i, color: iconColor),
+                      child: AppIconImage(
+                        asset: iconAssets[i],
+                        size: 24,
+                        color: iconColor,
+                      ),
                     ),
                     const SizedBox(height: 3),
                     Text(
-                      _labels[i],
+                      labels[i],
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: isActive

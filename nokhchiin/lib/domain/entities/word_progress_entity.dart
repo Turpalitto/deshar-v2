@@ -11,10 +11,13 @@ class WordProgressEntity extends Equatable {
     this.repetitions = 0,
     this.nextReviewAt,
     this.lastReviewedAt,
+    this.lastSuccessfulReviewAt,
+    this.successfulReviewDays = 0,
     this.correctStreak = 0,
     this.wrongCount = 0,
     this.isFavorite = false,
     this.seededFromPlacement = false,
+    this.deckIds = const {},
   });
 
   final String wordId;
@@ -24,6 +27,8 @@ class WordProgressEntity extends Equatable {
   final int repetitions;
   final DateTime? nextReviewAt;
   final DateTime? lastReviewedAt;
+  final DateTime? lastSuccessfulReviewAt;
+  final int successfulReviewDays;
   final int correctStreak;
   final int wrongCount;
   final bool isFavorite;
@@ -35,10 +40,12 @@ class WordProgressEntity extends Equatable {
   /// юнитов/разблокировку, где placement-слова обязаны учитываться как
   /// освоенные.
   final bool seededFromPlacement;
+  final Set<String> deckIds;
 
   bool needsReviewAt(DateTime now) {
-    if (nextReviewAt == null) return mastery != MasteryLevel.unseen;
-    return now.isAfter(nextReviewAt!);
+    final dueAt = nextReviewAt;
+    if (dueAt == null) return false;
+    return !dueAt.isAfter(now);
   }
 
   bool get needsReview => needsReviewAt(DateTime.now());
@@ -50,10 +57,13 @@ class WordProgressEntity extends Equatable {
     int? repetitions,
     DateTime? nextReviewAt,
     DateTime? lastReviewedAt,
+    DateTime? lastSuccessfulReviewAt,
+    int? successfulReviewDays,
     int? correctStreak,
     int? wrongCount,
     bool? isFavorite,
     bool? seededFromPlacement,
+    Set<String>? deckIds,
   }) {
     return WordProgressEntity(
       wordId: wordId,
@@ -63,13 +73,32 @@ class WordProgressEntity extends Equatable {
       repetitions: repetitions ?? this.repetitions,
       nextReviewAt: nextReviewAt ?? this.nextReviewAt,
       lastReviewedAt: lastReviewedAt ?? this.lastReviewedAt,
+      lastSuccessfulReviewAt:
+          lastSuccessfulReviewAt ?? this.lastSuccessfulReviewAt,
+      successfulReviewDays: successfulReviewDays ?? this.successfulReviewDays,
       correctStreak: correctStreak ?? this.correctStreak,
       wrongCount: wrongCount ?? this.wrongCount,
       isFavorite: isFavorite ?? this.isFavorite,
       seededFromPlacement: seededFromPlacement ?? this.seededFromPlacement,
+      deckIds: deckIds ?? this.deckIds,
     );
   }
 
   @override
-  List<Object?> get props => [wordId];
+  List<Object?> get props => [
+    wordId,
+    mastery,
+    easeFactor,
+    intervalDays,
+    repetitions,
+    nextReviewAt,
+    lastReviewedAt,
+    lastSuccessfulReviewAt,
+    successfulReviewDays,
+    correctStreak,
+    wrongCount,
+    isFavorite,
+    seededFromPlacement,
+    deckIds,
+  ];
 }

@@ -197,6 +197,19 @@ def compact_entry(e: dict) -> dict:
     pron = e.get("pronunciation")
     if pron:
         out["pronunciation"] = pron
+    for field in (
+        "frequencyTier",
+        "register",
+        "region",
+        "reviewStatus",
+        "sourceRef",
+        "exampleCe",
+        "exampleRu",
+        "audioId",
+        "license",
+    ):
+        if e.get(field) not in (None, ""):
+            out[field] = e[field]
     return out
 
 
@@ -267,6 +280,8 @@ def build_curated(dictionary_entries: list[dict]) -> dict:
         emoji: str | None = None,
         pronunciation: str | None = None,
         review_status: str | None = None,
+        frequency_tier: str | None = None,
+        source_ref: str | None = None,
     ):
         key = re.sub(r"\s+", "", ce.lower())
         if key in by_key:
@@ -281,23 +296,44 @@ def build_curated(dictionary_entries: list[dict]) -> dict:
         }
         if pronunciation:
             entry["pronunciation"] = pronunciation
-        if review_status:
-            entry["reviewStatus"] = review_status
+        entry["reviewStatus"] = review_status or "draft"
+        if frequency_tier:
+            entry["frequencyTier"] = frequency_tier
+        if source_ref:
+            entry["sourceRef"] = source_ref
         by_key[key] = entry
+
+    def source_ref_for(sources: list[str]) -> str:
+        internal = {"lessons", "curated", "verified"}
+        return next((source for source in sources if source not in internal), "curated")
+
+    def exact_attested(ce: str, ru: str) -> bool:
+        return any(
+            candidate["chechen"].strip().casefold() == ce.strip().casefold()
+            for candidate in by_norm_ru.get(ru.strip().lower(), [])
+        )
 
     # 1. lessons.json — источник правды для уроков
     for lesson in load_lessons():
         cat = lesson["id"]
         for w in lesson.get("words", []):
+            sources = list(
+                dict.fromkeys([*w.get("sources", []), "lessons", "curated"])
+            )
+            status = w.get("reviewStatus")
+            if status is None and exact_attested(w["chechen"], w["russian"]):
+                status = "source_checked"
             add(
                 w["chechen"],
                 w["russian"],
                 cat,
-                list(dict.fromkeys([*w.get("sources", []), "lessons", "curated"])),
+                sources,
                 w.get("hint"),
                 emoji=w.get("emoji"),
                 pronunciation=w.get("pronunciation"),
-                review_status=w.get("reviewStatus"),
+                review_status=status,
+                frequency_tier=w.get("frequencyTier") or "common",
+                source_ref=w.get("sourceRef") or source_ref_for(sources),
             )
 
     # 2. vocabulary_corrections.json — ручные overrides
@@ -305,13 +341,19 @@ def build_curated(dictionary_entries: list[dict]) -> dict:
     if corrections_path.exists():
         corrections = json.loads(corrections_path.read_text(encoding="utf-8"))
         for item in corrections.get("overrides", {}).values():
+            sources = list(
+                dict.fromkeys([*item.get("sources", []), "curated", "verified"])
+            )
             add(
                 item["chechen"],
                 item["russian"],
                 item.get("category") or "default",
-                list(dict.fromkeys([*item.get("sources", []), "curated", "verified"])),
+                sources,
                 item.get("hint"),
                 emoji=item.get("emoji"),
+                review_status=item.get("reviewStatus") or "source_checked",
+                frequency_tier=item.get("frequencyTier") or "uncommon",
+                source_ref=item.get("sourceRef") or "vocabulary_corrections",
             )
 
     # 3. Точный lookup прилагательных (без substring-майнинга)
@@ -326,6 +368,9 @@ def build_curated(dictionary_entries: list[dict]) -> dict:
                     e["russian"],
                     "adjectives",
                     list(dict.fromkeys([*e["sources"], "curated"])),
+                    review_status="source_checked",
+                    frequency_tier="uncommon",
+                    source_ref=source_ref_for(e["sources"]),
                 )
                 break
 

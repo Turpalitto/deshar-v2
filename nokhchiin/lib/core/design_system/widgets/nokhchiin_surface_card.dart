@@ -53,14 +53,14 @@ class _NokhchiinSurfaceCardState extends State<NokhchiinSurfaceCard> {
                 // карточка вместо жёсткого чёрного контура.
                 BoxShadow(
                   color: const Color(
-                    0xFF3D3225,
+                    0xFF17382A,
                   ).withValues(alpha: tokens.isDark ? 0.35 : 0.06),
                   blurRadius: 24,
                   offset: const Offset(0, 8),
                 ),
                 BoxShadow(
                   color: const Color(
-                    0xFF3D3225,
+                    0xFF17382A,
                   ).withValues(alpha: tokens.isDark ? 0.2 : 0.03),
                   blurRadius: 4,
                   offset: const Offset(0, 1),

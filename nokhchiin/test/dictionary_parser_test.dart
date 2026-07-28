@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nokhchiin/domain/entities/enums.dart';
+import 'package:nokhchiin/domain/entities/content_metadata.dart';
 import 'package:nokhchiin/data/datasources/asset_dictionary_parser.dart';
 
 void main() {
@@ -44,6 +45,8 @@ void main() {
               'category': 'greetings',
               'emoji': '👋',
               'sources': ['curated'],
+              'reviewStatus': 'source_checked',
+              'frequencyTier': 'common',
             },
             {'chechen': 'ткъа', 'russian': 'Двадцать', 'category': 'numbers'},
           ],
@@ -58,7 +61,9 @@ void main() {
       expect(words[0].russian, 'Здравствуйте');
       expect(words[0].partOfSpeech, PartOfSpeech.phrase); // greetings → phrase
       expect(words[0].emoji, '👋');
-      expect(words[0].tags, ['verified']);
+      expect(words[0].tags, isEmpty);
+      expect(words[0].reviewStatus, ReviewStatus.sourceChecked);
+      expect(words[0].frequencyTier, FrequencyTier.common);
 
       expect(words[1].partOfSpeech, PartOfSpeech.number); // numbers → number
     });
@@ -147,7 +152,8 @@ void main() {
       // Same chechen|russian → same UUID v5 → deduped
       expect(words.length, 1);
       expect(words[0].emoji, '❤️'); // curated version kept
-      expect(words[0].tags, ['verified']);
+      expect(words[0].tags, isEmpty);
+      expect(words[0].reviewStatus, ReviewStatus.draft);
     });
 
     test('generates stable UUIDs', () {

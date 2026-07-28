@@ -151,8 +151,8 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                       // Реальное число вместо устаревшего "7 800" (аудит §7).
                       (
                         AppIcons.navDictionary,
-                        'Словарь ${formatThousands(dictionaryWordCount)}+ '
-                            '${pluralize(dictionaryWordCount, one: 'слово', few: 'слова', many: 'слов')}',
+                        'Словарь ${formatThousands(dictionaryEntryCount)}+ '
+                            '${pluralize(dictionaryEntryCount, one: 'запись', few: 'записи', many: 'записей')}',
                       ),
                     ])
                       Padding(

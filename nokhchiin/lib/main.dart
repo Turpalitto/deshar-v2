@@ -17,6 +17,7 @@ Future<void> main() async {
 Future<void> _initAndRun() async {
   await Hive.initFlutter();
   await LocalProgressDataSource().init();
+  await LocalDeckDataSource().init();
   await LocalUserDataSource().init();
   runApp(const ProviderScope(child: NokhchiinApp()));
 }

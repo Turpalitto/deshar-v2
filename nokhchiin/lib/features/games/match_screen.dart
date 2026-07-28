@@ -23,10 +23,12 @@ class MatchScreen extends ConsumerStatefulWidget {
   const MatchScreen({
     super.key,
     required this.unitId,
+    this.deckId,
     this.embedded = false,
     this.onComplete,
   });
   final String unitId;
+  final String? deckId;
   final bool embedded;
   final VoidCallback? onComplete;
 
@@ -56,13 +58,22 @@ class _MatchScreenState extends ConsumerState<MatchScreen> {
       mode: profile?.mode ?? AppMode.kids,
       age: profile?.ageGroup ?? KidsAgeGroup.age6to9,
     );
-    final words = await ExerciseWordPool.loadForUnit(
-      ref.read(dictionaryRepoProvider),
-      widget.unitId,
-      minCount: pairCount,
-      take: pairCount,
-      rng: _rng,
-    );
+    final dictionary = ref.read(dictionaryRepoProvider);
+    final deckId = widget.deckId;
+    final words = deckId == null
+        ? await ExerciseWordPool.loadForUnit(
+            dictionary,
+            widget.unitId,
+            minCount: pairCount,
+            take: pairCount,
+            rng: _rng,
+          )
+        : await ExerciseWordPool.loadForIds(
+            dictionary,
+            await ref.read(deckRepoProvider).getWordIds(deckId),
+            take: pairCount,
+            rng: _rng,
+          );
     if (mounted) {
       final ru = [...words]..shuffle(_rng);
       setState(() {

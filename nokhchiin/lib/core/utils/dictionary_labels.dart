@@ -32,7 +32,19 @@ abstract final class DictionaryLabels {
     'literature': 'Художественная литература',
     'other': 'Общий словарь',
     'curated': 'Проверено',
+    'verified': 'Проверенная подборка',
+    'lessons': 'Учебная программа',
   };
+
+  static String sourcesLabel(List<String> sources) {
+    final labels = <String>[];
+    for (final source in sources) {
+      final label = _sourceLabels[source];
+      if (label != null && !labels.contains(label)) labels.add(label);
+    }
+    if (labels.isEmpty) return 'Словарная база';
+    return labels.take(2).join(' · ');
+  }
 
   static String? categoryLabel(
     String? category, {
