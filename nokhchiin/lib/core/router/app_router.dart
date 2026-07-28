@@ -16,6 +16,7 @@ import '../../features/games/match_screen.dart';
 import '../../features/insights/adult_insights_dashboard_screen.dart';
 import '../../features/parent/parent_dashboard_screen.dart';
 import '../../features/profile/profile_screen.dart';
+import '../../features/paywall/paywall_screen.dart';
 import '../../features/review/review_screen.dart';
 import '../../features/worlds/worlds_map_screen.dart';
 import '../../features/collections/collections_screen.dart';
@@ -280,6 +281,18 @@ final appRouter = GoRouter(
       path: '/progress',
       pageBuilder: (context, state) =>
           _fadeScale(state, const ProgressScreen()),
+    ),
+    GoRoute(
+      parentNavigatorKey: _rootNavigatorKey,
+      path: '/paywall',
+      pageBuilder: (context, state) => _fadeScale(
+        state,
+        PaywallScreen(
+          returnPath:
+              state.uri.queryParameters['return'] ??
+              state.uri.queryParameters['returnPath'],
+        ),
+      ),
     ),
     GoRoute(
       parentNavigatorKey: _rootNavigatorKey,
