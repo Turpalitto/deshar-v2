@@ -24,12 +24,12 @@ lib/
 │   ├── services/             # Analytics, crash reporting, notifications
 │   └── widgets/              # Переиспользуемые UI
 ├── domain/
-│   ├── entities/             # Word, Progress, User, Unit
+│   ├── entities/             # Word, Progress, User, Unit, DailySession
 │   ├── repositories/         # Абстракции (порты)
 │   ├── services/             # SRS Engine
 │   └── usecases/             # Review, Unlock, Mastery
 ├── data/
-│   ├── datasources/          # Assets JSON, Hive
+│   ├── datasources/          # Assets JSON, Hive boxes
 │   └── repositories/         # Имплементации
 └── features/
     ├── onboarding/           # Выбор режима + возраст
@@ -47,14 +47,38 @@ lib/
 - `chechen`, `russian`, `pronunciation`
 - `partOfSpeech`, `category`, `exampleCe/Ru`
 - `synonyms`, `sources[]`, `tags[]`
-- `emoji`, `illustrationKey` (будущие иллюстрации)
-- `audioCeUrl`, `audioRuUrl` — зарезервированные nullable-поля модели; в текущей сборке аудио нет
+- `emoji`, `illustrationKey`
+- `audioId` — ссылка на проверенный клип из `audio_manifest.json`
 
 ## Mastery (6 уровней)
 `unseen → seen → recognizing → remembering → using → mastered`
 
 ## SRS
 SM-2 алгоритм в `SpacedRepetitionEngine`. Слова с `needsReview` попадают в экран «Повторение».
+
+Первое знакомство проходит через `MarkWordSeenUseCase`; активный ответ — через
+`ReviewWordUseCase`. Детское занятие оценивает каждое слово, а разговорная
+викторина передаёт правильные и ошибочные ответы в тот же SRS.
+
+## Офлайн-состояние
+
+Hive хранит четыре независимых набора данных:
+
+- `user_profile_v1` — профиль, серия, XP и дневные счётчики;
+- `word_progress_v1` — SRS, избранное и принадлежность колодам;
+- `decks_v1` — пользовательские колоды;
+- `daily_sessions_v1` — фактические дневные задачи, слова, баллы и минуты.
+
+Старые Map-записи читаются с безопасными значениями по умолчанию. Ошибка записи
+прогресса или профиля пробрасывается в вызывающий код и не маскируется как успех.
+
+## Аудио
+
+`ChechenAudioService` валидирует manifest, диктора, диалект, лицензию, согласие
+и SHA-256. Аудиоконтролы доступны в карточках, словаре, SRS, викторинах,
+разговорнике и детском занятии. Публичный manifest пока не содержит клипов, а
+production playback gateway ещё не подключён: UI показывает честное
+«Аудио пока недоступно».
 
 ## Путь обучения
 Юниты в `assets/data/learning_path.json`. Следующий юнит открывается при mastery ≥ `requiredMastery` предыдущего.
@@ -92,6 +116,10 @@ flutter run
 - [x] 2 интерактивные истории; требуется расширение после вычитки носителями
 - [~] Единый иллюстративный язык — бренд-сцена и культурные изображения готовы,
   тематические иллюстрации пополняются постепенно
-- [ ] Записи носителей языка — намеренно отложены; аудио не входит в текущую сборку
+- [x] Детские занятия сохраняют SRS, XP, минуты и дневную историю
+- [x] История «Сегодня» читает сохранённые сессии, а не пересчитывает прошлое
+- [x] Строгий CI: formatter, analyze, тесты, 60% domain/data, аудиты, web, Android
+- [~] Аудиоинтерфейс и политика готовы; записи носителей и playback gateway
+  остаются главным блокером Audio Beta
 
 Редакционные требования и критерии готовности описаны в `PRODUCT_QUALITY.md`.

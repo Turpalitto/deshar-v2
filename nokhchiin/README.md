@@ -8,6 +8,9 @@ Production-grade, **offline-first** Flutter-приложение для изуч
 - **Аудитория:** взрослый трек (SRS, инсайты, культура) + детский (игры)
 - **Данные:** JSON в `assets/data/`, прогресс в Hive
 - **Словарь:** ~134 000 пар из Hugging Face + приоритетный проверяемый curated-слой
+- **Детский цикл:** три возрастные механики с SRS и сохранением результата
+- **История:** фактически завершённые дневные задачи хранятся в Hive
+- **Аудио:** UI и политика готовы, каталог записей носителей пока пуст
 
 ## Запуск
 
@@ -29,11 +32,14 @@ flutter run --dart-define=SENTRY_DSN=your_dsn_here
 
 ```bash
 flutter test
-dart analyze lib/
+flutter analyze
+python ../tools/validate_content.py
+python ../tools/audit_dictionary_package.py
 ```
 
-Покрыты: spaced repetition engine, парсер и поиск словаря, access/learning use cases,
-onboarding, billing/paywall и ключевой release journey.
+CI дополнительно требует не менее 60% покрытия строк `domain/data`, собирает web
+и Android debug APK. Покрыты SRS, словарь, детский цикл, дневные сессии,
+разговорная практика, onboarding, billing/paywall и ключевые маршруты.
 
 ## Архитектура
 
@@ -58,8 +64,10 @@ lib/
 
 ## Маршруты (GoRouter)
 
-Таб-бар: `/` Home · `/worlds` · `/review` · `/profile`
-Также: `/splash`, `/onboarding`, `/dictionary`, `/path`, `/insights`, `/parent`, games, stories, boss, `/legal/{privacy,terms}`. Paywall, AI-наставник и аудио не входят в текущую открытую сборку.
+Таб-бар: `/` Home · `/collections` · `/dictionary` · `/profile`.
+Также: `/splash`, `/onboarding`, `/path`, `/today/*`, `/review`, `/parent`,
+games, stories, boss, `/paywall` и `/legal/{privacy,terms}`. Premium-флаг
+выключен, но маршрут paywall и возврат на исходный экран уже проверяются.
 
 ## Данные
 
@@ -78,6 +86,7 @@ python tools/build_dictionary.py --curate-only --copy-assets
 ```
 
 Приложение читает подготовленные assets локально и не зависит от сети во время обучения.
+Профиль, SRS, колоды и `DailySessionEntity` сохраняются в отдельных Hive-box.
 
 ## Документация
 
