@@ -75,6 +75,7 @@ void main() {
     expect(migrated.lastSuccessfulReviewAt, reviewedAt);
     expect(migrated.successfulReviewDays, 3);
     expect(migrated.isFavorite, isTrue);
+    expect(migrated.deckIds, isEmpty);
   });
 
   test('due queue uses next review time and includes failed cards', () async {
