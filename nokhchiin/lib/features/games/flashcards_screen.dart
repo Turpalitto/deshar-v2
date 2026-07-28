@@ -9,10 +9,12 @@ import '../../core/design/tokens/app_spacing.dart';
 import '../../core/design/app_icons.dart';
 import '../../core/design/widgets/reward_celebration.dart';
 import '../../core/providers/providers.dart';
+import '../../core/widgets/chechen_audio_controls.dart';
 import '../../domain/entities/enums.dart';
 import '../../core/utils/exercise_word_pool.dart';
 import '../../core/utils/gameplay_difficulty.dart';
 import '../../domain/entities/word_entity.dart';
+import '../../domain/constants/gameplay_constants.dart';
 import 'widgets/game_session_widgets.dart';
 import 'widgets/spring_swipe_card.dart';
 
@@ -41,6 +43,7 @@ class FlashcardsScreen extends ConsumerStatefulWidget {
 
 class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
   final _combo = GameComboTracker();
+  final _startedAt = DateTime.now();
 
   List<WordEntity> _words = [];
   int _index = 0;
@@ -140,6 +143,20 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
         _showFlipNudge = false;
       });
     } else {
+      if (widget.unitId == 'today') {
+        final elapsed = DateTime.now().difference(_startedAt).inSeconds;
+        await ref.read(recordDailyTaskUseCaseProvider)(
+          date: _startedAt,
+          taskId: 'new_words',
+          selectedWordIds: _words.map((word) => word.id).toList(),
+          minutesSpent: ((elapsed + 59) ~/ 60).clamp(
+            GameplayConstants.minimumRecordedSessionMinutes,
+            GameplayConstants.maximumRecordedSessionMinutes,
+          ),
+          finishedAt: DateTime.now(),
+        );
+        ref.invalidate(dailyHistoryProvider);
+      }
       if (widget.embedded) {
         widget.onComplete?.call();
       } else {
@@ -390,6 +407,8 @@ class _FlashcardContent extends StatelessWidget {
                           ? Colors.white.withValues(alpha: 0.15)
                           : tokens.surfaceMuted,
                     ),
+                    const SizedBox(height: 12),
+                    ChechenAudioControls(audioId: word.audioId, compact: true),
                   ],
                 ],
               ),

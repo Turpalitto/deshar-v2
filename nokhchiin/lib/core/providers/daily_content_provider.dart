@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/entities/daily_content_entity.dart';
+import '../../domain/entities/daily_session_entity.dart';
 import '../../domain/services/daily_content_selector.dart';
 import 'repository_providers.dart';
 
@@ -27,19 +28,6 @@ final todayContentProvider = FutureProvider.autoDispose<DailyContentEntity?>((
 });
 
 final dailyHistoryProvider =
-    FutureProvider.autoDispose<List<DailyContentEntity>>((ref) async {
-      final now = DateTime.now();
-      final today = DateTime(now.year, now.month, now.day);
-      final curated = await ref.watch(dictionaryRepoProvider).getCuratedWords();
-      final progress = await ref.watch(progressRepoProvider).getAllProgress();
-      final history = <DailyContentEntity>[];
-      for (var daysAgo = 1; daysAgo <= 7; daysAgo++) {
-        final selection = _selector.select(
-          date: today.subtract(Duration(days: daysAgo)),
-          curatedWords: curated,
-          progress: progress,
-        );
-        if (selection != null) history.add(selection);
-      }
-      return history;
-    });
+    FutureProvider.autoDispose<List<DailySessionEntity>>(
+      (ref) => ref.watch(dailySessionRepoProvider).getRecent(),
+    );

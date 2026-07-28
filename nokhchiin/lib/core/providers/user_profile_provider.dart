@@ -94,6 +94,37 @@ class UserProfileNotifier extends AsyncNotifier<UserProfileEntity> {
     );
   }
 
+  Future<void> recordKidsSession({
+    required int wordsLearned,
+    required int minutes,
+  }) async {
+    if (wordsLearned <= 0) return;
+    final current = _current;
+    final xp = wordsLearned * GameplayConstants.wordLearnedXp;
+    final coins = wordsLearned * GameplayConstants.wordLearnedCoins;
+    final newXp = current.xp + xp;
+    final weekly = List<int>.from(current.weeklyXp);
+    if (weekly.length == GameplayConstants.weeklyXpDays) weekly[6] += xp;
+    await _update(
+      current.copyWith(
+        xp: newXp,
+        level: _levelForXp(newXp),
+        coins: current.coins + coins,
+        stars: current.stars + coins,
+        todayMinutes:
+            current.todayMinutes +
+            minutes.clamp(
+              GameplayConstants.minimumRecordedSessionMinutes,
+              GameplayConstants.maximumRecordedSessionMinutes,
+            ),
+        wordsLearnedToday: current.wordsLearnedToday + wordsLearned,
+        lessonsCompletedTotal: current.lessonsCompletedTotal + 1,
+        weeklyXp: weekly,
+        lastActiveDate: _todayKey(),
+      ),
+    );
+  }
+
   Future<void> claimDailyGift() async {
     if (_current.dailyGiftClaimed) return;
     await _update(

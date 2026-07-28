@@ -2,11 +2,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/usecases/learning_usecases.dart';
 import '../../domain/usecases/access_usecases.dart';
 import '../../domain/usecases/placement_test_usecase.dart';
+import '../../domain/usecases/daily_session_usecases.dart';
 import 'repository_providers.dart';
 import 'billing_providers.dart';
 
 final reviewWordUseCaseProvider = Provider(
   (ref) => ReviewWordUseCase(ref.watch(progressRepoProvider)),
+);
+
+final markWordSeenUseCaseProvider = Provider(
+  (ref) => MarkWordSeenUseCase(ref.watch(progressRepoProvider)),
+);
+
+final recordDailyTaskUseCaseProvider = Provider(
+  (ref) => RecordDailyTaskUseCase(ref.watch(dailySessionRepoProvider)),
 );
 
 final getDueWordsUseCaseProvider = Provider(

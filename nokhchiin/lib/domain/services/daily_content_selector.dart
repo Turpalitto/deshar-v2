@@ -75,6 +75,7 @@ class DailyContentSelector {
       phraseOfTheDay: phrase,
       rareWordOfTheDay: rareWord,
       quizWords: quizWords.take(5).toList(),
+      newWordsAreUnseen: unseen.isNotEmpty,
     );
   }
 

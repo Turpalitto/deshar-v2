@@ -2,6 +2,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import '../../domain/entities/word_progress_entity.dart';
 import '../../domain/entities/enums.dart';
 import '../../domain/entities/deck_entity.dart';
+import '../../domain/entities/daily_session_entity.dart';
 import '../../core/utils/app_logger.dart';
 
 class LocalProgressDataSource {
@@ -65,6 +66,7 @@ class LocalProgressDataSource {
         error: e,
         stackTrace: st,
       );
+      rethrow;
     }
   }
 
@@ -194,6 +196,75 @@ class LocalUserDataSource {
       await Hive.box<Map>(boxName).put('profile', data);
     } catch (e, st) {
       AppLogger.error('Failed to save user profile', error: e, stackTrace: st);
+      rethrow;
     }
   }
+}
+
+class LocalDailySessionDataSource {
+  static const boxName = 'daily_sessions_v1';
+
+  Future<void> init() async {
+    if (!Hive.isBoxOpen(boxName)) {
+      await Hive.openBox<Map>(boxName);
+    }
+  }
+
+  Box<Map> get _box => Hive.box<Map>(boxName);
+
+  Future<DailySessionEntity?> getForDate(DateTime date) async {
+    final raw = _box.get(_dateKey(date));
+    return raw == null ? null : _fromMap(raw);
+  }
+
+  Future<List<DailySessionEntity>> getRecent({int limit = 7}) async {
+    final sessions = <DailySessionEntity>[];
+    for (final raw in _box.values) {
+      try {
+        sessions.add(_fromMap(raw));
+      } catch (e, st) {
+        AppLogger.warn(
+          'Skipping corrupt daily session',
+          error: e,
+          stackTrace: st,
+        );
+      }
+    }
+    sessions.sort((a, b) => b.date.compareTo(a.date));
+    return sessions.take(limit).toList();
+  }
+
+  Future<void> save(DailySessionEntity session) {
+    return _box.put(_dateKey(session.date), {
+      'date': session.date.toIso8601String(),
+      'selectedWordIds': session.selectedWordIds,
+      'completedTaskIds': session.completedTaskIds,
+      'quizScore': session.quizScore,
+      'quizTotal': session.quizTotal,
+      'reviewCount': session.reviewCount,
+      'minutesSpent': session.minutesSpent,
+      'finishedAt': session.finishedAt?.toIso8601String(),
+    });
+  }
+
+  DailySessionEntity _fromMap(Map raw) {
+    return DailySessionEntity(
+      date: DateTime.parse(raw['date'] as String),
+      selectedWordIds: (raw['selectedWordIds'] as List? ?? const [])
+          .whereType<String>()
+          .toList(),
+      completedTaskIds: (raw['completedTaskIds'] as List? ?? const [])
+          .whereType<String>()
+          .toList(),
+      quizScore: raw['quizScore'] as int? ?? 0,
+      quizTotal: raw['quizTotal'] as int? ?? 0,
+      reviewCount: raw['reviewCount'] as int? ?? 0,
+      minutesSpent: raw['minutesSpent'] as int? ?? 0,
+      finishedAt: DateTime.tryParse(raw['finishedAt']?.toString() ?? ''),
+    );
+  }
+
+  String _dateKey(DateTime date) =>
+      '${date.year}-${date.month.toString().padLeft(2, '0')}-'
+      '${date.day.toString().padLeft(2, '0')}';
 }

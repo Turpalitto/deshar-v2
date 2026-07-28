@@ -8,6 +8,7 @@ class DailyContentEntity {
     required this.phraseOfTheDay,
     required this.rareWordOfTheDay,
     required this.quizWords,
+    this.newWordsAreUnseen = true,
   });
 
   final DateTime date;
@@ -16,4 +17,5 @@ class DailyContentEntity {
   final WordEntity? phraseOfTheDay;
   final WordEntity? rareWordOfTheDay;
   final List<WordEntity> quizWords;
+  final bool newWordsAreUnseen;
 }

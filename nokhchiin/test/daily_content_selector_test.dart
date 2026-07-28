@@ -82,6 +82,28 @@ void main() {
       selection.newWords.map((word) => word.id),
       isNot(contains(anyOf('common-0', 'common-1', 'common-2'))),
     );
+    expect(selection.newWordsAreUnseen, isTrue);
+  });
+
+  test('fallback words are explicitly marked as reinforcement', () {
+    final content = _content();
+    final progress = {
+      for (final word in content)
+        if (!word.isPhrase)
+          word.id: WordProgressEntity(
+            wordId: word.id,
+            mastery: MasteryLevel.remembering,
+          ),
+    };
+
+    final selection = _selector.select(
+      date: DateTime(2026, 7, 28),
+      curatedWords: content,
+      progress: progress,
+    )!;
+
+    expect(selection.newWords, hasLength(5));
+    expect(selection.newWordsAreUnseen, isFalse);
   });
 
   test('phrase and rare cards come from explicit safe pools', () {

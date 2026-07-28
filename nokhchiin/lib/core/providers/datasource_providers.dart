@@ -7,4 +7,7 @@ final assetDictSourceProvider = Provider((_) => AssetDictionaryDataSource());
 final progressLocalProvider = Provider((_) => LocalProgressDataSource());
 final deckLocalProvider = Provider((_) => LocalDeckDataSource());
 final userLocalProvider = Provider((_) => LocalUserDataSource());
+final dailySessionLocalProvider = Provider(
+  (_) => LocalDailySessionDataSource(),
+);
 final contentSourceProvider = Provider((_) => ContentDataSource());

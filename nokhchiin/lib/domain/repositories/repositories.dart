@@ -4,6 +4,7 @@ import '../entities/learning_entities.dart';
 import '../entities/culture_capsule.dart';
 import '../entities/enums.dart';
 import '../entities/deck_entity.dart';
+import '../entities/daily_session_entity.dart';
 
 abstract class DictionaryRepository {
   Future<List<WordEntity>> getAllWords();
@@ -51,6 +52,12 @@ abstract class LearningPathRepository {
 abstract class UserRepository {
   Future<UserProfileEntity> getProfile();
   Future<void> saveProfile(UserProfileEntity profile);
+}
+
+abstract class DailySessionRepository {
+  Future<DailySessionEntity?> getForDate(DateTime date);
+  Future<List<DailySessionEntity>> getRecent({int limit = 7});
+  Future<void> save(DailySessionEntity session);
 }
 
 abstract class PdfImportRepository {

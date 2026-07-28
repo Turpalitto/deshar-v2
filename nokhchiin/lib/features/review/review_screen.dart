@@ -13,6 +13,7 @@ import '../../core/providers/providers.dart';
 import '../../domain/constants/subscription_limits.dart';
 import '../../domain/entities/enums.dart';
 import '../../domain/entities/learning_entities.dart';
+import '../../domain/constants/gameplay_constants.dart';
 
 class ReviewScreen extends ConsumerStatefulWidget {
   const ReviewScreen({super.key});
@@ -27,6 +28,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
   bool _showAnswer = false;
   int _correct = 0;
   bool _rewardShown = false;
+  DateTime? _reviewStartedAt;
 
   Future<bool> _canReview() async {
     final profile =
@@ -239,7 +241,10 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                             unawaited(context.push('/paywall?return=/review'));
                             return;
                           }
-                          setState(() => _started = true);
+                          setState(() {
+                            _started = true;
+                            _reviewStartedAt = DateTime.now();
+                          });
                         },
                 ),
               ],
@@ -303,6 +308,30 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
               _rewardShown = true;
               WidgetsBinding.instance.addPostFrameCallback((_) async {
                 if (!mounted) return;
+                final startedAt = _reviewStartedAt ?? DateTime.now();
+                final elapsed = DateTime.now().difference(startedAt).inSeconds;
+                try {
+                  await ref.read(recordDailyTaskUseCaseProvider)(
+                    date: startedAt,
+                    taskId: 'review',
+                    selectedWordIds: words.map((word) => word.id).toList(),
+                    reviewCount: words.length,
+                    minutesSpent: ((elapsed + 59) ~/ 60).clamp(
+                      GameplayConstants.minimumRecordedSessionMinutes,
+                      GameplayConstants.maximumRecordedSessionMinutes,
+                    ),
+                    finishedAt: DateTime.now(),
+                  );
+                  ref.invalidate(dailyHistoryProvider);
+                } catch (_) {
+                  if (mounted) {
+                    ScaffoldMessenger.of(this.context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Не удалось сохранить историю занятия'),
+                      ),
+                    );
+                  }
+                }
                 await ref
                     .read(userProfileProvider.notifier)
                     .addXp(_correct * 5, _correct);
@@ -322,6 +351,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                           _index = 0;
                           _correct = 0;
                           _rewardShown = false;
+                          _reviewStartedAt = null;
                         });
                       }
                     },

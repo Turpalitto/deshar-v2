@@ -31,6 +31,10 @@ final userRepoProvider = Provider<UserRepository>(
   (ref) => UserRepositoryImpl(ref.watch(userLocalProvider)),
 );
 
+final dailySessionRepoProvider = Provider<DailySessionRepository>(
+  (ref) => DailySessionRepositoryImpl(ref.watch(dailySessionLocalProvider)),
+);
+
 final cultureCapsuleRepoProvider = Provider<CultureCapsuleRepository>(
   (ref) => CultureCapsuleRepositoryImpl(ref.watch(contentSourceProvider)),
 );

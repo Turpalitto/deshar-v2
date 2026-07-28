@@ -27,6 +27,27 @@ class ReviewWordUseCase {
   }
 }
 
+class MarkWordSeenUseCase {
+  MarkWordSeenUseCase(
+    this._progressRepo, [
+    this._srs = const SpacedRepetitionEngine(),
+  ]);
+
+  final ProgressRepository _progressRepo;
+  final SpacedRepetitionEngine _srs;
+
+  Future<WordProgressEntity> call(String wordId, {DateTime? now}) async {
+    final existing =
+        await _progressRepo.getProgress(wordId) ??
+        WordProgressEntity(wordId: wordId);
+    final updated = _srs.markSeen(existing, now: now);
+    if (updated != existing) {
+      await _progressRepo.saveProgress(updated);
+    }
+    return updated;
+  }
+}
+
 class GetDueWordsUseCase {
   GetDueWordsUseCase(this._progressRepo, this._dictionaryRepo);
 

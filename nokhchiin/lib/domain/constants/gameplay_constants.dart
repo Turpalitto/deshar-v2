@@ -37,6 +37,14 @@ abstract final class GameplayConstants {
   /// Количество дней в weekly XP массиве.
   static const int weeklyXpDays = 7;
 
+  // --- Учебные сессии ---
+
+  static const int minimumRecordedSessionMinutes = 1;
+  static const int maximumRecordedSessionMinutes = 60;
+  static const int kidsAge3to6SessionWordCount = 3;
+  static const int kidsAge6to9SessionWordCount = 4;
+  static const int kidsAge9to12SessionWordCount = 5;
+
   // --- Заморозка стрика ---
 
   /// Стоимость одной заморозки стрика (монеты).

@@ -87,6 +87,35 @@ const _words = [
 ];
 
 void main() {
+  group('MarkWordSeenUseCase', () {
+    test('persists first exposure with a review deadline', () async {
+      final repo = _FakeProgressRepo();
+      final useCase = MarkWordSeenUseCase(repo);
+      final now = DateTime(2026, 7, 28, 12);
+
+      final result = await useCase('w1', now: now);
+
+      expect(result.mastery, MasteryLevel.seen);
+      expect(result.lastReviewedAt, now);
+      expect(result.nextReviewAt, now.add(const Duration(hours: 4)));
+      expect(await repo.getProgress('w1'), result);
+    });
+
+    test('does not reset progress for an already learned word', () async {
+      const existing = WordProgressEntity(
+        wordId: 'w1',
+        mastery: MasteryLevel.recognizing,
+        repetitions: 2,
+      );
+      final repo = _FakeProgressRepo({'w1': existing});
+      final useCase = MarkWordSeenUseCase(repo);
+
+      final result = await useCase('w1');
+
+      expect(result, existing);
+    });
+  });
+
   group('UnitMasteryPercentUseCase', () {
     test('returns 0 when no progress exists', () async {
       final useCase = UnitMasteryPercentUseCase(

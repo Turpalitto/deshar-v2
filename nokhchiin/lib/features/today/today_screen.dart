@@ -7,6 +7,7 @@ import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
 import '../../core/widgets/chechen_audio_controls.dart';
 import '../../domain/entities/daily_content_entity.dart';
+import '../../domain/entities/daily_session_entity.dart';
 import '../../domain/entities/deck_entity.dart';
 import '../../domain/entities/enums.dart';
 import '../../domain/entities/word_entity.dart';
@@ -135,7 +136,7 @@ class _TodayDashboard extends StatelessWidget {
   final double completion;
   final String dateLabel;
   final String dueLabel;
-  final AsyncValue<List<DailyContentEntity>> history;
+  final AsyncValue<List<DailySessionEntity>> history;
 
   @override
   Widget build(BuildContext context) {
@@ -180,7 +181,9 @@ class _TodayDashboard extends StatelessWidget {
                       icon: Icons.add_rounded,
                       color: DesignTokens.meadow,
                       background: DesignTokens.meadowMuted,
-                      title: 'Пять новых слов',
+                      title: selection.newWordsAreUnseen
+                          ? 'Пять новых слов'
+                          : 'Пять слов для укрепления',
                       subtitle: '${selection.newWords.length} на сегодня',
                       onTap: () => context.push('/today/new'),
                     ),
@@ -209,12 +212,15 @@ class _TodayDashboard extends StatelessWidget {
                     for (final item in items)
                       ListTile(
                         contentPadding: EdgeInsets.zero,
-                        title: Text(item.wordOfTheDay.chechen),
-                        subtitle: Text(
-                          '${_formatDate(item.date)} · ${item.wordOfTheDay.russian}',
+                        title: Text(
+                          '${_formatDate(item.date)} · '
+                          '${item.completedTaskIds.length} заданий',
                         ),
-                        onTap: () =>
-                            context.push('/dictionary/${item.wordOfTheDay.id}'),
+                        subtitle: Text(
+                          '${item.selectedWordIds.length} слов · '
+                          '${item.minutesSpent} мин'
+                          '${item.quizTotal > 0 ? ' · тест ${item.quizScore}/${item.quizTotal}' : ''}',
+                        ),
                       ),
                   ],
                   loading: () => const [NokhchiinLoadingState()],
@@ -357,7 +363,9 @@ class _TodayHero extends StatelessWidget {
                 ),
                 const SizedBox(height: 7),
                 Text(
-                  'Пять слов до нового шага',
+                  selection.newWordsAreUnseen
+                      ? 'Пять слов до нового шага'
+                      : 'Укрепляем знакомые слова',
                   maxLines: 2,
                   style: TextStyle(
                     color: Colors.white,
@@ -368,7 +376,8 @@ class _TodayHero extends StatelessWidget {
                 ),
                 const SizedBox(height: 7),
                 Text(
-                  '${selection.newWords.length} новых слов · '
+                  '${selection.newWords.length} '
+                  '${selection.newWordsAreUnseen ? 'новых слов' : 'слов для укрепления'} · '
                   '${selection.quizWords.length} вопросов',
                   style: TextStyle(
                     color: Colors.white.withValues(alpha: 0.84),

@@ -14,6 +14,7 @@ import '../../core/utils/exercise_word_pool.dart';
 import '../../core/utils/gameplay_difficulty.dart';
 import '../../domain/entities/enums.dart';
 import '../../domain/entities/word_entity.dart';
+import '../../domain/constants/gameplay_constants.dart';
 import 'widgets/exercise_presentation.dart';
 import 'widgets/game_session_widgets.dart';
 
@@ -42,6 +43,7 @@ class QuizScreen extends ConsumerStatefulWidget {
 
 class _QuizScreenState extends ConsumerState<QuizScreen> {
   final _combo = GameComboTracker();
+  final _startedAt = DateTime.now();
   List<WordEntity> _words = [];
   List<WordEntity> _options = [];
   int _index = 0;
@@ -237,9 +239,27 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
     if (_index < totalQ - 1) {
       setState(() => _index++);
       _buildOptions();
-    } else if (widget.embedded) {
-      widget.onComplete?.call();
     } else {
+      if (widget.unitId == 'today') {
+        final elapsed = DateTime.now().difference(_startedAt).inSeconds;
+        await ref.read(recordDailyTaskUseCaseProvider)(
+          date: _startedAt,
+          taskId: 'quiz',
+          selectedWordIds: _words.take(totalQ).map((word) => word.id).toList(),
+          quizScore: _score,
+          quizTotal: totalQ,
+          minutesSpent: ((elapsed + 59) ~/ 60).clamp(
+            GameplayConstants.minimumRecordedSessionMinutes,
+            GameplayConstants.maximumRecordedSessionMinutes,
+          ),
+          finishedAt: DateTime.now(),
+        );
+        ref.invalidate(dailyHistoryProvider);
+      }
+      if (widget.embedded) {
+        widget.onComplete?.call();
+        return;
+      }
       await ref.read(userProfileProvider.notifier).addXp(50, 5);
       if (!mounted) return;
       await RewardCelebration.show(

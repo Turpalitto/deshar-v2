@@ -19,5 +19,6 @@ Future<void> _initAndRun() async {
   await LocalProgressDataSource().init();
   await LocalDeckDataSource().init();
   await LocalUserDataSource().init();
+  await LocalDailySessionDataSource().init();
   runApp(const ProviderScope(child: NokhchiinApp()));
 }
