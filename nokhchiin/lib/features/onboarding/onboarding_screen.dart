@@ -9,11 +9,13 @@ import '../../core/design/app_icons.dart';
 import '../../core/design/tokens/app_spacing.dart';
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
+import '../../core/services/analytics_service.dart';
 import '../../core/utils/number_format.dart';
 import '../../core/widgets/kids_tap_target.dart';
 import '../../core/widgets/legal_links_row.dart';
 import '../../domain/constants/dictionary_constants.dart';
 import '../../domain/entities/enums.dart';
+import '../../domain/entities/analytics_event.dart';
 
 class OnboardingScreen extends ConsumerWidget {
   const OnboardingScreen({super.key});
@@ -37,6 +39,7 @@ class OnboardingScreen extends ConsumerWidget {
               await ref
                   .read(userProfileProvider.notifier)
                   .setMode(AppMode.adult);
+              await _trackModeSelection(ref, AppMode.adult);
               if (context.mounted) {
                 unawaited(context.push('/onboarding/placement'));
               }
@@ -45,6 +48,7 @@ class OnboardingScreen extends ConsumerWidget {
               await ref
                   .read(userProfileProvider.notifier)
                   .setMode(AppMode.kids);
+              await _trackModeSelection(ref, AppMode.kids);
               if (context.mounted) _showAgePicker(context, ref);
             },
           );
@@ -153,6 +157,19 @@ class OnboardingScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+}
+
+Future<void> _trackModeSelection(WidgetRef ref, AppMode mode) async {
+  try {
+    await ref
+        .read(analyticsServiceProvider)
+        .track(
+          AnalyticsEventName.modeSelected,
+          properties: {'mode': mode.name},
+        );
+  } catch (_) {
+    // Analytics must not block onboarding.
   }
 }
 

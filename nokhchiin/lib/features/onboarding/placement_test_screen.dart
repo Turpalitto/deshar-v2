@@ -9,9 +9,11 @@ import '../../core/design/tokens/app_spacing.dart';
 import '../../core/design/widgets/loading_state.dart';
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
+import '../../core/services/analytics_service.dart';
 import '../../core/router/app_router.dart';
 import '../../domain/entities/enums.dart';
 import '../../domain/entities/word_entity.dart';
+import '../../domain/entities/analytics_event.dart';
 import '../../core/utils/gameplay_difficulty.dart';
 
 final _rng = Random();
@@ -152,6 +154,13 @@ class _PlacementTestScreenState extends ConsumerState<PlacementTestScreen> {
     if (_completing) return;
     _completing = true;
     await ref.read(userProfileProvider.notifier).completeOnboarding();
+    try {
+      await ref
+          .read(analyticsServiceProvider)
+          .track(AnalyticsEventName.onboardingCompleted);
+    } catch (_) {
+      // Analytics must not block entering the app.
+    }
     // Держим синхронный guard в согласии с профилем: иначе context.go('/')
     // отскочит redirect'ом обратно на /splash (ещё 2.2 с загрузки) сразу
     // после завершения онбординга.

@@ -2,6 +2,19 @@ import 'package:equatable/equatable.dart';
 
 /// События воронки paywall и продукта.
 enum AnalyticsEventName {
+  onboardingCompleted('onboarding_completed'),
+  modeSelected('mode_selected'),
+  sessionStarted('session_started'),
+  sessionCompleted('session_completed'),
+  wordFirstSeen('word_first_seen'),
+  answerSubmitted('answer_submitted'),
+  hintUsed('hint_used'),
+  audioPlayed('audio_played'),
+  voiceRecorded('voice_recorded'),
+  reviewCompleted('review_completed'),
+  conversationCompleted('conversation_completed'),
+  lessonAbandoned('lesson_abandoned'),
+  notificationOpened('notification_opened'),
   paywallViewed('paywall_viewed'),
   paywallDismissed('paywall_dismissed'),
   trialStarted('trial_started'),
