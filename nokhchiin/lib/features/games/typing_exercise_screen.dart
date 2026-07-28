@@ -27,7 +27,7 @@ import 'widgets/game_session_widgets.dart';
 
 final _rng = Random();
 
-/// Упражнение CE→RU: показ русского, ввод чеченского с кастомной клавиатурой.
+/// Упражнение RU→CE: показ русского, ввод чеченского с кастомной клавиатурой.
 class TypingExerciseScreen extends ConsumerStatefulWidget {
   const TypingExerciseScreen({super.key, required this.unitId});
 

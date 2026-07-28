@@ -6,7 +6,10 @@ import 'package:go_router/go_router.dart';
 import '../../core/design/tokens/app_spacing.dart';
 import '../../core/design_system/design_system.dart';
 import '../../core/providers/providers.dart';
+import '../../core/services/analytics_service.dart';
 import '../../core/widgets/chechen_audio_controls.dart';
+import '../../domain/entities/analytics_event.dart';
+import '../../domain/entities/word_entity.dart';
 
 class ConversationScreen extends ConsumerWidget {
   const ConversationScreen({super.key});
@@ -159,7 +162,68 @@ class ConversationQuizScreen extends ConsumerStatefulWidget {
 class _ConversationQuizScreenState
     extends ConsumerState<ConversationQuizScreen> {
   int _index = 0;
+  int _score = 0;
   String? _selected;
+  bool _busy = false;
+  bool _completionTracked = false;
+
+  Future<void> _answer(WordEntity current, String option) async {
+    if (_busy || _selected != null) return;
+    final correct = option == current.chechen;
+    setState(() => _busy = true);
+    try {
+      await ref.read(reviewWordUseCaseProvider)(current.id, correct ? 4 : 1);
+      try {
+        await ref
+            .read(analyticsServiceProvider)
+            .track(
+              AnalyticsEventName.answerSubmitted,
+              properties: {
+                'word_id': current.id,
+                'correct': correct.toString(),
+                'exercise': 'conversation',
+              },
+            );
+      } catch (_) {
+        // Analytics must not interrupt the exercise.
+      }
+      if (!mounted) return;
+      setState(() {
+        _selected = option;
+        if (correct) _score++;
+      });
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Не удалось сохранить ответ')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  void _trackCompletion(int total) {
+    if (_completionTracked) return;
+    _completionTracked = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      try {
+        await ref
+            .read(analyticsServiceProvider)
+            .track(
+              AnalyticsEventName.conversationCompleted,
+              properties: {
+                'category_id': widget.categoryId,
+                'score': _score.toString(),
+                'total': total.toString(),
+              },
+            );
+      } catch (_) {
+        // Analytics must not interrupt navigation.
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -180,6 +244,7 @@ class _ConversationQuizScreenState
             ..sort((a, b) => a.compareTo(b));
           final finished = _index >= words.length;
           if (finished) {
+            _trackCompletion(words.length);
             return Center(
               child: FilledButton.icon(
                 onPressed: () => context.pop(),
@@ -209,8 +274,8 @@ class _ConversationQuizScreenState
                   Padding(
                     padding: const EdgeInsets.only(bottom: AppSpacing.sm),
                     child: OutlinedButton(
-                      onPressed: _selected == null
-                          ? () => setState(() => _selected = option)
+                      onPressed: _selected == null && !_busy
+                          ? () => _answer(current, option)
                           : null,
                       child: Text(option),
                     ),

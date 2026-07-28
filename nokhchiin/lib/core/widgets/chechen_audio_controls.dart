@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/providers.dart';
+import '../services/analytics_service.dart';
+import '../../domain/entities/analytics_event.dart';
+import '../services/chechen_audio_service.dart';
 
 class ChechenAudioControls extends ConsumerWidget {
   const ChechenAudioControls({
@@ -42,17 +45,50 @@ class ChechenAudioControls extends ConsumerWidget {
       children: [
         IconButton.filledTonal(
           tooltip: 'Эталонная запись',
-          onPressed: () => service.play(audioId),
+          onPressed: () async {
+            final result = await service.play(audioId);
+            if (result == AudioActionResult.played) {
+              await _trackAudio(ref, AnalyticsEventName.audioPlayed, audioId);
+            }
+          },
           icon: const Icon(Icons.volume_up_outlined),
         ),
         IconButton.filledTonal(
           tooltip: 'Записать мой голос',
           onPressed: service.canRecordVoice
-              ? () => service.recordUserVoice(referenceAudioId: audioId)
+              ? () async {
+                  final path = await service.recordUserVoice(
+                    referenceAudioId: audioId,
+                  );
+                  if (path != null) {
+                    await _trackAudio(
+                      ref,
+                      AnalyticsEventName.voiceRecorded,
+                      audioId,
+                    );
+                  }
+                }
               : null,
           icon: const Icon(Icons.mic_none_outlined),
         ),
       ],
     );
+  }
+}
+
+Future<void> _trackAudio(
+  WidgetRef ref,
+  AnalyticsEventName event,
+  String? audioId,
+) async {
+  try {
+    await ref
+        .read(analyticsServiceProvider)
+        .track(
+          event,
+          properties: audioId == null ? const {} : {'audio_id': audioId},
+        );
+  } catch (_) {
+    // Audio playback and recording stay usable if analytics is unavailable.
   }
 }

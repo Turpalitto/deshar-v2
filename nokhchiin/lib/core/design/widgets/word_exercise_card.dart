@@ -5,6 +5,7 @@ import '../tokens/app_spacing.dart';
 import '../tokens/app_typography.dart';
 import '../theme/nokhchiin_theme.dart';
 import '../../widgets/word_illustration.dart';
+import '../../widgets/chechen_audio_controls.dart';
 import '../../../domain/entities/word_entity.dart';
 
 /// Специальные символы чеченского для режима ввода CE→RU.
@@ -55,6 +56,8 @@ class WordExerciseCard extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
         ],
+        const SizedBox(height: AppSpacing.md),
+        ChechenAudioControls(audioId: word.audioId, compact: true),
         if (showRussian) ...[
           const SizedBox(height: AppSpacing.lg),
           Text(
