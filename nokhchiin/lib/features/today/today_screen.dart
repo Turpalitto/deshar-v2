@@ -308,7 +308,7 @@ class _TodayHero extends StatelessWidget {
   Widget build(BuildContext context) {
     final percent = (completion * 100).round();
     return Container(
-      height: wide ? 292 : 236,
+      height: wide ? 292 : 260,
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
@@ -539,7 +539,7 @@ class _DailyContentLayout extends StatelessWidget {
 
     return Column(
       children: [
-        SizedBox(height: 120, child: word),
+        SizedBox(height: 180, child: word),
         if (phrase != null || rare != null) ...[
           const SizedBox(height: AppSpacing.md),
           SizedBox(
@@ -655,6 +655,7 @@ class _DailyEntryCard extends ConsumerWidget {
       child: Stack(
         children: [
           Positioned.fill(
+            right: 48,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,

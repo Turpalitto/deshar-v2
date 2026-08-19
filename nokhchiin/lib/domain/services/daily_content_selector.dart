@@ -42,8 +42,27 @@ class DailyContentSelector {
               MasteryLevel.unseen,
         )
         .toList();
-    final newPool = unseen.isEmpty ? words : unseen;
-    final newWords = _pickMany(newPool, date, salt: 17, count: 5);
+    final targetCount = words.length < 5 ? words.length : 5;
+    final newWords = [..._pickMany(unseen, date, salt: 17, count: targetCount)];
+    if (newWords.length < targetCount) {
+      for (final word in _pickMany(
+        words,
+        date,
+        salt: 19,
+        count: words.length,
+      )) {
+        if (newWords.any((candidate) => candidate.id == word.id)) continue;
+        newWords.add(word);
+        if (newWords.length == targetCount) break;
+      }
+    }
+    final allSelectedWordsAreUnseen =
+        newWords.isNotEmpty &&
+        newWords.every(
+          (word) =>
+              (progress[word.id]?.mastery ?? MasteryLevel.unseen) ==
+              MasteryLevel.unseen,
+        );
     final wordOfTheDay = wordOfDayForDate(date: date, curatedWords: sorted)!;
 
     final phrases = sorted.where((word) => word.isPhrase).toList();
@@ -75,7 +94,7 @@ class DailyContentSelector {
       phraseOfTheDay: phrase,
       rareWordOfTheDay: rareWord,
       quizWords: quizWords.take(5).toList(),
-      newWordsAreUnseen: unseen.isNotEmpty,
+      newWordsAreUnseen: allSelectedWordsAreUnseen,
     );
   }
 

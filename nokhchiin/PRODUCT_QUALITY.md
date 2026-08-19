@@ -71,6 +71,7 @@
 dart format --set-exit-if-changed .
 flutter analyze
 flutter test --coverage
+flutter test integration_test/app_smoke_test.dart -d <android-device>
 flutter test integration_test/kids_learning_cycle_test.dart -d <android-device>
 python ../tools/check_coverage.py coverage/lcov.info --include lib/domain/ --include lib/data/ --minimum 60
 python ../tools/audit_lesson_vocabulary.py
@@ -86,10 +87,11 @@ flutter build apk --debug
 источник. Это лексикографическая проверка, а не замена редакторской вычитки
 носителем языка, особенно для произношения и грамматического контекста фраз.
 
-Затем вручную проверяются Android, iPhone и web: onboarding, три детских
+CI запускает оба Android integration-сценария на эмуляторе. Затем вручную
+проверяются Android, iPhone и web: onboarding, три детских
 возраста, ошибка и правильный ответ, перезапуск с сохранённым прогрессом, урок,
 игры, награда, SRS, словарь, история «Сегодня», профиль, родительский режим и
-обе темы.
+активная светлая тема.
 
 Текущий статус — технически зрелая закрытая бета. Главный продуктовый блокер:
 проверенный пилотный пакет записей носителей и сценарные диалоги.

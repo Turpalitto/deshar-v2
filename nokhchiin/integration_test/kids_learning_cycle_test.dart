@@ -145,6 +145,19 @@ Future<void> _runKidsJourney(
   for (final word in words.skip(1)) {
     expect(progress[word.id]?.repetitions, 1);
   }
+
+  final duplicateReward = await restarted
+      .read(userProfileProvider.notifier)
+      .recordKidsSession(
+        wordsLearned: wordCount,
+        minutes: 1,
+        date: history.single.date,
+      );
+  final afterDuplicate = restarted.read(userProfileProvider).requireValue;
+  expect(duplicateReward, isFalse);
+  expect(afterDuplicate.xp, profile.xp);
+  expect(afterDuplicate.wordsLearnedToday, profile.wordsLearnedToday);
+  expect(afterDuplicate.todayMinutes, profile.todayMinutes);
 }
 
 Future<void> _submitAnswer(

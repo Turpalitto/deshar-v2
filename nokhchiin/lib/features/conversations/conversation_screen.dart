@@ -53,7 +53,7 @@ class ConversationScreen extends ConsumerWidget {
                             ),
                             Text(
                               category.enabled
-                                  ? '${category.entries.length} проверенных фраз'
+                                  ? '${category.entries.length} фраз из учебной подборки'
                                   : 'Материал проходит проверку',
                               style: Theme.of(context).textTheme.bodySmall,
                             ),
@@ -236,7 +236,7 @@ class _ConversationQuizScreenState
               .where((item) => item.id == widget.categoryId)
               .firstOrNull;
           if (category == null || category.entries.length < 2) {
-            return const Center(child: Text('Недостаточно проверенных фраз'));
+            return const Center(child: Text('Недостаточно фраз для викторины'));
           }
           final words = category.entries;
           final current = words[_index % words.length];

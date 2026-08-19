@@ -30,17 +30,35 @@ void main() {
       addTearDown(container.dispose);
       await container.read(userProfileProvider.future);
 
-      await container
+      final firstReward = await container
           .read(userProfileProvider.notifier)
-          .recordKidsSession(wordsLearned: 3, minutes: 2);
+          .recordKidsSession(
+            wordsLearned: 3,
+            minutes: 2,
+            date: DateTime(2026, 7, 28),
+          );
 
       final profile = container.read(userProfileProvider).requireValue;
+      expect(firstReward, isTrue);
       expect(profile.wordsLearnedToday, 3);
       expect(profile.todayMinutes, 2);
       expect(profile.lessonsCompletedTotal, 1);
       expect(profile.xp, 3 * GameplayConstants.wordLearnedXp);
       expect(profile.coins, 3 * GameplayConstants.wordLearnedCoins);
       expect(profile.weeklyXp.last, 3 * GameplayConstants.wordLearnedXp);
+      expect(profile.lastKidsSessionRewardDate, '2026-07-28');
+      expect(repository.profile, profile);
+
+      final duplicateReward = await container
+          .read(userProfileProvider.notifier)
+          .recordKidsSession(
+            wordsLearned: 3,
+            minutes: 2,
+            date: DateTime(2026, 7, 28, 23),
+          );
+
+      expect(duplicateReward, isFalse);
+      expect(container.read(userProfileProvider).requireValue, profile);
       expect(repository.profile, profile);
     },
   );

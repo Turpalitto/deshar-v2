@@ -73,6 +73,7 @@ class UserProfileEntity extends Equatable {
     this.unlockedWorlds = const ['meadow'],
     this.achievements = const [],
     this.lastActiveDate,
+    this.lastKidsSessionRewardDate,
     this.dailyGiftClaimed = false,
     this.weeklyXp = const [0, 0, 0, 0, 0, 0, 0],
     this.isPremium = false,
@@ -101,6 +102,7 @@ class UserProfileEntity extends Equatable {
   final List<String> unlockedWorlds;
   final List<String> achievements;
   final String? lastActiveDate;
+  final String? lastKidsSessionRewardDate;
   final bool dailyGiftClaimed;
   final List<int> weeklyXp;
   final bool isPremium;
@@ -140,6 +142,7 @@ class UserProfileEntity extends Equatable {
     List<String>? unlockedWorlds,
     List<String>? achievements,
     String? lastActiveDate,
+    String? lastKidsSessionRewardDate,
     bool? dailyGiftClaimed,
     List<int>? weeklyXp,
     bool? isPremium,
@@ -168,6 +171,8 @@ class UserProfileEntity extends Equatable {
       unlockedWorlds: unlockedWorlds ?? this.unlockedWorlds,
       achievements: achievements ?? this.achievements,
       lastActiveDate: lastActiveDate ?? this.lastActiveDate,
+      lastKidsSessionRewardDate:
+          lastKidsSessionRewardDate ?? this.lastKidsSessionRewardDate,
       dailyGiftClaimed: dailyGiftClaimed ?? this.dailyGiftClaimed,
       weeklyXp: weeklyXp ?? this.weeklyXp,
       isPremium: isPremium ?? this.isPremium,
@@ -201,6 +206,7 @@ class UserProfileEntity extends Equatable {
     unlockedWorlds,
     achievements,
     lastActiveDate,
+    lastKidsSessionRewardDate,
     dailyGiftClaimed,
     weeklyXp,
     isPremium,

@@ -94,12 +94,16 @@ class UserProfileNotifier extends AsyncNotifier<UserProfileEntity> {
     );
   }
 
-  Future<void> recordKidsSession({
+  Future<bool> recordKidsSession({
     required int wordsLearned,
     required int minutes,
+    DateTime? date,
   }) async {
-    if (wordsLearned <= 0) return;
+    if (wordsLearned <= 0) return false;
     final current = _current;
+    final rewardDate = date ?? DateTime.now();
+    final rewardKey = DailySyncCalculator.dateKey(rewardDate);
+    if (current.lastKidsSessionRewardDate == rewardKey) return false;
     final xp = wordsLearned * GameplayConstants.wordLearnedXp;
     final coins = wordsLearned * GameplayConstants.wordLearnedCoins;
     final newXp = current.xp + xp;
@@ -120,9 +124,11 @@ class UserProfileNotifier extends AsyncNotifier<UserProfileEntity> {
         wordsLearnedToday: current.wordsLearnedToday + wordsLearned,
         lessonsCompletedTotal: current.lessonsCompletedTotal + 1,
         weeklyXp: weekly,
-        lastActiveDate: _todayKey(),
+        lastActiveDate: rewardKey,
+        lastKidsSessionRewardDate: rewardKey,
       ),
     );
+    return true;
   }
 
   Future<void> claimDailyGift() async {

@@ -5,7 +5,7 @@ void main() {
   test('dictionary sources are presented with user-facing labels', () {
     expect(
       DictionaryLabels.sourcesLabel(const ['lessons', 'curated']),
-      'Учебная программа · Проверено',
+      'Учебная программа · Учебная подборка',
     );
     expect(DictionaryLabels.sourcesLabel(const ['unknown']), 'Словарная база');
   });

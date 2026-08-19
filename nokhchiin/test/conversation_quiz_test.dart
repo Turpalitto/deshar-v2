@@ -47,6 +47,34 @@ class _Analytics extends AnalyticsService {
 }
 
 void main() {
+  testWidgets('source-checked conversations use a neutral content label', (
+    tester,
+  ) async {
+    const category = ConversationCategoryEntity(
+      id: 'greetings',
+      title: 'Знакомство',
+      icon: 'chat',
+      enabled: true,
+      entries: [
+        WordEntity(id: 'hello', chechen: 'Маршалла', russian: 'Здравствуйте'),
+        WordEntity(id: 'thanks', chechen: 'Баркалла', russian: 'Спасибо'),
+      ],
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          conversationCategoriesProvider.overrideWith((_) async => [category]),
+        ],
+        child: const MaterialApp(home: ConversationScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('2 фраз из учебной подборки'), findsOneWidget);
+    expect(find.textContaining('проверенн'), findsNothing);
+  });
+
   testWidgets('conversation answers update SRS and learning analytics', (
     tester,
   ) async {

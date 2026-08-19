@@ -31,8 +31,8 @@ abstract final class DictionaryLabels {
     'radio': 'Radio Marsho',
     'literature': 'Художественная литература',
     'other': 'Общий словарь',
-    'curated': 'Проверено',
-    'verified': 'Проверенная подборка',
+    'curated': 'Учебная подборка',
+    'verified': 'Ручная подборка',
     'lessons': 'Учебная программа',
   };
 
@@ -56,7 +56,7 @@ abstract final class DictionaryLabels {
       if (category != 'default') return category;
     }
     if (sources.contains('verified') || sources.contains('lessons')) {
-      return 'Проверено';
+      return 'Учебная подборка';
     }
     for (final s in sources) {
       final label = _sourceLabels[s];

@@ -62,6 +62,11 @@ class _Decks implements DeckRepository {
 
 void main() {
   testWidgets('today shows the complete adult daily cycle', (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
     final decks = _Decks();
     final today = DateTime(2026, 7, 28);
     final content = DailyContentEntity(
@@ -86,6 +91,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
 
     expect(find.text('Сегодня'), findsOneWidget);
     expect(find.text('Просроченные повторения'), findsOneWidget);

@@ -50,6 +50,7 @@ void main() {
     expect(profile.ageGroup, KidsAgeGroup.age9to12);
     expect(profile.unlockedWorlds, ['meadow', 'city']);
     expect(profile.coins, 40);
+    expect(profile.lastKidsSessionRewardDate, isNull);
     expect(profile.notificationsEnabled, isFalse);
     expect(profile.chechenUiEnabled, isFalse);
     expect(profile.seenCultureCapsules, isEmpty);

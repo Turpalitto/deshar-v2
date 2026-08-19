@@ -38,6 +38,7 @@ class UserRepositoryImpl implements UserRepository {
           (data['unlockedWorlds'] as List?)?.cast<String>() ?? const ['meadow'],
       achievements: (data['achievements'] as List?)?.cast<String>() ?? const [],
       lastActiveDate: data['lastActiveDate'] as String?,
+      lastKidsSessionRewardDate: data['lastKidsSessionRewardDate'] as String?,
       dailyGiftClaimed: data['dailyGiftClaimed'] as bool? ?? false,
       weeklyXp:
           (data['weeklyXp'] as List?)?.cast<int>() ??
@@ -73,6 +74,7 @@ class UserRepositoryImpl implements UserRepository {
       'unlockedWorlds': profile.unlockedWorlds,
       'achievements': profile.achievements,
       'lastActiveDate': profile.lastActiveDate,
+      'lastKidsSessionRewardDate': profile.lastKidsSessionRewardDate,
       'dailyGiftClaimed': profile.dailyGiftClaimed,
       'weeklyXp': profile.weeklyXp,
       'isPremium': profile.isPremium,

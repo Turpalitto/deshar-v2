@@ -38,7 +38,8 @@ python ../tools/audit_dictionary_package.py
 ```
 
 CI дополнительно требует не менее 60% покрытия строк `domain/data`, собирает web
-и Android debug APK. Покрыты SRS, словарь, детский цикл, дневные сессии,
+и Android debug APK и запускает два integration-сценария на Android-эмуляторе.
+Покрыты SRS, словарь, детский цикл, дневные сессии,
 разговорная практика, onboarding, billing/paywall и ключевые маршруты.
 
 ## Архитектура

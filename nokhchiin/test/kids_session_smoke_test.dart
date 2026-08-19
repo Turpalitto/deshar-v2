@@ -34,12 +34,14 @@ class _KidsProfileNotifier extends UserProfileNotifier {
       UserProfileEntity(mode: AppMode.kids, ageGroup: ageGroup);
 
   @override
-  Future<void> recordKidsSession({
+  Future<bool> recordKidsSession({
     required int wordsLearned,
     required int minutes,
+    DateTime? date,
   }) async {
     recordedWords += wordsLearned;
     recordedMinutes += minutes;
+    return true;
   }
 }
 
@@ -147,7 +149,8 @@ void main() {
 
     await tester.tap(find.text('К заданию'));
     await tester.pumpAndSettle();
-    expect(find.text('Послушай и найди картинку'), findsOneWidget);
+    expect(find.text('Найди картинку для слова'), findsOneWidget);
+    expect(find.text('Послушай и найди картинку'), findsNothing);
     for (var index = 0; index < 3; index++) {
       expect(find.text('ce-${index + 1}'), findsOneWidget);
       await tester.tap(find.text('ru-${index + 1}'));

@@ -147,7 +147,11 @@ class _KidsSessionScreenState extends ConsumerState<KidsSessionScreen> {
       );
       await ref
           .read(userProfileProvider.notifier)
-          .recordKidsSession(wordsLearned: learnedCount, minutes: minutes);
+          .recordKidsSession(
+            wordsLearned: learnedCount,
+            minutes: minutes,
+            date: _startedAt,
+          );
       await _track(
         AnalyticsEventName.sessionCompleted,
         properties: {
@@ -386,14 +390,17 @@ class _PictureChoiceQuiz extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasAudio = target.audioId?.isNotEmpty ?? false;
     final visibleOptions = [
       target,
       ...options.where((word) => word.id != target.id),
     ].take(4).toList()..sort((a, b) => a.russian.compareTo(b.russian));
     return _QuizLayout(
       progress: progress,
-      prompt: 'Послушай и найди картинку',
-      clue: target.chechen,
+      prompt: hasAudio
+          ? 'Послушай и найди картинку'
+          : 'Найди картинку для слова',
+      clue: hasAudio ? 'Включи запись' : target.chechen,
       audioId: target.audioId,
       result: _resultText(isCorrect, target.russian),
       busy: busy,

@@ -106,6 +106,31 @@ void main() {
     expect(selection.newWordsAreUnseen, isFalse);
   });
 
+  test('partial unseen pool is topped up to five without duplicates', () {
+    final content = _content();
+    final learnableWords = content.where((word) => !word.isPhrase).toList();
+    final unseenIds = learnableWords.take(2).map((word) => word.id).toSet();
+    final progress = {
+      for (final word in learnableWords)
+        if (!unseenIds.contains(word.id))
+          word.id: WordProgressEntity(
+            wordId: word.id,
+            mastery: MasteryLevel.remembering,
+          ),
+    };
+
+    final selection = _selector.select(
+      date: DateTime(2026, 7, 28),
+      curatedWords: content,
+      progress: progress,
+    )!;
+
+    expect(selection.newWords, hasLength(5));
+    expect(selection.newWords.map((word) => word.id).toSet(), hasLength(5));
+    expect(selection.newWords.map((word) => word.id), containsAll(unseenIds));
+    expect(selection.newWordsAreUnseen, isFalse);
+  });
+
   test('phrase and rare cards come from explicit safe pools', () {
     final selection = _selector.select(
       date: DateTime(2026, 7, 28),

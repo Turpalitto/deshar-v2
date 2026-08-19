@@ -20,6 +20,7 @@ void main() {
       expect(profile.weeklyXp.length, 7);
       expect(profile.achievements, isEmpty);
       expect(profile.unlockedWorlds, ['meadow']);
+      expect(profile.lastKidsSessionRewardDate, isNull);
     });
 
     test('copyWith preserves unchanged fields', () {
@@ -100,6 +101,10 @@ void main() {
       expect(base, isNot(equals(base.copyWith(lessonsCompletedTotal: 1))));
       expect(base, isNot(equals(base.copyWith(reviewsDoneToday: 1))));
       expect(base, isNot(equals(base.copyWith(dailyGiftClaimed: true))));
+      expect(
+        base,
+        isNot(equals(base.copyWith(lastKidsSessionRewardDate: '2026-07-28'))),
+      );
     });
   });
 
