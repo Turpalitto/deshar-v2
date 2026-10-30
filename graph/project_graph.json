@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "protocol_version": "1.0",
+  "updated_at": "2026-10-23T17:49:51Z",
+  "nodes": [
+    {
+      "id": "project",
+      "kind": "project",
+      "name": "deshar-v2-tv-screensaver",
+      "managed": true
+    },
+    {
+      "id": "stack:unknown",
+      "kind": "stack",
+      "name": "Unknown",
+      "managed": true
+    }
+  ],
+  "edges": [
+    {
+      "source": "project",
+      "target": "stack:unknown",
+      "type": "uses"
+    },
+    {
+      "source": "project",
+      "target": "stack:unknown",
+      "type": "uses"
+    }
+  ]
+}
